@@ -591,10 +591,10 @@ void CCSprite::draw(void)
     ccGLEnableVertexAttribs( kCCVertexAttribFlag_PosColorTex );
 
 #define kQuadSize sizeof(m_sQuad.bl)
-    long offset = (long)&m_sQuad;
+    ptrdiff_t offset = (ptrdiff_t)&m_sQuad;
 
     // vertex
-    int diff = offsetof( ccV3F_C4B_T2F, vertices);
+    size_t diff = offsetof( ccV3F_C4B_T2F, vertices);
     glVertexAttribPointer(kCCVertexAttrib_Position, 3, GL_FLOAT, GL_FALSE, kQuadSize, (void*) (offset + diff));
 
     // texCoods
