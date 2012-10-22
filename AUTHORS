@@ -12,6 +12,10 @@ Developers:
     Rolando Abarca
         Javascript Binding and testjs
 
+    wenbin wang
+        add korean language support
+        fix getDeviceModel bug in android CocosDenshion
+
     Horcruxes
         fix the bug that CCArray::createWithContentsOfFile() may not read file data on iOS
 
