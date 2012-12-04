@@ -304,7 +304,7 @@ void CCDirector::setOpenGLView(CCEGLView *pobOpenGLView)
         m_obWinSizeInPoints = m_pobOpenGLView->getSize();
         m_obWinSizeInPixels = CCSizeMake(m_obWinSizeInPoints.width * m_fContentScaleFactor, m_obWinSizeInPoints.height * m_fContentScaleFactor);
         
-        createStatsLabel();
+//        createStatsLabel();
         
         if (m_pobOpenGLView)
         {

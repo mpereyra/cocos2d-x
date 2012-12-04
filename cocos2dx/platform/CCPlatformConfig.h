@@ -47,11 +47,23 @@ Config of cocos2d-x project, per target platform.
 // Determine target platform by compile environment macro.
 #define CC_TARGET_PLATFORM             CC_PLATFORM_UNKNOWN
 
+
+
+
+// mac
+#if ! CC_TARGET_PLATFORM && defined(TARGET_OS_MAC)
+#undef  CC_TARGET_PLATFORM
+#define CC_TARGET_PLATFORM         CC_PLATFORM_MAC
+//#define CC_SUPPORT_PVRTC
+#endif
+
 // iphone
 #if ! CC_TARGET_PLATFORM && (defined(TARGET_OS_IPHONE) || defined(TARGET_IPHONE_SIMULATOR))
+    barf
     #undef  CC_TARGET_PLATFORM
     #define CC_TARGET_PLATFORM         CC_PLATFORM_IOS
     #define CC_SUPPORT_PVRTC
+    error
 #endif
 
 // android
@@ -59,6 +71,9 @@ Config of cocos2d-x project, per target platform.
     #undef  CC_TARGET_PLATFORM
     #define CC_TARGET_PLATFORM         CC_PLATFORM_ANDROID
 #endif
+
+
+
 
 // win32
 #if ! CC_TARGET_PLATFORM && (defined(WIN32) && defined(_WINDOWS))
@@ -90,12 +105,6 @@ Config of cocos2d-x project, per target platform.
     #define CC_TARGET_PLATFORM     CC_PLATFORM_BLACKBERRY
 #endif
 
-// mac
-#if ! CC_TARGET_PLATFORM && defined(TARGET_OS_MAC)
-    #undef  CC_TARGET_PLATFORM
-    #define CC_TARGET_PLATFORM         CC_PLATFORM_MAC
-    //#define CC_SUPPORT_PVRTC
-#endif
 
 //////////////////////////////////////////////////////////////////////////
 // post configure
