@@ -1,12 +1,13 @@
 LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
-LOCAL_MODULE    := cocos_lua_static
+LOCAL_MODULE := cocos_lua_static
 
 LOCAL_MODULE_FILENAME := liblua
 
-LOCAL_SRC_FILES :=../../lua/lapi.c \
-                  ../../lua/lauxlib.c \
+LOCAL_SRC_FILES := \
+          ../../lua/lapi.c \
+          ../../lua/lauxlib.c \
           ../../lua/lbaselib.c \
           ../../lua/lcode.c \
           ../../lua/ldblib.c \
@@ -40,15 +41,15 @@ LOCAL_SRC_FILES :=../../lua/lapi.c \
           ../../tolua/tolua_is.c \
           ../../tolua/tolua_map.c \
           ../../tolua/tolua_push.c \
-          ../../tolua/tolua_to.c
+          ../../tolua/tolua_to.c \
           
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/../../lua \
                            $(LOCAL_PATH)/../../tolua \
-                           $(LOCAL_PATH)/../../cocos2dx_support 
+                           $(LOCAL_PATH)/../../cocos2dx_support \
           
           
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/ \
-                    $(LOCAL_PATH)/../../lua 
-                    
+                    $(LOCAL_PATH)/../../lua \
+
 
 include $(BUILD_STATIC_LIBRARY)
