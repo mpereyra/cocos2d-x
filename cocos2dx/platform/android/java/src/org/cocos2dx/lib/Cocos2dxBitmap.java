@@ -116,7 +116,7 @@ public class Cocos2dxBitmap {
 		Cocos2dxBitmap.initNativeObject(bitmap);
 	}
 
-	private static Paint newPaint(final String pFontName, final int pFontSize, final int pHorizontalAlignment) {
+	public static Paint newPaint(final String pFontName, final int pFontSize, final int pHorizontalAlignment) {
 		final Paint paint = new Paint();
 		paint.setColor(Color.WHITE);
 		paint.setTextSize(pFontSize);
@@ -219,7 +219,7 @@ public class Cocos2dxBitmap {
 	/*
 	 * If maxWidth or maxHeight is not 0, split the string to fix the maxWidth and maxHeight.
 	 */
-	private static String[] splitString(final String pString, final int pMaxWidth, final int pMaxHeight, final Paint pPaint) {
+	public static String[] splitString(final String pString, final int pMaxWidth, final int pMaxHeight, final Paint pPaint) {
 		final String[] lines = pString.split("\\n");
 		String[] ret = null;
 		final FontMetricsInt fm = pPaint.getFontMetricsInt();
