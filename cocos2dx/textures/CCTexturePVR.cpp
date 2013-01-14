@@ -88,10 +88,14 @@ static const unsigned int tableFormats[][7] = {
 	{ kPVRTexturePixelTypeA_8,		 GL_ALPHA,	GL_ALPHA,	GL_UNSIGNED_BYTE,				8,	false, kCCTexture2DPixelFormat_A8		},
 	{ kPVRTexturePixelTypeI_8,		 GL_LUMINANCE,	GL_LUMINANCE,	GL_UNSIGNED_BYTE,		8,	false, kCCTexture2DPixelFormat_I8		},
 	{ kPVRTexturePixelTypeAI_88,	 GL_LUMINANCE_ALPHA,	GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE,16,	false, kCCTexture2DPixelFormat_AI88	},
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)  
+    // BPC PATCH:
+    // By default these two are marked IOS only in Cocos (i.e. include within the below define).
+    // We can handle these on android though.
 	{ kPVRTexturePixelTypePVRTC_2,	 GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG, (unsigned int)-1, (unsigned int)-1,			2,	true, kCCTexture2DPixelFormat_PVRTC2	},
 	{ kPVRTexturePixelTypePVRTC_4,	 GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG, (unsigned int)-1, (unsigned int)-1,			4,	true, kCCTexture2DPixelFormat_PVRTC4	},
-
+    
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+    // BPC PATCH: END
 	{ kPVRTexturePixelTypeBGRA_8888, GL_RGBA,	GL_BGRA, GL_UNSIGNED_BYTE,					32,	false, kCCTexture2DPixelFormat_RGBA8888	},
 #endif // iphone only
 };
