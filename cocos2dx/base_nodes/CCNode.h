@@ -460,7 +460,7 @@ public:
 
      @since v0.8.2
      */
-    CCRect boundingBox(void);
+    virtual CCRect boundingBox(void);
 
     // actions
 
