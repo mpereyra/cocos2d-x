@@ -161,6 +161,11 @@ public:
     CCTexture2D* addPVRTCImage(const char* fileimage, int bpp, bool hasAlpha, int width);
 #endif // CC_SUPPORT_PVRTC
     
+    // BPC PATCH
+#ifdef ANDROID
+	CCTexture2D* addDDSImage(const char* filename);
+#endif
+    
     /** Returns a Texture2D object given an PVR filename
     * If the file image was not previously loaded, it will create a new CCTexture2D
     *  object and it will return it. Otherwise it will return a reference of a previously loaded image

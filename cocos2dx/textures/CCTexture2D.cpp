@@ -44,7 +44,11 @@ THE SOFTWARE.
 #include "shaders/CCGLProgram.h"
 #include "shaders/ccGLStateCache.h"
 #include "shaders/CCShaderCache.h"
-
+#ifdef ANDROID
+#include "CCTextureATC.h"
+#include "CCTextureDXT.h"
+#include "CCDDS.h"
+#endif
 #if CC_ENABLE_CACHE_TEXTURE_DATA
     #include "CCTextureCache.h"
 #endif
@@ -592,7 +596,65 @@ void CCTexture2D::PVRImagesHavePremultipliedAlpha(bool haveAlphaPremultiplied)
     PVRHaveAlphaPremultiplied_ = haveAlphaPremultiplied;
 }
 
+#ifdef ANDROID
+// BPC PATCH START
+bool CCTexture2D::initWithDDSFile(const char* file)
+{
+    bool bRet = false;
+    // nothing to do with CCObject::init
     
+    CCDDS* dds = CCDDS::ddsWithContentsOfFile(file);
+    if(dds && dds->getCompressionType() == DDS_COMPRESS_ATI) {
+        CCTextureATC *atc = new CCTextureATC;
+        bRet = atc->initWithDDS(dds);
+        if (bRet)
+        {
+            atc->setRetainName(true); // don't dealloc texture on release
+            m_uName = atc->getName();
+            m_fMaxS = 1.0f;
+            m_fMaxT = 1.0f;
+            m_uPixelsWide = atc->getWidth();
+            m_uPixelsHigh = atc->getHeight();
+            m_tContentSize = CCSizeMake(m_uPixelsWide, m_uPixelsHigh);
+            m_bHasPremultipliedAlpha = false;
+            m_ePixelFormat = atc->getPixelFormat();
+            this->setAntiAliasTexParameters();
+            atc->release();
+        }
+        else
+        {
+            CCLOG("cocos2d: Couldn't load ATC image %s", file);
+        }
+    }
+    else if(dds && dds->getCompressionType() == DDS_COMPRESS_S3) {
+        CCTextureDXT *dxt = new CCTextureDXT;
+        bRet = dxt->initWithDDS(dds);
+        if (bRet)
+        {
+            dxt->setRetainName(true); // don't dealloc texture on release
+            m_uName = dxt->getName();
+            m_fMaxS = 1.0f;
+            m_fMaxT = 1.0f;
+            m_uPixelsWide = dxt->getWidth();
+            m_uPixelsHigh = dxt->getHeight();
+            m_tContentSize = CCSizeMake(m_uPixelsWide, m_uPixelsHigh);
+            m_bHasPremultipliedAlpha = false;
+            m_ePixelFormat = dxt->getPixelFormat();
+            this->setAntiAliasTexParameters();
+            dxt->release();
+        }
+        else
+        {
+            CCLOG("cocos2d: Couldn't load DXT (s3) image %s", file);
+        }
+    }
+    
+    return bRet;
+}
+// BPC PATCH END
+#endif
+
+
 //
 // Use to apply MIN/MAG filter
 //

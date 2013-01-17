@@ -61,6 +61,8 @@ public:
     @warning Recall: you are responsible for calling delete[] on any Non-NULL pointer returned.
     */
     unsigned char* getFileDataFromZip(const char* pszZipFilePath, const char* pszFileName, unsigned long * pSize);
+    
+    static std::string& ccRemoveHDSuffixFromFile(std::string& path);
 
     /**
     @brief   Generate the absolute path of the file.

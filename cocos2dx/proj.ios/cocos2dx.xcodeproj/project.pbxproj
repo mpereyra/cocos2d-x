@@ -283,6 +283,12 @@
 		1551A872158F2ADF00E66CFE /* CCTouchHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 1551A627158F2ADE00E66CFE /* CCTouchHandler.h */; };
 		1551A874158F2B4700E66CFE /* cocos2dx-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 1551A873158F2B4700E66CFE /* cocos2dx-Prefix.pch */; };
 		2628297A15EC7064002C4240 /* ccTypeInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 2628297915EC7064002C4240 /* ccTypeInfo.h */; };
+		D29C32A616A7542B00C873BD /* CCTextureATC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D29C32A416A7542B00C873BD /* CCTextureATC.cpp */; };
+		D29C32A716A7542B00C873BD /* CCTextureATC.h in Headers */ = {isa = PBXBuildFile; fileRef = D29C32A516A7542B00C873BD /* CCTextureATC.h */; };
+		D29C32AB16A7561100C873BD /* CCDDS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D29C32A916A7561100C873BD /* CCDDS.cpp */; };
+		D29C32AC16A7561100C873BD /* CCDDS.h in Headers */ = {isa = PBXBuildFile; fileRef = D29C32AA16A7561100C873BD /* CCDDS.h */; };
+		D29C32AF16A7571600C873BD /* CCTextureDXT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D29C32AD16A7571600C873BD /* CCTextureDXT.cpp */; };
+		D29C32B016A7571600C873BD /* CCTextureDXT.h in Headers */ = {isa = PBXBuildFile; fileRef = D29C32AE16A7571600C873BD /* CCTextureDXT.h */; };
 		D43F7F8A15C7D8BA00D713FC /* CCTouch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D43F7F8915C7D8BA00D713FC /* CCTouch.cpp */; };
 /* End PBXBuildFile section */
 
@@ -566,6 +572,12 @@
 		1551A627158F2ADE00E66CFE /* CCTouchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCTouchHandler.h; sourceTree = "<group>"; };
 		1551A873158F2B4700E66CFE /* cocos2dx-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "cocos2dx-Prefix.pch"; sourceTree = "<group>"; };
 		2628297915EC7064002C4240 /* ccTypeInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ccTypeInfo.h; sourceTree = "<group>"; };
+		D29C32A416A7542B00C873BD /* CCTextureATC.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCTextureATC.cpp; sourceTree = "<group>"; };
+		D29C32A516A7542B00C873BD /* CCTextureATC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCTextureATC.h; sourceTree = "<group>"; };
+		D29C32A916A7561100C873BD /* CCDDS.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCDDS.cpp; sourceTree = "<group>"; };
+		D29C32AA16A7561100C873BD /* CCDDS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCDDS.h; sourceTree = "<group>"; };
+		D29C32AD16A7571600C873BD /* CCTextureDXT.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCTextureDXT.cpp; sourceTree = "<group>"; };
+		D29C32AE16A7571600C873BD /* CCTextureDXT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCTextureDXT.h; sourceTree = "<group>"; };
 		D43F7F8915C7D8BA00D713FC /* CCTouch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCTouch.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1103,6 +1115,12 @@
 				1551A611158F2ADE00E66CFE /* CCTextureCache.h */,
 				1551A612158F2ADE00E66CFE /* CCTexturePVR.cpp */,
 				1551A613158F2ADE00E66CFE /* CCTexturePVR.h */,
+				D29C32A416A7542B00C873BD /* CCTextureATC.cpp */,
+				D29C32A516A7542B00C873BD /* CCTextureATC.h */,
+				D29C32A916A7561100C873BD /* CCDDS.cpp */,
+				D29C32AA16A7561100C873BD /* CCDDS.h */,
+				D29C32AD16A7571600C873BD /* CCTextureDXT.cpp */,
+				D29C32AE16A7571600C873BD /* CCTextureDXT.h */,
 			);
 			path = textures;
 			sourceTree = "<group>";
@@ -1303,6 +1321,9 @@
 				1551A874158F2B4700E66CFE /* cocos2dx-Prefix.pch in Headers */,
 				154269DD15B5653000712A7F /* CCNotificationCenter.h in Headers */,
 				2628297A15EC7064002C4240 /* ccTypeInfo.h in Headers */,
+				D29C32A716A7542B00C873BD /* CCTextureATC.h in Headers */,
+				D29C32AC16A7561100C873BD /* CCDDS.h in Headers */,
+				D29C32B016A7571600C873BD /* CCTextureDXT.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1477,6 +1498,9 @@
 				1551A871158F2ADF00E66CFE /* CCTouchHandler.cpp in Sources */,
 				154269DC15B5653000712A7F /* CCNotificationCenter.cpp in Sources */,
 				D43F7F8A15C7D8BA00D713FC /* CCTouch.cpp in Sources */,
+				D29C32A616A7542B00C873BD /* CCTextureATC.cpp in Sources */,
+				D29C32AB16A7561100C873BD /* CCDDS.cpp in Sources */,
+				D29C32AF16A7571600C873BD /* CCTextureDXT.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

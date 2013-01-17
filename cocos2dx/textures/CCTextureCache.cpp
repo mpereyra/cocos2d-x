@@ -418,6 +418,13 @@ CCTexture2D * CCTextureCache::addImage(const char * path)
             {
                 texture = this->addPVRImage(fullpath.c_str());
             }
+            //BPC PATCH
+#ifdef ANDROID
+            else if(std::string::npos != lowerCase.find(".dds"))
+            {
+                texture = this->addDDSImage(fullpath.c_str());
+            }
+#endif
             else
             {
                 CCImage::EImageFormat eImageFormat = CCImage::kFmtUnKnown;
@@ -540,9 +547,46 @@ CCTexture2D * CCTextureCache::addPVRImage(const char* path)
         CCLOG("cocos2d: Couldn't add PVRImage:%s in CCTextureCache",key.c_str());
         CC_SAFE_DELETE(texture);
     }
-
     return texture;
 }
+
+#ifdef ANDROID
+// BPC PATCH START
+CCTexture2D * CCTextureCache::addDDSImage(const char* path)
+{
+	CCAssert(path != NULL, "TextureCache: fileimage MUST not be nill");
+    CCLOG("eize kef");
+	CCTexture2D * tex;
+	std::string key(path);
+    // remove possible -HD suffix to prevent caching the same image twice (issue #1040)
+    CCFileUtils::sharedFileUtils()->ccRemoveHDSuffixFromFile(key);
+    
+	if( (tex = (CCTexture2D*)m_pTextures->objectForKey(key)) )
+	{
+		return tex;
+	}
+    
+    // Split up directory and filename
+    std::string fullpath = CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(key.c_str());
+	tex = new CCTexture2D();
+	if( tex->initWithDDSFile(fullpath.c_str()) )
+	{
+		m_pTextures->setObject(tex, key);
+		tex->autorelease();
+#if CC_ENABLE_CACHE_TEXTTURE_DATA
+        // cache the texture file name
+        VolatileTexture::addImageTexture(tex, fullpath.c_str(), CCImage::kFmtDDS);
+#endif
+	}
+	else
+	{
+		CCLOG("cocos2d: Couldn't add DDSImage:%s in CCTextureCache",key.c_str());
+	}
+    
+	return tex;
+}
+// BPC PATCH END
+#endif
 
 CCTexture2D* CCTextureCache::addUIImage(CCImage *image, const char *key)
 {
