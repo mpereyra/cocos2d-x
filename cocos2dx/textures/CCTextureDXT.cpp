@@ -1,6 +1,6 @@
 #include "CCTextureDXT.h"
 #include "CCDDS.h"
-
+#include "platform/CCPlatformMacros.h"
 
 using namespace cocos2d;
 
@@ -53,7 +53,7 @@ bool CCTextureDXT::createGLTexture() {
     err = glGetError();
     if (err != GL_NO_ERROR)
     {
-       // CCLOG("cocos2d: TextureDXT: Error uploading compressed texture level: %u . glError: 0x%04X", (unsigned int)0, err);
+        CCLOG("cocos2d: TextureDXT: Error uploading compressed texture level: %u . glError: 0x%04X", (unsigned int)0, err);
         return false;
     }
     

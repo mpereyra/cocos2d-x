@@ -4,6 +4,7 @@
 #define __CCDDSFILE_H__
 
 #include "cocoa/CCObject.h"
+#include "ccMacros.h"
 #include <stdint.h>
 
 #define GL_COMPRESSED_RGB_S3TC_DXT1_EXT   0x83F0

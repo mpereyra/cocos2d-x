@@ -50,7 +50,7 @@ bool CCTextureATC::createGLTexture() {
     err = glGetError();
     if (err != GL_NO_ERROR)
     {
-       // CCLOG("cocos2d: TextureATC: Error uploading compressed texture level: %u . glError: 0x%04X", (unsigned int)0, err);
+        CCLOG("cocos2d: TextureATC: Error uploading compressed texture level: %u . glError: 0x%04X", (unsigned int)0, err);
         return false;
     }
     

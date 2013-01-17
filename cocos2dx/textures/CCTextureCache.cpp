@@ -555,7 +555,6 @@ CCTexture2D * CCTextureCache::addPVRImage(const char* path)
 CCTexture2D * CCTextureCache::addDDSImage(const char* path)
 {
 	CCAssert(path != NULL, "TextureCache: fileimage MUST not be nill");
-    CCLOG("eize kef");
 	CCTexture2D * tex;
 	std::string key(path);
     // remove possible -HD suffix to prevent caching the same image twice (issue #1040)

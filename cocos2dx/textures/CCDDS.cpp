@@ -77,7 +77,7 @@ bool CCDDS::initWithData(void* buffer, unsigned long size) {
     // Test to see if this is infact actually a DDS
     int32_t magicNumber = *(int32_t*)dataWalker;
     if(magicNumber != DDS_MAGIC) {
-       // CCLOG("Data passed to CCDDS was not in DDS format");
+        CCLOG("Data passed to CCDDS was not in DDS format");
         return false;
     }
     
@@ -87,7 +87,7 @@ bool CCDDS::initWithData(void* buffer, unsigned long size) {
     m_headerInfo = *(DDSSurfaceDesc2*)dataWalker;
     
     if((m_headerInfo.pixelFormat.flags & DDPF_FOURCC) == 0) {
-       // CCLOG("Uncompressed format inside DDS file, currently unsupported, pixelFormat[0x%08X]", m_headerInfo.pixelFormat);
+        CCLOG("Uncompressed format inside DDS file, currently unsupported, pixelFormat[0x%08X]", m_headerInfo.pixelFormat);
         return false;
     }
     
@@ -120,15 +120,15 @@ bool CCDDS::initWithData(void* buffer, unsigned long size) {
 #endif
     else if(m_headerInfo.pixelFormat.fourCC == ID_ATC) {
         // We don't support this because it lacks an alpha channel
-       // CCLOG("ATC formatted DDS, currently unsupported");
+        CCLOG("ATC formatted DDS, currently unsupported");
         return false;
     }
     else if(m_headerInfo.pixelFormat.fourCC == ID_DX10) {
-       // CCLOG("DX10 formatted DDS, currently unsupported");
+        CCLOG("DX10 formatted DDS, currently unsupported");
         return false;
     }
     else {
-        //CCLOG("Unknown compressed format inside DDS");
+        CCLOG("Unknown compressed format inside DDS");
         return false;
     }
     
@@ -176,7 +176,7 @@ void CCDDS::logDescription(void) {
     strFourCC[2]=(m_headerInfo.pixelFormat.fourCC>>16)&255;
     strFourCC[3]=(m_headerInfo.pixelFormat.fourCC>>24)&255;
     strFourCC[4]=0;
-   /*
+   
     CCLOG("CCDDS: %p", this);
     CCLOG("----------------------");
     CCLOG("DDSSurfaceDesc2.size: %d", m_headerInfo.size);
@@ -197,5 +197,5 @@ void CCDDS::logDescription(void) {
     CCLOG("DDPixelFormat.rgbAlphaBitMask: 0x%08X\n", m_headerInfo.pixelFormat.rgbAlphaBitMask);
     
     CCLOG("DDCaps2.caps1: 0x%08X", m_headerInfo.capabilities.caps1);
-    CCLOG("DDCaps2.caps2: 0x%08X", m_headerInfo.capabilities.caps2);*/
+    CCLOG("DDCaps2.caps2: 0x%08X", m_headerInfo.capabilities.caps2);
 }
