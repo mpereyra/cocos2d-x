@@ -495,13 +495,18 @@ void CCTexture2D::drawAtPoint(const CCPoint& point)
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 }
 
-void CCTexture2D::drawInRect(const CCRect& rect)
+void CCTexture2D::drawInRect(const CCRect& rect, bool flipX, bool flipY)
 {
+    GLfloat minS = flipX ? m_fMaxS : 0.0f;
+    GLfloat maxS = flipX ? 0.0f : m_fMaxS;
+    GLfloat minT = flipY ? m_fMaxT : 0.0f;
+    GLfloat maxT = flipY ? 0.0f : m_fMaxT;
+
     GLfloat    coordinates[] = {    
-        0.0f,    m_fMaxT,
-        m_fMaxS,m_fMaxT,
-        0.0f,    0.0f,
-        m_fMaxS,0.0f };
+        minS,    maxT,
+        maxS,    maxT,
+        minS,    minT,
+        maxS,    minT };
 
     GLfloat    vertices[] = {    rect.origin.x,        rect.origin.y,                            /*0.0f,*/
         rect.origin.x + rect.size.width,        rect.origin.y,                            /*0.0f,*/

@@ -124,7 +124,7 @@ public:
     /** draws a texture at a given point */
     void drawAtPoint(const CCPoint& point);
     /** draws a texture inside a rect */
-    void drawInRect(const CCRect& rect);
+    void drawInRect(const CCRect& rect, bool flipX = false, bool flipY = false);
 
     /**
     Extensions to make it easy to create a CCTexture2D object from an image file.
