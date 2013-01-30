@@ -59,7 +59,11 @@ static id s_sharedDirectorCaller;
 -(void) dealloc
 {
     s_sharedDirectorCaller = nil;
-    CCLOG("cocos2d: deallocing CCDirectorCaller %x", (unsigned int)self);
+    // BPC PATCH START:
+    // this "self" used to be "(unsigned int)self" which busted the compiler
+    
+    CCLOG("cocos2d: deallocing CCDirectorCaller %x", self);
+    // BPC PATCH END
 	if (displayLink) {
 		CVDisplayLinkRelease(displayLink);
 	}
