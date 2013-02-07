@@ -454,8 +454,10 @@ static bool _initWithString(const char * pText, cocos2d::CCImage::ETextAlign eAl
 		: (2 == uVertFlag) ? dimensions.height - realDimensions.height							// align to bottom
 		: (dimensions.height - realDimensions.height) / 2.0f;									// align to center
 		
-		
-		NSRect textRect = NSMakeRect(xPadding, POTHigh - dimensions.height + yPadding, realDimensions.width, realDimensions.height);
+		NSRect textRect = NSMakeRect(xPadding, POTHigh - realDimensions.height + yPadding, realDimensions.width, dimensions.height);
+		if( (POTHigh - dimensions.height) <= 0 ) {
+            textRect = NSMakeRect(xPadding, yPadding, realDimensions.width, realDimensions.height);
+        }
 		//Disable antialias
 		
 		[[NSGraphicsContext currentContext] setShouldAntialias:NO];	
