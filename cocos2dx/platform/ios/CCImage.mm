@@ -25,6 +25,7 @@ THE SOFTWARE.
 #import "CCFileUtils.h"
 #import <string>
 
+#import <CoreText/CoreText.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
@@ -213,6 +214,25 @@ static bool _initWithString(const char * pText, cocos2d::CCImage::ETextAlign eAl
         
         // create the font   
         id font;
+        //Try registering a custom font from path. If this fails either we already registered the font
+        //and will load up fine using postscript name or the font doesnt exists and we default to system font
+        CGDataProviderRef fontDataProvider = CGDataProviderCreateWithFilename([fntName UTF8String]);
+        if(fontDataProvider)
+        {
+            CGFontRef customFont = CGFontCreateWithDataProvider(fontDataProvider);
+            fntName = (NSString *)CGFontCopyPostScriptName(customFont);
+            CGDataProviderRelease(fontDataProvider);
+            CFErrorRef error;
+            if(!CTFontManagerRegisterGraphicsFont(customFont, &error)){
+                CFStringRef errorDescription = CFErrorCopyDescription(error);
+                NSLog(@"Failed to load font: %@", errorDescription);
+                CFRelease(errorDescription);
+            }
+            
+            CGFontRelease(customFont);
+            
+        }
+
         font = [UIFont fontWithName:fntName size:nSize];  
         if (font)
         {
