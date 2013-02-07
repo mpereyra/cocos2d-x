@@ -346,11 +346,22 @@ static bool _initWithString(const char * pText, cocos2d::CCImage::ETextAlign eAl
 	do {
 		NSString * string  = [NSString stringWithUTF8String:pText];
 		//string = [NSString stringWithFormat:@"d\r\nhello world hello kitty Hello what %@", string];
-		
+  
+        NSArray *traits = [[NSString stringWithUTF8String:pFontName] componentsSeparatedByString:@"-"];
+        NSString *fontName = [traits objectAtIndex:0];
+        
+        NSFontTraitMask traitMask = 0;
+        if( [traits count]>1 ) {
+            NSString *traitString = [traits objectAtIndex:1];
+            if( [traitString rangeOfString:@"Bold"].location != NSNotFound ) traitMask |= NSBoldFontMask;
+            if( [traitString rangeOfString:@"Italic"].location != NSNotFound ) traitMask |= NSItalicFontMask;
+        }
+        if( traitMask == 0 ) traitMask = (NSUnboldFontMask | NSUnitalicFontMask);
+        
 		// font
 		NSFont *font = [[NSFontManager sharedFontManager]
-						 fontWithFamily:[NSString stringWithUTF8String:pFontName]
-						traits:NSUnboldFontMask | NSUnitalicFontMask
+						 fontWithFamily:fontName
+						 traits:traitMask
 						 weight:0
 						 size:nSize];
 		
