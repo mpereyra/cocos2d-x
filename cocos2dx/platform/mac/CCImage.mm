@@ -456,7 +456,7 @@ static bool _initWithString(const char * pText, cocos2d::CCImage::ETextAlign eAl
 		
 		NSRect textRect = NSMakeRect(xPadding, POTHigh - realDimensions.height + yPadding, realDimensions.width, dimensions.height);
 		if( (POTHigh - dimensions.height) <= 0 ) {
-            textRect = NSMakeRect(xPadding, yPadding, realDimensions.width, realDimensions.height);
+            textRect = NSMakeRect(xPadding, yPadding, realDimensions.width, dimensions.height);
         }
 		//Disable antialias
 		
