@@ -454,12 +454,13 @@ static bool _initWithString(const char * pText, cocos2d::CCImage::ETextAlign eAl
 		: (2 == uVertFlag) ? dimensions.height - realDimensions.height							// align to bottom
 		: (dimensions.height - realDimensions.height) / 2.0f;									// align to center
 		
-		NSRect textRect = NSMakeRect(xPadding, POTHigh - realDimensions.height + yPadding, realDimensions.width, dimensions.height);
-		if( (POTHigh - dimensions.height) <= 0 ) {
-            textRect = NSMakeRect(xPadding, yPadding, realDimensions.width, dimensions.height);
+        NSRect textRect = NSMakeRect(xPadding, yPadding, realDimensions.width, dimensions.height);
+        bool textLargerThanBounds = ((POTHigh - dimensions.height) > 0);
+        if( textLargerThanBounds ) {
+            textRect.origin.y += POTHigh - realDimensions.height;
         }
+        
 		//Disable antialias
-		
 		[[NSGraphicsContext currentContext] setShouldAntialias:NO];	
 		
 		NSImage *image = [[NSImage alloc] initWithSize:NSMakeSize(POTWide, POTHigh)];
