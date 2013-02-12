@@ -430,14 +430,15 @@ static bool _initWithString(const char * pText, cocos2d::CCImage::ETextAlign eAl
 		CGSize dimensions = CGSizeMake(pInfo->width, pInfo->height);
 		
 	
-		if(dimensions.width <= 0 && dimensions.height <= 0) {
+		if(dimensions.width <= 0) {
 			dimensions.width = realDimensions.width;
-			dimensions.height = realDimensions.height;
-		} else if (dimensions.height <= 0) {
+		}
+        if (dimensions.height <= 0) {
 			dimensions.height = realDimensions.height;
 		}
 
 		NSUInteger POTWide = (NSUInteger)dimensions.width;
+        
 		NSUInteger POTHigh = (NSUInteger)(MAX(dimensions.height, realDimensions.height));
 		unsigned char*			data;
 		//Alignment
