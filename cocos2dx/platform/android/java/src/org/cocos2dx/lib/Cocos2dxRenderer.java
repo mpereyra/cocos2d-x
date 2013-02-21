@@ -75,7 +75,6 @@ public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
 
 	@Override
 	public void onSurfaceChanged(final GL10 pGL10, final int pWidth, final int pHeight) {
-		Cocos2dxRenderer.nativeSurfaceChanged(pWidth, pHeight);
 	}
 
 	@Override
@@ -110,7 +109,6 @@ public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
 	private static native boolean nativeKeyDown(final int pKeyCode);
 	private static native void nativeRender();
 	private static native void nativeInit(final int pWidth, final int pHeight);
-	private static native void nativeSurfaceChanged(final int pWidth, final int pHeight);
 	private static native void nativeOnPause();
 	private static native void nativeOnResume();
 
