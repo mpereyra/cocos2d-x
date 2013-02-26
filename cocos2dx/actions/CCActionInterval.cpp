@@ -2488,4 +2488,36 @@ void CCTargetedAction::update(float time)
     m_pAction->update(time);
 }
 
+CCShake::CCShake(CCSize area) : m_area(area) {
+}
+
+void CCShake::update(float time){
+    float p = 1-time;
+    float x = (((float)rand()/(float)RAND_MAX)*m_area.width - m_area.width/2)*p + m_start.x;
+    float y = (((float)rand()/(float)RAND_MAX)*m_area.height - m_area.height/2)*p + m_start.y;
+    m_pTarget->setPosition(CCPoint(x,y));
+}
+
+void CCShake::startWithTarget(CCNode *pTarget)
+{
+    CCActionInterval::startWithTarget(pTarget);
+    m_start = pTarget->getPosition();
+}
+
+void CCShake::stop(void)
+{
+    m_pTarget->setPosition(m_start);
+    CCActionInterval::stop();
+}
+
+
+CCShake* CCShake::create(float duration, CCSize area) {
+    CCShake* pAction = new CCShake(area);
+    
+    pAction->initWithDuration(duration);
+    pAction->autorelease();
+    
+    return pAction;
+}
+
 NS_CC_END

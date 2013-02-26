@@ -858,6 +858,22 @@ private:
     CCFiniteTimeAction* m_pAction;
 };
 
+/** @brief Shakes an object within a radius. Shakiness decreases linearly with time.
+ */
+class CC_DLL CCShake : public CCActionInterval
+{
+protected:
+    CCPoint m_start;
+    CCSize m_area;
+public:
+    CCShake(CCSize area);
+    virtual void update(float time);
+    virtual void startWithTarget(CCNode *pTarget);
+    virtual void stop(void);
+    /** creates the action */
+    static CCShake* create(float duration, CCSize area);
+};
+
 // end of actions group
 /// @}
 
