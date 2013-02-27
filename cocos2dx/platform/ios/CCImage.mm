@@ -219,6 +219,7 @@ static bool _initWithString(const char * pText, cocos2d::CCImage::ETextAlign eAl
         CGDataProviderRef fontDataProvider = CGDataProviderCreateWithFilename([fntName UTF8String]);
         if(fontDataProvider)
         {
+            
             CGFontRef customFont = CGFontCreateWithDataProvider(fontDataProvider);
             fntName = (NSString *)CGFontCopyPostScriptName(customFont);
             CGDataProviderRelease(fontDataProvider);
@@ -227,13 +228,15 @@ static bool _initWithString(const char * pText, cocos2d::CCImage::ETextAlign eAl
                 CFStringRef errorDescription = CFErrorCopyDescription(error);
                 NSLog(@"Failed to load font: %@", errorDescription);
                 CFRelease(errorDescription);
+                CFRelease(error);
             }
-            
+            font = [UIFont fontWithName:fntName size:nSize];  
             CGFontRelease(customFont);
-            
+            CFRelease(fntName);
+         
         }
-
-        font = [UIFont fontWithName:fntName size:nSize];  
+        else
+            font = [UIFont fontWithName:fntName size:nSize];
         if (font)
         {
             dim = _calculateStringSize(str, font, &constrainSize);
