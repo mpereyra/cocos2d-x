@@ -390,16 +390,22 @@ static bool _initWithString(const char * pText, cocos2d::CCImage::ETextAlign eAl
 			: (3 == uHoriFlag) ? NSCenterTextAlignment
 			: NSLeftTextAlignment;
 		
+        /// ======================= BEGIN BPC PATCH ======================= ///
+        /// ======================= BEGIN BPC PATCH ======================= ///
+        /// ======================= BEGIN BPC PATCH ======================= ///
 		NSMutableParagraphStyle *paragraphStyle = [[[NSMutableParagraphStyle alloc] init] autorelease];
 		[paragraphStyle setParagraphStyle:[NSParagraphStyle defaultParagraphStyle]];
 		[paragraphStyle setLineBreakMode:NSLineBreakByCharWrapping];
+        [paragraphStyle setMaximumLineHeight:nSize];
 		[paragraphStyle setAlignment:align];
 
 		// attribute
-		NSDictionary* tokenAttributesDict = [NSDictionary dictionaryWithObjectsAndKeys:
-											 foregroundColor,NSForegroundColorAttributeName,
-											 font, NSFontAttributeName,
-											 paragraphStyle, NSParagraphStyleAttributeName, nil];
+		NSDictionary* tokenAttributesDict = @{NSForegroundColorAttributeName : foregroundColor,
+                                              NSFontAttributeName : font,
+                                              NSParagraphStyleAttributeName : paragraphStyle};
+        /// ======================= BEGIN BPC PATCH ======================= ///
+        /// ======================= BEGIN BPC PATCH ======================= ///
+        /// ======================= BEGIN BPC PATCH ======================= ///
 
 		// linebreak
 		if (pInfo->width > 0) {
