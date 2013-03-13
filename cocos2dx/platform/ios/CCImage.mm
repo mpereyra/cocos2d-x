@@ -284,7 +284,7 @@ static bool _initWithString(const char * pText, cocos2d::CCImage::ETextAlign eAl
         {
             dim.width = constrainSize.width;
         }
-        if (constrainSize.height > 0 && constrainSize.height > dim.height)
+        if (constrainSize.height > 0)
         {
             dim.height = constrainSize.height;
         }         
