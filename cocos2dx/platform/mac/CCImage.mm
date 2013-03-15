@@ -346,7 +346,10 @@ static bool _initWithString(const char * pText, cocos2d::CCImage::ETextAlign eAl
 	do {
 		NSString * string  = [NSString stringWithUTF8String:pText];
 		//string = [NSString stringWithFormat:@"d\r\nhello world hello kitty Hello what %@", string];
-  
+        
+        /// ======================= BEGIN BPC PATCH ======================= ///
+        /// ======================= BEGIN BPC PATCH ======================= ///
+        /// ======================= BEGIN BPC PATCH ======================= ///
         NSArray *traits = [[NSString stringWithUTF8String:pFontName] componentsSeparatedByString:@"-"];
         NSString *fontName = [traits objectAtIndex:0];
         
@@ -363,7 +366,10 @@ static bool _initWithString(const char * pText, cocos2d::CCImage::ETextAlign eAl
 						 fontWithFamily:fontName
 						 traits:traitMask
 						 weight:0
-						 size:nSize];
+                         size:nSize];
+        /// ======================= END BPC PATCH ======================= ///
+        /// ======================= END BPC PATCH ======================= ///
+        /// ======================= END BPC PATCH ======================= ///
 		
 		if (font == nil) {
 			font = [[NSFontManager sharedFontManager]
@@ -403,9 +409,9 @@ static bool _initWithString(const char * pText, cocos2d::CCImage::ETextAlign eAl
 		NSDictionary* tokenAttributesDict = @{NSForegroundColorAttributeName : foregroundColor,
                                               NSFontAttributeName : font,
                                               NSParagraphStyleAttributeName : paragraphStyle};
-        /// ======================= BEGIN BPC PATCH ======================= ///
-        /// ======================= BEGIN BPC PATCH ======================= ///
-        /// ======================= BEGIN BPC PATCH ======================= ///
+        /// ======================= END BPC PATCH ======================= ///
+        /// ======================= END BPC PATCH ======================= ///
+        /// ======================= END BPC PATCH ======================= ///
 
 		// linebreak
 		if (pInfo->width > 0) {
@@ -460,12 +466,18 @@ static bool _initWithString(const char * pText, cocos2d::CCImage::ETextAlign eAl
 		CGFloat yPadding = (1 == uVertFlag || realDimensions.height >= dimensions.height) ? 0	// align to top
 		: (2 == uVertFlag) ? dimensions.height - realDimensions.height							// align to bottom
 		: (dimensions.height - realDimensions.height) / 2.0f;									// align to center
-		
+        
+        /// ======================= BEGIN BPC PATCH ======================= ///
+        /// ======================= BEGIN BPC PATCH ======================= ///
+        /// ======================= BEGIN BPC PATCH ======================= ///
         NSRect textRect = NSMakeRect(xPadding, yPadding, realDimensions.width, dimensions.height);
         bool textLargerThanBounds = ((POTHigh - dimensions.height) > 0);
         if( textLargerThanBounds ) {
             textRect.origin.y += POTHigh - realDimensions.height;
         }
+        /// ======================= END BPC PATCH ======================= ///
+        /// ======================= END BPC PATCH ======================= ///
+        /// ======================= END BPC PATCH ======================= ///
         
 		//Disable antialias
 		[[NSGraphicsContext currentContext] setShouldAntialias:NO];	
