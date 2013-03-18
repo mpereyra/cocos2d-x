@@ -346,7 +346,7 @@ static bool _initWithString(const char * pText, cocos2d::CCImage::ETextAlign eAl
 	do {
 		NSString * string  = [NSString stringWithUTF8String:pText];
 		//string = [NSString stringWithFormat:@"d\r\nhello world hello kitty Hello what %@", string];
-        
+  
         /// ======================= BEGIN BPC PATCH ======================= ///
         /// ======================= BEGIN BPC PATCH ======================= ///
         /// ======================= BEGIN BPC PATCH ======================= ///
@@ -366,7 +366,7 @@ static bool _initWithString(const char * pText, cocos2d::CCImage::ETextAlign eAl
 						 fontWithFamily:fontName
 						 traits:traitMask
 						 weight:0
-                         size:nSize];
+						 size:nSize];
         /// ======================= END BPC PATCH ======================= ///
         /// ======================= END BPC PATCH ======================= ///
         /// ======================= END BPC PATCH ======================= ///
