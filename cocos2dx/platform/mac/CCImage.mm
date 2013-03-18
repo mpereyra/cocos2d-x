@@ -347,6 +347,9 @@ static bool _initWithString(const char * pText, cocos2d::CCImage::ETextAlign eAl
 		NSString * string  = [NSString stringWithUTF8String:pText];
 		//string = [NSString stringWithFormat:@"d\r\nhello world hello kitty Hello what %@", string];
   
+        /// ======================= BEGIN BPC PATCH ======================= ///
+        /// ======================= BEGIN BPC PATCH ======================= ///
+        /// ======================= BEGIN BPC PATCH ======================= ///
         NSArray *traits = [[NSString stringWithUTF8String:pFontName] componentsSeparatedByString:@"-"];
         NSString *fontName = [traits objectAtIndex:0];
         
@@ -364,6 +367,9 @@ static bool _initWithString(const char * pText, cocos2d::CCImage::ETextAlign eAl
 						 traits:traitMask
 						 weight:0
 						 size:nSize];
+        /// ======================= END BPC PATCH ======================= ///
+        /// ======================= END BPC PATCH ======================= ///
+        /// ======================= END BPC PATCH ======================= ///
 		
 		if (font == nil) {
 			font = [[NSFontManager sharedFontManager]
