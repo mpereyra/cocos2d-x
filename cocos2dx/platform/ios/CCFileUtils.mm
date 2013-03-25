@@ -37,6 +37,9 @@ THE SOFTWARE.
 #include "CCDictionary.h"
 #include "support/zip_support/unzip.h"
 
+#include <fcntl.h>
+#include <sys/stat.h>
+
 #define MAX_PATH 260
 
 USING_NS_CC;
@@ -269,21 +272,35 @@ unsigned char* CCFileUtils::getFileData(const char* pszFileName, const char* psz
     unsigned char * pBuffer = NULL;
     CCAssert(pszFileName != NULL && pSize != NULL && pszMode != NULL, "Invalid parameters.");
     *pSize = 0;
-    do 
-    {
-        // read the file from hardware
-        FILE *fp = fopen(pszFileName, pszMode);
-        CC_BREAK_IF(!fp);
+    
+    do {
+        struct stat file_descriptor_stat;
+        int file_descriptor = open(pszFileName, O_RDONLY);
+        
+        if(file_descriptor == -1) {
+            perror("CCFileUtils::getFileData");
+            break;
+        }
+    
+        // Get the file size
+        if(fstat(file_descriptor, &file_descriptor_stat) == -1) {
+            perror("CCFileUtils::getFileData");
+        } else *pSize = file_descriptor_stat.st_size;
+        
+        if(*pSize > 0) {
+            // Create the buffer
+            pBuffer = new unsigned char[*pSize];
+            
+            // Read the buffer
+            if(read(file_descriptor, pBuffer, *pSize) == -1) // Check for an error
+                perror("CCFileUtils::getFileData");
+        }
+        
+        // Close the file
+        close(file_descriptor);
+    } while(false);
 
-        fseek(fp,0,SEEK_END);
-        *pSize = ftell(fp);
-        fseek(fp,0,SEEK_SET);
-        pBuffer = new unsigned char[*pSize];
-        *pSize = fread(pBuffer,sizeof(unsigned char), *pSize,fp);
-        fclose(fp);
-    } while (0);
-
-    if (! pBuffer && isPopupNotify()) 
+    if (! pBuffer && isPopupNotify())
     {
         std::string title = "Notification";
         std::string msg = "Get data from file(";

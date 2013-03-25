@@ -26,6 +26,10 @@ THE SOFTWARE.
 #include "platform/CCFileUtilsCommon_cpp.h"
 #include "support/zip_support/ZipUtils.h"
 
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <errno.h>
+
 using namespace std;
 
 NS_CC_BEGIN
@@ -109,23 +113,37 @@ unsigned char* CCFileUtils::getFileData(const char* pszFileName, const char* psz
     {
         do 
         {
-            // read rrom other path than user set it
-            FILE *fp = fopen(pszFileName, pszMode);
-            CC_BREAK_IF(!fp);
+            struct stat file_descriptor_stat;
+            int file_descriptor = open(pszFileName, O_RDONLY);
 
-            unsigned long size;
-            fseek(fp,0,SEEK_END);
-            size = ftell(fp);
-            fseek(fp,0,SEEK_SET);
-            pData = new unsigned char[size];
-            size = fread(pData,sizeof(unsigned char), size,fp);
-            fclose(fp);
+            if(file_descriptor == -1) {
+                perror("CCFileUtils::getFileData"); 
+                break;
+            }
+            
+            // Get the file size
+            long size = 0;
+            if(fstat(file_descriptor, &file_descriptor_stat) == -1) {
+                perror("CCFileUtils::getFileData"); 
+            } else  size = file_descriptor_stat.st_size;
+            
+            if(size > 0) {
+                // Create the buffer
+                pData = new unsigned char[size];
+                
+                // Read the buffer
+                if(read(file_descriptor, pData, size) == -1)
+                    perror("CCFileUtils::getFileData");
+            }
+            
+            // Close the file
+            close(file_descriptor);
 
             if (pSize)
             {
                 *pSize = size;
-            }            
-        } while (0);        
+            }      
+        } while (0);
     }
 
     if (! pData && isPopupNotify())
