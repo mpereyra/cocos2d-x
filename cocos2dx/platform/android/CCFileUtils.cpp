@@ -132,8 +132,14 @@ unsigned char* CCFileUtils::getFileData(const char* pszFileName, const char* psz
                 pData = new unsigned char[size];
                 
                 // Read the buffer
-                if(read(file_descriptor, pData, size) == -1)
+                if(read(file_descriptor, pData, size) == -1) {
                     perror("CCFileUtils::getFileData");
+                
+                    // Clean up
+                    delete [] pData;
+                    pData = NULL;
+                    size = 0;
+                }
             }
             
             // Close the file
