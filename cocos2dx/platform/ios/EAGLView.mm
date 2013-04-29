@@ -841,7 +841,7 @@ static EAGLView *view = 0;
         caretRect_ = end;
         caretRect_.origin.y = viewSize.height - (caretRect_.origin.y + caretRect_.size.height + [UIFont smallSystemFontSize]);
         caretRect_.size.height = 0;
-        isKeyboardShown_ = YES;
+//        isKeyboardShown_ = YES; // ignore fix for new CCEditBox, it breaks old CCTextFieldTTF
     }
     else if (UIKeyboardWillHideNotification == type)
     {
