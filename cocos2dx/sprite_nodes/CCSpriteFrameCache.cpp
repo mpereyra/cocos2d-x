@@ -38,6 +38,9 @@ THE SOFTWARE.
 #include "cocoa/CCArray.h"
 #include "cocoa/CCDictionary.h"
 #include <vector>
+// BPC PATCH START ewww :(
+#include "../../../Shared/ImageManager.h"
+// BPC PATCH END
 
 using namespace std;
 
@@ -246,6 +249,10 @@ void CCSpriteFrameCache::addSpriteFramesWithFile(const char *pszPlist)
 
         if (! texturePath.empty())
         {
+			// BPC PATCH START
+			// resolve any compression formats
+			texturePath = Bpc::ImageManager::getPreferredFilename(texturePath);
+			// BPC PATCH END
             // build texture path relative to plist file
             texturePath = CCFileUtils::sharedFileUtils()->fullPathFromRelativeFile(texturePath.c_str(), pszPath);
         }
@@ -403,12 +410,14 @@ CCSpriteFrame* CCSpriteFrameCache::spriteFrameByName(const char *pszName)
         if (key)
         {
             frame = (CCSpriteFrame*)m_pSpriteFrames->objectForKey(key->getCString());
-            if (! frame)
-            {
-                CCLOG("cocos2d: CCSpriteFrameCache: Frame '%s' not found", pszName);
-            }
         }
     }
+	//COCOS PATCH -M2tM
+	if (! frame)
+	{
+		CCLOG("cocos2d: CCSpriteFrameCache: Frame '%s' not found", pszName);
+	}
+	//END PATCH
     return frame;
 }
 
