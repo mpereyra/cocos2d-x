@@ -58,7 +58,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		AD373C7A16260E8400D5154B /* libliblua.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libliblua.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		AD373C7A16260E8400D5154B /* liblua.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblua.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD373C9C16260F2D00D5154B /* lapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lapi.c; sourceTree = "<group>"; };
 		AD373C9D16260F2D00D5154B /* lapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lapi.h; sourceTree = "<group>"; };
 		AD373C9E16260F2D00D5154B /* lauxlib.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = lauxlib.c; sourceTree = "<group>"; };
@@ -145,7 +145,7 @@
 		AD373C7B16260E8400D5154B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				AD373C7A16260E8400D5154B /* libliblua.a */,
+				AD373C7A16260E8400D5154B /* liblua.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -244,7 +244,7 @@
 			);
 			name = liblua;
 			productName = liblua;
-			productReference = AD373C7A16260E8400D5154B /* libliblua.a */;
+			productReference = AD373C7A16260E8400D5154B /* liblua.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -344,7 +344,7 @@
 			buildSettings = {
 				DSTROOT = /tmp/liblua.dst;
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = lua;
 				SKIP_INSTALL = YES;
 			};
 			name = Adhoc;
@@ -398,7 +398,7 @@
 			buildSettings = {
 				DSTROOT = /tmp/liblua.dst;
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = lua;
 				SKIP_INSTALL = YES;
 			};
 			name = Debug;
@@ -408,7 +408,7 @@
 			buildSettings = {
 				DSTROOT = /tmp/liblua.dst;
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = lua;
 				SKIP_INSTALL = YES;
 			};
 			name = Release;
