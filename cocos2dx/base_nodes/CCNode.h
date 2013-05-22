@@ -446,7 +446,9 @@ public:
     virtual void updateTransform(void);
 
     /** performs OpenGL view-matrix transformation based on position, scale, rotation and other attributes. */
+// BPC PATCH START (just making it virtual)
     virtual void transform(void);
+// BPC PATCH END
 
     /** performs OpenGL view-matrix transformation of it's ancestors.
      Generally the ancestors are already transformed, but in certain cases (eg: attaching a FBO)
