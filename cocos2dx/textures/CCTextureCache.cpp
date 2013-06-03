@@ -43,16 +43,18 @@ THE SOFTWARE.
 #include <list>
 #include <pthread.h>
 #include <semaphore.h>
+#include <vector>
 
 using namespace std;
 
 NS_CC_BEGIN
 
+typedef pair<CCObject*,SEL_CallFuncO> Functor;
+
 typedef struct _AsyncStruct
 {
     std::string            filename;
-    CCObject    *target;
-    SEL_CallFuncO        selector;
+    std::vector<Functor> functors;
 } AsyncStruct;
 
 typedef struct _ImageInfo
@@ -87,7 +89,7 @@ static unsigned long s_nAsyncRefCount = 0;
 static bool need_quit = false;
 
 static std::queue<AsyncStruct*>* s_pAsyncStructQueue = NULL;
-static std::queue<ImageInfo*>*   s_pImageQueue = NULL;
+static std::list<ImageInfo*>*   s_pImageQueue = NULL;
 
 static CCImage::EImageFormat computeImageFormatType(string& filename)
 {
@@ -146,7 +148,7 @@ static void* loadImage(void* data)
         }        
 
         const char *filename = pAsyncStruct->filename.c_str();
-
+        
         // compute image type
         CCImage::EImageFormat imageType = computeImageFormatType(pAsyncStruct->filename);
         if (imageType == CCImage::kFmtUnKnown)
@@ -159,6 +161,7 @@ static void* loadImage(void* data)
         
         // generate image            
         CCImage *pImage = new CCImage();
+        CCLOG("filename: %s", filename);
         if (! pImage->initWithImageFileThreadSafe(filename, imageType))
         {
             delete pImage;
@@ -174,7 +177,7 @@ static void* loadImage(void* data)
 
         // put the image info into the queue
         pthread_mutex_lock(&s_ImageInfoMutex);
-        s_pImageQueue->push(pImageInfo);
+        s_pImageQueue->push_back(pImageInfo);
         pthread_mutex_unlock(&s_ImageInfoMutex);    
     }
     
@@ -272,6 +275,36 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target, SEL_CallF
         return;
     }
 
+    /* BPC Patch */
+    pthread_mutex_lock(&s_ImageInfoMutex);
+    // Search for an existing texture in the AsyncStructQueue with the
+    // same filename
+    list<ImageInfo*> *imagesQueue = s_pImageQueue;
+
+    if (imagesQueue && imagesQueue->empty())
+    {
+        pthread_mutex_unlock(&s_ImageInfoMutex);
+    }
+    else if(imagesQueue)
+    {
+        list<ImageInfo*>::iterator imageQueueIter = imagesQueue->begin();
+        for(;imageQueueIter!=imagesQueue->end();++imageQueueIter) {
+            AsyncStruct *pAsyncStruct = (*imageQueueIter)->asyncStruct;
+            const string &filename = pAsyncStruct->filename;
+            if(filename.compare(path)==0) {
+                // We have multiple requests for the same file.
+                Functor f(target,selector);
+                pAsyncStruct->functors.push_back(f);
+                pthread_mutex_unlock(&s_ImageInfoMutex);
+                return;
+            }
+        }
+    }
+
+    pthread_mutex_unlock(&s_ImageInfoMutex);
+
+    /*end BPC patch*/
+    
     // lazy init
     if (s_pSem == NULL)
     {             
@@ -293,7 +326,7 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target, SEL_CallF
         s_pSem = &s_sem;
 #endif
         s_pAsyncStructQueue = new queue<AsyncStruct*>();
-        s_pImageQueue = new queue<ImageInfo*>();        
+        s_pImageQueue = new list<ImageInfo*>();        
         
         pthread_mutex_init(&s_asyncStructQueueMutex, NULL);
         pthread_mutex_init(&s_ImageInfoMutex, NULL);
@@ -317,8 +350,8 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target, SEL_CallF
     // generate async struct
     AsyncStruct *data = new AsyncStruct();
     data->filename = fullpath.c_str();
-    data->target = target;
-    data->selector = selector;
+    Functor functor(target,selector);
+    data->functors.push_back(functor);
 
     // add async struct into queue
     pthread_mutex_lock(&s_asyncStructQueueMutex);
@@ -330,58 +363,63 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target, SEL_CallF
 
 void CCTextureCache::addImageAsyncCallBack(float dt)
 {
-    // the image is generated in loading thread
-    std::queue<ImageInfo*> *imagesQueue = s_pImageQueue;
-
     pthread_mutex_lock(&s_ImageInfoMutex);
+    // the image is generated in loading thread
+    list<ImageInfo*> *imagesQueue = s_pImageQueue;
+
     if (imagesQueue->empty())
     {
         pthread_mutex_unlock(&s_ImageInfoMutex);
     }
     else
     {
-        ImageInfo *pImageInfo = imagesQueue->front();
-        imagesQueue->pop();
-        pthread_mutex_unlock(&s_ImageInfoMutex);
+        while(!imagesQueue->empty()) {
+            ImageInfo *pImageInfo = imagesQueue->front();
+            imagesQueue->pop_front();
+            pthread_mutex_unlock(&s_ImageInfoMutex);
 
-        AsyncStruct *pAsyncStruct = pImageInfo->asyncStruct;
-        CCImage *pImage = pImageInfo->image;
+            AsyncStruct *pAsyncStruct = pImageInfo->asyncStruct;
+            CCImage *pImage = pImageInfo->image;
 
-        CCObject *target = pAsyncStruct->target;
-        SEL_CallFuncO selector = pAsyncStruct->selector;
-        const char* filename = pAsyncStruct->filename.c_str();
+            const char* filename = pAsyncStruct->filename.c_str();
 
-        // generate texture in render thread
-        CCTexture2D *texture = new CCTexture2D();
+            // generate texture in render thread
+            CCTexture2D *texture = new CCTexture2D();
 #if 0 //TODO: (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-        texture->initWithImage(pImage, kCCResolutioniPhone);
+            texture->initWithImage(pImage, kCCResolutioniPhone);
 #else
-        texture->initWithImage(pImage);
+            texture->initWithImage(pImage);
 #endif
 
 #if CC_ENABLE_CACHE_TEXTURE_DATA
-       // cache the texture file name
-       VolatileTexture::addImageTexture(texture, filename, pImageInfo->imageType);
+            // cache the texture file name
+            VolatileTexture::addImageTexture(texture, filename, pImageInfo->imageType);
 #endif
 
-        // cache the texture
-        m_pTextures->setObject(texture, filename);
-        texture->autorelease();
+            // cache the texture
+            m_pTextures->setObject(texture, filename);
+            texture->autorelease();
+            while(!pAsyncStruct->functors.empty()) {
+                Functor f = pAsyncStruct->functors.back();
+                CCObject *target = f.first;
+                SEL_CallFuncO selector = f.second;
+                if (target && selector)
+                {
+                    (target->*selector)(texture);
+                    target->release();
+                }
+                pAsyncStruct->functors.pop_back();
+            }
 
-        if (target && selector)
-        {
-            (target->*selector)(texture);
-            target->release();
-        }        
+            pImage->release();
+            delete pAsyncStruct;
+            delete pImageInfo;
 
-        pImage->release();
-        delete pAsyncStruct;
-        delete pImageInfo;
-
-        --s_nAsyncRefCount;
-        if (0 == s_nAsyncRefCount)
-        {
-            CCDirector::sharedDirector()->getScheduler()->unscheduleSelector(schedule_selector(CCTextureCache::addImageAsyncCallBack), this);
+            --s_nAsyncRefCount;
+            if (0 == s_nAsyncRefCount)
+            {
+                CCDirector::sharedDirector()->getScheduler()->unscheduleSelector(schedule_selector(CCTextureCache::addImageAsyncCallBack), this);
+            }
         }
     }
 }
