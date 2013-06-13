@@ -30,22 +30,26 @@ NS_CC_BEGIN
 
 CCPoint::CCPoint(void)
 {
-    setPoint(0.0f, 0.0f);
+//BPC Patch let's add a z. -M2tM
+    setPoint(0.0f, 0.0f, 0.0f);
 }
 
-CCPoint::CCPoint(float x, float y)
+//BPC Patch let's add a z. -M2tM
+CCPoint::CCPoint(float x, float y, float z)
 {
-    setPoint(x, y);
+    setPoint(x, y, z);
 }
 
 CCPoint::CCPoint(const CCPoint& other)
 {
-    setPoint(other.x, other.y);
+	//BPC Patch let's add a z. -M2tM
+    setPoint(other.x, other.y, other.z);
 }
 
 CCPoint& CCPoint::operator= (const CCPoint& other)
 {
-    setPoint(other.x, other.y);
+	//BPC Patch let's add a z. -M2tM
+    setPoint(other.x, other.y, other.z);
     return *this;
 }
 
@@ -55,16 +59,26 @@ void CCPoint::setPoint(float x, float y)
     this->y = y;
 }
 
+//BPC Patch let's add a z. -M2tM
+void CCPoint::setPoint(float x, float y, float z)
+{
+    this->x = x;
+    this->y = y;
+	this->z = z;
+}
+
 CCObject* CCPoint::copyWithZone(CCZone* pZone)
 {
     CCPoint* pRet = new CCPoint();
-    pRet->setPoint(this->x, this->y);
+	//BPC Patch let's add a z. -M2tM
+    pRet->setPoint(this->x, this->y, this->z);
     return pRet;
 }
 
 bool CCPoint::equals(const CCPoint& target) const
 {
-    return ((x == target.x) && (y == target.y));
+	//BPC Patch let's add a z. -M2tM
+    return ((x == target.x) && (y == target.y) && (z == target.z));
 }
 
 bool CCPoint::CCPointEqualToPoint(const CCPoint& point1, const CCPoint& point2)
@@ -237,6 +251,27 @@ bool CCRect::CCRectIntersectsRect(const CCRect& rectA, const CCRect& rectB)
             CCRectGetMaxY(rectB) < CCRectGetMinY(rectA));
      */
     return rectA.intersectsRect(rectB);
+}
+
+//BPC Patch - Make a rectangle from the min/max points in a vector of points. - M2tM
+CCRect CCBoundingRectFromPoints(const std::vector<CCPoint> &points)
+{
+	if(points.empty()){
+		return CCRect(0, 0, 0, 0);
+	}
+	CCPoint minimum = points[0];
+	CCPoint maximum = points[0];
+	for(std::vector<CCPoint>::const_iterator it = points.begin();it != points.end();++it){
+		minimum.x = std::min(minimum.x, it->x);
+		minimum.y = std::min(minimum.y, it->y);
+		minimum.z = std::min(minimum.z, it->z);
+		
+		maximum.x = std::max(maximum.x, it->x);
+		maximum.y = std::max(maximum.y, it->y);
+		maximum.z = std::max(maximum.z, it->z);
+	}
+	
+	return CCRect(minimum.x, minimum.y, (maximum.x - minimum.x), (maximum.y - minimum.y));
 }
 
 NS_CC_END
