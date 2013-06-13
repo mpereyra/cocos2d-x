@@ -158,9 +158,14 @@ void CCSpriteBatchNode::visit(void)
     transform();
 
     draw();
+	
+	//BPC Patch - Adding endTransform - M2tM
+	endTransform();
 
     if (m_pGrid && m_pGrid->isActive())
     {
+	//BPC Patch - Adding endTransformAncestors - M2tM
+		endTransformAncestors();
         m_pGrid->afterDraw(this);
     }
 
