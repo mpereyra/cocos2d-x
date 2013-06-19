@@ -39,6 +39,7 @@ enum {
     kCCShaderType_PositionTexture_uColor,
     kCCShaderType_PositionTextureA8Color,
     kCCShaderType_Position_uColor,
+    kCCShaderNormal,
     
     kCCShaderType_MAX,
 };
@@ -140,7 +141,17 @@ void CCShaderCache::loadDefaultShaders()
     loadDefaultShader(p, kCCShaderType_Position_uColor);
     
     m_pPrograms->setObject(p, kCCShader_Position_uColor);
-    p->release();    
+    p->release();
+    
+    //
+    // Attempt to make a shader that actually uses normals
+    //
+    p = new CCGLProgram();
+    loadDefaultShader(p, kCCShaderNormal);
+    
+    m_pPrograms->setObject(p, kCCShader_Normal);
+    p->release();
+
 }
 
 void CCShaderCache::reloadDefaultShaders()
@@ -190,7 +201,11 @@ void CCShaderCache::reloadDefaultShaders()
     //
     p = programForKey(kCCShader_Position_uColor);
     p->reset();
-    loadDefaultShader(p, kCCShaderType_Position_uColor);  
+    loadDefaultShader(p, kCCShaderType_Position_uColor);
+    
+    p = programForKey(kCCShader_Normal);
+    p->reset();
+    loadDefaultShader(p, kCCShaderNormal);
 }
 
 void CCShaderCache::loadDefaultShader(CCGLProgram *p, int type)
@@ -246,6 +261,14 @@ void CCShaderCache::loadDefaultShader(CCGLProgram *p, int type)
             
             p->addAttribute("aVertex", kCCVertexAttrib_Position);    
             
+            break;
+        case kCCShaderNormal:
+            p->initWithVertexShaderByteArray(ccNormal_vert, ccNormal_frag);
+
+            p->addAttribute(kCCAttributeNamePosition, kCCVertexAttrib_Position);
+            p->addAttribute(kCCAttributeNameNormal, kCCVertexAttrib_Normal);
+            p->addAttribute(kCCAttributeNameTexCoord, kCCVertexAttrib_TexCoords);
+
             break;
         default:
             CCLOG("cocos2d: %s:%d, error shader type", __FUNCTION__, __LINE__);

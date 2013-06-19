@@ -44,6 +44,7 @@ enum {
     kCCVertexAttrib_Position,
     kCCVertexAttrib_Color,
     kCCVertexAttrib_TexCoords,
+    kCCVertexAttrib_Normal,
 
     kCCVertexAttrib_MAX,
 };
@@ -62,6 +63,7 @@ enum {
 #define kCCShader_PositionTexture_uColor        "ShaderPositionTexture_uColor"
 #define kCCShader_PositionTextureA8Color        "ShaderPositionTextureA8Color"
 #define kCCShader_Position_uColor                "ShaderPosition_uColor"
+#define kCCShader_Normal                        "ShaderNormal"
 
 // uniform names
 #define kCCUniformMVPMatrix_s            "u_MVPMatrix"
@@ -72,6 +74,7 @@ enum {
 #define    kCCAttributeNameColor            "a_color"
 #define    kCCAttributeNamePosition        "a_position"
 #define    kCCAttributeNameTexCoord        "a_texCoord"
+#define    kCCAttributeNameNormal          "a_normal"
 
 struct _hashUniformEntry;
 
