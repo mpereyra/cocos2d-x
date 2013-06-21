@@ -5,11 +5,12 @@ precision lowp float;                       \n\
                                             \n\
 varying vec2 v_texCoord;                    \n\
 uniform sampler2D u_texture;                \n\
-//varying lowp    float  LightIntensity;      \n\
+varying float LightIntensity;               \n\
                                             \n\
 void main()                                                              \n\
 {                                                                        \n\
-//    gl_FragColor = texture2D(u_texture, v_texCoord) * LightIntensity;    \n\
-    gl_FragColor = texture2D(u_texture, v_texCoord);                     \n\
+    vec4 light = vec4(LightIntensity,LightIntensity,LightIntensity,1.0); \n\
+    gl_FragColor = texture2D(u_texture, v_texCoord) * light;             \n\
+//    gl_FragColor = texture2D(u_texture, v_texCoord);                   \n\
 }                                                                        \n\
 ";
