@@ -11,6 +11,5 @@ void main()                                                              \n\
 {                                                                        \n\
     vec4 light = vec4(LightIntensity,LightIntensity,LightIntensity,1.0); \n\
     gl_FragColor = texture2D(u_texture, v_texCoord) * light;             \n\
-//    gl_FragColor = texture2D(u_texture, v_texCoord);                   \n\
 }                                                                        \n\
 ";
