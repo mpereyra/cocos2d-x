@@ -66,6 +66,26 @@ enum {
     kCCNodeOnCleanup
 };
 
+/** @brief CCProjectionDetails is a struct used to project and un-project from the current projection matrix state.
+ It is a thin wrapper over equivalent opengl calls.
+ 
+ BPC Patch this class is not cocos native. - M2tM
+ */
+
+struct CCProjectionDetails {
+	CCProjectionDetails();
+	
+	void updateFromStack();
+	
+	CCPoint project(const CCPoint &point);
+	CCPoint unProject(const CCPoint &point);
+
+	kmMat4 modelView;
+	kmMat4 projection;
+	GLint viewport[4];
+};
+
+
 /** @brief CCNode is the main element. Anything that gets drawn or contains things that get drawn is a CCNode.
  The most popular CCNodes are: CCScene, CCLayer, CCSprite, CCMenu.
 

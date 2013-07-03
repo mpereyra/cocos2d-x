@@ -27,6 +27,7 @@ THE SOFTWARE.
 
 #include "CCGeometry.h"
 #include "platform/CCPlatformMacros.h"
+#include "CCGL.h"
 
 NS_CC_BEGIN
 
@@ -55,6 +56,24 @@ CC_DLL bool CCAffineTransformEqualToTransform(const CCAffineTransform& t1, const
 CC_DLL CCAffineTransform CCAffineTransformInvert(const CCAffineTransform& t);
 
 extern CC_DLL const CCAffineTransform CCAffineTransformIdentity;
+
+//START: BPC PATCH
+void transform_point(GLfloat out[4], const GLfloat m[16], const GLfloat in[4]);
+
+void matmul(GLfloat * product, const GLfloat * a, const GLfloat * b);
+
+GLboolean invert_matrix(const GLfloat * m, GLfloat * out);
+
+GLboolean gluProject(GLfloat objx, GLfloat objy, GLfloat objz,
+	 const GLfloat model[16], const GLfloat proj[16],
+	 const GLint viewport[4],
+	 GLfloat * winx, GLfloat * winy, GLfloat * winz);
+
+GLboolean gluUnProject(GLfloat winx, GLfloat winy, GLfloat winz,
+   const GLfloat model[16], const GLfloat proj[16],
+   const GLint viewport[4],
+   GLfloat * objx, GLfloat * objy, GLfloat * objz);
+//END: BPC PATCH
 
 NS_CC_END
 
