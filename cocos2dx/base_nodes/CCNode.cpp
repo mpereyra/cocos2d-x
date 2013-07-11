@@ -492,8 +492,6 @@ CCRect CCNode::worldBoundingBox()
 	points[2] = project.project(CCPoint(0.0, m_tContentSize.height, m_fVertexZ));
 	points[3] = project.project(CCPoint(m_tContentSize.width, m_tContentSize.height, m_fVertexZ));
 	
-	CCRect result = CCBoundingRectFromPoints(points);
-	
 	return CCBoundingRectFromPoints(points);
 }
 
@@ -510,10 +508,6 @@ CCRect CCNode::boundingBox()
 	points[1] = project.unProject(CCPoint(m_tContentSize.width, 0.0, m_fVertexZ));
 	points[2] = project.unProject(CCPoint(0.0, m_tContentSize.height, m_fVertexZ));
 	points[3] = project.unProject(CCPoint(m_tContentSize.width, m_tContentSize.height, m_fVertexZ));
-	
-	CCRect result = CCBoundingRectFromPoints(points);
-	result.origin.x = 0;
-	result.origin.y = 0;
 	
 	return CCBoundingRectFromPoints(points);
 }
