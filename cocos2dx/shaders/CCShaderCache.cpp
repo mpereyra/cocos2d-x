@@ -40,7 +40,7 @@ enum {
     kCCShaderType_PositionTextureA8Color,
     kCCShaderType_Position_uColor,
     kCCShaderNormal,
-    
+    kCCShaderType_PositionTextureColorHighlight,    
     kCCShaderType_MAX,
 };
 
@@ -150,6 +150,13 @@ void CCShaderCache::loadDefaultShaders()
     loadDefaultShader(p, kCCShaderNormal);
     
     m_pPrograms->setObject(p, kCCShader_Normal);
+    p->release();
+    
+    // Position Texture Color shader with highlight
+    p = new CCGLProgram();
+    loadDefaultShader(p, kCCShaderType_PositionTextureColorHighlight);
+    
+    m_pPrograms->setObject(p, kCCShader_PositionTextureColorHighlight);
     p->release();
 
 }
@@ -269,6 +276,14 @@ void CCShaderCache::loadDefaultShader(CCGLProgram *p, int type)
             p->addAttribute(kCCAttributeNameNormal, kCCVertexAttrib_Normal);
             p->addAttribute(kCCAttributeNameTexCoord, kCCVertexAttrib_TexCoords);
 
+            break;
+        case kCCShaderType_PositionTextureColorHighlight:
+            p->initWithVertexShaderByteArray(ccPositionTextureColor_vert, ccPositionTextureColorHighlight_frag);
+            
+            p->addAttribute(kCCAttributeNamePosition, kCCVertexAttrib_Position);
+            p->addAttribute(kCCAttributeNameColor, kCCVertexAttrib_Color);
+            p->addAttribute(kCCAttributeNameTexCoord, kCCVertexAttrib_TexCoords);
+            
             break;
         default:
             CCLOG("cocos2d: %s:%d, error shader type", __FUNCTION__, __LINE__);

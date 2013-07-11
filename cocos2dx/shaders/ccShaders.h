@@ -59,6 +59,9 @@ extern CC_DLL const GLchar * ccExSwitchMask_frag;
 
 extern CC_DLL const GLchar * ccNormal_frag;
 extern CC_DLL const GLchar * ccNormal_vert;
+
+extern CC_DLL const GLchar * ccPositionTextureColorHighlight_frag;
+
 // end of shaders group
 /// @}
 
