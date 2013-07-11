@@ -29,6 +29,7 @@ struct TextLine {
 };
 
 NS_CC_BEGIN
+
 class BitmapDC
 {
 public:
