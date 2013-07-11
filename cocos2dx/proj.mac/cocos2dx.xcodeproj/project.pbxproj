@@ -1276,9 +1276,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		1551A33E158F2AB200E66CFE /* cocos2dx */ = {
+		1551A33E158F2AB200E66CFE /* cocos2dx-mac */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1551A34C158F2AB200E66CFE /* Build configuration list for PBXNativeTarget "cocos2dx" */;
+			buildConfigurationList = 1551A34C158F2AB200E66CFE /* Build configuration list for PBXNativeTarget "cocos2dx-mac" */;
 			buildPhases = (
 				1551A33B158F2AB200E66CFE /* Sources */,
 				1551A33C158F2AB200E66CFE /* Frameworks */,
@@ -1288,7 +1288,7 @@
 			);
 			dependencies = (
 			);
-			name = cocos2dx;
+			name = "cocos2dx-mac";
 			productName = cocos2dx;
 			productReference = 1551A33F158F2AB200E66CFE /* libcocos2dx.a */;
 			productType = "com.apple.product-type.library.static";
@@ -1314,7 +1314,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				1551A33E158F2AB200E66CFE /* cocos2dx */,
+				1551A33E158F2AB200E66CFE /* cocos2dx-mac */,
 			);
 		};
 /* End PBXProject section */
@@ -1553,7 +1553,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1551A34C158F2AB200E66CFE /* Build configuration list for PBXNativeTarget "cocos2dx" */ = {
+		1551A34C158F2AB200E66CFE /* Build configuration list for PBXNativeTarget "cocos2dx-mac" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1551A34D158F2AB200E66CFE /* Debug */,
