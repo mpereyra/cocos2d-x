@@ -487,6 +487,7 @@ public:
      @since v0.8.2
      */
     virtual CCRect boundingBox(void);
+	virtual CCRect worldBoundingBox(void);
 
     // actions
 

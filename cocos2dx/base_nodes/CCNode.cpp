@@ -55,44 +55,26 @@ CCProjectionDetails::CCProjectionDetails(){
 }
 
 void CCProjectionDetails::updateFromStack(){
-	GLenum __error = glGetError(); 
-    if(__error) {
-		CCLog("OpenGL error 0x%04X in %s %s %d\n", __error, __FILE__, __FUNCTION__, __LINE__);
-	}
 	kmGLGetMatrix(KM_GL_MODELVIEW, &modelView);
 	kmGLGetMatrix(KM_GL_PROJECTION, &projection);
 	glGetIntegerv(GL_VIEWPORT, viewport);
-	__error = glGetError(); 
-    if(__error) {
-		CCLog("OpenGL error 0x%04X in %s %s %d\n", __error, __FILE__, __FUNCTION__, __LINE__);
-	}
 }
 
 CCPoint CCProjectionDetails::project(const CCPoint &point){
-	GLenum __error = glGetError(); 
-    if(__error) {
-		CCLog("OpenGL error 0x%04X in %s %s %d\n", __error, __FILE__, __FUNCTION__, __LINE__);
-	}
 	CCPoint result;
-	gluProject(point.x, point.y, point.z, &(modelView.mat[0]), &(projection.mat[0]), viewport, &result.x, &result.y, &result.z);
+	if(gluProject(point.x, point.y, point.z, &(modelView.mat[0]), &(projection.mat[0]), viewport, &result.x, &result.y, &result.z) == GL_FALSE){
+		CCLog("gluProject failure!");
+	}
 	
 	result.x/=CCDirector::sharedDirector()->getContentScaleFactor();
 	result.y/=CCDirector::sharedDirector()->getContentScaleFactor();
 	result.z/=CCDirector::sharedDirector()->getContentScaleFactor();
 	
-	__error = glGetError(); 
-    if(__error) {
-		CCLog("OpenGL error 0x%04X in %s %s %d\n", __error, __FILE__, __FUNCTION__, __LINE__);
-	}
-	
 	return result;
 }
 
+//NOTE: To do this properly we need to know the depth at a particular screen position. We don't have a depth buffer on iPhone though... So we can't rely on this method.
 CCPoint CCProjectionDetails::unProject(const CCPoint &point){
-	GLenum __error = glGetError(); 
-    if(__error) {
-		CCLog("OpenGL error 0x%04X in %s %s %d\n", __error, __FILE__, __FUNCTION__, __LINE__);
-	}
 	//GLint pixelDepthAtScreenPosition;
 	/*glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glPixelStorei(GL_PACK_ALIGNMENT, 1);
@@ -104,11 +86,6 @@ CCPoint CCProjectionDetails::unProject(const CCPoint &point){
 	result.x*=CCDirector::sharedDirector()->getContentScaleFactor();
 	result.y*=CCDirector::sharedDirector()->getContentScaleFactor();
 	result.z*=CCDirector::sharedDirector()->getContentScaleFactor();
-	
-	__error = glGetError(); 
-    if(__error) {
-		CCLog("OpenGL error 0x%04X in %s %s %d\n", __error, __FILE__, __FUNCTION__, __LINE__);
-	}
 	
 	return result;
 }
@@ -500,26 +477,32 @@ void CCNode::setUserData(void *var)
     m_pUserData = var;
 }
 
-CCRect CCNode::boundingBox()
+CCRect CCNode::worldBoundingBox()
 {
-    CCRect rect = CCRectMake(0, 0, m_tContentSize.width, m_tContentSize.height);
-	
 	//BPC Patch - Supporting 3d Nodes by bypassing the regulard 2d matrix stuff cocos used to do - M2tM
-	GLenum __error = glGetError(); 
-    if(__error) {
-		CCLog("OpenGL error 0x%04X in %s %s %d\n", __error, __FILE__, __FUNCTION__, __LINE__);
-	}
+	transformAncestors();
 	transform();
-	__error = glGetError();
-    if(__error) {
-		CCLog("OpenGL error 0x%04X in %s %s %d\n", __error, __FILE__, __FUNCTION__, __LINE__);
-	}
 	CCProjectionDetails project;
 	endTransform();
-	__error = glGetError();
-    if(__error) {
-		CCLog("OpenGL error 0x%04X in %s %s %d\n", __error, __FILE__, __FUNCTION__, __LINE__);
-	}
+	endTransformAncestors();
+	std::vector<CCPoint> points(4);
+	
+	points[0] = project.project(CCPoint(0.0, 0.0, m_fVertexZ));
+	points[1] = project.project(CCPoint(m_tContentSize.width, 0.0, m_fVertexZ));
+	points[2] = project.project(CCPoint(0.0, m_tContentSize.height, m_fVertexZ));
+	points[3] = project.project(CCPoint(m_tContentSize.width, m_tContentSize.height, m_fVertexZ));
+	
+	CCRect result = CCBoundingRectFromPoints(points);
+	
+	return CCBoundingRectFromPoints(points);
+}
+
+CCRect CCNode::boundingBox()
+{
+	//BPC Patch - Supporting 3d Nodes by bypassing the regulard 2d matrix stuff cocos used to do - M2tM
+	transform();
+	CCProjectionDetails project;
+	endTransform();
 	
 	std::vector<CCPoint> points(4);
 	
@@ -531,10 +514,6 @@ CCRect CCNode::boundingBox()
 	CCRect result = CCBoundingRectFromPoints(points);
 	result.origin.x = 0;
 	result.origin.y = 0;
-	
-	if(abs(rect.origin.x - result.origin.x) > 1.0 || abs(rect.origin.y - result.origin.y) > 1.0 || abs(rect.size.width - result.size.width) > 1.0 || abs(rect.size.height - result.size.height) > 1.0){
-		fprintf(stderr, "(%f, %f)x(%f, %f) => (%f, %f)X(%f, %f)\n", rect.origin.x, rect.origin.y, rect.size.width, rect.size.height, result.origin.x, result.origin.y, result.size.width, result.size.height);
-	}
 	
 	return CCBoundingRectFromPoints(points);
 }
@@ -880,22 +859,18 @@ void CCNode::endTransformAncestors()
 
 void CCNode::transform()
 {
-	GLenum __error = glGetError(); 
-    if(__error) {
-		CCLog("OpenGL error 0x%04X in %s %s %d\n", __error, __FILE__, __FUNCTION__, __LINE__);
-	}
 	//BPC Patch - Adding pushMatrix (3d stuff)
 	kmGLPushMatrix();
-    kmMat4 transfrom4x4;
+    kmMat4 transform4x4;
 
     // Convert 3x3 into 4x4 matrix
     CCAffineTransform tmpAffine = this->nodeToParentTransform();
-    CGAffineToGL(&tmpAffine, transfrom4x4.mat);
+    CGAffineToGL(&tmpAffine, transform4x4.mat);
 
     // Update Z vertex manually
-    transfrom4x4.mat[14] = m_fVertexZ;
+    transform4x4.mat[14] = m_fVertexZ;
 
-    kmGLMultMatrix( &transfrom4x4 );
+    kmGLMultMatrix( &transform4x4 );
 
 
     // XXX: Expensive calls. Camera should be integrated into the cached affine matrix
@@ -911,10 +886,6 @@ void CCNode::transform()
         if( translate )
             kmGLTranslatef(RENDER_IN_SUBPIXEL(-m_tAnchorPointInPoints.x), RENDER_IN_SUBPIXEL(-m_tAnchorPointInPoints.y), 0 );
     }
-	__error = glGetError(); 
-    if(__error) {
-		CCLog("OpenGL error 0x%04X in %s %s %d\n", __error, __FILE__, __FUNCTION__, __LINE__);
-	}
 }
 
 void CCNode::onEnter()
@@ -1203,37 +1174,17 @@ CCAffineTransform CCNode::worldToNodeTransform(void)
 }
 
 CCPoint CCNode::convertToNodeSpace(const CCPoint& point) {
-	GLenum __error = glGetError(); 
-    if(__error) {
-		CCLog("OpenGL error 0x%04X in %s %s %d\n", __error, __FILE__, __FUNCTION__, __LINE__);
-	}
-    CCPoint ret = CCPointApplyAffineTransform(point, worldToNodeTransform());
-
-//BPC Patch -> Using the actual 4x4 transform matrices, not the cached 3x3 one cocos2dx was using. - M2tM
-
-	transform();
-	CCProjectionDetails project;
-	endTransform();
-	
-	CCPoint pointWithAnchor = point;
-	pointWithAnchor.x -= m_tAnchorPointInPoints.x;
-	pointWithAnchor.y -= m_tAnchorPointInPoints.y;
-	
-	__error = glGetError();
-    if(__error) {
-		CCLog("OpenGL error 0x%04X in %s %s %d\n", __error, __FILE__, __FUNCTION__, __LINE__);
-	}
-	
-	return project.unProject(point);
+//BPC Patch -> We -would- prefer to be able to convert to the node space with the actual 4x4 transform matrices, but we can't unProject reliably without knowing the z value.
+    return CCPointApplyAffineTransform(point, worldToNodeTransform());
 }
 
 CCPoint CCNode::convertToWorldSpace(const CCPoint& point) {
-    CCPoint ret = CCPointApplyAffineTransform(point, nodeToWorldTransform());
-	
 //BPC Patch -> Using the actual 4x4 transform matrices, not the cached 3x3 one cocos2dx was using. - M2tM
+	transformAncestors();
 	transform();
 	CCProjectionDetails project;
 	endTransform();
+	endTransformAncestors();
 	
 	CCPoint pointWithAnchor = point;
 	pointWithAnchor.x += m_tAnchorPointInPoints.x;

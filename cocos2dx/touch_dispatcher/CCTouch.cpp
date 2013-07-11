@@ -25,13 +25,14 @@
 #include "support/CCPointExtension.h"
 #include "CCTouch.h"
 #include "CCDirector.h"
+#include "CCEGLView.h"
 
 NS_CC_BEGIN
 
 // returns the current touch location in screen coordinates
 CCPoint CCTouch::getLocationInView() const 
-{ 
-    return m_point; 
+{
+    return CCPoint(m_point.x, CCDirector::sharedDirector()->getOpenGLView()->getFrameSize().height - m_point.y);
 }
 
 // returns the current previous location in screen coordinates
