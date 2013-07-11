@@ -187,10 +187,10 @@ private:
     void  setAlignmentBottom(CCObject* pSender);
     void  updateAlignment();
     const char* getCurrentAlignment();
-private:
     CCLabelTTF* m_plabel;
     CCTextAlignment m_eHorizAlign;
     CCVerticalTextAlignment m_eVertAlign;
+    VerticalTextAlignment _vertAlign;
 };
 
 class LabelTTFMultiline : public AtlasDemo
@@ -222,19 +222,19 @@ public:
     ~BitmapFontMultiLineAlignment();
     void snapArrowsToEdge();
     virtual std::string title();
-    virtual std::string subtitle();
     void stringChanged(CCObject *sender);
     void alignmentChanged(CCObject *sender);
     virtual void ccTouchesBegan(CCSet *pTouches, CCEvent *pEvent);
     virtual void ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent);
     virtual void ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent);
+    virtual void ccTouchesMoved(Set *pTouches, Event *pEvent);
 
-public:
     CCLabelBMFont *m_pLabelShouldRetain;
     CCSprite *m_pArrowsBarShouldRetain;
     CCSprite *m_pArrowsShouldRetain;
     CCMenuItemFont *m_pLastSentenceItem, *m_pLastAlignmentItem;
     bool m_drag;
+    bool _drag;
 };
 
 class LabelTTFA8Test : public AtlasDemo
@@ -290,6 +290,44 @@ public:
     virtual std::string title();
     virtual std::string subtitle();
 };
+
+class LabelBMFontBounds : public AtlasDemo
+{
+public:
+    LabelBMFontBounds();
+    
+    virtual void draw();
+    virtual std::string title();
+    virtual std::string subtitle();
+private:
+    LabelBMFont *label1;
+};
+
+class LabelBMFontNewTest : public AtlasDemo
+{
+public:
+    LabelBMFontNewTest();
+    
+    virtual void draw();
+    virtual std::string title();
+    virtual std::string subtitle();
+private:
+    LabelBMFontNew *label1;
+};
+
+class LabelDyamicTest : public AtlasDemo
+{
+public:
+    LabelDyamicTest();
+    
+    virtual void draw();
+    virtual std::string title();
+    virtual std::string subtitle();
+private:
+    StringTTF *label1;
+};
+
+
 
 // we don't support linebreak mode
 

@@ -244,9 +244,13 @@ public:
 
     /** content size */
     const CCSize& getContentSizeInPixels();
+
+    bool hasPremultipliedAlpha() const;
+    bool hasMipmaps() const;
     
-    bool hasPremultipliedAlpha();
-    bool hasMipmaps();
+    /** set premultiplied alpha in the texture manually */
+    void setPremultipliedAlpha(bool preMultAlpha) { _hasPremultipliedAlpha = preMultAlpha; }
+    
 private:
     bool initPremultipliedATextureWithImage(CCImage * image, unsigned int pixelsWide, unsigned int pixelsHigh);
     

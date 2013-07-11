@@ -187,7 +187,43 @@ CCDirector::~CCDirector(void)
     s_SharedDirector = NULL;
 }
 
-void CCDirector::setGLDefaultValues(void)
+void Director::setDefaultValues(void)
+{
+	Configuration *conf = Configuration::sharedConfiguration();
+
+	// default FPS
+	double fps = conf->getNumber("cocos2d.x.fps", kDefaultFPS);
+	_oldAnimationInterval = _animationInterval = 1.0 / fps;
+
+	// Display FPS
+	_displayStats = conf->getBool("cocos2d.x.display_fps", false);
+
+	// GL projection
+	const char *projection = conf->getCString("cocos2d.x.gl.projection", "2d");
+	if( strcmp(projection, "3d") == 0 )
+		_projection = kDirectorProjection3D;
+	else if (strcmp(projection, "2d") == 0)
+		_projection = kDirectorProjection2D;
+	else if (strcmp(projection, "custom") == 0)
+		_projection = kDirectorProjectionCustom;
+	else
+		CCAssert(false, "Invalid projection value");
+
+	// Default pixel format for PNG images with alpha
+	const char *pixel_format = conf->getCString("cocos2d.x.texture.pixel_format_for_png", "rgba8888");
+	if( strcmp(pixel_format, "rgba8888") == 0 )
+		Texture2D::setDefaultAlphaPixelFormat(kTexture2DPixelFormat_RGBA8888);
+	else if( strcmp(pixel_format, "rgba4444") == 0 )
+		Texture2D::setDefaultAlphaPixelFormat(kTexture2DPixelFormat_RGBA4444);
+	else if( strcmp(pixel_format, "rgba5551") == 0 )
+		Texture2D::setDefaultAlphaPixelFormat(kTexture2DPixelFormat_RGB5A1);
+
+	// PVR v2 has alpha premultiplied ?
+	bool pvr_alpha_premultipled = conf->getBool("cocos2d.x.texture.pvrv2_has_alpha_premultiplied", false);
+	Texture2D::PVRImagesHavePremultipliedAlpha(pvr_alpha_premultipled);
+}
+
+void Director::setGLDefaultValues(void)
 {
     // This method SHOULD be called only after openGLView_ was initialized
     CCAssert(m_pobOpenGLView, "opengl view should not be null");
