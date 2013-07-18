@@ -38,38 +38,48 @@ struct LetterDefinition
     float           V;
     float           width;
     float           height;
-    float           offset;
+    float           offsetX;
+    float           offsetY;
+    
     int             textureID;
     float           commonLineHeight;
 };
 
-/**
- */
 class LabelFontDefinition
 {
 public:
-
-    static LabelFontDefinition* create(const char *fontName, int fontSize, const char *letters, int textureSize = 512, bool debugOutput = false);
-
+    
     LabelFontDefinition();
    ~LabelFontDefinition();
-
-    bool init(const char *fontName, int fontSize, const char *letters, int textureSize, bool debugOutput);
-
+    
+    bool createFontDefinition(char *fontName, int fontSize, char *letters, int textureSize = 512, bool debugOutput = false);
     
     LetterDefinition & getLetterDefinition(unsigned short int theLetter);
     Texture2D * getTexture(int index);
-
-    Font * getFont() { return _textImages->getFont(); }
-    float  getCommonLineHeight() const { return _commonLineHeight; }
+    Font * getFont()                        { if (debugUseFreetype) return _textImages->getFontNew(); else return _textImages->getFont(); }
+    float  getCommonLineHeight()            { if (debugUseFreetype) return _commonLineHeightNew; else return _commonLineHeight;           }
     
 private:
     
-    void   addLetterDef(LetterDefinition &defToAdd);
     
+    bool prepareLetterDefinitions(TextFontPagesDef *pageDefs);
+    
+    
+    // carloX
+    bool prepareLetterDefinitionsNew(TextFontPagesDef *pageDefs);
+    void addLetterDefNew(LetterDefinition &defToAdd);
+    std::map<unsigned short, LetterDefinition>  _fontLettersDefinitionUTF16;
+    float                                       _commonLineHeightNew;
+    
+    
+    void   addLetterDef(LetterDefinition &defToAdd);
     TextImage *                                 _textImages;
     float                                       _commonLineHeight;
     std::map<unsigned short, LetterDefinition>  _fontLettersDefinitionUTF8;
+    
+    
+    bool debugUseFreetype;
+        
     
 };
 
