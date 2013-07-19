@@ -37,6 +37,27 @@ StringTTF::StringTTF(FontDefinitionTTF *theDef, TextAlignment alignment) :   _cu
 {
 }
 
+StringTTF* StringTTF::create(FontDefinitionTTF *def, TextAlignment alignment)
+{
+    StringTTF *ret = new StringTTF(def, alignment);
+    
+    if (!ret)
+        return 0;
+        
+    if( ret->init() )
+    {
+        ret->autorelease();
+        return ret;
+    }
+    else
+    {
+        delete ret;
+        return 0;
+    }
+    
+    return ret;
+}
+
 StringTTF::~StringTTF()
 {
     if (_currentUTF8String)
@@ -52,7 +73,17 @@ StringTTF::~StringTTF()
     }
 }
 
-bool StringTTF::setText(char *pStringToRender, float lineWidth, TextAlignment alignment, bool lineBreakWithoutSpaces)
+bool StringTTF::init()
+{
+    return true;
+}
+
+void StringTTF::setString(const char *stringToRender)
+{
+    setText(stringToRender, 500, kTextAlignmentCenter, false);
+}
+
+bool StringTTF::setText(const char *stringToRender, float lineWidth, TextAlignment alignment, bool lineBreakWithoutSpaces)
 {
     if (!_fontDef)
         return false;
@@ -75,7 +106,8 @@ bool StringTTF::setText(char *pStringToRender, float lineWidth, TextAlignment al
         return false;
     
     int numLetter = 0;
-    unsigned short int *pUTF8Text = pFont->getUTF16Text(pStringToRender, numLetter);
+    unsigned short int *pUTF8Text = pFont->getUTF16Text(stringToRender, numLetter);
+    
     setCurrentString(pUTF8Text);
     
     // align text
