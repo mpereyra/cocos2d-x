@@ -29,20 +29,11 @@
 
 NS_CC_BEGIN
 
-StringTTF* StringTTF::create(LabelFontDefinition *def, TextAlignment alignment)
-{
-    StringTTF *ret = new StringTTF(def, alignment);
-    if( ! ret->init() )
-        return NULL;
-    return ret;
-}
-
-StringTTF::StringTTF(LabelFontDefinition *theDef, TextAlignment alignment) :
-_currentUTF8String(0),
-_fontDef(theDef),
-_alignment(alignment),
-_lineBreakWithoutSpaces(false),
-_advances(0)
+StringTTF::StringTTF(FontDefinitionTTF *theDef, TextAlignment alignment) : _currentUTF8String(0),
+                                                                             _fontDef(theDef),
+                                                                             _alignment(alignment),
+                                                                             _lineBreakWithoutSpaces(false),
+                                                                             _advances(0)
 {
 }
 
@@ -61,12 +52,7 @@ StringTTF::~StringTTF()
     }
 }
 
-bool StringTTF::init()
-{
-    return true;
-}
-
-bool StringTTF::setText(const char *stringToRender, float lineWidth, TextAlignment alignment, bool lineBreakWithoutSpaces)
+bool StringTTF::setText(char *pStringToRender, float lineWidth, TextAlignment alignment, bool lineBreakWithoutSpaces)
 {
     if (!_fontDef)
         return false;
@@ -89,7 +75,7 @@ bool StringTTF::setText(const char *stringToRender, float lineWidth, TextAlignme
         return false;
     
     int numLetter = 0;
-    unsigned short int *pUTF8Text = pFont->getUTF16Text(stringToRender, numLetter);
+    unsigned short int *pUTF8Text = pFont->getUTF16Text(pStringToRender, numLetter);
     setCurrentString(pUTF8Text);
     
     // align text

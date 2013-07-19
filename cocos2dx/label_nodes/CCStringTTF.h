@@ -33,14 +33,11 @@ NS_CC_BEGIN
 class StringTTF : public Node , public LabelTextFormatProtocol, public RGBAProtocol
 {
 public:
-    static StringTTF* create(LabelFontDefinition *pDefinition, TextAlignment alignment = kTextAlignmentLeft);
-
-    StringTTF(LabelFontDefinition *pDefinition, TextAlignment alignment = kTextAlignmentLeft);
-    ~StringTTF();
-
-    bool init();
     
-    bool setText(const char *pStringToRender, float lineWidth, TextAlignment alignment = kTextAlignmentLeft, bool lineBreakWithoutSpaces = false);
+     StringTTF(FontDefinitionTTF *pDefinition, TextAlignment alignment = kTextAlignmentLeft);
+    ~StringTTF();
+    
+    bool setText(char *pStringToRender, float lineWidth, TextAlignment alignment = kTextAlignmentLeft, bool lineBreakWithoutSpaces = false);
     
     // main interface
     virtual void setAlignment(TextAlignment alignment);
@@ -122,7 +119,7 @@ private:
     bool                        _lineBreakWithoutSpaces;
     float                       _width;
     TextAlignment               _alignment;
-    LabelFontDefinition*        _fontDef;
+    FontDefinitionTTF*          _fontDef;
     unsigned short int *        _currentUTF8String;
     Size               *        _advances;
     
