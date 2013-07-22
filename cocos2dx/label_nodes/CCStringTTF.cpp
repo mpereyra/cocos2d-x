@@ -80,7 +80,7 @@ bool StringTTF::init()
 
 void StringTTF::setString(const char *stringToRender)
 {
-    setText(stringToRender, 500, kTextAlignmentCenter, false);
+    setText(stringToRender, 0, kTextAlignmentCenter, false);
 }
 
 bool StringTTF::setText(const char *stringToRender, float lineWidth, TextAlignment alignment, bool lineBreakWithoutSpaces)
@@ -104,11 +104,16 @@ bool StringTTF::setText(const char *stringToRender, float lineWidth, TextAlignme
     
     if (!pFont)
         return false;
-    
+
     int numLetter = 0;
-    unsigned short int *pUTF8Text = pFont->getUTF16Text(stringToRender, numLetter);
+    unsigned short int *UTF8Text = pFont->getUTF16Text(stringToRender, numLetter);
+
+    // INIT THE BATCH NODE
+    // WARNING: currently only one font page is supported
+    SpriteBatchNode::initWithTexture(_fontDef->getTexture(0), numLetter);
     
-    setCurrentString(pUTF8Text);
+    // 
+    setCurrentString(UTF8Text);
     
     // align text
     alignText();
@@ -176,23 +181,25 @@ void StringTTF::alignText()
 {
     hideAllLetters();
     LabelTextFormatter::createStringSprites(this);
-    LabelTextFormatter::multilineText(this);
-    hideAllLetters();
-    LabelTextFormatter::createStringSprites(this);
+    if( LabelTextFormatter::multilineText(this) )
+    {
+        hideAllLetters();
+        LabelTextFormatter::createStringSprites(this);
+    }
     LabelTextFormatter::alignText(this);
 }
 
 void StringTTF::hideAllLetters()
 {
-    Object* pObj = NULL;
-    CCARRAY_FOREACH(&_spriteArray, pObj)
+    Object* Obj = NULL;
+    CCARRAY_FOREACH(&_spriteArray, Obj)
     {
-        ((Sprite *)pObj)->setVisible(false);
+        ((Sprite *)Obj)->setVisible(false);
     }
     
-    CCARRAY_FOREACH(&_spriteArrayCache, pObj)
+    CCARRAY_FOREACH(&_spriteArrayCache, Obj)
     {
-        ((Sprite *)pObj)->setVisible(false);
+        ((Sprite *)Obj)->setVisible(false);
     }
 }
 
@@ -204,13 +211,13 @@ bool StringTTF::computeAdvancesForString(const char *stringToRender)
         _advances = 0;
     }
     
-    Font *pFont = _fontDef->getFont();
+    Font *theFont = _fontDef->getFont();
     
-    if (!pFont)
+    if (!theFont)
         return false;
     
     int letterCount = 0;
-    _advances = pFont->getAdvancesForText(stringToRender, letterCount);
+    _advances = theFont->getAdvancesForText(stringToRender, letterCount);
     
     if(!_advances)
         return false;
@@ -226,13 +233,13 @@ bool StringTTF::computeAdvancesForString(unsigned short int *stringToRender)
         _advances = 0;
     }
     
-    Font *pFont = _fontDef->getFont();
+    Font *theFont = _fontDef->getFont();
     
-    if (!pFont)
+    if (!theFont)
         return false;
     
     int letterCount = 0;
-    _advances = pFont->getAdvancesForTextUTF16(stringToRender, letterCount);
+    _advances = theFont->getAdvancesForTextUTF16(stringToRender, letterCount);
     
     if(!_advances)
         return false;
@@ -272,6 +279,7 @@ Sprite * StringTTF::createNewSpriteFromLetterDefinition(LetterDefinition &theDef
     
     tempSprite->initWithSpriteFrame(pFrame);
     tempSprite->setAnchorPoint(Point(0.0, 1.0));
+    tempSprite->setBatchNode(this);
     
     return tempSprite;
 }
@@ -290,9 +298,14 @@ Sprite * StringTTF::updateSpriteWithLetterDefinition(Sprite *spriteToUpdate, Let
         uvRect.origin.x    = theDefinition.U;
         uvRect.origin.y    = theDefinition.V;
         
-        SpriteFrame *pFrame = SpriteFrame::createWithTexture(theTexture, uvRect);
-        spriteToUpdate->initWithSpriteFrame(pFrame);
-        spriteToUpdate->setAnchorPoint(Point(0.0, 1.0));
+        SpriteFrame *frame = SpriteFrame::createWithTexture(theTexture, uvRect);
+        if (frame)
+        {
+            spriteToUpdate->setTexture(theTexture);
+            spriteToUpdate->setDisplayFrame(frame);
+            spriteToUpdate->setAnchorPoint(Point(0.0, 1.0));
+            spriteToUpdate->setBatchNode(this);
+        }
         
         return spriteToUpdate;
     }
@@ -301,9 +314,9 @@ Sprite * StringTTF::updateSpriteWithLetterDefinition(Sprite *spriteToUpdate, Let
 Sprite * StringTTF::getSpriteForLetter(unsigned short int newLetter)
 {
     LetterDefinition tempDefinition = _fontDef->getLetterDefinition(newLetter);
-    Sprite *pNewSprite = createNewSpriteFromLetterDefinition(tempDefinition, _fontDef->getTexture(tempDefinition.textureID) );
-    this->addChild(pNewSprite);
-    return    pNewSprite;
+    Sprite *newSprite = createNewSpriteFromLetterDefinition(tempDefinition, _fontDef->getTexture(tempDefinition.textureID) );
+    this->addChild(newSprite);
+    return    newSprite;
 }
 
 Sprite * StringTTF::updateSpriteForLetter(Sprite *spriteToUpdate, unsigned short int newLetter)

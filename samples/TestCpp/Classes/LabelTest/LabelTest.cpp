@@ -1695,6 +1695,8 @@ NewLabelTTFTest::NewLabelTTFTest()
 
     label = Label::createWithTTF("Hello World", "fonts/arial.ttf", 28);
     label->setPosition( Point(size.width/2, size.height/2) );
+    label->setAnchorPoint(Point(0.5, 1.0));
+    label->retain();
     addChild(label);
 }
 
@@ -1722,6 +1724,7 @@ NewLabelBMFontTest::NewLabelBMFontTest()
 
     label = Label::createWithBMFont("Hello World", "fonts/bitmapFontTest2.fnt");
     label->setPosition( Point(size.width/2, size.height/2) );
+    label->retain();
     addChild(label);
 }
 
