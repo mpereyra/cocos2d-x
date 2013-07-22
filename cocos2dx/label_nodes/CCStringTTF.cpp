@@ -181,11 +181,13 @@ void StringTTF::alignText()
 {
     hideAllLetters();
     LabelTextFormatter::createStringSprites(this);
+    
     if( LabelTextFormatter::multilineText(this) )
     {
         hideAllLetters();
         LabelTextFormatter::createStringSprites(this);
     }
+    
     LabelTextFormatter::alignText(this);
 }
 
