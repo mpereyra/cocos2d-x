@@ -49,19 +49,16 @@ struct LetterDefinition
 
 /**
  */
-class FontDefinitionTTF : public Object
+class CC_DLL FontDefinitionTTF : public Object
 {
 public:
 
     static FontDefinitionTTF* create(const char *fontName, int fontSize, const char *letters, int textureSize = DEFAULT_ATLAS_TEXTURE_SIZE);
     LetterDefinition & getLetterDefinition(unsigned short int theLetter);
     Texture2D * getTexture(int index);
-    int getNumTextures();
-    
-    Font * getFont()                        { return _textImages->getFont(); }
-    float  getCommonLineHeight()            { return _commonLineHeight;      }
-    
-    // carloX
+    int         getNumTextures();
+    Font *      getFont()                        { return _textImages->getFont(); }
+    float       getCommonLineHeight()            { return _commonLineHeight;      }
     FontAtlas * createFontAtlas();
     
 private:

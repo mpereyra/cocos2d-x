@@ -40,7 +40,7 @@ Layer* restartAtlasAction();
 
 static int sceneIdx = -1; 
 
-#define MAX_LAYER    32
+#define MAX_LAYER    31
 
 Layer* createAtlasLayer(int nIndex)
 {
@@ -77,9 +77,8 @@ Layer* createAtlasLayer(int nIndex)
         case 26: return new LabelBMFontBounds();
         case 27: return new TTFFontShadowAndStroke();
         case 28: return new LabelBMFontNewTest();
-        case 29: return new LabelDyamicTest();
-        case 30: return new NewLabelBMFontTest();
-        case 31: return new NewLabelTTFTest();
+        case 29: return new NewLabelBMFontTest();
+        case 30: return new NewLabelTTFTest();
     }
 
     return NULL;
@@ -1638,7 +1637,7 @@ LabelBMFontNewTest::LabelBMFontNewTest()
     addChild(layer, -10);
     
     // LabelBMFont
-    label1 = LabelBMFontNew::create("Testing Glyph Designer", "fonts/boundsTestFont.fnt");
+    label1 = StringBMFont::create("Testing Glyph Designer", "fonts/boundsTestFont.fnt");
     
     addChild(label1);
     label1->setPosition(ccp(s.width/2, s.height/2));
@@ -1657,34 +1656,7 @@ std::string LabelBMFontNewTest::subtitle()
     return "Testing the new LabelBMFont";
 }
 
-LabelDyamicTest::LabelDyamicTest()
-{
-    Size size = Director::sharedDirector()->getWinSize();
-    
-    const char *pFontFileName       = "fonts/arial.ttf";
-    const char *pFontGlyphs         = "abcdefghilmnopqrstuvzxywABCDEFGHILMNOPQRSTUVZXYW0123456789,. ";
-    FontDefinitionTTF *pDef         =  new FontDefinitionTTF;
-    
-    pDef->createFontDefinition((char *)pFontFileName, 26, (char *) pFontGlyphs);
-    StringTTF *pTestString = new StringTTF(pDef);
-    pTestString->setText( (char *)LongSentencesExample, size.width, kTextAlignmentCenter, false);
-    addChild(pTestString);
-    pTestString->setPosition(Point(0, size.height/2));
-}
-
-void LabelDyamicTest::draw()
-{
-}
-
-std::string LabelDyamicTest::title()
-{
-    return "Dynamic TTF label";
-}
-
-std::string LabelDyamicTest::subtitle()
-{
-    return "Testing the new dynamic TTF label";
-}
+///
 
 //
 /// NEW LABEL with TTF
