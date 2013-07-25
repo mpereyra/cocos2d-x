@@ -40,46 +40,45 @@ Layer* restartAtlasAction();
 
 static int sceneIdx = -1; 
 
-#define MAX_LAYER    31
-
-Layer* createAtlasLayer(int nIndex)
+static std::function<Layer*()> createFunctions[] =
 {
-    switch(nIndex)
-    {
-        case 0: return new LabelAtlasTest();
-        case 1: return new LabelAtlasColorTest();
-        case 2: return new Atlas3();
-        case 3: return new Atlas4();
-        case 4: return new Atlas5();
-        case 5: return new Atlas6();
-        case 6: return new AtlasBitmapColor();
-        case 7: return new AtlasFastBitmap();
-        case 8: return new BitmapFontMultiLine();
-        case 9: return new LabelsEmpty();
-        case 10: return new LabelBMFontHD();
-        case 11: return new LabelAtlasHD();
-        case 12: return new LabelGlyphDesigner();
+    CL(LabelAtlasTest),
+    CL(LabelAtlasColorTest),
+    CL(Atlas3),
+    CL(Atlas4),
+    CL(Atlas5),
+    CL(Atlas6),
+    CL(AtlasBitmapColor),
+    CL(AtlasFastBitmap),
+    CL(BitmapFontMultiLine),
+    CL(LabelsEmpty),
+    CL(LabelBMFontHD),
+    CL(LabelAtlasHD),
+    CL(LabelGlyphDesigner),
+    CL(LabelTTFTest),
+    CL(LabelTTFMultiline),
+    CL(LabelTTFChinese),
+    CL(LabelBMFontChinese),
+    CL(BitmapFontMultiLineAlignment),
+    CL(LabelTTFA8Test),
+    CL(BMFontOneAtlas),
+    CL(BMFontUnicode),
+    CL(BMFontInit),
+    CL(TTFFontInit),
+    CL(Issue1343),
+    CL(LabelTTFAlignment),
+    CL(LabelBMFontBounds),
+    CL(TTFFontShadowAndStroke),
+    CL(NewLabelTTFTestLongLine),
+    //    CL(NewLabelTTFTestUnicode),
+    CL(NewLabelTTFColorTest),
+    CL(NewLabelTTFFontsTest),
+    //    CL(NewLabelBMFontTest),
+//    CL(NewLabelFontDefTest),
 
-        // Not a label test. Should be moved to Atlas test
-        case 13: return new Atlas1();
-        case 14: return new LabelTTFTest();
-        case 15: return new LabelTTFMultiline();
-        case 16: return new LabelTTFChinese();
-        case 17: return new LabelBMFontChinese();
-        case 18: return new BitmapFontMultiLineAlignment();
-        case 19: return new LabelTTFA8Test();
-        case 20: return new BMFontOneAtlas();
-        case 21: return new BMFontUnicode();
-        case 22: return new BMFontInit();
-        case 23: return new TTFFontInit();
-        case 24: return new Issue1343();
-        case 25: return new LabelTTFAlignment();
-        case 26: return new LabelBMFontBounds();
-        case 27: return new TTFFontShadowAndStroke();
-        case 28: return new LabelBMFontNewTest();
-        case 29: return new NewLabelBMFontTest();
-        case 30: return new NewLabelTTFTest();
-    }
+    // should be moved to another test
+    CL(Atlas1),
+};
 
     return NULL;
 }
@@ -1659,49 +1658,143 @@ std::string LabelBMFontNewTest::subtitle()
 ///
 
 //
-/// NEW LABEL with TTF
+// NewLabelTTFTestLongLine
 //
-NewLabelTTFTest::NewLabelTTFTest()
+NewLabelTTFTestLongLine::NewLabelTTFTestLongLine()
 {
     Size size = Director::getInstance()->getWinSize();
-    label = Label::createWithTTF(LongSentencesExample, "fonts/arial.ttf", 28, GlyphCollection::NEHE, size.width);
-    label->setPosition( Point(size.width/2, size.height/2) );
-    label->setAnchorPoint(Point(0.5, 1.0));
-    label->retain();
-    addChild(label);
+
+    // Long sentence
+    auto label1 = Label::createWithTTF(LongSentencesExample, "fonts/arial.ttf", 28, GlyphCollection::NEHE, size.width);
+    label1->setPosition( Point(size.width/2, size.height/2) );
+    label1->setAnchorPoint(Point(0.5, 1.0));
+    addChild(label1);
 }
 
-NewLabelTTFTest::~NewLabelTTFTest()
-{
-    CC_SAFE_RELEASE(label);
-}
-
-std::string NewLabelTTFTest::title()
+std::string NewLabelTTFTestLongLine::title()
 {
     return "Label() using TTF";
 }
 
-std::string NewLabelTTFTest::subtitle()
+std::string NewLabelTTFTestLongLine::subtitle()
 {
-    return "Uses the new Label() with TTF";
+    return "Uses the new Label() with TTF. Testing auto-wrapping";
 }
 
 //
-/// NEW LABEL with BMFont
+// NewLabelTTFTestUnicode
+//
+NewLabelTTFTestUnicode::NewLabelTTFTestUnicode()
+{
+    Size size = Director::getInstance()->getWinSize();
+
+    // Spanish
+    auto label1 = Label::createWithTTF("Buen día, ¿cómo te llamas?", "fonts/arial.ttf", 28, GlyphCollection::DYNAMIC, size.width);
+    label1->setPosition( Point(size.width/2, size.height/5) );
+    addChild(label1);
+
+    // German
+    auto label2 = Label::createWithTTF("In welcher Straße haben Sie gelebt?", "fonts/arial.ttf", 28, GlyphCollection::DYNAMIC, size.width);
+    label2->setPosition( Point(size.width/2, size.height/5 * 2) );
+    addChild(label2);
+}
+
+std::string NewLabelTTFTestUnicode::title()
+{
+    return "Label() using TTF with unicode chars";
+}
+
+std::string NewLabelTTFTestUnicode::subtitle()
+{
+    return "Uses the new Label() with TTF. Testing Unicode";
+}
+
+//
+// NewLabelTTFColorTest
+//
+NewLabelTTFColorTest::NewLabelTTFColorTest()
+{
+    Size size = Director::getInstance()->getWinSize();
+
+    // Green
+    auto label1 = Label::createWithTTF("Green", "fonts/arial.ttf", 28);
+    label1->setPosition( Point(size.width/2, size.height/5) );
+    label1->setColor( Color3B::GREEN );
+    addChild(label1);
+
+    // Red
+    auto label2 = Label::createWithTTF("Red", "fonts/arial.ttf", 28);
+    label2->setPosition( Point(size.width/2, size.height/5 * 2) );
+    label2->setColor( Color3B::RED );
+    addChild(label2);
+
+    // Blue
+    auto label3 = Label::createWithTTF("Blue", "fonts/arial.ttf", 28);
+    label3->setPosition( Point(size.width/2, size.height/5 * 3) );
+    label3->setColor( Color3B::BLUE );
+    addChild(label3);
+}
+
+std::string NewLabelTTFColorTest::title()
+{
+    return "Label() using TTF with differnt color";
+}
+
+std::string NewLabelTTFColorTest::subtitle()
+{
+    return "Uses the new Label() with TTF. Testing Color";
+}
+
+//
+// NewLabelTTFFontsTest
+//
+NewLabelTTFFontsTest::NewLabelTTFFontsTest()
+{
+    const char *ttfpaths[] = {
+        "fonts/A Damn Mess.ttf",
+        "fonts/Abberancy.ttf",
+        "fonts/Abduction.ttf",
+        "fonts/American Typewriter.ttf",
+        "fonts/Paint Boy.ttf",
+        "fonts/Schwarzwald Regular.ttf",
+        "fonts/Scissor Cuts.ttf",
+    };
+#define arraysize(ar)  (sizeof(ar) / sizeof(ar[0]))
+
+    Size size = Director::getInstance()->getWinSize();
+
+    for(int i=0;i < arraysize(ttfpaths); ++i) {
+        auto label = Label::createWithTTF( ttfpaths[i], ttfpaths[i], 28);
+        if( label ) {
+            label->setPosition( Point(size.width/2, size.height/arraysize(ttfpaths) * i) );
+            addChild(label);
+            label->setAnchorPoint(Point(0.5, 0.5));
+        } else {
+            log("ERROR: Cannot load: %s", ttfpaths[i]);
+        }
+    }
+}
+
+std::string NewLabelTTFFontsTest::title()
+{
+    return "Label() using different TTF files";
+}
+
+std::string NewLabelTTFFontsTest::subtitle()
+{
+    return "Uses the new Label() with non standard TTF files";
+}
+
+//
+// NEW LABEL with BMFont
 //
 NewLabelBMFontTest::NewLabelBMFontTest()
 {
     Size size = Director::getInstance()->getWinSize();
 
-    label = Label::createWithBMFont("Hello World, this is testing the new Label using fnt file", "fonts/bitmapFontTest2.fnt", size.width);
-    label->setPosition( Point(size.width/2, size.height/2) );
-    label->retain();
-    addChild(label);
-}
-
-NewLabelBMFontTest::~NewLabelBMFontTest()
-{
-    CC_SAFE_RELEASE(label);
+    auto label1 = Label::createWithBMFont("Hello World, this is testing the new Label using fnt file", "fonts/bitmapFontTest2.fnt", size.width);
+    label1->setPosition( Point(size.width/2, size.height/2) );
+    addChild(label1);
 }
 
 std::string NewLabelBMFontTest::title()
@@ -1715,15 +1808,10 @@ std::string NewLabelBMFontTest::subtitle()
 }
 
 //
-/// NEW LABEL with FontDefinition
+// NEW LABEL with FontDefinition
 //
 NewLabelFontDefTest::NewLabelFontDefTest()
 {
-}
-
-NewLabelFontDefTest::~NewLabelFontDefTest()
-{
-    CC_SAFE_RELEASE(label);
 }
 
 std::string NewLabelFontDefTest::title()
