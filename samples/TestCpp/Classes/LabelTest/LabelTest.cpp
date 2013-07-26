@@ -1807,8 +1807,41 @@ std::string NewLabelBMFontTest::subtitle()
     return "Uses the new Label() with BMFont";
 }
 
+
+
 //
-// NEW LABEL with FontDefinition
+/// NEW LABEL with BMFont
+//
+NewLabelBMFontTestOld::NewLabelBMFontTestOld()
+{
+    Size size = Director::getInstance()->getWinSize();
+    
+    label = Label::createWithBMFontOLD("Hello world, this uses new label with FTN file", "fonts/bitmapFontTest2.fnt", size.width);
+    label->setPosition( Point(size.width/2, size.height/2) );
+    label->setAnchorPoint(Point(0.5, 0.5));
+    label->retain();
+    addChild(label);
+}
+
+NewLabelBMFontTestOld::~NewLabelBMFontTestOld()
+{
+    CC_SAFE_RELEASE(label);
+}
+
+std::string NewLabelBMFontTestOld::title()
+{
+    return "Label() using BMFont OLD";
+}
+
+std::string NewLabelBMFontTestOld::subtitle()
+{
+    return "Uses the new Label() with BMFont OLD";
+}
+
+
+
+//
+/// NEW LABEL with FontDefinition
 //
 NewLabelFontDefTest::NewLabelFontDefTest()
 {
