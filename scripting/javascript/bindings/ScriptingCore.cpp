@@ -1292,3 +1292,241 @@ JSBool jsSocketClose(JSContext* cx, unsigned argc, jsval* vp)
     }
     return JS_TRUE;
 }
+
+static Color3B getColorFromJSObject(JSContext *cx, JSObject *colorObject)
+{
+    jsval jsr;
+    Color3B out;
+    JS_GetProperty(cx, colorObject, "r", &jsr);
+    double fontR = 0.0;
+    JS_ValueToNumber(cx, jsr, &fontR);
+    
+    JS_GetProperty(cx, colorObject, "g", &jsr);
+    double fontG = 0.0;
+    JS_ValueToNumber(cx, jsr, &fontG);
+    
+    JS_GetProperty(cx, colorObject, "b", &jsr);
+    double fontB = 0.0;
+    JS_ValueToNumber(cx, jsr, &fontB);
+    
+    // the out
+    out.r = (unsigned char)fontR;
+    out.g = (unsigned char)fontG;
+    out.b = (unsigned char)fontB;
+    
+    return out;
+}
+
+Size getSizeFromJSObject(JSContext *cx, JSObject *sizeObject)
+{
+    jsval jsr;
+    Size out;
+    JS_GetProperty(cx, sizeObject, "width", &jsr);
+    double width = 0.0;
+    JS_ValueToNumber(cx, jsr, &width);
+    
+    JS_GetProperty(cx, sizeObject, "height", &jsr);
+    double height = 0.0;
+    JS_ValueToNumber(cx, jsr, &height);
+    
+    
+    // the out
+    out.width  = width;
+    out.height = height;
+    
+    return out;
+}
+
+JSBool jsval_to_FontDefinition( JSContext *cx, jsval vp, FontDefinition *out )
+{
+    JSObject *jsobj;
+    
+	if( ! JS_ValueToObject( cx, vp, &jsobj ) )
+		return JS_FALSE;
+	
+	JSB_PRECONDITION( jsobj, "Not a valid JS object");
+    
+    // defaul values
+    const char *            defautlFontName         = "Arial";
+    const int               defaultFontSize         = 32;
+    TextHAlignment         defaultTextAlignment    = TextHAlignment::LEFT;
+    TextVAlignment defaultTextVAlignment   = TextVAlignment::TOP;
+    
+    // by default shadow and stroke are off
+    out->_shadow._shadowEnabled = false;
+    out->_stroke._strokeEnabled = false;
+    
+    // white text by default
+    out->_fontFillColor = Color3B::WHITE;
+    
+    // font name
+    jsval jsr;
+    JS_GetProperty(cx, jsobj, "fontName", &jsr);
+    JS_ValueToString(cx, jsr);
+    JSStringWrapper wrapper(jsr);
+    if ( wrapper )
+    {
+        out->_fontName  = (char*)wrapper;
+    }
+    else
+    {
+        out->_fontName  = defautlFontName;
+    }
+    
+    // font size
+    JSBool hasProperty;
+    JS_HasProperty(cx, jsobj, "fontSize", &hasProperty);
+    if ( hasProperty )
+    {
+        JS_GetProperty(cx, jsobj, "fontSize", &jsr);
+        double fontSize = 0.0;
+        JS_ValueToNumber(cx, jsr, &fontSize);
+        out->_fontSize  = fontSize;
+    }
+    else
+    {
+        out->_fontSize  = defaultFontSize;
+    }
+    
+    // font alignment horizontal
+    JS_HasProperty(cx, jsobj, "fontAlignmentH", &hasProperty);
+    if ( hasProperty )
+    {
+        JS_GetProperty(cx, jsobj, "fontAlignmentH", &jsr);
+        double fontAlign = 0.0;
+        JS_ValueToNumber(cx, jsr, &fontAlign);
+        out->_alignment = (TextHAlignment)(int)fontAlign;
+    }
+    else
+    {
+        out->_alignment  = defaultTextAlignment;
+    }
+    
+    // font alignment vertical
+    JS_HasProperty(cx, jsobj, "fontAlignmentV", &hasProperty);
+    if ( hasProperty )
+    {
+        JS_GetProperty(cx, jsobj, "fontAlignmentV", &jsr);
+        double fontAlign = 0.0;
+        JS_ValueToNumber(cx, jsr, &fontAlign);
+        out->_vertAlignment = (TextVAlignment)(int)fontAlign;
+    }
+    else
+    {
+        out->_vertAlignment  = defaultTextVAlignment;
+    }
+    
+    // font fill color
+    JS_HasProperty(cx, jsobj, "fontFillColor", &hasProperty);
+    if ( hasProperty )
+    {
+        JS_GetProperty(cx, jsobj, "fontFillColor", &jsr);
+        
+        JSObject *jsobjColor;
+        if( ! JS_ValueToObject( cx, jsr, &jsobjColor ) )
+            return JS_FALSE;
+        
+        out->_fontFillColor = getColorFromJSObject(cx, jsobjColor);
+    }
+    
+    // font rendering box dimensions
+    JS_HasProperty(cx, jsobj, "fontDimensions", &hasProperty);
+    if ( hasProperty )
+    {
+        JS_GetProperty(cx, jsobj, "fontDimensions", &jsr);
+        
+        JSObject *jsobjSize;
+        if( ! JS_ValueToObject( cx, jsr, &jsobjSize ) )
+            return JS_FALSE;
+        
+        out->_dimensions = getSizeFromJSObject(cx, jsobjSize);
+    }
+    
+    // shadow
+    JS_HasProperty(cx, jsobj, "shadowEnabled", &hasProperty);
+    if ( hasProperty )
+    {
+        JS_GetProperty(cx, jsobj, "shadowEnabled", &jsr);
+        out->_shadow._shadowEnabled  = ToBoolean(jsr);
+        
+        if( out->_shadow._shadowEnabled )
+        {
+            // default shadow values
+            out->_shadow._shadowOffset  = Size(5, 5);
+            out->_shadow._shadowBlur    = 1;
+            out->_shadow._shadowOpacity = 1;
+            
+            // shado offset
+            JS_HasProperty(cx, jsobj, "shadowOffset", &hasProperty);
+            if ( hasProperty )
+            {
+                JS_GetProperty(cx, jsobj, "shadowOffset", &jsr);
+                
+                JSObject *jsobjShadowOffset;
+                if( ! JS_ValueToObject( cx, jsr, &jsobjShadowOffset ) )
+                    return JS_FALSE;
+                out->_shadow._shadowOffset = getSizeFromJSObject(cx, jsobjShadowOffset);
+            }
+            
+            // shadow blur
+            JS_HasProperty(cx, jsobj, "shadowBlur", &hasProperty);
+            if ( hasProperty )
+            {
+                JS_GetProperty(cx, jsobj, "shadowBlur", &jsr);
+                double shadowBlur = 0.0;
+                JS_ValueToNumber(cx, jsr, &shadowBlur);
+                out->_shadow._shadowBlur = shadowBlur;
+            }
+            
+            // shadow intensity
+            JS_HasProperty(cx, jsobj, "shadowOpacity", &hasProperty);
+            if ( hasProperty )
+            {
+                JS_GetProperty(cx, jsobj, "shadowOpacity", &jsr);
+                double shadowOpacity = 0.0;
+                JS_ValueToNumber(cx, jsr, &shadowOpacity);
+                out->_shadow._shadowOpacity = shadowOpacity;
+            }
+        }
+    }
+    
+    // stroke
+    JS_HasProperty(cx, jsobj, "strokeEnabled", &hasProperty);
+    if ( hasProperty )
+    {
+        JS_GetProperty(cx, jsobj, "strokeEnabled", &jsr);
+        out->_stroke._strokeEnabled  = ToBoolean(jsr);
+        
+        if( out->_stroke._strokeEnabled )
+        {
+            // default stroke values
+            out->_stroke._strokeSize  = 1;
+            out->_stroke._strokeColor = Color3B::BLUE;
+            
+            // stroke color
+            JS_HasProperty(cx, jsobj, "strokeColor", &hasProperty);
+            if ( hasProperty )
+            {
+                JS_GetProperty(cx, jsobj, "strokeColor", &jsr);
+                
+                JSObject *jsobjStrokeColor;
+                if( ! JS_ValueToObject( cx, jsr, &jsobjStrokeColor ) )
+                    return JS_FALSE;
+                out->_stroke._strokeColor = getColorFromJSObject(cx, jsobjStrokeColor);
+            }
+            
+            // stroke size
+            JS_HasProperty(cx, jsobj, "strokeSize", &hasProperty);
+            if ( hasProperty )
+            {
+                JS_GetProperty(cx, jsobj, "strokeSize", &jsr);
+                double strokeSize = 0.0;
+                JS_ValueToNumber(cx, jsr, &strokeSize);
+                out->_stroke._strokeSize = strokeSize;
+            }
+        }
+    }
+    
+    // we are done here
+	return JS_TRUE;
+}

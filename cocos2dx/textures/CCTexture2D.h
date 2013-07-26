@@ -135,9 +135,9 @@ public:
     bool initWithImage(CCImage * uiImage);
 
     /** Initializes a texture from a string with dimensions, alignment, font name and font size */
-    bool initWithString(const char *text, const CCSize& dimensions, CCTextAlignment hAlignment, CCVerticalTextAlignment vAlignment, const char *fontName, float fontSize);
-    /** Initializes a texture from a string with font name and font size */
-    bool initWithString(const char *text, const char *fontName, float fontSize);
+    bool initWithString(const char *text,  const char *fontName, float fontSize, const Size& dimensions = Size(0, 0), TextHAlignment hAlignment = TextHAlignment::CENTER, TextVAlignment vAlignment = TextVAlignment::TOP);
+    /** Initializes a texture from a string using a text definition*/
+    bool initWithString(const char *text, const FontDefinition& textDefinition);
 
 #ifdef CC_SUPPORT_PVRTC    
     /**

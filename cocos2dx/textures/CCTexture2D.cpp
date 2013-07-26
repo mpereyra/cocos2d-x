@@ -417,49 +417,143 @@ bool CCTexture2D::initPremultipliedATextureWithImage(CCImage *image, unsigned in
     return true;
 }
 
-// implementation CCTexture2D (Text)
-bool CCTexture2D::initWithString(const char *text, const char *fontName, float fontSize)
+// implementation Texture2D (Text)
+bool Texture2D::initWithString(const char *text, const char *fontName, float fontSize, const Size& dimensions/* = Size(0, 0)*/, TextHAlignment hAlignment/* =  TextHAlignment::CENTER */, TextVAlignment vAlignment/* =  TextVAlignment::TOP */)
 {
-    return initWithString(text, CCSizeMake(0,0), kCCTextAlignmentCenter, kCCVerticalTextAlignmentTop, fontName, fontSize);
+    FontDefinition tempDef;
+    
+    tempDef._shadow._shadowEnabled = false;
+    tempDef._stroke._strokeEnabled = false;
+   
+    
+    tempDef._fontName      = std::string(fontName);
+    tempDef._fontSize      = fontSize;
+    tempDef._dimensions    = dimensions;
+    tempDef._alignment     = hAlignment;
+    tempDef._vertAlignment = vAlignment;
+    tempDef._fontFillColor = Color3B::WHITE;
+
+    return initWithString(text, tempDef);
 }
 
-bool CCTexture2D::initWithString(const char *text, const CCSize& dimensions, CCTextAlignment hAlignment, CCVerticalTextAlignment vAlignment, const char *fontName, float fontSize)
+bool Texture2D::initWithString(const char *text, const FontDefinition& textDefinition)
 {
 #if CC_ENABLE_CACHE_TEXTURE_DATA
     // cache the texture data
-    VolatileTexture::addStringTexture(this, text, dimensions, hAlignment, vAlignment, fontName, fontSize);
+    VolatileTexture::addStringTexture(this, text, textDefinition);
 #endif
 
-    CCImage image;
-
-    CCImage::ETextAlign eAlign;
-
-    if (kCCVerticalTextAlignmentTop == vAlignment)
+    bool bRet = false;
+    Image::TextAlign eAlign;
+    
+    if (TextVAlignment::TOP == textDefinition._vertAlignment)
     {
-        eAlign = (kCCTextAlignmentCenter == hAlignment) ? CCImage::kAlignTop
-            : (kCCTextAlignmentLeft == hAlignment) ? CCImage::kAlignTopLeft : CCImage::kAlignTopRight;
+        eAlign = (TextHAlignment::CENTER == textDefinition._alignment) ? Image::TextAlign::TOP
+        : (TextHAlignment::LEFT == textDefinition._alignment) ? Image::TextAlign::TOP_LEFT : Image::TextAlign::TOP_RIGHT;
     }
-    else if (kCCVerticalTextAlignmentCenter == vAlignment)
+    else if (TextVAlignment::CENTER == textDefinition._vertAlignment)
     {
-        eAlign = (kCCTextAlignmentCenter == hAlignment) ? CCImage::kAlignCenter
-            : (kCCTextAlignmentLeft == hAlignment) ? CCImage::kAlignLeft : CCImage::kAlignRight;
+        eAlign = (TextHAlignment::CENTER == textDefinition._alignment) ? Image::TextAlign::CENTER
+        : (TextHAlignment::LEFT == textDefinition._alignment) ? Image::TextAlign::LEFT : Image::TextAlign::RIGHT;
     }
-    else if (kCCVerticalTextAlignmentBottom == vAlignment)
+    else if (TextVAlignment::BOTTOM == textDefinition._vertAlignment)
     {
-        eAlign = (kCCTextAlignmentCenter == hAlignment) ? CCImage::kAlignBottom
-            : (kCCTextAlignmentLeft == hAlignment) ? CCImage::kAlignBottomLeft : CCImage::kAlignBottomRight;
+        eAlign = (TextHAlignment::CENTER == textDefinition._alignment) ? Image::TextAlign::BOTTOM
+        : (TextHAlignment::LEFT == textDefinition._alignment) ? Image::TextAlign::BOTTOM_LEFT : Image::TextAlign::BOTTOM_RIGHT;
     }
     else
     {
-        CCAssert(false, "Not supported alignment format!");
-    }
-    
-    if (!image.initWithString(text, (int)dimensions.width, (int)dimensions.height, eAlign, fontName, (int)fontSize))
-    {
+        CCASSERT(false, "Not supported alignment format!");
         return false;
     }
+    
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID) || (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
 
-    return initWithImage(&image);
+    // handle shadow parameters
+    bool  shadowEnabled = false;
+    float shadowDX      = 0.0f;
+    float shadowDY      = 0.0f;
+    float shadowBlur    = 0.0f;
+    float shadowOpacity = 0.0f;
+    
+    if ( textDefinition._shadow._shadowEnabled )
+    {
+        shadowEnabled =  true;
+        shadowDX      = textDefinition._shadow._shadowOffset.width;
+        shadowDY      = textDefinition._shadow._shadowOffset.height;
+        shadowBlur    = textDefinition._shadow._shadowBlur;
+        shadowOpacity = textDefinition._shadow._shadowOpacity;
+    }
+    
+    // handle stroke parameters
+    bool strokeEnabled = false;
+    float strokeColorR = 0.0f;
+    float strokeColorG = 0.0f;
+    float strokeColorB = 0.0f;
+    float strokeSize   = 0.0f;
+    
+    if ( textDefinition._stroke._strokeEnabled )
+    {
+        strokeEnabled = true;
+        strokeColorR = textDefinition._stroke._strokeColor.r / 255.0f;
+        strokeColorG = textDefinition._stroke._strokeColor.g / 255.0f;
+        strokeColorB = textDefinition._stroke._strokeColor.b / 255.0f;
+        strokeSize   = textDefinition._stroke._strokeSize;
+    }
+    
+    Image* pImage = new Image();
+    do
+    {
+        CC_BREAK_IF(NULL == pImage);
+        
+        bRet = pImage->initWithStringShadowStroke(text,
+                                                  (int)textDefinition._dimensions.width,
+                                                  (int)textDefinition._dimensions.height,
+                                                  eAlign,
+                                                  textDefinition._fontName.c_str(),
+                                                  textDefinition._fontSize,
+                                                  textDefinition._fontFillColor.r / 255.0f,
+                                                  textDefinition._fontFillColor.g / 255.0f,
+                                                  textDefinition._fontFillColor.b / 255.0f,
+                                                  shadowEnabled,
+                                                  shadowDX,
+                                                  shadowDY,
+                                                  shadowOpacity,
+                                                  shadowBlur,
+                                                  strokeEnabled,
+                                                  strokeColorR,
+                                                  strokeColorG,
+                                                  strokeColorB,
+                                                  strokeSize);
+        
+        
+        CC_BREAK_IF(!bRet);
+        bRet = initWithImage(pImage);
+        
+    } while (0);
+    
+    CC_SAFE_RELEASE(pImage);
+    
+    return bRet;
+
+#else
+    bool requestUnsupported = textDefinition._shadow._shadowEnabled || textDefinition._stroke._strokeEnabled;
+
+    CCASSERT(requestUnsupported == false, "Currently shadow and stroke only supported on iOS and Android!");
+
+    Image* pImage = new Image();
+    do
+    {
+        CC_BREAK_IF(NULL == pImage);
+        bRet = pImage->initWithString(text, (int)textDefinition._dimensions.width, (int)textDefinition._dimensions.height, eAlign, textDefinition._fontName.c_str(), (int)textDefinition._fontSize);
+        CC_BREAK_IF(!bRet);
+        bRet = initWithImage(pImage);
+    } while (0);
+    
+    CC_SAFE_RELEASE(pImage);
+
+    return bRet;    
+#endif
 }
 
 

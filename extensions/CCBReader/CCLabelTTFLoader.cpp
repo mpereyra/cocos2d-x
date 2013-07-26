@@ -64,9 +64,9 @@ void CCLabelTTFLoader::onHandlePropTypeFloatScale(CCNode * pNode, CCNode * pPare
 
 void CCLabelTTFLoader::onHandlePropTypeIntegerLabeled(CCNode * pNode, CCNode * pParent, CCString * pPropertyName, int pIntegerLabeled, CCBReader * pCCBReader) {
     if(pPropertyName->compare(PROPERTY_HORIZONTALALIGNMENT) == 0) {
-        ((CCLabelTTF *)pNode)->setHorizontalAlignment(CCTextAlignment(pIntegerLabeled));
+        ((CCLabelTTF *)pNode)->setHorizontalAlignment(TextHAlignment(pIntegerLabeled));
     } else if(pPropertyName->compare(PROPERTY_VERTICALALIGNMENT) == 0) {
-        ((CCLabelTTF *)pNode)->setVerticalAlignment(CCVerticalTextAlignment(pIntegerLabeled));
+        ((CCLabelTTF *)pNode)->setVerticalAlignment(TextHAlignment(pIntegerLabeled));
     } else {
         CCNodeLoader::onHandlePropTypeFloatScale(pNode, pParent, pPropertyName, pIntegerLabeled, pCCBReader);
     }

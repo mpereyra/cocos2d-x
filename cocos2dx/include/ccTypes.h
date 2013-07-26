@@ -297,7 +297,7 @@ typedef struct _ccV2F_C4F_T2F_Quad
 } ccV2F_C4F_T2F_Quad;
 
 //! Blend Function used for textures
-typedef struct _ccBlendFunc
+struct BlendFunc
 {
     //! source blend function
     GLenum src;
@@ -323,6 +323,27 @@ typedef enum
     kCCTextAlignmentRight,
 } CCTextAlignment;
 
+// Label::VAlignment
+// Label::HAlignment
+
+// XXX: If any of these enums are edited and/or reordered, update Texture2D.m
+//! Vertical text alignment type
+enum class TextVAlignment
+{
+    TOP,
+    CENTER,
+    BOTTOM,
+};
+
+// XXX: If any of these enums are edited and/or reordered, update Texture2D.m
+//! Horizontal text alignment type
+enum class TextHAlignment
+{
+    LEFT,
+    CENTER,
+    RIGHT,
+};
+
 // types for animation in particle systems
 
 // texture coordinates for a quad
@@ -345,6 +366,87 @@ typedef struct
     float delay;
     CCSize size; 
 } ccAnimationFrameData;
+
+/**
+ types used for defining fonts properties (i.e. font name, size, stroke or shadow)
+ */
+
+
+// shadow attributes
+struct FontShadow
+{
+public:
+    
+    // shadow is not enabled by default
+    FontShadow()
+        : _shadowEnabled(false)
+        , _shadowBlur(0)
+        , _shadowOpacity(0)
+    {}
+
+    // true if shadow enabled
+    bool   _shadowEnabled;
+    // shadow x and y offset
+	Size   _shadowOffset;
+    // shadow blurrines
+	float  _shadowBlur;
+    // shadow opacity
+	float  _shadowOpacity;
+};
+
+// stroke attributes
+struct FontStroke
+{
+public:
+    
+    // stroke is disabled by default
+    FontStroke()
+	    : _strokeEnabled(false)
+        , _strokeColor(Color3B::BLACK)
+        , _strokeSize(0)
+    {}
+    
+    // true if stroke enabled
+    bool      _strokeEnabled;
+    // stroke color
+	Color3B   _strokeColor;
+    // stroke size
+    float     _strokeSize;
+    
+};
+
+// font attributes
+struct FontDefinition
+{
+public:
+    
+    FontDefinition()
+        : _fontSize(0)
+        , _alignment(TextHAlignment::CENTER)
+        , _vertAlignment(TextVAlignment::TOP)
+        , _fontFillColor(Color3B::WHITE)
+        , _dimensions(Size::ZERO)
+    {}
+    
+    // font name
+    std::string           _fontName;
+    // font size
+    int                   _fontSize;
+    // horizontal alignment
+    TextHAlignment        _alignment;
+    // vertical alignment
+    TextVAlignment _vertAlignment;
+    // renering box
+    Size                  _dimensions;
+    // font color
+    Color3B               _fontFillColor;
+    // font shadow
+    FontShadow            _shadow;
+    // font stroke
+    FontStroke            _stroke;
+    
+};
+
 
 NS_CC_END
 

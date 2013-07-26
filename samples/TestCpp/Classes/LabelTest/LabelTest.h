@@ -187,10 +187,10 @@ private:
     void  setAlignmentBottom(CCObject* pSender);
     void  updateAlignment();
     const char* getCurrentAlignment();
-    CCLabelTTF* m_plabel;
-    CCTextAlignment m_eHorizAlign;
-    CCVerticalTextAlignment m_eVertAlign;
-    VerticalTextAlignment _vertAlign;
+private:
+    CCLabelTTF* _plabel;
+    TextHAlignment _horizAlign;
+    TextVAlignment _vertAlign;
 };
 
 class LabelTTFMultiline : public AtlasDemo

@@ -32,13 +32,12 @@ http://www.angelcode.com/products/bmfont/ (Free, Windows only)
 ****************************************************************************/
 #include "CCStringBMFont.h"
 #include "cocoa/CCString.h"
-#include "platform/platform.h"
 #include "cocoa/CCDictionary.h"
 #include "CCConfiguration.h"
 #include "CCLabelTextFormatter.h"
 #include "draw_nodes/CCDrawingPrimitives.h"
 #include "sprite_nodes/CCSprite.h"
-#include "support/CCPointExtension.h"
+//#include "support/CCPointExtension.h"
 #include "platform/CCFileUtils.h"
 #include "CCDirector.h"
 #include "textures/CCTextureCache.h"
@@ -83,23 +82,23 @@ StringBMFont * StringBMFont::create()
     return NULL;
 }
 
-StringBMFont * StringBMFont::create(const char *str, const char *fntFile, float width, TextAlignment alignment)
+StringBMFont * StringBMFont::create(const char *str, const char *fntFile, float width, TextHAlignment alignment)
 {
-    return StringBMFont::create(str, fntFile, width, alignment, PointZero);
+    return StringBMFont::create(str, fntFile, width, alignment, Point::ZERO);
 }
 
 StringBMFont * StringBMFont::create(const char *str, const char *fntFile, float width)
 {
-    return StringBMFont::create(str, fntFile, width, kTextAlignmentLeft, PointZero);
+    return StringBMFont::create(str, fntFile, width, TextHAlignment::LEFT, Point::ZERO);
 }
 
 StringBMFont * StringBMFont::create(const char *str, const char *fntFile)
 {
-    return StringBMFont::create(str, fntFile, kLabelAutomaticWidth, kTextAlignmentLeft, PointZero);
+    return StringBMFont::create(str, fntFile, kLabelAutomaticWidth, TextHAlignment::LEFT, Point::ZERO);
 }
 
 //LabelBMFont - Creation & Init
-StringBMFont *StringBMFont::create(const char *str, const char *fntFile, float width/* = kLabelAutomaticWidth*/, TextAlignment alignment/* = kTextAlignmentLeft*/, Point imageOffset/* = PointZero*/)
+StringBMFont *StringBMFont::create(const char *str, const char *fntFile, float width/* = kLabelAutomaticWidth*/, TextHAlignment alignment/* = kTextAlignmentLeft*/, Point imageOffset/* = Point::ZERO*/)
 {
     StringBMFont *pRet = new StringBMFont();
     if(pRet && pRet->initWithString(str, fntFile, width, alignment, imageOffset))
@@ -113,10 +112,10 @@ StringBMFont *StringBMFont::create(const char *str, const char *fntFile, float w
 
 bool StringBMFont::init()
 {
-    return initWithString(NULL, NULL, kLabelAutomaticWidth, kTextAlignmentLeft, PointZero);
+    return initWithString(NULL, NULL, kLabelAutomaticWidth, TextHAlignment::LEFT, Point::ZERO);
 }
 
-bool StringBMFont::initWithString(const char *theString, const char *fntFile, float width/* = kLabelAutomaticWidth*/, TextAlignment alignment/* = kTextAlignmentLeft*/, Point imageOffset/* = PointZero*/)
+bool StringBMFont::initWithString(const char *theString, const char *fntFile, float width/* = kLabelAutomaticWidth*/, TextHAlignment alignment/* = kTextAlignmentLeft*/, Point imageOffset/* = Point::ZERO*/)
 {
     CCAssert(!_configuration, "re-init is no longer supported");
     CCAssert( (theString && fntFile) || (theString==NULL && fntFile==NULL), "Invalid params for StringBMFont");
@@ -139,7 +138,7 @@ bool StringBMFont::initWithString(const char *theString, const char *fntFile, fl
         
         _fntFile = fntFile;
         
-        texture = TextureCache::sharedTextureCache()->addImage(_configuration->getAtlasName());
+        texture = TextureCache::getInstance()->addImage(_configuration->getAtlasName());
     }
     else 
     {
@@ -162,15 +161,15 @@ bool StringBMFont::initWithString(const char *theString, const char *fntFile, fl
         _cascadeOpacityEnabled = true;
         _cascadeColorEnabled = true;
         
-        _contentSize = SizeZero;
+        _contentSize = Size::ZERO;
         
         _isOpacityModifyRGB = _textureAtlas->getTexture()->hasPremultipliedAlpha();
-        _anchorPoint = ccp(0.5f, 0.5f);
+        _anchorPoint = Point(0.5f, 0.5f);
         
         _imageOffset = imageOffset;
         
         _reusedChar = new Sprite();
-        _reusedChar->initWithTexture(_textureAtlas->getTexture(), CCRectMake(0, 0, 0, 0), false);
+        _reusedChar->initWithTexture(_textureAtlas->getTexture(), Rect(0, 0, 0, 0), false);
         _reusedChar->setBatchNode(this);
         
         this->setString(theString);
@@ -183,11 +182,11 @@ bool StringBMFont::initWithString(const char *theString, const char *fntFile, fl
 StringBMFont::StringBMFont()
 : _string(NULL)
 , _initialString(NULL)
-, _alignment(kTextAlignmentCenter)
+, _alignment(TextHAlignment::CENTER)
 , _width(-1.0f)
 , _configuration(NULL)
 , _lineBreakWithoutSpaces(false)
-, _imageOffset(PointZero)
+, _imageOffset(Point::ZERO)
 , _reusedChar(NULL)
 , _displayedOpacity(255)
 , _realOpacity(255)
@@ -362,7 +361,7 @@ void StringBMFont::setAnchorPoint(const Point& point)
 }
 
 // StringBMFont - Alignment
-void StringBMFont::setAlignment(TextAlignment alignment)
+void StringBMFont::setAlignment(TextHAlignment alignment)
 {
     this->_alignment = alignment;
     updateLabel();
@@ -423,7 +422,7 @@ void StringBMFont::setFntFile(const char* fntFile)
         CC_SAFE_RELEASE(_configuration);
         _configuration = newConf;
 
-        this->setTexture(TextureCache::sharedTextureCache()->addImage(_configuration->getAtlasName()));
+        this->setTexture(TextureCache::getInstance()->addImage(_configuration->getAtlasName()));
         LabelTextFormatter::createStringSprites(this);
     }
 }
@@ -683,7 +682,7 @@ void StringBMFont::multilineText()
 
 void StringBMFont::alignText()
 {
-    if (_alignment != kTextAlignmentLeft)
+    if (_alignment != TextHAlignment::LEFT)
     {
         LabelTextFormatter::alignText(this);
     }
@@ -704,7 +703,7 @@ float StringBMFont::getMaxLineWidth()
     return _width;
 }
 
-TextAlignment StringBMFont::getTextAlignment()
+TextHAlignment StringBMFont::getTextAlignment()
 {
     return _alignment;
 }

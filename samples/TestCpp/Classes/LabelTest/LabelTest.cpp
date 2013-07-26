@@ -355,19 +355,19 @@ LabelTTFAlignment::LabelTTFAlignment()
     Size s = Director::sharedDirector()->getWinSize();
 
     LabelTTF* ttf0 = LabelTTF::create("Alignment 0\nnew line", "Helvetica", 12,
-                                          CCSizeMake(256, 32), kTextAlignmentLeft);
+                                          CCSizeMake(256, 32), TextHAlignment::LEFT);
     ttf0->setPosition(ccp(s.width/2,(s.height/6)*2));
     ttf0->setAnchorPoint(ccp(0.5f,0.5f));
     this->addChild(ttf0);
 
     LabelTTF* ttf1 = LabelTTF::create("Alignment 1\nnew line", "Helvetica", 12,
-                                          CCSizeMake(245, 32), kTextAlignmentCenter);
+                                          CCSizeMake(245, 32), TextHAlignment::CENTER);
     ttf1->setPosition(ccp(s.width/2,(s.height/6)*3));
     ttf1->setAnchorPoint(ccp(0.5f,0.5f));
     this->addChild(ttf1);
 
     LabelTTF* ttf2 = LabelTTF::create("Alignment 2\nnew line", "Helvetica", 12,
-                                          CCSizeMake(245, 32), kTextAlignmentRight);
+                                          CCSizeMake(245, 32), TextHAlignment::RIGHT);
     ttf2->setPosition(ccp(s.width/2,(s.height/6)*4));
     ttf2->setAnchorPoint(ccp(0.5f,0.5f));
     this->addChild(ttf2);
@@ -960,8 +960,8 @@ LabelTTFTest::LabelTTFTest()
     this->addChild(menu);
 
     _plabel = NULL;
-    _horizAlign = kTextAlignmentLeft;
-    _vertAlign = kVerticalTextAlignmentTop;
+    _horizAlign = TextHAlignment::LEFT;
+    _vertAlign = TextVAlignment::TOP;
 
     this->updateAlignment();
 }
@@ -995,37 +995,37 @@ void  LabelTTFTest::updateAlignment()
 
 void LabelTTFTest::setAlignmentLeft(Object* pSender)
 {
-    _horizAlign = kTextAlignmentLeft;
+    _horizAlign = TextHAlignment::LEFT;
     this->updateAlignment();
 }
 
 void LabelTTFTest::setAlignmentCenter(Object* pSender)
 {
-    _horizAlign = kTextAlignmentCenter;
+    _horizAlign = TextHAlignment::CENTER;
     this->updateAlignment();
 }
 
 void LabelTTFTest::setAlignmentRight(Object* pSender)
 {
-    _horizAlign = kTextAlignmentRight;
+    _horizAlign = TextHAlignment::RIGHT;
     this->updateAlignment();
 }
 
 void LabelTTFTest::setAlignmentTop(Object* pSender)
 {
-    _vertAlign = kVerticalTextAlignmentTop;
+    _vertAlign = TextVAlignment::TOP;
     this->updateAlignment();
 }
 
 void LabelTTFTest::setAlignmentMiddle(Object* pSender)
 {
-    _vertAlign = kVerticalTextAlignmentCenter;
+    _vertAlign = TextVAlignment::CENTER;
     this->updateAlignment();
 }
 
 void LabelTTFTest::setAlignmentBottom(Object* pSender)
 {
-    _vertAlign = kVerticalTextAlignmentBottom;
+    _vertAlign = TextVAlignment::BOTTOM;
     this->updateAlignment();
 }
 
@@ -1034,24 +1034,24 @@ const char* LabelTTFTest::getCurrentAlignment()
     const char* vertical = NULL;
     const char* horizontal = NULL;
     switch (_vertAlign) {
-        case kVerticalTextAlignmentTop:
+        case TextVAlignment::TOP:
             vertical = "Top";
             break;
-        case kVerticalTextAlignmentCenter:
+        case TextVAlignment::CENTER:
             vertical = "Middle";
             break;
-        case kVerticalTextAlignmentBottom:
+        case TextVAlignment::BOTTOM:
             vertical = "Bottom";
             break;
     }
     switch (_horizAlign) {
-        case kTextAlignmentLeft:
+        case TextHAlignment::LEFT:
             horizontal = "Left";
             break;
-        case kTextAlignmentCenter:
+        case TextHAlignment::CENTER:
             horizontal = "Center";
             break;
-        case kTextAlignmentRight:
+        case TextHAlignment::RIGHT:
             horizontal = "Right";
             break;
     }
@@ -1077,8 +1077,8 @@ LabelTTFMultiline::LabelTTFMultiline()
                                             "Paint Boy",
                                             32,
                                             CCSizeMake(s.width/2,200),
-                                            kTextAlignmentCenter,
-                                            kVerticalTextAlignmentTop);
+                                            TextHAlignment::CENTER,
+                                            TextVAlignment::TOP);
 
     center->setPosition(ccp(s.width / 2, 150));
 
@@ -1148,7 +1148,7 @@ BitmapFontMultiLineAlignment::BitmapFontMultiLineAlignment()
     Size size = Director::sharedDirector()->getWinSize();
 
     // create and initialize a Label
-    this->_labelShouldRetain = LabelBMFont::create(LongSentencesExample, "fonts/markerFelt.fnt", size.width/1.5, kTextAlignmentCenter);
+    this->_labelShouldRetain = LabelBMFont::create(LongSentencesExample, "fonts/markerFelt.fnt", size.width/1.5, TextHAlignment::CENTER);
     this->_labelShouldRetain->retain();
 
     this->_arrowsBarShouldRetain = Sprite::create("Images/arrowsBar.png");
@@ -1257,13 +1257,13 @@ void BitmapFontMultiLineAlignment::alignmentChanged(cocos2d::Object *sender)
     switch(item->getTag())
     {
     case LeftAlign:
-        this->_labelShouldRetain->setAlignment(kTextAlignmentLeft);
+        this->_labelShouldRetain->setAlignment(TextHAlignment::LEFT);
         break;
     case CenterAlign:
-        this->_labelShouldRetain->setAlignment(kTextAlignmentCenter);
+        this->_labelShouldRetain->setAlignment(TextHAlignment::CENTER);
         break;
     case RightAlign:
-        this->_labelShouldRetain->setAlignment(kTextAlignmentRight);
+        this->_labelShouldRetain->setAlignment(TextHAlignment::RIGHT);
         break;
 
     default:
@@ -1355,11 +1355,11 @@ BMFontOneAtlas::BMFontOneAtlas()
 {
     Size s = Director::sharedDirector()->getWinSize();
 
-    LabelBMFont *label1 = LabelBMFont::create("This is Helvetica", "fonts/helvetica-32.fnt", kLabelAutomaticWidth, kTextAlignmentLeft, PointZero);
+    LabelBMFont *label1 = LabelBMFont::create("This is Helvetica", "fonts/helvetica-32.fnt", kLabelAutomaticWidth, TextHAlignment::LEFT, PointZero);
     addChild(label1);
     label1->setPosition(ccp(s.width/2, s.height/3*2));
 
-    LabelBMFont *label2 = LabelBMFont::create("And this is Geneva", "fonts/geneva-32.fnt", kLabelAutomaticWidth, kTextAlignmentLeft, ccp(0, 128));
+    LabelBMFont *label2 = LabelBMFont::create("And this is Geneva", "fonts/geneva-32.fnt", kLabelAutomaticWidth, TextHAlignment::LEFT, ccp(0, 128));
     addChild(label2);
     label2->setPosition(ccp(s.width/2, s.height/3*1));
 }
@@ -1387,7 +1387,7 @@ BMFontUnicode::BMFontUnicode()
 
     Size s = Director::sharedDirector()->getWinSize();
 
-    LabelBMFont *label1 = LabelBMFont::create(spanish, "fonts/arial-unicode-26.fnt", 200, kTextAlignmentLeft);
+    LabelBMFont *label1 = LabelBMFont::create(spanish, "fonts/arial-unicode-26.fnt", 200, TextHAlignment::LEFT);
     addChild(label1);
     label1->setPosition(ccp(s.width/2, s.height/5*4));
 
