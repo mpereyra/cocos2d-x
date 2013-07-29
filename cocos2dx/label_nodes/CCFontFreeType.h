@@ -26,8 +26,8 @@
 #define _FontFreetype_h_
 
 #include "CCFont.h"
-
-#include "ft2build.h"
+#include <string>
+#include <ft2build.h>
 #include FT_FREETYPE_H
 
 NS_CC_BEGIN
@@ -63,6 +63,8 @@ private:
     
     FT_Face           _fontRef;
     const int         _letterPadding;
+    
+    std::string       _fontName;
     
 };
 

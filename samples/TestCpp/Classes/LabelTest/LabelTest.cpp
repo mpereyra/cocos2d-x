@@ -1740,7 +1740,7 @@ NewLabelTTFColorTest::NewLabelTTFColorTest()
 
 std::string NewLabelTTFColorTest::title()
 {
-    return "Label() using TTF with differnt color";
+    return "Label() using TTF with color";
 }
 
 std::string NewLabelTTFColorTest::subtitle()
@@ -1767,10 +1767,12 @@ NewLabelTTFFontsTest::NewLabelTTFFontsTest()
     Size size = Director::getInstance()->getWinSize();
 
     for(int i=0;i < arraysize(ttfpaths); ++i) {
-        auto label = Label::createWithTTF( ttfpaths[i], ttfpaths[i], 28);
+        auto label = Label::createWithTTF( ttfpaths[i], ttfpaths[i], 40, GlyphCollection::NEHE);
         if( label ) {
-            label->setPosition( Point(size.width/2, size.height/arraysize(ttfpaths) * i) );
+            
+            label->setPosition( Point(size.width/2, ((size.height * 0.6)/arraysize(ttfpaths) * i) + (size.height/5)));
             addChild(label);
+            
             label->setAnchorPoint(Point(0.5, 0.5));
         } else {
             log("ERROR: Cannot load: %s", ttfpaths[i]);
@@ -1785,7 +1787,8 @@ std::string NewLabelTTFFontsTest::title()
 
 std::string NewLabelTTFFontsTest::subtitle()
 {
-    return "Uses the new Label() with non standard TTF files";
+    //return "Uses the new Label() with non standard TTF files";
+    return "";
 }
 
 //

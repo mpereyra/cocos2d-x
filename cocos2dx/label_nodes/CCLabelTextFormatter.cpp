@@ -341,7 +341,10 @@ bool LabelTextFormatter::createStringSprites(LabelTextFormatProtocol *theLabel)
         Sprite *pLetterSprite = theLabel->getSpriteForChar(c, i);
         
         if (!pLetterSprite)
+        {
+            log("WARNING: can't find letter definition in font file for letter: %c", c);
             continue;
+        }
         
         // See issue 1343. cast( signed short + unsigned integer ) == unsigned integer (sign is lost!)
         int yOffset = commonLineHeight - charYOffset;
