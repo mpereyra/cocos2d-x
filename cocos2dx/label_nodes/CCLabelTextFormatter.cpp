@@ -267,7 +267,9 @@ bool LabelTextFormatter::alignText(LabelTextFormatProtocol *theLabel)
                     if (index < 0) continue;
                     
                     Sprite* characterSprite = theLabel->getSpriteChild(index);
-                    characterSprite->setPosition(ccpAdd(characterSprite->getPosition(), ccp(shift, 0.0f)));
+                    
+					if (characterSprite)
+						characterSprite->setPosition(ccpAdd(characterSprite->getPosition(), ccp(shift, 0.0f)));
                 }
             }
             

@@ -142,7 +142,7 @@ bool CCTextureAtlas::initWithFile(const char * file, unsigned int capacity)
     CCTexture2D *texture = CCTextureCache::sharedTextureCache()->addImage(file);
 
     if (texture)
-    {
+    {   
         return initWithTexture(texture, capacity);
     }
     else
