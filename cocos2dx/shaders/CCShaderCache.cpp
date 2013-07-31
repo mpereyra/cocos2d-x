@@ -39,7 +39,6 @@ enum {
     kCCShaderType_PositionTexture_uColor,
     kCCShaderType_PositionTextureA8Color,
     kCCShaderType_Position_uColor,
-    kCCShaderType_PositionTextureColorHighlight,
     
     kCCShaderType_MAX,
 };
@@ -141,16 +140,7 @@ void CCShaderCache::loadDefaultShaders()
     loadDefaultShader(p, kCCShaderType_Position_uColor);
     
     m_pPrograms->setObject(p, kCCShader_Position_uColor);
-    p->release();
-    
-    
-    // Position Texture Color shader with highlight
-    p = new CCGLProgram();
-    loadDefaultShader(p, kCCShaderType_PositionTextureColorHighlight);
-    
-    m_pPrograms->setObject(p, kCCShader_PositionTextureColorHighlight);
-    p->release();
-
+    p->release();    
 }
 
 void CCShaderCache::reloadDefaultShaders()
@@ -200,14 +190,7 @@ void CCShaderCache::reloadDefaultShaders()
     //
     p = programForKey(kCCShader_Position_uColor);
     p->reset();
-    loadDefaultShader(p, kCCShaderType_Position_uColor);
-    
-    //
-    // Position Texture Color shader with highlight (by Daniel Dionne)
-    //
-    p = programForKey(kCCShader_PositionTextureColorHighlight);
-    p->reset();
-    loadDefaultShader(p, kCCShaderType_PositionTextureColorHighlight);
+    loadDefaultShader(p, kCCShaderType_Position_uColor);  
 }
 
 void CCShaderCache::loadDefaultShader(CCGLProgram *p, int type)
@@ -264,15 +247,6 @@ void CCShaderCache::loadDefaultShader(CCGLProgram *p, int type)
             p->addAttribute("aVertex", kCCVertexAttrib_Position);    
             
             break;
-        case kCCShaderType_PositionTextureColorHighlight:
-            p->initWithVertexShaderByteArray(ccPositionTextureColor_vert, ccPositionTextureColorHighlight_frag);
-            
-            p->addAttribute(kCCAttributeNamePosition, kCCVertexAttrib_Position);
-            p->addAttribute(kCCAttributeNameColor, kCCVertexAttrib_Color);
-            p->addAttribute(kCCAttributeNameTexCoord, kCCVertexAttrib_TexCoords);
-            
-            break;
-
         default:
             CCLOG("cocos2d: %s:%d, error shader type", __FUNCTION__, __LINE__);
             return;
