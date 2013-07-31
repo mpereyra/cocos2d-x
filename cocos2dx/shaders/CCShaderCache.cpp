@@ -200,7 +200,14 @@ void CCShaderCache::reloadDefaultShaders()
     //
     p = programForKey(kCCShader_Position_uColor);
     p->reset();
-    loadDefaultShader(p, kCCShaderType_Position_uColor);  
+    loadDefaultShader(p, kCCShaderType_Position_uColor);
+    
+    //
+    // Position Texture Color shader with highlight (by Daniel Dionne)
+    //
+    p = programForKey(kCCShader_PositionTextureColorHighlight);
+    p->reset();
+    loadDefaultShader(p, kCCShaderType_PositionTextureColorHighlight);
 }
 
 void CCShaderCache::loadDefaultShader(CCGLProgram *p, int type)
