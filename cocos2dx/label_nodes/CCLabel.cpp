@@ -23,7 +23,6 @@
  ****************************************************************************/
 
 #include "CCLabel.h"
-#include "CCStringBMFont.h"
 #include "CCStringTTF.h"
 #include "CCFontDefinition.h"
 #include "CCFontCache.h"
@@ -76,13 +75,5 @@ Label::Label()
 Label::~Label()
 {
 }
-
-
-// TESTING STUFF THAT NEEDS TO GO ////////////////////////////////////////////////////////////////
-Label* Label::createWithBMFontOLD( const char* label, const char* bmfontFilePath, int lineSize)
-{
-   return StringBMFont::create(label, bmfontFilePath, lineSize);
-}
-//////////////////////////////////////////////////////////////////////////////////////////////////
 
 NS_CC_END

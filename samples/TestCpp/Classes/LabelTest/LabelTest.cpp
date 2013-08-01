@@ -1630,33 +1630,6 @@ void LabelBMFontBounds::draw()
     ccDrawPoly(vertices, 4, true);
 }
 
-LabelBMFontNewTest::LabelBMFontNewTest()
-{
-    Size s = Director::sharedDirector()->getWinSize();
-    
-    LayerColor *layer = LayerColor::create(Color4B(128,128,128,255));
-    addChild(layer, -10);
-    
-    // LabelBMFont
-    label1 = StringBMFont::create("Testing Glyph Designer", "fonts/boundsTestFont.fnt");
-    
-    addChild(label1);
-    label1->setPosition(ccp(s.width/2, s.height/2));
-}
-
-void LabelBMFontNewTest::draw()
-{
-}
-std::string LabelBMFontNewTest::title()
-{
-    return "New LabelBMFont";
-}
-
-std::string LabelBMFontNewTest::subtitle()
-{
-    return "Testing the new LabelBMFont";
-}
-
 ///
 
 //
@@ -1898,41 +1871,8 @@ std::string NewLabelBMFontTest::subtitle()
     return "Uses the new Label() with BMFont";
 }
 
-
-
 //
-/// NEW LABEL with BMFont
-//
-NewLabelBMFontTestOld::NewLabelBMFontTestOld()
-{
-    Size size = Director::getInstance()->getWinSize();
-    
-    label = Label::createWithBMFontOLD("Hello world, this uses new label with FTN file", "fonts/bitmapFontTest2.fnt", size.width);
-    label->setPosition( Point(size.width/2, size.height/2) );
-    label->setAnchorPoint(Point(0.5, 0.5));
-    label->retain();
-    addChild(label);
-}
-
-NewLabelBMFontTestOld::~NewLabelBMFontTestOld()
-{
-    CC_SAFE_RELEASE(label);
-}
-
-std::string NewLabelBMFontTestOld::title()
-{
-    return "Label() using BMFont OLD";
-}
-
-std::string NewLabelBMFontTestOld::subtitle()
-{
-    return "Uses the new Label() with BMFont OLD";
-}
-
-
-
-//
-/// NEW LABEL with FontDefinition
+// NEW LABEL with FontDefinition
 //
 NewLabelFontDefTest::NewLabelFontDefTest()
 {

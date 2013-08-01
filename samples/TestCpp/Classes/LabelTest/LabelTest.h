@@ -303,18 +303,6 @@ private:
     LabelBMFont *label1;
 };
 
-class LabelBMFontNewTest : public AtlasDemo
-{
-public:
-    LabelBMFontNewTest();
-    
-    virtual void draw();
-    virtual std::string title();
-    virtual std::string subtitle();
-private:
-    StringBMFont *label1;
-};
-
 class NewLabelTTFTestLongLine : public AtlasDemo
 {
 public:
@@ -388,22 +376,6 @@ public:
 
 private:
 };
-
-
-class NewLabelBMFontTestOld : public AtlasDemo
-{
-public:
-    
-    NewLabelBMFontTestOld();
-    ~NewLabelBMFontTestOld();
-    
-    virtual std::string title();
-    virtual std::string subtitle();
-    
-private:
-    Label *label;
-};
-
 
 class NewLabelFontDefTest : public AtlasDemo
 {
