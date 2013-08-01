@@ -5393,15 +5393,6 @@
 			path = lib;
 			sourceTree = "<group>";
 		};
-		A07A52C81784AC360073F6A7 /* etc */ = {
-			isa = PBXGroup;
-			children = (
-				A07A52C91784AC360073F6A7 /* etc1.cpp */,
-				A07A52CA1784AC360073F6A7 /* etc1.h */,
-			);
-			path = etc;
-			sourceTree = "<group>";
-		};
 		A0C80A791799DBA4002532D9 /* NewLabel_Experimental */ = {
 			isa = PBXGroup;
 			children = (

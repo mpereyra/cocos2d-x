@@ -46,6 +46,10 @@ protected:
     FontFNT(CCBMFontConfiguration *theContfig) :  _configuration(theContfig) {}
     virtual ~FontFNT();
     
+    
+    // texture stuff
+    virtual FontAtlas *createFontAtlas();
+    
 private:
     
     int  getAdvanceForChar(unsigned short theChar);
