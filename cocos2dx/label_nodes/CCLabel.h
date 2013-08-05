@@ -79,8 +79,8 @@ public:
     virtual void setCascadeColorEnabled(bool cascadeColorEnabled);
     virtual const Color3B& getColor(void) const;
     virtual const Color3B& getDisplayedColor() const;
-    virtual unsigned char  getOpacity() const;
-    virtual unsigned char  getDisplayedOpacity() const;
+    virtual unsigned char getOpacity() const;
+    virtual unsigned char getDisplayedOpacity() const;
     
      // CCLabelTextFormat protocol implementation
     virtual Sprite *                    getSpriteChild(int ID);

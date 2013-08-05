@@ -36,6 +36,11 @@ FontFNT * FontFNT::create(const char* fntFilePath)
     return tempFont;
 }
 
+FontFNT * FontFNT::create(CCBMFontConfiguration *theContfig)
+{
+    return new FontFNT(theContfig);
+}
+
 FontFNT::~FontFNT()
 {
     if (_configuration)
