@@ -375,10 +375,4 @@ int FontFreeType::getLetterPadding()
     return _letterPadding;
 }
 
-FontAtlas * FontFreeType::createFontAtlas()
-{
-    return nullptr;
-}
-
-
 NS_CC_END

@@ -191,6 +191,7 @@ bool TextImage::initWithString(const char *text, int nWidth, int nHeight, cocos2
     
     return true;
 }
+ */
 
 bool TextImage::createPageDefinitions(unsigned short int *inText, int imageWidth, int imageHeight, int lineHeight)
 {
