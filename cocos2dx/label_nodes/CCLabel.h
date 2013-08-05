@@ -65,7 +65,10 @@ public:
     virtual void setScale(float scale);
     virtual void setScaleX(float scaleX);
     virtual void setScaleY(float scaleY);
-
+    
+    // carloX 
+    const char * getString() const { return "not implemented"; }
+    
     // RGBAProtocol
     virtual bool isOpacityModifyRGB() const;
     virtual void setOpacityModifyRGB(bool isOpacityModifyRGB);
@@ -79,8 +82,8 @@ public:
     virtual void setCascadeColorEnabled(bool cascadeColorEnabled);
     virtual const Color3B& getColor(void) const;
     virtual const Color3B& getDisplayedColor() const;
-    virtual unsigned char getOpacity() const;
-    virtual unsigned char getDisplayedOpacity() const;
+    virtual unsigned char  getOpacity() const;
+    virtual unsigned char  getDisplayedOpacity() const;
     
      // CCLabelTextFormat protocol implementation
     virtual Sprite *                    getSpriteChild(int ID);
