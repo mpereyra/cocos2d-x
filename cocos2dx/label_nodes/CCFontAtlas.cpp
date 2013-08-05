@@ -27,11 +27,8 @@ void FontAtlas::relaseTextures()
 {
     for( auto &item: _atlasTextures)
     {
-        if ( item.second )
-            item.second->release();
+        item.second.release();
     }
-
-    _atlasTextures.clear();
 }
 
 void FontAtlas::addLetterDefinition(const FontLetterDefinition &letterDefinition)
@@ -57,10 +54,10 @@ bool FontAtlas::getLetterDefinitionForChar(unsigned short  letteCharUTF16, FontL
 void FontAtlas::addTexture(Texture2D &texture, int slot)
 {
     texture.retain();
-    _atlasTextures[slot] = &texture;
+    _atlasTextures[slot] = texture;
 }
 
-Texture2D & FontAtlas::getTexture(int slot) 
+Texture2D & FontAtlas::getTexture(int slot)
 {
     return *(_atlasTextures[slot]);
 }
@@ -75,18 +72,7 @@ void  FontAtlas::setCommonLineHeight(float newHeight)
     _commonLineHeight = newHeight;
 }
 
-unsigned short int * FontAtlas::getUTF16Text(const char *pText, int &outNumLetters) const
-{
-    unsigned short* utf16String = cc_utf8_to_utf16(pText);
-    
-    if(!utf16String)
-        return 0;
-    
-    outNumLetters = cc_wcslen(utf16String);
-    return utf16String;
-}
-
-Font & FontAtlas::getFont() const
+Font * FontAtlas::getFont()
 {
     return _font;
 }
