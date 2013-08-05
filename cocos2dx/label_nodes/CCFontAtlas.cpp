@@ -27,7 +27,7 @@ void FontAtlas::relaseTextures()
 {
     for( auto &item: _atlasTextures)
     {
-        item.second.release();
+        item.second->release();
     }
 }
 
@@ -51,13 +51,13 @@ bool FontAtlas::getLetterDefinitionForChar(unsigned short  letteCharUTF16, FontL
     }
 }
 
-void FontAtlas::addTexture(Texture2D &texture, int slot)
+void FontAtlas::addTexture(Texture2D *texture, int slot)
 {
-    texture.retain();
+    texture->retain();
     _atlasTextures[slot] = texture;
 }
 
-Texture2D & FontAtlas::getTexture(int slot)
+Texture2D * FontAtlas::getTexture(int slot)
 {
     return *(_atlasTextures[slot]);
 }
