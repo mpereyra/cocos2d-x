@@ -67,7 +67,7 @@ public:
 private:
     
     void relaseTextures();
-    std::map<int, Texture2D &>                      _atlasTextures;
+    std::map<int, Texture2D *>                      _atlasTextures;
     std::map<unsigned short, FontLetterDefinition>  _fontLetterDefinitions;
     float                                           _commonLineHeight;
     Font &                                          _font;

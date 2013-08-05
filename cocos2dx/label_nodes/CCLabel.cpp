@@ -161,7 +161,7 @@ bool Label::setText(const char *stringToRender, float lineWidth, TextHAlignment 
         return false;
     
     numLetter = cc_wcslen(utf16String);
-    SpriteBatchNode::initWithTexture(&_fontAtlas->getTexture(0), numLetter);
+    SpriteBatchNode::initWithTexture(_fontAtlas->getTexture(0), numLetter);
     _cascadeColorEnabled = true;
     
     //
