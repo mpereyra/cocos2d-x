@@ -50,17 +50,18 @@ class CC_DLL FontAtlas : public Object
     
 public:
     
-    FontAtlas(Font &theFont);
+    FontAtlas(Font *theFont);
     virtual ~FontAtlas();
     
-    void addLetterDefinition(const FontLetterDefinition &letterDefinition);
-    bool getLetterDefinitionForChar(unsigned short  letteCharUTF16, FontLetterDefinition &outDefinition) const;
-    void addTexture(Texture2D &texture, int slot);
-    Texture2D & getTexture(int slot);
+    void addLetterDefinition(FontLetterDefinition &letterDefinition);
+    FontLetterDefinition * getLetterDefinitionForChar(unsigned short  letteCharUTF16);
+    
+    void  addTexture(Texture2D *pTexture, int slot);
+    float getCommonLineHeight();
     void  setCommonLineHeight(float newHeight);
-    float getCommonLineHeight() const;
-    unsigned short int * getUTF16Text(const char *pText, int &outNumLetters) const;
-    Font & getFont() const;
+    Texture2D * getTexture(int slot);
+    Font      * getFont();
+    unsigned short int * getUTF16Text(const char *pText, int &outNumLetters);
     
 private:
     
@@ -68,7 +69,7 @@ private:
     std::map<int, Texture2D *>                      _atlasTextures;
     std::map<unsigned short, FontLetterDefinition>  _fontLetterDefinitions;
     float                                           _commonLineHeight;
-    Font &                                          _font;
+    Font *                                          _font;
 
 };
 
