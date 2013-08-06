@@ -23,11 +23,8 @@
  ****************************************************************************/
 
 #include "cocos2d.h"
-#include "CCFontDefinition.h"
 
 NS_CC_BEGIN
-
-const int FontDefinitionTTF::_DEFAUL_ATALS_TEXTURE_SIZE = 1024;
 
 const int FontDefinitionTTF::_DEFAUL_ATALS_TEXTURE_SIZE = 1024;
 
