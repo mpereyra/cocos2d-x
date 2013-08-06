@@ -29,6 +29,8 @@ NS_CC_BEGIN
 
 const int FontDefinitionTTF::_DEFAUL_ATALS_TEXTURE_SIZE = 1024;
 
+const int FontDefinitionTTF::_DEFAUL_ATALS_TEXTURE_SIZE = 1024;
+
 FontDefinitionTTF::FontDefinitionTTF():_textImages(0), _commonLineHeight(0)
 {
 }
