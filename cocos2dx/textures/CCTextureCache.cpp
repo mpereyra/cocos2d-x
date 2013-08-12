@@ -273,7 +273,7 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target, SEL_CallF
     }
 
     // lazy init
-    if (s_pSem == NULL)
+    if (_asyncStructQueue == NULL)
     {             
 #if CC_ASYNC_TEXTURE_CACHE_USE_NAMED_SEMAPHORE
         s_pSem = sem_open(CC_ASYNC_TEXTURE_CACHE_SEMAPHORE, O_CREAT, 0644, 0);
