@@ -52,7 +52,16 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		01A130DD178F218400FF1249 /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01A130DC178F218400FF1249 /* CoreText.framework */; };
+		018DB85017B41BD9006EC77B /* LabelTestNew.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 018DB84C17B419BA006EC77B /* LabelTestNew.cpp */; };
+		018DB85117B41BDB006EC77B /* LabelTestNew.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 018DB84C17B419BA006EC77B /* LabelTestNew.cpp */; };
+		15A055AD17966C350040AC39 /* Deprecated.lua in Resources */ = {isa = PBXBuildFile; fileRef = 15A055AC17966C350040AC39 /* Deprecated.lua */; };
+		15A055AE17966C350040AC39 /* Deprecated.lua in Resources */ = {isa = PBXBuildFile; fileRef = 15A055AC17966C350040AC39 /* Deprecated.lua */; };
+		15A055AF17966C350040AC39 /* Deprecated.lua in Resources */ = {isa = PBXBuildFile; fileRef = 15A055AC17966C350040AC39 /* Deprecated.lua */; };
+		15A055B017966C350040AC39 /* Deprecated.lua in Resources */ = {isa = PBXBuildFile; fileRef = 15A055AC17966C350040AC39 /* Deprecated.lua */; };
+		15A055C2179E25050040AC39 /* DrawPrimitives.lua in Resources */ = {isa = PBXBuildFile; fileRef = 15A055C1179E25050040AC39 /* DrawPrimitives.lua */; };
+		15A055C3179E25050040AC39 /* DrawPrimitives.lua in Resources */ = {isa = PBXBuildFile; fileRef = 15A055C1179E25050040AC39 /* DrawPrimitives.lua */; };
+		15A055C4179E25050040AC39 /* DrawPrimitives.lua in Resources */ = {isa = PBXBuildFile; fileRef = 15A055C1179E25050040AC39 /* DrawPrimitives.lua */; };
+		15A055C5179E25050040AC39 /* DrawPrimitives.lua in Resources */ = {isa = PBXBuildFile; fileRef = 15A055C1179E25050040AC39 /* DrawPrimitives.lua */; };
 		15C64825165F3934007D4F18 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15C64824165F3934007D4F18 /* OpenGL.framework */; };
 		15C64827165F394E007D4F18 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15C64826165F394E007D4F18 /* QuartzCore.framework */; };
 		15C64829165F396B007D4F18 /* OpenAL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15C64828165F396B007D4F18 /* OpenAL.framework */; };
@@ -2266,6 +2275,10 @@
 
 /* Begin PBXFileReference section */
 		01A130DC178F218400FF1249 /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.1.sdk/System/Library/Frameworks/CoreText.framework; sourceTree = DEVELOPER_DIR; };
+		018DB84C17B419BA006EC77B /* LabelTestNew.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LabelTestNew.cpp; sourceTree = "<group>"; };
+		018DB84D17B419BA006EC77B /* LabelTestNew.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LabelTestNew.h; sourceTree = "<group>"; };
+		15A055AC17966C350040AC39 /* Deprecated.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = Deprecated.lua; path = ../scripting/lua/script/Deprecated.lua; sourceTree = "<group>"; };
+		15A055C1179E25050040AC39 /* DrawPrimitives.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = DrawPrimitives.lua; path = ../scripting/lua/script/DrawPrimitives.lua; sourceTree = "<group>"; };
 		15C64822165F391E007D4F18 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 		15C64824165F3934007D4F18 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/OpenGL.framework; sourceTree = DEVELOPER_DIR; };
 		15C64826165F394E007D4F18 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.8.sdk/System/Library/Frameworks/QuartzCore.framework; sourceTree = DEVELOPER_DIR; };
@@ -4510,6 +4523,8 @@
 		A0359A4517821D9B00987F6C /* LabelTest */ = {
 			isa = PBXGroup;
 			children = (
+				018DB84C17B419BA006EC77B /* LabelTestNew.cpp */,
+				018DB84D17B419BA006EC77B /* LabelTestNew.h */,
 				A0359A4617821D9B00987F6C /* LabelTest.cpp */,
 				A0359A4717821D9B00987F6C /* LabelTest.h */,
 			);
@@ -6912,6 +6927,9 @@
 				A0359B0A17821D9C00987F6C /* ZwoptexTest.cpp in Sources */,
 				A07A525C1783A3D90073F6A7 /* AppController.mm in Sources */,
 				A07A52601783A3D90073F6A7 /* main.m in Sources */,
+				1ACD13F3178E487D00682DBD /* Scale9SpriteTest.cpp in Sources */,
+				1A96FFCD1791701800E3AF98 /* SocketIOTest.cpp in Sources */,
+				018DB85117B41BDB006EC77B /* LabelTestNew.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -7187,6 +7205,9 @@
 				A07A52431783A3A90073F6A7 /* RootViewController.mm in Sources */,
 				A07A52441783A3A90073F6A7 /* testsAppDelegate.mm in Sources */,
 				A07A524C1783A3A90073F6A7 /* main.m in Sources */,
+				1ACD13F4178E487D00682DBD /* Scale9SpriteTest.cpp in Sources */,
+				1A96FFCE1791701800E3AF98 /* SocketIOTest.cpp in Sources */,
+				018DB85017B41BD9006EC77B /* LabelTestNew.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
