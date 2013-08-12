@@ -65,10 +65,7 @@ public:
     virtual void setScale(float scale);
     virtual void setScaleX(float scaleX);
     virtual void setScaleY(float scaleY);
-    
-    // carloX 
-    const char * getString() const { return "not implemented"; }
-    
+
     // RGBAProtocol
     virtual bool isOpacityModifyRGB() const;
     virtual void setOpacityModifyRGB(bool isOpacityModifyRGB);
