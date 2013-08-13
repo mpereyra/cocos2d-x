@@ -352,7 +352,7 @@ LabelTTFAlignment::LabelTTFAlignment()
     ttf0->setPosition(ccp(s.width/2,(s.height/6)*2));
     ttf0->setAnchorPoint(ccp(0.5f,0.5f));
     this->addChild(ttf0);
-
+    
     LabelTTF* ttf1 = LabelTTF::create("Alignment 1\nnew line", "Helvetica", 12,
                                           CCSizeMake(245, 32), TextHAlignment::CENTER);
     ttf1->setPosition(ccp(s.width/2,(s.height/6)*3));
@@ -444,7 +444,6 @@ void Atlas3::step(float dt)
     
     LabelBMFont *label3 = (LabelBMFont*) getChildByTag(kTagBitmapAtlas3);
     label3->setString(string);
-
 }
 
 std::string Atlas3::title()
