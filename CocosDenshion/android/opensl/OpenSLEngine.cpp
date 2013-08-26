@@ -1,6 +1,6 @@
 #include "OpenSLEngine.h"
 
-#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG,"OPENSL_ENGINE.CPP", __VA_ARGS__)
+#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG,"OPENSL_ENGINE.CPP", "%s", __VA_ARGS__)
 
 using namespace std;
 
