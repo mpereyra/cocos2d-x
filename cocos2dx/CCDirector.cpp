@@ -193,7 +193,7 @@ void CCDirector::setGLDefaultValues(void)
     CCAssert(m_pobOpenGLView, "opengl view should not be null");
 
     setAlphaBlending(true);
-    setDepthTest(false);
+    setDepthTest(true);
     setProjection(m_eProjection);
 
     // set other opengl default values
