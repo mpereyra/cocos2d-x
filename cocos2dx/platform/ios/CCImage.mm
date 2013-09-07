@@ -201,6 +201,8 @@ static CGSize _calculateStringSize(NSString *str, id font, CGSize *constrainSize
 
 static bool _initWithString(const char * pText, cocos2d::CCImage::ETextAlign eAlign, const char * pFontName, int nSize, tImageInfo* pInfo)
 {
+    static NSMutableDictionary *pathToFontName = [[NSMutableDictionary alloc] init];
+
     bool bRet = false;
     do 
     {
@@ -216,27 +218,37 @@ static bool _initWithString(const char * pText, cocos2d::CCImage::ETextAlign eAl
         id font;
         //Try registering a custom font from path. If this fails either we already registered the font
         //and will load up fine using postscript name or the font doesnt exists and we default to system font
-        CGDataProviderRef fontDataProvider = CGDataProviderCreateWithFilename([fntName UTF8String]);
-        if(fontDataProvider)
-        {
-            
-            CGFontRef customFont = CGFontCreateWithDataProvider(fontDataProvider);
-            fntName = (NSString *)CGFontCopyPostScriptName(customFont);
-            CGDataProviderRelease(fontDataProvider);
-            CFErrorRef error;
-            if(!CTFontManagerRegisterGraphicsFont(customFont, &error)){
-                CFStringRef errorDescription = CFErrorCopyDescription(error);
-                NSLog(@"Failed to load font: %@", errorDescription);
-                CFRelease(errorDescription);
-                CFRelease(error);
-            }
-            font = [UIFont fontWithName:fntName size:nSize];  
-            CGFontRelease(customFont);
-            CFRelease(fntName);
-         
+        bool isPath = [[fntName pathExtension] isEqualToString:@"ttf"] || [[fntName pathExtension] isEqualToString:@"otf"];
+        NSString* fullPath = fntName;
+        bool exists = true;
+        if(isPath){
+            fntName = [pathToFontName objectForKey:fntName];
+            exists = fntName != nil;
         }
-        else
-            font = [UIFont fontWithName:fntName size:nSize];
+        if(!exists){
+            CGDataProviderRef fontDataProvider = CGDataProviderCreateWithFilename([fullPath UTF8String]);
+            if(fontDataProvider)
+            {
+                
+                CGFontRef customFont = CGFontCreateWithDataProvider(fontDataProvider);
+                fntName = (NSString *)CGFontCopyPostScriptName(customFont);
+                CGDataProviderRelease(fontDataProvider);
+                CFErrorRef error;
+                if(!CTFontManagerRegisterGraphicsFont(customFont, &error)){
+                    CFStringRef errorDescription = CFErrorCopyDescription(error);
+                    NSLog(@"Failed to load font: %@", errorDescription);
+                    CFRelease(errorDescription);
+                    CFRelease(error);
+                }else{
+                    [pathToFontName setObject:fntName forKey:fullPath];
+                }
+                CGFontRelease(customFont);
+                CFRelease(fntName);
+             
+            }
+        }
+        
+        font = [UIFont fontWithName:fntName size:nSize];
         if (font)
         {
             dim = _calculateStringSize(str, font, &constrainSize);
