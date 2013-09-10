@@ -39,7 +39,7 @@ THE SOFTWARE.
 #include "cocoa/CCDictionary.h"
 #include <vector>
 // BPC PATCH START ewww :(
-#include "../../../shared/ImageManager.h"
+#include "../../../shared/core/ImageManager.h"
 // BPC PATCH END
 
 using namespace std;
