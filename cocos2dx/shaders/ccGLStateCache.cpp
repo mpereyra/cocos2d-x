@@ -39,6 +39,7 @@ static GLuint    s_uCurrentProjectionMatrix = -1;
 static bool        s_bVertexAttribPosition = false;
 static bool        s_bVertexAttribColor = false;
 static bool        s_bVertexAttribTexCoords = false;
+static bool        s_bVertexAttribNormal = false;
 
 
 #if CC_ENABLE_GL_STATE_CACHE
@@ -63,6 +64,7 @@ void ccGLInvalidateStateCache( void )
     s_bVertexAttribPosition = false;
     s_bVertexAttribColor = false;
     s_bVertexAttribTexCoords = false;
+    s_bVertexAttribNormal = false;
 #if CC_ENABLE_GL_STATE_CACHE
     s_uCurrentShaderProgram = -1;
     for( int i=0; i < kCCMaxActiveTexture; i++ )
@@ -222,6 +224,18 @@ void ccGLEnableVertexAttribs( unsigned int flags )
             glDisableVertexAttribArray( kCCVertexAttrib_TexCoords );
 
         s_bVertexAttribTexCoords = enableTexCoords;
+    }
+
+    /* Normal */
+    bool enableNormal = (flags & kCCVertexAttribFlag_Normal) != 0 ? true : false;
+
+    if( enableNormal != s_bVertexAttribNormal ) {
+        if( enableNormal )
+            glEnableVertexAttribArray( kCCVertexAttrib_Normal );
+        else
+            glDisableVertexAttribArray( kCCVertexAttrib_Normal );
+
+        s_bVertexAttribNormal = enableNormal;
     }
 }
 
