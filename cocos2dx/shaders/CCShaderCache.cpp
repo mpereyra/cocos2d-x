@@ -269,14 +269,6 @@ void CCShaderCache::loadDefaultShader(CCGLProgram *p, int type)
             p->addAttribute("aVertex", kCCVertexAttrib_Position);    
             
             break;
-        case kCCShaderNormal:
-            p->initWithVertexShaderByteArray(ccNormal_vert, ccNormal_frag);
-
-            p->addAttribute(kCCAttributeNamePosition, kCCVertexAttrib_Position);
-            p->addAttribute(kCCAttributeNameNormal, kCCVertexAttrib_Normal);
-            p->addAttribute(kCCAttributeNameTexCoord, kCCVertexAttrib_TexCoords);
-
-            break;
         case kCCShaderType_PositionTextureColorHighlight:
             p->initWithVertexShaderByteArray(ccPositionTextureColor_vert, ccPositionTextureColorHighlight_frag);
             
