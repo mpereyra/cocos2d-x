@@ -276,13 +276,15 @@
 		41CD6C4515BF7382005E6F29 /* CCWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = 41CD6C3215BF7382005E6F29 /* CCWindow.m */; };
 		41CD6C4615BF7382005E6F29 /* EAGLView.h in Headers */ = {isa = PBXBuildFile; fileRef = 41CD6C3315BF7382005E6F29 /* EAGLView.h */; };
 		41CD6C4715BF7382005E6F29 /* EAGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 41CD6C3415BF7382005E6F29 /* EAGLView.mm */; };
+		B4B849BE17ED6E1C00E5DB53 /* tcUTF8.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B4B849BC17ED6E1C00E5DB53 /* tcUTF8.cpp */; };
+		B4B849BF17ED6E1C00E5DB53 /* tcUTF8.h in Headers */ = {isa = PBXBuildFile; fileRef = B4B849BD17ED6E1C00E5DB53 /* tcUTF8.h */; };
 		F4D7A74715F269D10081CE26 /* ccTypeInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = F4D7A74615F269D10081CE26 /* ccTypeInfo.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		154269DA15B5653000712A7F /* CCNotificationCenter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCNotificationCenter.cpp; sourceTree = "<group>"; };
 		154269DB15B5653000712A7F /* CCNotificationCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCNotificationCenter.h; sourceTree = "<group>"; };
-		1551A33F158F2AB200E66CFE /* libcocos2dx.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcocos2dx.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		1551A33F158F2AB200E66CFE /* libcocos2dx.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = libcocos2dx.a; path = "libcocos2dx-mac.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1551A342158F2AB200E66CFE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1551A355158F2ADE00E66CFE /* CCAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCAction.cpp; sourceTree = "<group>"; };
 		1551A356158F2ADE00E66CFE /* CCAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCAction.h; sourceTree = "<group>"; };
@@ -552,6 +554,8 @@
 		41CD6C3215BF7382005E6F29 /* CCWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCWindow.m; sourceTree = "<group>"; };
 		41CD6C3315BF7382005E6F29 /* EAGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EAGLView.h; sourceTree = "<group>"; };
 		41CD6C3415BF7382005E6F29 /* EAGLView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EAGLView.mm; sourceTree = "<group>"; };
+		B4B849BC17ED6E1C00E5DB53 /* tcUTF8.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tcUTF8.cpp; sourceTree = "<group>"; };
+		B4B849BD17ED6E1C00E5DB53 /* tcUTF8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tcUTF8.h; sourceTree = "<group>"; };
 		F4D7A74615F269D10081CE26 /* ccTypeInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ccTypeInfo.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -968,6 +972,8 @@
 		1551A5E7158F2ADE00E66CFE /* support */ = {
 			isa = PBXGroup;
 			children = (
+				B4B849BC17ED6E1C00E5DB53 /* tcUTF8.cpp */,
+				B4B849BD17ED6E1C00E5DB53 /* tcUTF8.h */,
 				154269DA15B5653000712A7F /* CCNotificationCenter.cpp */,
 				154269DB15B5653000712A7F /* CCNotificationCenter.h */,
 				1551A5E8158F2ADE00E66CFE /* base64.cpp */,
@@ -1270,6 +1276,7 @@
 				41CD6C4415BF7382005E6F29 /* CCWindow.h in Headers */,
 				41CD6C4615BF7382005E6F29 /* EAGLView.h in Headers */,
 				F4D7A74715F269D10081CE26 /* ccTypeInfo.h in Headers */,
+				B4B849BF17ED6E1C00E5DB53 /* tcUTF8.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1441,6 +1448,7 @@
 				41CD6C4715BF7382005E6F29 /* EAGLView.mm in Sources */,
 				41BC70B915BF7EA2006A0A6C /* CCThread.mm in Sources */,
 				15842A2615CF6C42006B033F /* CCTouch.cpp in Sources */,
+				B4B849BE17ED6E1C00E5DB53 /* tcUTF8.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
