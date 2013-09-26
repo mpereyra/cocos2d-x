@@ -176,6 +176,10 @@ bool CCTexture2D::hasPremultipliedAlpha()
     return m_bHasPremultipliedAlpha;
 }
 
+void CCTexture2D::setHasPremultipliedAlpha(bool hasPMA) {
+    m_bHasPremultipliedAlpha = hasPMA;
+}
+
 bool CCTexture2D::initWithData(const void *data, CCTexture2DPixelFormat pixelFormat, unsigned int pixelsWide, unsigned int pixelsHigh, const CCSize& contentSize)
 {
     // XXX: 32 bits or POT textures uses UNPACK of 4 (is this correct ??? )
