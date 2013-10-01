@@ -28,6 +28,7 @@ THE SOFTWARE.
 #import <CoreText/CoreText.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import <cmath>
 
 typedef struct
 {
@@ -190,6 +191,11 @@ static CGSize _calculateStringSize(NSString *str, id font, CGSize *constrainSize
         
         dim.height += tmp.height;
     }
+    
+    /* BPC_PATCH for CGBitmapContextCreate error in iOS7 / xCode5 */
+    dim.height= std::ceil(dim.height);
+    dim.width= std::ceil(dim.width);
+    /* End BPC_PATCH for CGBitmapContextCreate error in iOS7 / xCode5 */
     
     return dim;
 }
