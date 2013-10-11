@@ -215,8 +215,10 @@ class CC_DLL CCCallFunc : public CCActionInstant //<NSCopying>
 public:
     CCCallFunc()
         : m_pSelectorTarget(NULL)
-        , m_pCallFunc(NULL)
+    /* BPC PATCH - Swapped order of the initializers below to avoid warnings */
 		, m_nScriptHandler(0)
+		, m_pCallFunc(NULL)
+    /* END BPC PATCH */
     {
     }
     virtual ~CCCallFunc()
