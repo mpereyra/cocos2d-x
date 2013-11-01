@@ -26,6 +26,7 @@ THE SOFTWARE.
 
 #include "CCTextureCache.h"
 #include "CCTexture2D.h"
+#include "CCTexturePVR.h"
 #include "ccMacros.h"
 #include "CCDirector.h"
 #include "platform/platform.h"
@@ -61,6 +62,7 @@ typedef struct _ImageInfo
 {
     AsyncStruct *asyncStruct;
     CCImage        *image;
+    class CCTexturePVR *pvrTexture;
     CCImage::EImageFormat imageType;
 } ImageInfo;
 
@@ -147,32 +149,55 @@ static void* loadImage(void* data)
             pthread_mutex_unlock(&s_asyncStructQueueMutex);
         }        
 
-        const char *filename = pAsyncStruct->filename.c_str();
-        
-        // compute image type
-        CCImage::EImageFormat imageType = computeImageFormatType(pAsyncStruct->filename);
-        if (imageType == CCImage::kFmtUnKnown)
+        /* PVR is special case. */
+        CCTexturePVR *pvr(NULL);
+        CCImage *pImage(NULL);
+        CCImage::EImageFormat imageType(CCImage::kFmtUnKnown);
+        if(pAsyncStruct->filename.find(".pvr") != std::string::npos)
         {
-            CCLOG("unsupported format %s",filename);
+          /* PVR textures are loaded from disk on this (background) thread
+           * and then their GL names will be generated once they get pulled
+           * out onto the main thread. */
+          pvr = new CCTexturePVR;
+          if(!pvr->initWithContentsOfFileAsync(pAsyncStruct->filename.c_str()))
+          {
+            CCLOG("unable to load PVR %s", pAsyncStruct->filename.c_str());
+            delete pvr;
             delete pAsyncStruct;
-            
             continue;
+          }
         }
-        
-        // generate image            
-        CCImage *pImage = new CCImage();
-        CCLOG("filename: %s", filename);
-        if (! pImage->initWithImageFileThreadSafe(filename, imageType))
+        else
         {
-            delete pImage;
-            CCLOG("can not load %s", filename);
-            continue;
+          const char *filename = pAsyncStruct->filename.c_str();
+          
+          // compute image type
+          imageType = computeImageFormatType(pAsyncStruct->filename);
+          if (imageType == CCImage::kFmtUnKnown)
+          {
+              CCLOG("unsupported format %s",filename);
+              delete pAsyncStruct;
+              
+              continue;
+          }
+          
+          // generate image            
+          pImage = new CCImage();
+          CCLOG("filename: %s", filename);
+          if (! pImage->initWithImageFileThreadSafe(filename, imageType))
+          {
+              delete pImage;
+              delete pAsyncStruct;
+              CCLOG("can not load %s", filename);
+              continue;
+          }
         }
 
         // generate image info
         ImageInfo *pImageInfo = new ImageInfo();
         pImageInfo->asyncStruct = pAsyncStruct;
         pImageInfo->image = pImage;
+        pImageInfo->pvrTexture = pvr;
         pImageInfo->imageType = imageType;
 
         // put the image info into the queue
@@ -276,34 +301,33 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target, SEL_CallF
     }
 
     /* BPC Patch */
-    pthread_mutex_lock(&s_ImageInfoMutex);
-    // Search for an existing texture in the AsyncStructQueue with the
-    // same filename
-    list<ImageInfo*> *imagesQueue = s_pImageQueue;
 
-    if (imagesQueue && imagesQueue->empty())
+    pthread_mutex_lock(&s_ImageInfoMutex);
+    /* Search for an existing texture in the AsyncStructQueue with the same filename. */
+    std::list<ImageInfo*> * const imagesQueue(s_pImageQueue);
+    if(imagesQueue && !imagesQueue->empty())
     {
-        pthread_mutex_unlock(&s_ImageInfoMutex);
-    }
-    else if(imagesQueue)
-    {
-        list<ImageInfo*>::iterator imageQueueIter = imagesQueue->begin();
-        for(;imageQueueIter!=imagesQueue->end();++imageQueueIter) {
-            AsyncStruct *pAsyncStruct = (*imageQueueIter)->asyncStruct;
-            const string &filename = pAsyncStruct->filename;
-            if(filename.compare(path)==0) {
-                // We have multiple requests for the same file.
-                Functor f(target,selector);
+        /* Allow for multiple callbacks per file. */
+        std::list<ImageInfo*>::iterator imageQueueIter(imagesQueue->begin());
+        for(; imageQueueIter != imagesQueue->end(); ++imageQueueIter) {
+            AsyncStruct * const pAsyncStruct((*imageQueueIter)->asyncStruct);
+            std::string const &filename(pAsyncStruct->filename);
+
+            if(filename == path) {
+                /* We have multiple requests for the same file. */
+                Functor const f(target,selector);
                 pAsyncStruct->functors.push_back(f);
+                
+                target->retain();
+
                 pthread_mutex_unlock(&s_ImageInfoMutex);
                 return;
             }
         }
     }
-
     pthread_mutex_unlock(&s_ImageInfoMutex);
 
-    /*end BPC patch*/
+    /* End BPC Patch */
     
     // lazy init
     if (s_pSem == NULL)
@@ -361,6 +385,33 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target, SEL_CallF
     sem_post(s_pSem);
 }
 
+void CCTextureCache::removeAsyncImage(CCObject * const target)
+{
+    pthread_mutex_lock(&s_ImageInfoMutex);
+
+    std::list<ImageInfo*> * const imagesQueue(s_pImageQueue);
+    if(imagesQueue && !imagesQueue->empty())
+    {
+      std::list<ImageInfo*>::iterator imageQueueIter(imagesQueue->begin());
+      for(; imageQueueIter != imagesQueue->end(); ++imageQueueIter) {
+        AsyncStruct * const pAsyncStruct((*imageQueueIter)->asyncStruct);
+        std::vector<Functor>::iterator it(pAsyncStruct->functors.begin());
+
+        /* Search for a selector matching the target. */
+        for(; it != pAsyncStruct->functors.end(); ++it) {
+          if(it->first == target) {
+            it->first->release();
+            pAsyncStruct->functors.erase(it--);
+            /* ... continue along, should any other functors
+             * reference the target. */
+          }
+        }
+      }
+    }
+
+    pthread_mutex_unlock(&s_ImageInfoMutex);
+}
+
 void CCTextureCache::addImageAsyncCallBack(float dt)
 {
     pthread_mutex_lock(&s_ImageInfoMutex);
@@ -384,12 +435,26 @@ void CCTextureCache::addImageAsyncCallBack(float dt)
             const char* filename = pAsyncStruct->filename.c_str();
 
             // generate texture in render thread
-            CCTexture2D *texture = new CCTexture2D();
+            CCTexturePVR *pvrTexture(pImageInfo->pvrTexture);
+            CCTexture2D *texture(new CCTexture2D);
+            if(!pvrTexture)
+            {
 #if 0 //TODO: (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-            texture->initWithImage(pImage, kCCResolutioniPhone);
+              texture->initWithImage(pImage, kCCResolutioniPhone);
 #else
-            texture->initWithImage(pImage);
+              texture->initWithImage(pImage);
 #endif
+            }
+            else
+            {
+              /* The PVR was created on a separate thread, so it knows no
+               * GL name yet. Try to create that now. */
+              if(pvrTexture->createGLTexture())
+              { texture->initWithPVRTexture(pvrTexture); }
+              pvrTexture->deleteData();
+              delete pvrTexture;
+              pvrTexture = NULL;
+            }
 
 #if CC_ENABLE_CACHE_TEXTURE_DATA
             // cache the texture file name
@@ -411,7 +476,8 @@ void CCTextureCache::addImageAsyncCallBack(float dt)
                 pAsyncStruct->functors.pop_back();
             }
 
-            pImage->release();
+            if(pImage)
+            { pImage->release(); }
             delete pAsyncStruct;
             delete pImageInfo;
 

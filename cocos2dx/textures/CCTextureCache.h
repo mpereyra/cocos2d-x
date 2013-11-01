@@ -98,6 +98,10 @@ public:
     
     void addImageAsync(const char *path, CCObject *target, SEL_CallFuncO selector);
 
+    /*** BPC Patch ***
+     * Removes an asynchronous request for an image, should the target no longer care about it. */
+    void removeAsyncImage(CCObject * const target);
+
     /* Returns a Texture2D object given an CGImageRef image
     * If the image was not previously loaded, it will create a new CCTexture2D object and it will return it.
     * Otherwise it will return a reference of a previously loaded image

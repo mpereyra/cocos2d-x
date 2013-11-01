@@ -150,6 +150,7 @@ public:
     
     /** Initializes a texture from a PVR file */
     bool initWithPVRFile(const char* file);
+    bool initWithPVRTexture(class CCTexturePVR * const texture);
     
 #ifdef ANDROID
     //BPC PATCH

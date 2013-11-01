@@ -85,6 +85,8 @@ public:
 
     /** initializes a CCTexturePVR with a path */
     bool initWithContentsOfFile(const char* path);
+    bool initWithContentsOfFileAsync(char const * const path);
+    bool createGLTexture();
 
     /** creates and initializes a CCTexturePVR with a path 
      @deprecated This interface will be deprecated when js-binding is stable. */
@@ -102,15 +104,16 @@ public:
     inline CCTexture2DPixelFormat getFormat() { return m_eFormat; }
     inline bool isRetainName() { return m_bRetainName; }
     inline void setRetainName(bool retainName) { m_bRetainName = retainName; }
+    inline void deleteData() { CC_SAFE_DELETE_ARRAY(m_pvrdata); }
 
 private:
     bool unpackPVRData(unsigned char* data, unsigned int len);
-    bool createGLTexture();
     
 protected:
     struct CCPVRMipmap m_asMipmaps[CC_PVRMIPMAP_MAX];   // pointer to mipmap images    
     unsigned int m_uNumberOfMipmaps;                    // number of mipmap used
     
+    unsigned char* m_pvrdata;
     unsigned int m_uTableFormatIndex;
     unsigned int m_uWidth, m_uHeight;
     GLuint m_uName;

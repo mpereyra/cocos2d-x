@@ -150,6 +150,9 @@ CCTexturePVR::~CCTexturePVR()
     {
         ccGLDeleteTexture(m_uName);
     }
+
+    /* Clean up any remaining PVR data. */
+    deleteData();
 }
 
 bool CCTexturePVR::unpackPVRData(unsigned char* data, unsigned int len)
@@ -388,7 +391,6 @@ bool CCTexturePVR::createGLTexture()
 
 bool CCTexturePVR::initWithContentsOfFile(const char* path)
 {
-    unsigned char* pvrdata = NULL;
     int pvrlen = 0;
     
     std::string lowerCase(path);
@@ -399,15 +401,15 @@ bool CCTexturePVR::initWithContentsOfFile(const char* path)
         
     if (lowerCase.find(".ccz") != std::string::npos)
     {
-        pvrlen = ZipUtils::ccInflateCCZFile(path, &pvrdata);
+        pvrlen = ZipUtils::ccInflateCCZFile(path, &m_pvrdata);
     }
     else if (lowerCase.find(".gz") != std::string::npos)
     {
-        pvrlen = ZipUtils::ccInflateGZipFile(path, &pvrdata);
+        pvrlen = ZipUtils::ccInflateGZipFile(path, &m_pvrdata);
     }
     else
     {
-        pvrdata = CCFileUtils::sharedFileUtils()->getFileData(path, "rb", (unsigned long *)(&pvrlen));
+        m_pvrdata = CCFileUtils::sharedFileUtils()->getFileData(path, "rb", (unsigned long *)(&pvrlen));
     }
     
     if (pvrlen < 0)
@@ -424,14 +426,64 @@ bool CCTexturePVR::initWithContentsOfFile(const char* path)
 
     m_bRetainName = false; // cocos2d integration
 
-    if (!unpackPVRData(pvrdata, pvrlen)  || !createGLTexture())
+    if (!unpackPVRData(m_pvrdata, pvrlen)  || !createGLTexture())
     {
-        CC_SAFE_DELETE_ARRAY(pvrdata);
+        deleteData();
         this->release();
         return false;
     }
 
-    CC_SAFE_DELETE_ARRAY(pvrdata);
+    deleteData();
+    
+    return true;
+}
+
+bool CCTexturePVR::initWithContentsOfFileAsync(char const * const path)
+{
+    long pvrlen(0);
+    
+    std::string lowerCase(path);
+    for(size_t i(0); i < lowerCase.length(); ++i)
+    { lowerCase[i] = tolower(lowerCase[i]); }
+        
+    if(lowerCase.find(".ccz") != std::string::npos)
+    { pvrlen = ZipUtils::ccInflateCCZFile(path, &m_pvrdata); }
+    else if(lowerCase.find(".gz") != std::string::npos)
+    { pvrlen = ZipUtils::ccInflateGZipFile(path, &m_pvrdata); }
+    else
+    {
+      m_pvrdata = CCFileUtils::sharedFileUtils()->getFileData(
+                                    path,
+                                    "rb",
+                                    reinterpret_cast<unsigned long *>(&pvrlen));
+    }
+    
+    /* getFileData wanted an unsigned long, we gave it a long. If it shows up as
+     * negative here, it could just be a number larger than long supports. */
+    if(pvrlen < 0)
+    {
+        deleteData();
+        release();
+        return false;
+    }
+    
+    m_uNumberOfMipmaps = 0;
+    m_uName = 0;
+    m_uWidth = m_uHeight = 0;
+    m_bHasAlpha = false;
+    m_bRetainName = false;
+
+    /* Defer the creation of the GL name until we're on the
+     * main thread. */
+    if(!unpackPVRData(m_pvrdata, pvrlen))
+    {
+        deleteData();
+        release();
+        return false;
+    }
+
+    /* Keep our GL texture name alive, even after we're destroyed. */
+    setRetainName(true);
     
     return true;
 }
