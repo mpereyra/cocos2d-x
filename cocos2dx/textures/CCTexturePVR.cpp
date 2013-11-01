@@ -440,7 +440,8 @@ bool CCTexturePVR::initWithContentsOfFile(const char* path)
 
 bool CCTexturePVR::initWithContentsOfFileAsync(char const * const path)
 {
-    long pvrlen(0);
+    int pvrlen(0);
+    unsigned long rawlen(0);
     
     std::string lowerCase(path);
     for(size_t i(0); i < lowerCase.length(); ++i)
@@ -455,17 +456,17 @@ bool CCTexturePVR::initWithContentsOfFileAsync(char const * const path)
       m_pvrdata = CCFileUtils::sharedFileUtils()->getFileData(
                                     path,
                                     "rb",
-                                    reinterpret_cast<unsigned long *>(&pvrlen));
+                                    &rawlen);
     }
     
-    /* getFileData wanted an unsigned long, we gave it a long. If it shows up as
-     * negative here, it could just be a number larger than long supports. */
     if(pvrlen < 0)
     {
         deleteData();
         release();
         return false;
     }
+    else if(pvrlen > 0)
+    { rawlen = pvrlen; }
     
     m_uNumberOfMipmaps = 0;
     m_uName = 0;
@@ -475,7 +476,7 @@ bool CCTexturePVR::initWithContentsOfFileAsync(char const * const path)
 
     /* Defer the creation of the GL name until we're on the
      * main thread. */
-    if(!unpackPVRData(m_pvrdata, pvrlen))
+    if(!unpackPVRData(m_pvrdata, rawlen))
     {
         deleteData();
         release();
