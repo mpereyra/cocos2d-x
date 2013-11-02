@@ -30,6 +30,7 @@ THE SOFTWARE.
 #include "platform/CCFileUtils.h"
 #include "unzip.h"
 #include <map>
+#include <pthread.h>
 
 NS_CC_BEGIN
 
