@@ -576,13 +576,15 @@ CCTexture2D * CCTextureCache::addDDSImage(const char* path)
         // cache the texture file name
         VolatileTexture::addImageTexture(tex, fullpath.c_str(), CCImage::kFmtDDS);
 #endif
+
+        return tex;
 	}
 	else
 	{
 		CCLOG("cocos2d: Couldn't add DDSImage:%s in CCTextureCache",key.c_str());
+        delete tex;
+        return NULL;
 	}
-    
-	return tex;
 }
 // BPC PATCH END
 #endif
