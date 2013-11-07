@@ -252,9 +252,20 @@ void CCSpriteFrameCache::addSpriteFramesWithFile(const char *pszPlist)
 			// BPC PATCH START
 			// resolve any compression formats
 			texturePath = Bpc::ImageManager::getPreferredFilename(texturePath);
-			// BPC PATCH END
-            // build texture path relative to plist file
-            texturePath = CCFileUtils::sharedFileUtils()->fullPathFromRelativeFile(texturePath.c_str(), pszPath);
+
+            // DO NOT build texture path relative to plist file;
+            // plist may be in bundle while texture path is downloaded.
+            Bpc::ImageInfo iInfo = Bpc::ImageManager::shared().findImage(texturePath);
+            if(iInfo.found)
+            {
+                texturePath = iInfo.path;
+            }
+            else //if somehow our image manager can't find it, fallback to default behavior.
+            {
+                DLog("texture not found: %s", texturePath.c_str());
+                texturePath = CCFileUtils::sharedFileUtils()->fullPathFromRelativeFile(texturePath.c_str(), pszPath);
+            }
+            // BPC PATCH END
         }
         else
         {
