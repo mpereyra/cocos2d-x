@@ -55,7 +55,6 @@ typedef pair<CCObject*,SEL_CallFuncO> Functor;
 typedef struct _AsyncStruct
 {
     std::string            filename;
-    std::vector<Functor> functors;
 } AsyncStruct;
 
 typedef struct _ImageInfo
@@ -68,6 +67,7 @@ typedef struct _ImageInfo
 
 static pthread_t s_loadingThread;
 
+static pthread_mutex_t      s_callbacksMutex;
 static pthread_mutex_t      s_asyncStructQueueMutex;
 static pthread_mutex_t      s_ImageInfoMutex;
 
@@ -90,6 +90,8 @@ static unsigned long s_nAsyncRefCount = 0;
 
 static bool need_quit = false;
 
+typedef std::map<std::string, std::vector<Functor> > Callbacks_t;
+static Callbacks_t* s_pCallbacks = NULL;
 static std::queue<AsyncStruct*>* s_pAsyncStructQueue = NULL;
 static std::list<ImageInfo*>*   s_pImageQueue = NULL;
 
@@ -146,6 +148,7 @@ static void* loadImage(void* data)
         {
             pAsyncStruct = pQueue->front();
             pQueue->pop();
+            pQueue = NULL;
             pthread_mutex_unlock(&s_asyncStructQueueMutex);
         }        
 
@@ -215,6 +218,7 @@ static void* loadImage(void* data)
         sem_destroy(s_pSem);
     #endif
         s_pSem = NULL;
+        delete s_pCallbacks;
         delete s_pAsyncStructQueue;
         delete s_pImageQueue;
     }
@@ -300,35 +304,6 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target, SEL_CallF
         return;
     }
 
-    /* BPC Patch */
-
-    pthread_mutex_lock(&s_ImageInfoMutex);
-    /* Search for an existing texture in the AsyncStructQueue with the same filename. */
-    std::list<ImageInfo*> * const imagesQueue(s_pImageQueue);
-    if(imagesQueue && !imagesQueue->empty())
-    {
-        /* Allow for multiple callbacks per file. */
-        std::list<ImageInfo*>::iterator imageQueueIter(imagesQueue->begin());
-        for(; imageQueueIter != imagesQueue->end(); ++imageQueueIter) {
-            AsyncStruct * const pAsyncStruct((*imageQueueIter)->asyncStruct);
-            std::string const &filename(pAsyncStruct->filename);
-
-            if(filename == path) {
-                /* We have multiple requests for the same file. */
-                Functor const f(target,selector);
-                pAsyncStruct->functors.push_back(f);
-                
-                target->retain();
-
-                pthread_mutex_unlock(&s_ImageInfoMutex);
-                return;
-            }
-        }
-    }
-    pthread_mutex_unlock(&s_ImageInfoMutex);
-
-    /* End BPC Patch */
-    
     // lazy init
     if (s_pSem == NULL)
     {             
@@ -349,6 +324,7 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target, SEL_CallF
         }
         s_pSem = &s_sem;
 #endif
+        s_pCallbacks = new Callbacks_t();
         s_pAsyncStructQueue = new queue<AsyncStruct*>();
         s_pImageQueue = new list<ImageInfo*>();        
         
@@ -358,6 +334,23 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target, SEL_CallF
 
         need_quit = false;
     }
+
+    /* Check early for multiple requests. */
+    pthread_mutex_lock(&s_callbacksMutex);
+    Callbacks_t::iterator const it(s_pCallbacks->find(path));
+    if(it != s_pCallbacks->end())
+    {
+      /* We have multiple requests for the same file. */
+      Functor const f(target, selector);
+      it->second.push_back(f);
+
+      target->retain();
+
+      pthread_mutex_unlock(&s_callbacksMutex);
+      return;
+    }
+    pthread_mutex_unlock(&s_callbacksMutex);
+
 
     if (0 == s_nAsyncRefCount)
     {
@@ -373,13 +366,18 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target, SEL_CallF
 
     // generate async struct
     AsyncStruct *data = new AsyncStruct();
-    data->filename = fullpath.c_str();
-    Functor functor(target,selector);
-    data->functors.push_back(functor);
+    data->filename = fullpath;
 
     // add async struct into queue
     pthread_mutex_lock(&s_asyncStructQueueMutex);
     s_pAsyncStructQueue->push(data);
+
+    /* Add callback. */
+    Functor const functor(target, selector);
+    pthread_mutex_lock(&s_callbacksMutex);
+    (*s_pCallbacks)[fullpath].push_back(functor);
+
+    pthread_mutex_unlock(&s_callbacksMutex);
     pthread_mutex_unlock(&s_asyncStructQueueMutex);
 
     sem_post(s_pSem);
@@ -387,29 +385,25 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target, SEL_CallF
 
 void CCTextureCache::removeAsyncImage(CCObject * const target)
 {
-    pthread_mutex_lock(&s_ImageInfoMutex);
+    pthread_mutex_lock(&s_callbacksMutex);
 
-    std::list<ImageInfo*> * const imagesQueue(s_pImageQueue);
-    if(imagesQueue && !imagesQueue->empty())
+    for(Callbacks_t::iterator it(s_pCallbacks->begin()); it != s_pCallbacks->end(); ++it)
     {
-      std::list<ImageInfo*>::iterator imageQueueIter(imagesQueue->begin());
-      for(; imageQueueIter != imagesQueue->end(); ++imageQueueIter) {
-        AsyncStruct * const pAsyncStruct((*imageQueueIter)->asyncStruct);
-        std::vector<Functor>::iterator it(pAsyncStruct->functors.begin());
-
+      for(std::vector<Functor>::iterator fit(it->second.begin()); fit != it->second.end(); ++fit)
+      {
         /* Search for a selector matching the target. */
-        for(; it != pAsyncStruct->functors.end(); ++it) {
-          if(it->first == target) {
-            it->first->release();
-            pAsyncStruct->functors.erase(it--);
-            /* ... continue along, should any other functors
-             * reference the target. */
-          }
+        if(fit->first == target) {
+          fit->first->release();
+          it->second.erase(fit--);
+          /* ... continue along, should any other functors
+           * reference the target. */
         }
       }
+      if(it->second.empty())
+      { s_pCallbacks->erase(it--); }
     }
 
-    pthread_mutex_unlock(&s_ImageInfoMutex);
+    pthread_mutex_unlock(&s_callbacksMutex);
 }
 
 void CCTextureCache::addImageAsyncCallBack(float dt)
@@ -464,16 +458,30 @@ void CCTextureCache::addImageAsyncCallBack(float dt)
             // cache the texture
             m_pTextures->setObject(texture, filename);
             texture->autorelease();
-            while(!pAsyncStruct->functors.empty()) {
-                Functor f = pAsyncStruct->functors.back();
-                CCObject *target = f.first;
-                SEL_CallFuncO selector = f.second;
-                if (target && selector)
+
+            pthread_mutex_lock(&s_callbacksMutex);
+            /* Get a copy of the functors and clear the original. */
+            std::vector<Functor> functors((*s_pCallbacks)[filename]);
+            (*s_pCallbacks).erase(filename);
+            pthread_mutex_unlock(&s_callbacksMutex);
+            
+            for(std::vector<Functor>::iterator it(functors.begin()); it != functors.end(); ++it)
+            {
+                /* Copy the functor and remove the original. */
+                Functor const f(*it);
+                functors.erase(it--);
+                
+                CCObject * const target(f.first);
+                SEL_CallFuncO selector(f.second);
+                if(target && selector)
                 {
                     (target->*selector)(texture);
+                    
+                    /* It's important that this was removed from the functors
+                     * collection first, since the target's dtor could look into
+                     * the functor to remove itself, thus causing a double deletion. */
                     target->release();
                 }
-                pAsyncStruct->functors.pop_back();
             }
 
             if(pImage)
