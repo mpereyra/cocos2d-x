@@ -537,7 +537,7 @@ CCTexture2D * CCTextureCache::addPVRImage(const char* path)
     {
 #if CC_ENABLE_CACHE_TEXTURE_DATA
         // cache the texture file name
-        VolatileTexture::addImageTexture(texture, fullpath.c_str(), CCImage::kFmtRawData);
+        VolatileTexture::addImageTexture(texture, fullpath.c_str(), CCImage::kFmtPVR);
 #endif
         m_pTextures->setObject(texture, key.c_str());
         texture->autorelease();
@@ -572,7 +572,7 @@ CCTexture2D * CCTextureCache::addDDSImage(const char* path)
 	{
 		m_pTextures->setObject(tex, key);
 		tex->autorelease();
-#if CC_ENABLE_CACHE_TEXTTURE_DATA
+#if CC_ENABLE_CACHE_TEXTURE_DATA
         // cache the texture file name
         VolatileTexture::addImageTexture(tex, fullpath.c_str(), CCImage::kFmtDDS);
 #endif
@@ -902,13 +902,9 @@ void VolatileTexture::reloadAllTextures()
         case kImageFile:
             {
                 CCImage image;
-                std::string lowerCase(vt->m_strFileName.c_str());
-                for (unsigned int i = 0; i < lowerCase.length(); ++i)
-                {
-                    lowerCase[i] = tolower(lowerCase[i]);
-                }
+                // BPC PATCH: changed filename comparison to format (PVR, DDS) check
 
-                if (std::string::npos != lowerCase.find(".pvr")) 
+                if (vt->m_FmtImage == CCImage::kFmtPVR)
                 {
                     CCTexture2DPixelFormat oldPixelFormat = CCTexture2D::defaultAlphaPixelFormat();
                     CCTexture2D::setDefaultAlphaPixelFormat(vt->m_PixelFormat);
@@ -916,6 +912,14 @@ void VolatileTexture::reloadAllTextures()
                     vt->texture->initWithPVRFile(vt->m_strFileName.c_str());
                     CCTexture2D::setDefaultAlphaPixelFormat(oldPixelFormat);
                 } 
+                else if (vt->m_FmtImage == CCImage::kFmtDDS)
+                {
+                    CCTexture2DPixelFormat oldPixelFormat = CCTexture2D::defaultAlphaPixelFormat();
+                    CCTexture2D::setDefaultAlphaPixelFormat(vt->m_PixelFormat);
+
+                    vt->texture->initWithDDSFile(vt->m_strFileName.c_str());
+                    CCTexture2D::setDefaultAlphaPixelFormat(oldPixelFormat);
+                }
                 else 
                 {
                     unsigned long nSize = 0;

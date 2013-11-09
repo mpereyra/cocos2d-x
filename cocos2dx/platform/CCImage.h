@@ -45,6 +45,10 @@ public:
         kFmtJpg = 0,
         kFmtPng,
         kFmtTiff,
+        // BPC PATCH
+        kFmtPVR,
+        kFmtDDS,
+        // END BPC PATCH
         kFmtRawData,
         kFmtUnKnown
     }EImageFormat;
