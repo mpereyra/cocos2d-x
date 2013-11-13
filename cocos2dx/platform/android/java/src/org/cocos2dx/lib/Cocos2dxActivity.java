@@ -57,7 +57,13 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
 
     	this.mGLSurfaceView = onCreateView();
 
-		Cocos2dxHelper.init(this, this);
+      /* Attempt to preserve our GL context. */
+      try
+      { this.mGLSurfaceView.setPreserveEGLContextOnPause(true); }
+      catch(java.lang.NoSuchMethodError e)
+      { }
+
+      Cocos2dxHelper.init(this, this);
 	}
 
 	// ===========================================================
