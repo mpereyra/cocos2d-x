@@ -470,6 +470,9 @@ CCTexture2D * CCTextureCache::addImage(const char * path)
                 else
                 {
                     CCLOG("cocos2d: Couldn't add image:%s in CCTextureCache", path);
+                    /* BPC PATCH - This was returning a pointer to an invalid texture */
+                    return NULL;
+                    /* END BPC PATCH */
                 }
             }
         } while (0);
