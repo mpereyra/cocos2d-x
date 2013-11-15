@@ -30,6 +30,7 @@ THE SOFTWARE.
 #include "platform/CCFileUtils.h"
 #include "unzip.h"
 #include <map>
+#include <pthread.h>
 
 NS_CC_BEGIN
 
@@ -297,12 +298,31 @@ struct ZipEntryInfo
 class ZipFilePrivate
 {
 public:
+    ZipFilePrivate();
+    ~ZipFilePrivate();
+    void lock();
+    void unlock();
+
     unzFile zipFile;
+    pthread_mutex_t mutex;
 
     // std::unordered_map is faster if available on the platform
     typedef std::map<std::string, struct ZipEntryInfo> FileListContainer;
     FileListContainer fileList;
 };
+
+ZipFilePrivate::ZipFilePrivate()
+  : zipFile(NULL)
+{ pthread_mutex_init(&mutex, NULL); }
+
+ZipFilePrivate::~ZipFilePrivate()
+{ pthread_mutex_destroy(&mutex); }
+
+void ZipFilePrivate::lock()
+{ pthread_mutex_lock(&mutex); }
+
+void ZipFilePrivate::unlock()
+{ pthread_mutex_unlock(&mutex); }
 
 ZipFile::ZipFile(const std::string &zipFile, const std::string &filter)
     : m_data(new ZipFilePrivate)
@@ -325,6 +345,7 @@ ZipFile::~ZipFile()
 
 bool ZipFile::setFilter(const std::string &filter)
 {
+    m_data->lock();
     bool ret = false;
     do
     {
@@ -366,11 +387,13 @@ bool ZipFile::setFilter(const std::string &filter)
 
     } while(false);
 
+    m_data->unlock();
     return ret;
 }
 
 bool ZipFile::fileExists(const std::string &fileName) const
 {
+    m_data->lock();
     bool ret = false;
     do
     {
@@ -379,11 +402,13 @@ bool ZipFile::fileExists(const std::string &fileName) const
         ret = m_data->fileList.find(fileName) != m_data->fileList.end();
     } while(false);
 
+    m_data->unlock();
     return ret;
 }
 
 unsigned char *ZipFile::getFileData(const std::string &fileName, unsigned long *pSize)
 {
+    m_data->lock();
     unsigned char * pBuffer = NULL;
     if (pSize)
     {
@@ -418,6 +443,7 @@ unsigned char *ZipFile::getFileData(const std::string &fileName, unsigned long *
         unzCloseCurrentFile(m_data->zipFile);
     } while (0);
 
+    m_data->unlock();
     return pBuffer;
 }
 

@@ -596,6 +596,25 @@ bool CCTexture2D::initWithPVRFile(const char* file)
     return bRet;
 }
 
+bool CCTexture2D::initWithPVRTexture(CCTexturePVR * const pvr)
+{
+    if(!pvr)
+      return false;
+
+    m_uName = pvr->getName();
+    m_fMaxS = 1.0f;
+    m_fMaxT = 1.0f;
+    m_uPixelsWide = pvr->getWidth();
+    m_uPixelsHigh = pvr->getHeight();
+    m_tContentSize = CCSizeMake(static_cast<float>(m_uPixelsWide),
+                                static_cast<float>(m_uPixelsHigh));
+    m_bHasPremultipliedAlpha = PVRHaveAlphaPremultiplied_;
+    m_ePixelFormat = pvr->getFormat();
+    m_bHasMipmaps = pvr->getNumberOfMipmaps() > 1;       
+
+    return true;
+}
+
 void CCTexture2D::PVRImagesHavePremultipliedAlpha(bool haveAlphaPremultiplied)
 {
     PVRHaveAlphaPremultiplied_ = haveAlphaPremultiplied;
