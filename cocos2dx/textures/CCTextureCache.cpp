@@ -436,10 +436,26 @@ void CCTextureCache::addImageAsyncCallBack(float dt)
             if(!pvrTexture)
             {
 #if 0 //TODO: (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-              texture->initWithImage(pImage, kCCResolutioniPhone);
+              bool const success(texture->initWithImage(pImage, kCCResolutioniPhone));
 #else
-              texture->initWithImage(pImage);
+              bool const success(texture->initWithImage(pImage));
 #endif
+              if(!success)
+              {
+                /* Remove this entry. */
+                pthread_mutex_lock(&s_callbacksMutex);
+                std::vector<Functor> functors((*s_pCallbacks)[pAsyncStruct->filename]);
+                (*s_pCallbacks).erase(pAsyncStruct->filename);
+                pthread_mutex_unlock(&s_callbacksMutex);
+
+                /* Schedule a placeholder for each functor. */
+                for(std::vector<Functor>::iterator it(functors.begin()); it != functors.end(); ++it)
+                { 
+                  addImageAsync("placeholder.png", it->first, it->second);
+                  it->first->release();
+                }
+                return;
+              }
             }
             else
             {
