@@ -21,13 +21,15 @@ namespace cocos2d {
         GLuint m_textureName;
         bool m_bRetainName;
         
-        bool createGLTexture();
+        void deleteData();
         
     public:
         CCTextureDXT();
         virtual ~CCTextureDXT();
         
+        bool initWithDDSAsync(CCDDS* dds);
         bool initWithDDS(CCDDS* dds);
+        static CCTextureDXT* dxtTextureWithDDSAsync(CCDDS* dds);
         static CCTextureDXT* dxtTextureWithDDS(CCDDS* dds);
         
         uint32_t getWidth() { return m_width; }
@@ -38,7 +40,8 @@ namespace cocos2d {
         bool getRetainName() { return m_bRetainName; }
         void setRetainName(bool retain) { m_bRetainName = retain; }
         
+        bool createGLTexture();
+        
     };
 }
-
 #endif

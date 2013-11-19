@@ -156,6 +156,17 @@ bool CCDDS::initWithContentsOfFile(const char* path) {
 }
 
 
+// We cannot autorelease outside the main thread
+CCDDS* CCDDS::ddsWithContentsOfFileAsync(const char* path) {
+    
+    CCDDS* newDDS = new CCDDS();
+    if(newDDS->initWithContentsOfFile(path)) {
+        return newDDS;
+    }
+    delete newDDS;
+    return NULL;
+}
+
 CCDDS* CCDDS::ddsWithContentsOfFile(const char* path) {
     
     CCDDS* newDDS = new CCDDS();

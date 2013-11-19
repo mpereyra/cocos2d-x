@@ -6,9 +6,32 @@ using namespace cocos2d;
 
 CCTextureATC::CCTextureATC() {
     m_textureName = 0;
+    m_dds = NULL;
 }
 
 CCTextureATC::~CCTextureATC() {
+    deleteData();
+}
+
+void CCTextureATC::deleteData() {
+    if(m_dds) {
+        m_dds->release();
+    }
+    m_dds = NULL;
+}
+
+// We cannot autorelease outside the main thread
+bool CCTextureATC::initWithDDSAsync(CCDDS* dds) {
+    
+    // format not correct, but avoids assert in
+    // CCTexture2D::bitsPerPixelForFormat
+    m_pixelFormat = kCCTexture2DPixelFormat_PVRTC4;
+    m_width  = dds->getHeaderInfo().width;
+    m_height = dds->getHeaderInfo().height;
+    m_glFormat = dds->getGLFormat();
+    m_dds = dds;
+    m_dds->retain();
+    return true;
 }
 
 bool CCTextureATC::initWithDDS(CCDDS* dds) {
@@ -19,7 +42,19 @@ bool CCTextureATC::initWithDDS(CCDDS* dds) {
     m_height = dds->getHeaderInfo().height;
     m_glFormat = dds->getGLFormat();
     m_dds = dds;
-    return createGLTexture();
+    bool textureCreated = createGLTexture();
+    m_dds = NULL;
+    return textureCreated;
+}
+
+// We cannot autorelease outside the main thread
+CCTextureATC* CCTextureATC::atcTextureWithDDSAsync(CCDDS* dds) {
+    CCTextureATC* newTexture = new CCTextureATC();
+    if(newTexture->initWithDDSAsync(dds)) {
+        return newTexture;
+    }
+    delete newTexture;
+    return NULL;
 }
 
 CCTextureATC* CCTextureATC::atcTextureWithDDS(CCDDS* dds) {

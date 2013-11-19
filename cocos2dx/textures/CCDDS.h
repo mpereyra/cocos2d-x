@@ -92,6 +92,7 @@ namespace cocos2d {
         bool initWithData(void* buffer, unsigned long size);
         bool initWithContentsOfFile(const char* path);
         static CCDDS* ddsWithData(void* buffer, unsigned long size);
+        static CCDDS* ddsWithContentsOfFileAsync(const char* path);
         static CCDDS* ddsWithContentsOfFile(const char* path);
         
         void* getTextureData() { return m_textureData; }
