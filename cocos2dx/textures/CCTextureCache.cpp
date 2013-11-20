@@ -371,9 +371,17 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target, SEL_CallF
 
 		need_quit = false;
     }
+    
+    /* We'll hold onto the target until the callback is complete. */
+    if(target)
+    {
+        target->retain();
+    }
 
     /* Check early for multiple requests. */
     pthread_mutex_lock(&s_callbacksMutex);
+    
+    /* Has someone already requested this file? (attach to the previous) */
     Callbacks_t::iterator const it(s_pCallbacks->find(path));
     if(it != s_pCallbacks->end())
     {
@@ -381,13 +389,13 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target, SEL_CallF
       Functor const f(target, selector);
       it->second.push_back(f);
 
-      target->retain();
-
       pthread_mutex_unlock(&s_callbacksMutex);
       return;
     }
     pthread_mutex_unlock(&s_callbacksMutex);
 
+    /* Has this requester already requested a file? (ignore the previous) */
+    removeAsyncImage(target);
 
     if (0 == s_nAsyncRefCount)
     {
@@ -395,11 +403,6 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target, SEL_CallF
     }
 
     ++s_nAsyncRefCount;
-
-    if (target)
-    {
-        target->retain();
-	}
 
 	// generate async struct
 	AsyncStruct *data = new AsyncStruct();
