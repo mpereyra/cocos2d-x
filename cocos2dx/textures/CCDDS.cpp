@@ -46,7 +46,6 @@ using namespace cocos2d;
 #define DDSCAPS2_CUBEMAP_NEGATIVEZ 0x00008000
 #define DDSCAPS2_VOLUME            0x00200000
 
-#define CC_DDS_VERBOSE 1
 
 CCDDS::CCDDS() {
     m_internallyAllocated = false;
