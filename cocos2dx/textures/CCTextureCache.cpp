@@ -377,6 +377,9 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target, SEL_CallF
     {
         target->retain();
     }
+    
+    /* Has this requester already requested a file? (ignore the previous) */
+    removeAsyncImage(target);
 
     /* Check early for multiple requests. */
     pthread_mutex_lock(&s_callbacksMutex);
@@ -393,9 +396,6 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target, SEL_CallF
       return;
     }
     pthread_mutex_unlock(&s_callbacksMutex);
-
-    /* Has this requester already requested a file? (ignore the previous) */
-    removeAsyncImage(target);
 
     if (0 == s_nAsyncRefCount)
     {
