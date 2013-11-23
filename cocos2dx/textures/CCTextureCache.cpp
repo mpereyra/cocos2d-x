@@ -70,6 +70,8 @@ typedef struct _ImageInfo
 	CCImage::EImageFormat imageType;
 } ImageInfo;
 
+static void (*s_asyncCallback)(CCTextureCache::AsyncCallback const &) = NULL;
+
 static pthread_t s_loadingThread;
 
 static pthread_mutex_t      s_callbacksMutex;
@@ -268,6 +270,29 @@ static void* loadImage(void* data)
 // TextureCache - Alloc, Init & Dealloc
 static CCTextureCache *g_sharedTextureCache = NULL;
 
+CCTextureCache::AsyncCallback::AsyncCallback(CCObject * const targ, SEL_CallFuncO sel, CCTexture2D * const tex)
+  : target(targ), selector(sel), texture(tex)
+{
+  target->retain();
+  texture->retain();
+}
+
+CCTextureCache::AsyncCallback::AsyncCallback(CCTextureCache::AsyncCallback const &ac)
+  : target(ac.target), selector(ac.selector), texture(ac.texture)
+{
+  target->retain();
+  texture->retain();
+}
+
+CCTextureCache::AsyncCallback::~AsyncCallback()
+{
+  target->release();
+  texture->release();
+}
+
+void CCTextureCache::AsyncCallback::operator ()()
+{ (target->*selector)(texture); }
+
 CCTextureCache * CCTextureCache::sharedTextureCache()
 {
 	if (!g_sharedTextureCache)
@@ -423,6 +448,9 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target, SEL_CallF
     sem_post(s_pSem);
 }
 
+void CCTextureCache::setAsyncImageCallback(void (*callback)(AsyncCallback const &))
+{ s_asyncCallback = callback; }
+
 void CCTextureCache::removeAsyncImage(CCObject * const target)
 {
     pthread_mutex_lock(&s_callbacksMutex);
@@ -553,7 +581,11 @@ void CCTextureCache::addImageAsyncCallBack(float dt)
                 SEL_CallFuncO selector(f.second);
                 if (target && selector)
                 {
-                    (target->*selector)(texture);
+                    /* Allow the game to specify its own way to handle/throttle callbacks. */
+                    if(s_asyncCallback)
+                    { s_asyncCallback(CCTextureCache::AsyncCallback(target, selector, texture)); }
+                    else
+                    { (target->*selector)(texture); }
 
                     /* It's important that this was removed from the functors
                      * collection first, since the target's dtor could look into

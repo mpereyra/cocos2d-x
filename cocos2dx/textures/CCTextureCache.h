@@ -64,6 +64,23 @@ private:
     void addImageAsyncCallBack(float dt);
 
 public:
+    /* BPC PATCH */
+    /* Sends target/selector to Asio as functor. */
+    struct AsyncCallback
+    {
+      AsyncCallback(CCObject * const targ, SEL_CallFuncO sel, CCTexture2D * const tex);
+      AsyncCallback(AsyncCallback const &ac);
+      ~AsyncCallback();
+
+      void operator ()();
+
+    private:
+      AsyncCallback& operator =(AsyncCallback const &) /* = delete */;
+
+      CCObject * const target;
+      SEL_CallFuncO selector;
+      CCTexture2D * const texture;
+    };
 
     CCTextureCache();
     virtual ~CCTextureCache();
@@ -97,6 +114,7 @@ public:
     */
     
     void addImageAsync(const char *path, CCObject *target, SEL_CallFuncO selector);
+    static void setAsyncImageCallback(void (*)(AsyncCallback const &));
 
     /*** BPC Patch ***
      * Removes an asynchronous request for an image, should the target no longer care about it. */
