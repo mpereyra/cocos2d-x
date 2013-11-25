@@ -68,7 +68,9 @@ public:
     /* Sends target/selector to Asio as functor. */
     struct AsyncCallback
     {
-      AsyncCallback(CCObject * const targ, SEL_CallFuncO sel, CCTexture2D * const tex);
+      typedef void (CCObject::*Func)(CCTexture2D * const, std::string const &);
+      AsyncCallback(CCObject * const targ, Func const sel,
+                    CCTexture2D * const tex, std::string const &filename);
       AsyncCallback(AsyncCallback const &ac);
       ~AsyncCallback();
 
@@ -78,8 +80,9 @@ public:
       AsyncCallback& operator =(AsyncCallback const &) /* = delete */;
 
       CCObject * const target;
-      SEL_CallFuncO selector;
+      Func const selector;
       CCTexture2D * const texture;
+      std::string const filename;
     };
 
     CCTextureCache();
@@ -113,7 +116,7 @@ public:
     * @since v0.8
     */
     
-    void addImageAsync(const char *path, CCObject *target, SEL_CallFuncO selector);
+    void addImageAsync(const char *path, CCObject *target, AsyncCallback::Func const selector);
     static void setAsyncImageCallback(void (*)(AsyncCallback const &));
 
     /*** BPC Patch ***

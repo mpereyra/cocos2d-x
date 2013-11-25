@@ -53,7 +53,7 @@ using namespace std;
 
 NS_CC_BEGIN
 
-typedef pair<CCObject*,SEL_CallFuncO> Functor;
+typedef std::pair<CCObject*, CCTextureCache::AsyncCallback::Func> Functor;
 
 typedef struct _AsyncStruct
 {
@@ -270,15 +270,16 @@ static void* loadImage(void* data)
 // TextureCache - Alloc, Init & Dealloc
 static CCTextureCache *g_sharedTextureCache = NULL;
 
-CCTextureCache::AsyncCallback::AsyncCallback(CCObject * const targ, SEL_CallFuncO sel, CCTexture2D * const tex)
-  : target(targ), selector(sel), texture(tex)
+CCTextureCache::AsyncCallback::AsyncCallback(CCObject * const targ, CCTextureCache::AsyncCallback::Func const sel,
+                                             CCTexture2D * const tex, std::string const &file)
+  : target(targ), selector(sel), texture(tex), filename(file)
 {
   target->retain();
   texture->retain();
 }
 
 CCTextureCache::AsyncCallback::AsyncCallback(CCTextureCache::AsyncCallback const &ac)
-  : target(ac.target), selector(ac.selector), texture(ac.texture)
+  : target(ac.target), selector(ac.selector), texture(ac.texture), filename(ac.filename)
 {
   target->retain();
   texture->retain();
@@ -291,7 +292,7 @@ CCTextureCache::AsyncCallback::~AsyncCallback()
 }
 
 void CCTextureCache::AsyncCallback::operator ()()
-{ (target->*selector)(texture); }
+{ (target->*selector)(texture, filename); }
 
 CCTextureCache * CCTextureCache::sharedTextureCache()
 {
@@ -342,7 +343,8 @@ CCDictionary* CCTextureCache::snapshotTextures()
     return pRet;
 }
 
-void CCTextureCache::addImageAsync(const char *path, CCObject *target, SEL_CallFuncO selector)
+void CCTextureCache::addImageAsync(const char *path, CCObject *target,
+                                   CCTextureCache::AsyncCallback::Func const selector)
 {
 	CCAssert(path != NULL, "TextureCache: fileimage MUST not be NULL");	
 
@@ -355,12 +357,20 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target, SEL_CallF
     pathKey = CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(pathKey.c_str());
     texture = (CCTexture2D*)m_pTextures->objectForKey(pathKey.c_str());
 
+    /* s_pCallbacks is lazily initialized. */
+    if(s_pCallbacks && target)
+    {
+      /* Has this requester already requested a file? (ignore the previous) */
+      removeAsyncImage(target);
+    }
+
+
 	std::string fullpath = pathKey;
 	if (texture != NULL)
 	{
 		if (target && selector)
 		{
-			(target->*selector)(texture);
+			(target->*selector)(texture, fullpath);
 		}
 		
 		return;
@@ -403,9 +413,6 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target, SEL_CallF
         target->retain();
     }
     
-    /* Has this requester already requested a file? (ignore the previous) */
-    removeAsyncImage(target);
-
     /* Check early for multiple requests. */
     pthread_mutex_lock(&s_callbacksMutex);
     
@@ -578,14 +585,14 @@ void CCTextureCache::addImageAsyncCallBack(float dt)
                 functors.erase(it--);
 
                 CCObject * const target(f.first);
-                SEL_CallFuncO selector(f.second);
+                CCTextureCache::AsyncCallback::Func const selector(f.second);
                 if (target && selector)
                 {
                     /* Allow the game to specify its own way to handle/throttle callbacks. */
                     if(s_asyncCallback)
-                    { s_asyncCallback(CCTextureCache::AsyncCallback(target, selector, texture)); }
+                    { s_asyncCallback(CCTextureCache::AsyncCallback(target, selector, texture, filename)); }
                     else
-                    { (target->*selector)(texture); }
+                    { (target->*selector)(texture, filename); }
 
                     /* It's important that this was removed from the functors
                      * collection first, since the target's dtor could look into
