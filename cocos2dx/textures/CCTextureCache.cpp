@@ -167,6 +167,8 @@ static void* loadImage(void* data)
         CCImage::EImageFormat imageType(CCImage::kFmtUnKnown);
         if(pAsyncStruct->filename.find(".pvr") != std::string::npos)
         {
+            /* imageType still has to be set for reloadAllTextures(). */
+            imageType = CCImage::kFmtPVR;
             /* PVR textures are loaded from disk on this (background) thread
              * and then their GL names will be generated once they get pulled
              * out onto the main thread. */
