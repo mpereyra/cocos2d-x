@@ -119,7 +119,9 @@ public:
     void setVerticalAlignment(CCVerticalTextAlignment verticalAlignment);
     
     CCSize getDimensions();
-    void setDimensions(const CCSize &dim);
+    // BPC PATCH - making this virtual
+    virtual void setDimensions(const CCSize &dim);
+    // END BPC PATCH
     
     float getFontSize();
     void setFontSize(float fontSize);
