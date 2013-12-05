@@ -501,7 +501,12 @@ void CCTextureCache::addImageAsyncCallBack(float dt)
         while(true)
         {
             pthread_mutex_lock(&s_ImageInfoMutex);
-            if(!imagesQueue->empty())
+            if(imagesQueue->empty())
+            {
+                pthread_mutex_unlock(&s_ImageInfoMutex);
+                return;
+            }
+            else
             {
                 ImageInfo *pImageInfo = imagesQueue->front();
                 imagesQueue->pop_front();
@@ -619,12 +624,6 @@ void CCTextureCache::addImageAsyncCallBack(float dt)
                     CCDirector::sharedDirector()->getScheduler()->unscheduleSelector(schedule_selector(CCTextureCache::addImageAsyncCallBack), this);
                 }
             }
-            else
-            {
-                pthread_mutex_unlock(&s_ImageInfoMutex);
-                break;
-            }
-            pthread_mutex_unlock(&s_ImageInfoMutex);
         }
     }
 }
