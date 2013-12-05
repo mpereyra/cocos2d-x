@@ -497,122 +497,134 @@ void CCTextureCache::addImageAsyncCallBack(float dt)
     }
     else
     {
-        while(!imagesQueue->empty()) {
-            ImageInfo *pImageInfo = imagesQueue->front();
-            imagesQueue->pop_front();
-            pthread_mutex_unlock(&s_ImageInfoMutex);
-
-            AsyncStruct *pAsyncStruct = pImageInfo->asyncStruct;
-            CCImage *pImage = pImageInfo->image;
-
-            const char* filename = pAsyncStruct->filename.c_str();
-
-            // generate texture in render thread
-            CCTexturePVR *pvrTexture(pImageInfo->pvrTexture);
+        pthread_mutex_unlock(&s_ImageInfoMutex);
+        while(true)
+        {
+            pthread_mutex_lock(&s_ImageInfoMutex);
+            if(!imagesQueue->empty())
+            {
+                ImageInfo *pImageInfo = imagesQueue->front();
+                imagesQueue->pop_front();
+                pthread_mutex_unlock(&s_ImageInfoMutex);
+                
+                AsyncStruct *pAsyncStruct = pImageInfo->asyncStruct;
+                CCImage *pImage = pImageInfo->image;
+                
+                const char* filename = pAsyncStruct->filename.c_str();
+                
+                // generate texture in render thread
+                CCTexturePVR *pvrTexture(pImageInfo->pvrTexture);
 #ifdef ANDROID
-            CCTextureDXT *dxtTexture(pImageInfo->dxtTexture);
-            CCTextureATC *atcTexture(pImageInfo->atcTexture);
+                CCTextureDXT *dxtTexture(pImageInfo->dxtTexture);
+                CCTextureATC *atcTexture(pImageInfo->atcTexture);
 #endif
-            CCTexture2D *texture(new CCTexture2D);
-
-            if(pvrTexture)
-            {
-                /* The PVR was created on a separate thread, so it knows no
-                 * GL name yet. Try to create that now. */
-                if(pvrTexture->createGLTexture())
-                { texture->initWithPVRTexture(pvrTexture); }
-                delete pvrTexture;
-                pvrTexture = NULL;
-            }
-#ifdef ANDROID
-            else if(dxtTexture)
-            {
-                if(dxtTexture->createGLTexture())
-                { texture->initWithDXTFileAsync(dxtTexture); }
-                delete dxtTexture;
-                dxtTexture = NULL;
-            }
-            else if(atcTexture)
-            {
-                if(atcTexture->createGLTexture())
-                { texture->initWithATCFileAsync(atcTexture); }
-                delete atcTexture;
-                atcTexture = NULL;
-            }
-#endif
-            else
-            {
-#if 0 //TODO: (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-                bool const success(texture->initWithImage(pImage, kCCResolutioniPhone));
-#else
-                bool const success(texture->initWithImage(pImage));
-#endif
-
-                if(!success)
+                CCTexture2D *texture(new CCTexture2D);
+                
+                if(pvrTexture)
                 {
-                    /* Remove this entry. */
-                    pthread_mutex_lock(&s_callbacksMutex);
-                    std::vector<Functor> functors((*s_pCallbacks)[pAsyncStruct->filename]);
-                    (*s_pCallbacks).erase(pAsyncStruct->filename);
-                    pthread_mutex_unlock(&s_callbacksMutex);
-
-                    /* Schedule a placeholder for each functor. */
-                    for(std::vector<Functor>::iterator it(functors.begin()); it != functors.end(); ++it)
+                    /* The PVR was created on a separate thread, so it knows no
+                     * GL name yet. Try to create that now. */
+                    if(pvrTexture->createGLTexture())
+                    { texture->initWithPVRTexture(pvrTexture); }
+                    delete pvrTexture;
+                    pvrTexture = NULL;
+                }
+#ifdef ANDROID
+                else if(dxtTexture)
+                {
+                    if(dxtTexture->createGLTexture())
+                    { texture->initWithDXTFileAsync(dxtTexture); }
+                    delete dxtTexture;
+                    dxtTexture = NULL;
+                }
+                else if(atcTexture)
+                {
+                    if(atcTexture->createGLTexture())
+                    { texture->initWithATCFileAsync(atcTexture); }
+                    delete atcTexture;
+                    atcTexture = NULL;
+                }
+#endif
+                else
+                {
+#if 0 //TODO: (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+                    bool const success(texture->initWithImage(pImage, kCCResolutioniPhone));
+#else
+                    bool const success(texture->initWithImage(pImage));
+#endif
+                    
+                    if(!success)
                     {
-                        addImageAsync("placeholder.png", it->first, it->second);
-                        it->first->release();
+                        /* Remove this entry. */
+                        pthread_mutex_lock(&s_callbacksMutex);
+                        std::vector<Functor> functors((*s_pCallbacks)[pAsyncStruct->filename]);
+                        (*s_pCallbacks).erase(pAsyncStruct->filename);
+                        pthread_mutex_unlock(&s_callbacksMutex);
+                        
+                        /* Schedule a placeholder for each functor. */
+                        for(std::vector<Functor>::iterator it(functors.begin()); it != functors.end(); ++it)
+                        {
+                            addImageAsync("placeholder.png", it->first, it->second);
+                            it->first->release();
+                        }
+                        return;
                     }
-                    return;
+                }
+#if CC_ENABLE_CACHE_TEXTURE_DATA
+                // cache the texture file name
+                VolatileTexture::addImageTexture(texture, filename, pImageInfo->imageType);
+#endif
+                
+                // cache the texture
+                m_pTextures->setObject(texture, filename);
+                texture->autorelease();
+                
+                pthread_mutex_lock(&s_callbacksMutex);
+                /* Get a copy of the functors and clear the original. */
+                std::vector<Functor> functors((*s_pCallbacks)[filename]);
+                (*s_pCallbacks).erase(filename);
+                pthread_mutex_unlock(&s_callbacksMutex);
+                
+                for(std::vector<Functor>::iterator it(functors.begin()); it != functors.end(); ++it)
+                {
+                    /* Copy the functor and remove the original. */
+                    Functor const f(*it);
+                    functors.erase(it--);
+                    
+                    CCObject * const target(f.first);
+                    CCTextureCache::AsyncCallback::Func const selector(f.second);
+                    if (target && selector)
+                    {
+                        /* Allow the game to specify its own way to handle/throttle callbacks. */
+                        if(s_asyncCallback)
+                        { s_asyncCallback(CCTextureCache::AsyncCallback(target, selector, texture, filename)); }
+                        else
+                        { (target->*selector)(texture, filename); }
+                        
+                        /* It's important that this was removed from the functors
+                         * collection first, since the target's dtor could look into
+                         * the functor to remove itself, thus causing a double deletion. */
+                        target->release();
+                    }		
+                }
+                
+                if(pImage)
+                { pImage->release(); }
+                delete pAsyncStruct;
+                delete pImageInfo;
+                
+                --s_nAsyncRefCount;
+                if (0 == s_nAsyncRefCount)
+                {
+                    CCDirector::sharedDirector()->getScheduler()->unscheduleSelector(schedule_selector(CCTextureCache::addImageAsyncCallBack), this);
                 }
             }
-#if CC_ENABLE_CACHE_TEXTURE_DATA
-            // cache the texture file name
-            VolatileTexture::addImageTexture(texture, filename, pImageInfo->imageType);
-#endif
-
-            // cache the texture
-            m_pTextures->setObject(texture, filename);
-            texture->autorelease();
-
-            pthread_mutex_lock(&s_callbacksMutex);
-            /* Get a copy of the functors and clear the original. */
-            std::vector<Functor> functors((*s_pCallbacks)[filename]);
-            (*s_pCallbacks).erase(filename);
-            pthread_mutex_unlock(&s_callbacksMutex);
-
-            for(std::vector<Functor>::iterator it(functors.begin()); it != functors.end(); ++it)
+            else
             {
-                /* Copy the functor and remove the original. */
-                Functor const f(*it);
-                functors.erase(it--);
-
-                CCObject * const target(f.first);
-                CCTextureCache::AsyncCallback::Func const selector(f.second);
-                if (target && selector)
-                {
-                    /* Allow the game to specify its own way to handle/throttle callbacks. */
-                    if(s_asyncCallback)
-                    { s_asyncCallback(CCTextureCache::AsyncCallback(target, selector, texture, filename)); }
-                    else
-                    { (target->*selector)(texture, filename); }
-
-                    /* It's important that this was removed from the functors
-                     * collection first, since the target's dtor could look into
-                     * the functor to remove itself, thus causing a double deletion. */
-                    target->release();
-                }		
+                pthread_mutex_unlock(&s_ImageInfoMutex);
+                break;
             }
-
-            if(pImage)
-            { pImage->release(); }
-            delete pAsyncStruct;
-            delete pImageInfo;
-
-            --s_nAsyncRefCount;
-            if (0 == s_nAsyncRefCount)
-            {
-                CCDirector::sharedDirector()->getScheduler()->unscheduleSelector(schedule_selector(CCTextureCache::addImageAsyncCallBack), this);
-            }
+            pthread_mutex_unlock(&s_ImageInfoMutex);
         }
     }
 }
