@@ -293,6 +293,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0FCAC8C1185FB864003924EA /* BPCRetry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BPCRetry.h; path = ../BPCRetry.h; sourceTree = "<group>"; };
 		154269DA15B5653000712A7F /* CCNotificationCenter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCNotificationCenter.cpp; sourceTree = "<group>"; };
 		154269DB15B5653000712A7F /* CCNotificationCenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCNotificationCenter.h; sourceTree = "<group>"; };
 		1551A33F158F2AB200E66CFE /* libcocos2dx.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcocos2dx.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -597,6 +598,7 @@
 			isa = PBXGroup;
 			children = (
 				1551A873158F2B4700E66CFE /* cocos2dx-Prefix.pch */,
+				0FCAC8C1185FB864003924EA /* BPCRetry.h */,
 				1551A353158F2ADE00E66CFE /* cocos2dx */,
 				1551A341158F2AB200E66CFE /* Frameworks */,
 				1551A340158F2AB200E66CFE /* Products */,
