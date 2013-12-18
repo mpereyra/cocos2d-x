@@ -464,7 +464,8 @@ void CCTextureCache::removeAsyncImage(CCObject * const target)
 {
     pthread_mutex_lock(&s_callbacksMutex);
 
-    for(Callbacks_t::iterator it(s_pCallbacks->begin()); it != s_pCallbacks->end();)
+    /* Empty callback objects (with no functors) are valid; a functor may come later. */
+    for(Callbacks_t::iterator it(s_pCallbacks->begin()); it != s_pCallbacks->end(); ++it)
     {
       for(std::vector<Functor>::iterator fit(it->second.begin()); fit != it->second.end(); ++fit)
       {
@@ -476,10 +477,6 @@ void CCTextureCache::removeAsyncImage(CCObject * const target)
            * reference the target. */
         }
       }
-      if(it->second.empty())
-      { s_pCallbacks->erase(it++); }
-      else
-      { ++it; }
     }
 
     pthread_mutex_unlock(&s_callbacksMutex);
