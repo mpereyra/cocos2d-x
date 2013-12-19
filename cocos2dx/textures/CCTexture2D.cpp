@@ -53,6 +53,9 @@ THE SOFTWARE.
     #include "CCTextureCache.h"
 #endif
 
+// BPC PATCH
+#include "BPCRetry.h"
+
 NS_CC_BEGIN
 
 //CLASS IMPLEMENTATIONS:
@@ -201,28 +204,28 @@ bool CCTexture2D::initWithData(const void *data, CCTexture2DPixelFormat pixelFor
 	switch(pixelFormat)
 	{
 	case kCCTexture2DPixelFormat_RGBA8888:
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)pixelsWide, (GLsizei)pixelsHigh, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		bpcRetry(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)pixelsWide, (GLsizei)pixelsHigh, 0, GL_RGBA, GL_UNSIGNED_BYTE, data));
 		break;
 	case kCCTexture2DPixelFormat_RGB888:
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLsizei)pixelsWide, (GLsizei)pixelsHigh, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		bpcRetry(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLsizei)pixelsWide, (GLsizei)pixelsHigh, 0, GL_RGB, GL_UNSIGNED_BYTE, data));
 		break;
 	case kCCTexture2DPixelFormat_RGBA4444:
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)pixelsWide, (GLsizei)pixelsHigh, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, data);
+		bpcRetry(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)pixelsWide, (GLsizei)pixelsHigh, 0, GL_RGBA, GL_UNSIGNED_SHORT_4_4_4_4, data));
 		break;
 	case kCCTexture2DPixelFormat_RGB5A1:
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)pixelsWide, (GLsizei)pixelsHigh, 0, GL_RGBA, GL_UNSIGNED_SHORT_5_5_5_1, data);
+		bpcRetry(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)pixelsWide, (GLsizei)pixelsHigh, 0, GL_RGBA, GL_UNSIGNED_SHORT_5_5_5_1, data));
 		break;
 	case kCCTexture2DPixelFormat_RGB565:
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLsizei)pixelsWide, (GLsizei)pixelsHigh, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, data);
+		bpcRetry(glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, (GLsizei)pixelsWide, (GLsizei)pixelsHigh, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, data));
 		break;
 	case kCCTexture2DPixelFormat_AI88:
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE_ALPHA, (GLsizei)pixelsWide, (GLsizei)pixelsHigh, 0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, data);
+		bpcRetry(glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE_ALPHA, (GLsizei)pixelsWide, (GLsizei)pixelsHigh, 0, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, data));
 		break;
 	case kCCTexture2DPixelFormat_A8:
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, (GLsizei)pixelsWide, (GLsizei)pixelsHigh, 0, GL_ALPHA, GL_UNSIGNED_BYTE, data);
+		bpcRetry(glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, (GLsizei)pixelsWide, (GLsizei)pixelsHigh, 0, GL_ALPHA, GL_UNSIGNED_BYTE, data));
 		break;
     case kCCTexture2DPixelFormat_I8:
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, (GLsizei)pixelsWide, (GLsizei)pixelsHigh, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, data);
+        bpcRetry(glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, (GLsizei)pixelsWide, (GLsizei)pixelsHigh, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, data));
         break;
 	default:
 		CCAssert(0, "NSInternalInconsistencyException");
@@ -550,7 +553,7 @@ bool CCTexture2D::initWithPVRTCData(const void *data, int level, int bpp, bool h
 	if(size < 32) {
 		size = 32;
 	}
-	glCompressedTexImage2D(GL_TEXTURE_2D, level, format, length, length, 0, size, data);
+	bpcRetry(glCompressedTexImage2D(GL_TEXTURE_2D, level, format, length, length, 0, size, data));
 
 	m_tContentSize = CCSizeMake((float)(length), (float)(length));
 	m_uPixelsWide = length;

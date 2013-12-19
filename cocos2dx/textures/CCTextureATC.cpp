@@ -1,6 +1,6 @@
 #include "CCTextureATC.h"
 #include "CCDDS.h"
-
+#include "BPCRetry.h"
 
 using namespace cocos2d;
 
@@ -79,8 +79,8 @@ bool CCTextureATC::createGLTexture() {
     glGenTextures(1, &m_textureName);
     glBindTexture(GL_TEXTURE_2D, m_textureName);
     
-    glCompressedTexImage2D(GL_TEXTURE_2D, 0, m_glFormat, m_width, m_height, 0, \
-                           m_dds->getHeaderInfo().pitchOrLinearSize, m_dds->getTextureData());
+    bpcRetry(glCompressedTexImage2D(GL_TEXTURE_2D, 0, m_glFormat, m_width, m_height, 0, \
+                           m_dds->getHeaderInfo().pitchOrLinearSize, m_dds->getTextureData()));
     
     err = glGetError();
     if (err != GL_NO_ERROR)

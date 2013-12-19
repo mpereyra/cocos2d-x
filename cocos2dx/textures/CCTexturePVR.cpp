@@ -35,7 +35,7 @@ THE SOFTWARE.
 #include "shaders/ccGLStateCache.h"
 #include <ctype.h>
 #include <cctype>
-
+#include "BPCRetry.h"
 NS_CC_BEGIN
 
 #define PVR_TEXTURE_FLAG_TYPE_MASK    0xff
@@ -362,11 +362,11 @@ bool CCTexturePVR::createGLTexture()
         
 		if (compressed)
         {
-			glCompressedTexImage2D(GL_TEXTURE_2D, i, internalFormat, width, height, 0, datalen, data);
+			bpcRetry(glCompressedTexImage2D(GL_TEXTURE_2D, i, internalFormat, width, height, 0, datalen, data));
         }
 		else
         {
-			glTexImage2D(GL_TEXTURE_2D, i, internalFormat, width, height, 0, format, type, data);
+			bpcRetry(glTexImage2D(GL_TEXTURE_2D, i, internalFormat, width, height, 0, format, type, data));
         }
         
 		if (i > 0 && (width != height || ccNextPOT(width) != width ))

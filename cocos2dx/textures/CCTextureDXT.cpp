@@ -1,6 +1,7 @@
 #include "CCTextureDXT.h"
 #include "CCDDS.h"
 #include "platform/CCPlatformMacros.h"
+#include "BPCRetry.h"
 
 using namespace cocos2d;
 
@@ -87,8 +88,8 @@ bool CCTextureDXT::createGLTexture() {
     
     unsigned int nBytes = ((m_width+3)/4)*((m_height+3)/4) * m_dds->getBlockSize();;
     
-    glCompressedTexImage2D(GL_TEXTURE_2D, 0, m_glFormat, m_width, m_height, 0, \
-                           nBytes, m_dds->getTextureData());
+    bpcRetry(glCompressedTexImage2D(GL_TEXTURE_2D, 0, m_glFormat, m_width, m_height, 0, \
+                           nBytes, m_dds->getTextureData()));
     
     err = glGetError();
     if (err != GL_NO_ERROR)
