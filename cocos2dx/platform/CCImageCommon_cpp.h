@@ -89,6 +89,21 @@ CCImage::~CCImage()
 {
     CC_SAFE_DELETE_ARRAY(m_pData);
 }
+/* BPC_PATCH start */
+void correctImageType(unsigned char* pBuffer, CCImage::EImageFormat &imageType) {
+    // Make sure this is a JPG based on the data header, change the format to PNG if it's not.
+    //   The two external sources that currently lie to us on file formats are Google+ and Facebook,
+    //   and they only support JPEG, PNG and GIF. Since we don't support GIFs, we can assume it's a PNG
+    //   (if it was a GIF we will end up displaying a placeholder)
+    if (imageType == CCImage::kFmtJpg) {
+        static const unsigned char JPG_SOI[] = {0xFF, 0xD8};
+        if (memcmp(pBuffer, JPG_SOI, 2) != 0) {
+            // Not a JPEG! Let's assume it's a PNG
+            imageType = CCImage::kFmtPng;
+        }
+    }
+}
+/* BPC_PATCH end */
 
 bool CCImage::initWithImageFile(const char * strPath, EImageFormat eImgFmt/* = eFmtPng*/)
 {
@@ -97,6 +112,7 @@ bool CCImage::initWithImageFile(const char * strPath, EImageFormat eImgFmt/* = e
     unsigned char* pBuffer = CCFileUtils::sharedFileUtils()->getFileData(CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(strPath), "rb", &nSize);
     if (pBuffer != NULL && nSize > 0)
     {
+        correctImageType(pBuffer, eImgFmt); // BPC_PATCH for PNGs disguised as JPGs
         bRet = initWithImageData(pBuffer, nSize, eImgFmt);
     }
     CC_SAFE_DELETE_ARRAY(pBuffer);
@@ -110,6 +126,7 @@ bool CCImage::initWithImageFileThreadSafe(const char *fullpath, EImageFormat ima
     unsigned char *pBuffer = CCFileUtils::sharedFileUtils()->getFileData(fullpath, "rb", &nSize);
     if (pBuffer != NULL && nSize > 0)
     {
+        correctImageType(pBuffer, imageType); // BPC_PATCH for PNGs disguised as JPGs
         bRet = initWithImageData(pBuffer, nSize, imageType);
     }
     CC_SAFE_DELETE_ARRAY(pBuffer);
