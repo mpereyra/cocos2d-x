@@ -632,6 +632,15 @@ CCTexture2D * CCTextureCache::addImage(const char * path)
 {
 	CCAssert(path != NULL, "TextureCache: fileimage MUST not be NULL");
 
+    // BPC PATCH
+    bool alreadyFailed = m_failedTextures.find(path) != m_failedTextures.end();
+    if (alreadyFailed)
+    {
+        CCLOG("cocos2d: Couldn't add previously-failed image %s to CCTextureCache", path);
+        return NULL;
+    }
+    // END BPC PATCH
+
 	CCTexture2D * texture = NULL;
 	// Split up directory and filename
 	// MUTEX:
@@ -712,8 +721,9 @@ CCTexture2D * CCTextureCache::addImage(const char * path)
 				else
 				{
 					CCLOG("cocos2d: Couldn't add image:%s in CCTextureCache", path);
-                    /* BPC PATCH - This was returning a pointer to an invalid texture */
-                    return NULL;
+                    /* BPC PATCH */
+                    m_failedTextures.insert(path);
+                    return NULL; // this was originally falling through, returning an invalid texture
                     /* END BPC PATCH */
 				}
 			}
