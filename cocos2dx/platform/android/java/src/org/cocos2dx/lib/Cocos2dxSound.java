@@ -280,7 +280,9 @@ public class Cocos2dxSound {
 			Log.e(Cocos2dxSound.TAG, "error: " + e.getMessage(), e);
 		} finally {
 			if(fd != null) {
-				fd.close();
+				try {
+					fd.close();
+				} catch (final Exception e) {}
 			}
 		}
 
