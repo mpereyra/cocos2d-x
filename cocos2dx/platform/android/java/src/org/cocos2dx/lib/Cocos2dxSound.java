@@ -34,6 +34,7 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.util.Log;
+import android.content.res.AssetFileDescriptor;
 
 public class Cocos2dxSound {
 	// ===========================================================
@@ -262,16 +263,25 @@ public class Cocos2dxSound {
 
 	public int createSoundIDFromAsset(final String pPath) {
 		int soundID = Cocos2dxSound.INVALID_SOUND_ID;
+		//BPC PATCH:
+		//openFd could throw an IOException and won't be closed properly,
+		//so we shall manually close it.
+		AssetFileDescriptor fd = null;
 
 		try {
 			if (pPath.startsWith("/")) {
 				soundID = this.mSoundPool.load(pPath, 0);
 			} else {
-				soundID = this.mSoundPool.load(this.mContext.getAssets().openFd(pPath), 0);
+				fd = this.mContext.getAssets().openFd(pPath);
+				soundID = this.mSoundPool.load(fd, 0);
 			}
 		} catch (final Exception e) {
 			soundID = Cocos2dxSound.INVALID_SOUND_ID;
 			Log.e(Cocos2dxSound.TAG, "error: " + e.getMessage(), e);
+		} finally {
+			if(fd != null) {
+				fd.close();
+			}
 		}
 
 		return soundID;
