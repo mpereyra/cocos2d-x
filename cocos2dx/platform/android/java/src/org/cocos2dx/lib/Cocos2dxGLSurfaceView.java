@@ -56,6 +56,11 @@ public class Cocos2dxGLSurfaceView extends GLSurfaceView {
 	private Cocos2dxRenderer mCocos2dxRenderer;
 	private Cocos2dxEditText mCocos2dxEditText;
 
+	/* BPC PATCH: onTouchEvent is still called when backgrounded
+	   if you are dragging/panning while pressing the home key.
+	   Setting focus doesn't help, so use this bool on pause/resume. */
+	private boolean mHandleTouches = true;
+
 	// ===========================================================
 	// Constructors
 	// ===========================================================
@@ -153,6 +158,8 @@ public class Cocos2dxGLSurfaceView extends GLSurfaceView {
 				Cocos2dxGLSurfaceView.this.mCocos2dxRenderer.handleOnResume();
 			}
 		});
+		//BPC PATCH: to resume onTouchEvent
+		mHandleTouches = true;
 	}
 
 	@Override
@@ -165,10 +172,16 @@ public class Cocos2dxGLSurfaceView extends GLSurfaceView {
 		});
 
 		super.onPause();
+		//BPC PATCH: to interrupt onTouchEvent
+		mHandleTouches = false;
 	}
 
 	@Override
 	public boolean onTouchEvent(final MotionEvent pMotionEvent) {
+		//BPC PATCH: manual interruption of onTouchEvent
+		if(!mHandleTouches)
+			return true;
+
 		// these data are used in ACTION_MOVE and ACTION_CANCEL
 		final int pointerNumber = pMotionEvent.getPointerCount();
 		final int[] ids = new int[pointerNumber];
