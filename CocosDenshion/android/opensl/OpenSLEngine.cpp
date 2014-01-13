@@ -321,7 +321,9 @@ void OpenSLEngine::createEngine(void* pHandle)
 	const char* errorInfo = dlerror();
 	if (errorInfo)
 	{
-		LOGD(errorInfo);
+        // BPC PATCH (added %s to avoid format-security error)
+		LOGD("%s", errorInfo);
+        // END BPC PATCH
 		return;
 	}
 

@@ -41,7 +41,9 @@ void CCLog(const char * pszFormat, ...)
     vsnprintf(buf, MAX_LEN, pszFormat, args);
     va_end(args);
 
-    __android_log_print(ANDROID_LOG_DEBUG, "cocos2d-x debug info",  buf);
+    // BPC PATCH (added "%s" to avoid error-format-security)
+    __android_log_print(ANDROID_LOG_DEBUG, "cocos2d-x debug info",  "%s", buf);
+    // END BPC_PATCH
 }
 
 void CCMessageBox(const char * pszMsg, const char * pszTitle)

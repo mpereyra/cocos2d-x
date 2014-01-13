@@ -38,7 +38,9 @@ bool SimpleAudioEngineOpenSL::initEngine()
 			const char* errorInfo = dlerror();
 			if (errorInfo)
 			{
-				LOGD(errorInfo);
+                // BPC PATCH (added %s)
+				LOGD("%s", errorInfo);
+                // END BPC PATCH
 				bRet = false;
 				break;
 			}

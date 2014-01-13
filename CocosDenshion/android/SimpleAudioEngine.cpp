@@ -156,7 +156,9 @@ SimpleAudioEngine::SimpleAudioEngine()
 	
 	const char* deviceModel = methodInfo.env->GetStringUTFChars(jstr, NULL);
     
-	LOGD(deviceModel);
+    // BPC PATCH (added %s)
+	LOGD("%s", deviceModel);
+    // END BPC PATCH
     
 	if (strcmp(I9100_MODEL, deviceModel) == 0)
 	{
