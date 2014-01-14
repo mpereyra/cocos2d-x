@@ -108,6 +108,9 @@ public:
     virtual void handleTouchesEnd(int num, int ids[], float xs[], float ys[]);
     virtual void handleTouchesCancel(int num, int ids[], float xs[], float ys[]);
 
+    //BPC PATCH: cancel all touches when Backgrounding on android.
+    void cancelAllTouches();
+
     /**
      * Get the opengl view port rectangle.
      */
