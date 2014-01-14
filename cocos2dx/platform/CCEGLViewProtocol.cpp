@@ -314,6 +314,27 @@ void CCEGLViewProtocol::handleTouchesCancel(int num, int ids[], float xs[], floa
     m_pDelegate->touchesCancelled(&set, NULL);
 }
 
+//BPC PATCH: cancel all touches when backgrounding on android.
+void CCEGLViewProtocol::cancelAllTouches()
+{
+    //if there are existing touches, make a set of them to pass to touchesCancelled.
+    if(s_indexBitsUsed != 0) {
+        CCSet set;
+        CCArray* it = s_TouchesIntergerDict.allKeys();
+        for(unsigned i = 0; i < it->count(); ++i) {
+            CCInteger * key = (CCInteger*)it->objectAtIndex(i);
+            CCInteger* pIndex = (CCInteger*)(s_TouchesIntergerDict.objectForKey(key->getValue()));
+            CCTouch* pTouch = s_pTouches[pIndex->getValue()];
+            set.addObject(pTouch);
+        }
+        m_pDelegate->touchesCancelled(&set, NULL);
+
+        //remove all existing touches or there will be weird behavior when we come back.
+        s_indexBitsUsed = 0;
+        s_TouchesIntergerDict.removeAllObjects();
+    }
+}
+
 const CCRect& CCEGLViewProtocol::getViewPortRect() const
 {
     return m_obViewPortRect;
