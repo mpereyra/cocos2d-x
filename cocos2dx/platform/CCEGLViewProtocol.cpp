@@ -326,6 +326,9 @@ void CCEGLViewProtocol::cancelAllTouches()
             CCInteger* pIndex = (CCInteger*)(s_TouchesIntergerDict.objectForKey(key->getValue()));
             CCTouch* pTouch = s_pTouches[pIndex->getValue()];
             set.addObject(pTouch);
+            // release the object
+            pTouch->release();
+            s_pTouches[pIndex->getValue()] = NULL;
         }
         m_pDelegate->touchesCancelled(&set, NULL);
 
