@@ -27,6 +27,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.opengl.GLSurfaceView;
+import android.util.Log;
 
 public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
 	// ===========================================================
@@ -73,8 +74,10 @@ public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
 		this.mLastTickInNanoSeconds = System.nanoTime();
 	}
 
+  // BPC PATCH
 	@Override
 	public void onSurfaceChanged(final GL10 pGL10, final int pWidth, final int pHeight) {
+		Cocos2dxRenderer.nativeBPCResume();
 	}
 
 	@Override
@@ -111,6 +114,7 @@ public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
 	private static native void nativeInit(final int pWidth, final int pHeight);
 	private static native void nativeOnPause();
 	private static native void nativeOnResume();
+  private static native void nativeBPCResume();
 
 	public void handleActionDown(final int pID, final float pX, final float pY) {
 		Cocos2dxRenderer.nativeTouchesBegin(pID, pX, pY);
