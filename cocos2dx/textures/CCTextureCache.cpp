@@ -295,7 +295,7 @@ CCTextureCache::AsyncCallback::~AsyncCallback()
 {
   target->release();
   if(texture) {
-    texture->retain();
+    texture->release();
   }
 }
 
