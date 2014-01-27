@@ -228,8 +228,11 @@ public:
     virtual void setAnchorPoint(const CCPoint& anchor);
     virtual void ignoreAnchorPointForPosition(bool value);
     virtual void setVisible(bool bVisible);
-    void setFlipX(bool bFlipX);
-    void setFlipY(bool bFlipY);
+    /* BPC PATCH - made setFlip virtual */
+    virtual void setFlipX(bool bFlipX);
+    virtual void setFlipY(bool bFlipY);
+    /* end BPC PATCH */
+    
     /** whether or not the sprite is flipped horizontally. 
     It only flips the texture of the sprite, and not the texture of the sprite's children.
     Also, flipping the texture doesn't alter the anchorPoint.
