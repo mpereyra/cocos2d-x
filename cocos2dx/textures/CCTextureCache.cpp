@@ -187,6 +187,7 @@ static void* loadImage(void* data)
             // These come back 'nude' (new), because we are off the main thread and cannot 'autorelease'
             CCDDS* dxtDDS = CCDDS::ddsWithContentsOfFileAsync(pAsyncStruct->filename.c_str());
             dxt = CCTextureDXT::dxtTextureWithDDSAsync(dxtDDS);
+            dxtDDS->release();
             if(!dxt)
             {
                 CCLOG("unable to load DXT %s", pAsyncStruct->filename.c_str());
@@ -201,6 +202,7 @@ static void* loadImage(void* data)
             // These come back 'nude' (new), because we are off the main thread and cannot 'autorelease'
             CCDDS* atcDDS = CCDDS::ddsWithContentsOfFileAsync(pAsyncStruct->filename.c_str());
             atc = CCTextureATC::atcTextureWithDDSAsync(atcDDS);
+            atcDDS->release();
             if(!atc)
             {
                 CCLOG("unable to load ATC %s", pAsyncStruct->filename.c_str());
