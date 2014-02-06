@@ -344,6 +344,8 @@
 		24F9BC7216C2EBE100A6468C /* Adhoc */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				DSTROOT = /tmp/liblua.dst;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = lua;
@@ -401,6 +403,8 @@
 		AD373C8916260E8400D5154B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				DSTROOT = /tmp/liblua.dst;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = lua;
@@ -411,6 +415,8 @@
 		AD373C8A16260E8400D5154B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				DSTROOT = /tmp/liblua.dst;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = lua;

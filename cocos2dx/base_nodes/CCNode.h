@@ -306,6 +306,8 @@ private:
     void detachChild(CCNode *child, bool doCleanup);
 
     CCPoint convertToWindowSpace(const CCPoint& nodePoint);
+    
+    CCNode(const CCNode &other) = delete; // disable copy constructor
 
 public:
 

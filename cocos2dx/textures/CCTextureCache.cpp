@@ -187,6 +187,7 @@ static void* loadImage(void* data)
             // These come back 'nude' (new), because we are off the main thread and cannot 'autorelease'
             CCDDS* dxtDDS = CCDDS::ddsWithContentsOfFileAsync(pAsyncStruct->filename.c_str());
             dxt = CCTextureDXT::dxtTextureWithDDSAsync(dxtDDS);
+            dxtDDS->release();
             if(!dxt)
             {
                 CCLOG("unable to load DXT %s", pAsyncStruct->filename.c_str());
@@ -201,6 +202,7 @@ static void* loadImage(void* data)
             // These come back 'nude' (new), because we are off the main thread and cannot 'autorelease'
             CCDDS* atcDDS = CCDDS::ddsWithContentsOfFileAsync(pAsyncStruct->filename.c_str());
             atc = CCTextureATC::atcTextureWithDDSAsync(atcDDS);
+            atcDDS->release();
             if(!atc)
             {
                 CCLOG("unable to load ATC %s", pAsyncStruct->filename.c_str());
@@ -295,7 +297,7 @@ CCTextureCache::AsyncCallback::~AsyncCallback()
 {
   target->release();
   if(texture) {
-    texture->retain();
+    texture->release();
   }
 }
 
@@ -360,11 +362,9 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target,
 
 	// optimization
 
-	std::string pathKey = path;
-
-    pathKey = CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(pathKey.c_str());
-    texture = (CCTexture2D*)m_pTextures->objectForKey(pathKey.c_str());
-    bool alreadyFailed = m_failedTextures.find(path) != m_failedTextures.end();
+    std::string const fullpath = CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(path);
+    texture = (CCTexture2D*)m_pTextures->objectForKey(fullpath.c_str());
+    bool alreadyFailed = m_failedTextures.find(fullpath) != m_failedTextures.end();
 
     /* s_pCallbacks is lazily initialized. */
     if(s_pCallbacks && target)
@@ -374,7 +374,6 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target,
     }
 
 
-	std::string fullpath = pathKey;
 	if (texture != NULL || alreadyFailed)
 	{
 		if (target && selector)
@@ -426,7 +425,7 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target,
     pthread_mutex_lock(&s_callbacksMutex);
     
     /* Has someone already requested this file? (attach to the previous) */
-    Callbacks_t::iterator const it(s_pCallbacks->find(path));
+    Callbacks_t::iterator const it(s_pCallbacks->find(fullpath));
     if(it != s_pCallbacks->end())
     {
       /* We have multiple requests for the same file. */
@@ -471,7 +470,7 @@ void CCTextureCache::removeAsyncImage(CCObject * const target)
 {
     pthread_mutex_lock(&s_callbacksMutex);
 
-    for(Callbacks_t::iterator it(s_pCallbacks->begin()); it != s_pCallbacks->end();)
+    for(Callbacks_t::iterator it(s_pCallbacks->begin()); it != s_pCallbacks->end(); ++it)
     {
       for(std::vector<Functor>::iterator fit(it->second.begin()); fit != it->second.end(); ++fit)
       {
@@ -483,10 +482,6 @@ void CCTextureCache::removeAsyncImage(CCObject * const target)
            * reference the target. */
         }
       }
-      if(it->second.empty())
-      { s_pCallbacks->erase(it++); }
-      else
-      { ++it; }
     }
 
     pthread_mutex_unlock(&s_callbacksMutex);
