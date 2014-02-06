@@ -251,7 +251,7 @@ bool CCSprite::initWithFile(const char *pszFilename)
 {
     CCAssert(pszFilename != NULL, "Invalid filename for sprite");
 
-    CCTexture2D *pTexture = CCTextureCache::sharedTextureCache()->addImage(pszFilename);
+    CCTexture2D *pTexture = CCTextureCache::sharedTextureCache()->addImage(pszFilename, this);
     if (pTexture)
     {
         CCRect rect = CCRectZero;
@@ -269,7 +269,7 @@ bool CCSprite::initWithFile(const char *pszFilename, const CCRect& rect)
 {
     CCAssert(pszFilename != NULL, "");
 
-    CCTexture2D *pTexture = CCTextureCache::sharedTextureCache()->addImage(pszFilename);
+    CCTexture2D *pTexture = CCTextureCache::sharedTextureCache()->addImage(pszFilename, this);
     if (pTexture)
     {
         return initWithTexture(pTexture, rect);

@@ -629,6 +629,14 @@ void CCTextureCache::addImageAsyncCallBack(float dt)
     }
 }
 
+
+CCTexture2D* CCTextureCache::addImage(const char* fileimage, CCObject* target) {
+    /* Has this requester already requested a file? (ignore the previous) */
+    CCAssert(target, "cocos2d: target is null, cannot remove async image request");
+    removeAsyncImage(target);
+    return addImage(fileimage);
+}
+
 CCTexture2D * CCTextureCache::addImage(const char * path)
 {
 	CCAssert(path != NULL, "TextureCache: fileimage MUST not be NULL");
@@ -641,6 +649,7 @@ CCTexture2D * CCTextureCache::addImage(const char * path)
         return NULL;
     }
     // END BPC PATCH
+
 
 	CCTexture2D * texture = NULL;
 	// Split up directory and filename
