@@ -82,6 +82,9 @@ public:
 
       void operator ()();
 
+      CCObject * getTarget() const
+      { return target; }
+
     private:
       AsyncCallback& operator =(AsyncCallback const &) /* = delete */;
 
