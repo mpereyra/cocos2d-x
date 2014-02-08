@@ -487,7 +487,7 @@ void CCTextureCache::removeAsyncImage(CCObject * const target)
     pthread_mutex_unlock(&s_callbacksMutex);
 }
 
-void CCTextureCache::removeAllAsyncImage()
+void CCTextureCache::removeAllAsyncImages()
 {
     pthread_mutex_lock(&s_asyncStructQueueMutex);
     pthread_mutex_lock(&s_ImageInfoMutex);
@@ -496,24 +496,20 @@ void CCTextureCache::removeAllAsyncImage()
     {
 
         AsyncStruct *pAsyncStruct = s_pAsyncStructQueue->front();
-        CCLOG("woohoo clearing this guy first: %s", pAsyncStruct->filename.c_str());
         s_pAsyncStructQueue->pop();
         delete pAsyncStruct;
     }
     while (!s_pImageQueue->empty())
     {
         ImageInfo *pImageInfo = s_pImageQueue->front();
-        CCLOG("woohoo clearing this guy %p: %s", pImageInfo->image, pImageInfo->asyncStruct->filename.c_str());
         s_pImageQueue->pop_front();
         delete pImageInfo;
     }
     while (!s_pCallbacks->empty())
     {
         Callbacks_t::iterator it(s_pCallbacks->begin());
-        for(std::vector<Functor>::iterator fit(it->second.begin()); fit != it->second.end(); ++fit) {
-            CCLOG("woohoo releasing this guy %p", fit->first);
-            fit->first->release();
-        }
+        for(std::vector<Functor>::iterator fit(it->second.begin()); fit != it->second.end(); ++fit)
+        { fit->first->release(); }
         s_pCallbacks->erase(it);
     }
     pthread_mutex_unlock(&s_callbacksMutex);
