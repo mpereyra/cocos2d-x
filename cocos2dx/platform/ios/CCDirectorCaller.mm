@@ -24,6 +24,7 @@
 #import <Foundation/Foundation.h>
 #import "CCDirectorCaller.h"
 #import "CCDirector.h"
+#import "EAGLView.h" //BPC PATCH in doCaller
 
 static id s_sharedDirectorCaller;
 
@@ -90,6 +91,10 @@ static id s_sharedDirectorCaller;
                       
 -(void) doCaller: (id) sender
 {
+    //BPC PATCH: fix crash pressing the siri button.
+    //refer to: http://www.cocos2d-x.org/forums/6/topics/36111
+    [EAGLContext setCurrentContext: [[EAGLView sharedEGLView] context]];
+    //END BPC PATCH
     cocos2d::CCDirector::sharedDirector()->mainLoop();
 }
 
