@@ -106,6 +106,9 @@ static CDBufferManager *bufferManager = nil;
 }    
 
 -(void) resumeBackgroundMusic {
+    //BPC Patch GI-908
+    [am setMode:kAMM_FxPlusMusicIfNoOtherAudio];
+    //end BPC Patch
     [am resumeBackgroundMusic];
 }    
 
