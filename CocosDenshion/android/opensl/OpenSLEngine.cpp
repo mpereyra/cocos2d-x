@@ -285,6 +285,18 @@ bool initAudioPlayer(AudioPlayer* player, const char* filename)
 	int fd = getFileDescriptor(filename, start, length);
 	if (FILE_NOT_FOUND == fd)
 	{
+		// BPC patch GI-917 (sourced from Cocos commits: 98129dd, a1f5d321)
+		FILE* fp = fopen(filename , "rb");
+		if(fp){
+			SLDataLocator_URI loc_fd = {SL_DATALOCATOR_URI , (SLchar*)filename};
+			SLDataFormat_MIME format_mime = {SL_DATAFORMAT_MIME, NULL, SL_CONTAINERTYPE_UNSPECIFIED};
+			player->audioSrc.pLocator = &loc_fd;
+			player->audioSrc.pFormat = &format_mime;
+			return createAudioPlayerBySource(player);
+		}
+		LOGD("file not found! Stop preload file: %s", filename);
+
+  		// end BPC Patch
 		return false;
 	}
 	SLDataLocator_AndroidFD loc_fd = {SL_DATALOCATOR_ANDROIDFD, fd, start, length};

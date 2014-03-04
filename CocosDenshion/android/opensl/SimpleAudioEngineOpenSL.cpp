@@ -90,24 +90,29 @@ void SimpleAudioEngineOpenSL::setEffectsVolume(float volume)
 
 unsigned int SimpleAudioEngineOpenSL::playEffect(const char* pszFilePath, bool bLoop)
 {
-	unsigned int soundID;
-	do 
-	{
-		soundID = s_pOpenSL->preloadEffect(pszFilePath);
-		if (soundID != FILE_NOT_FOUND)
+	// BPC patch GI-917 (sourced from Cocos commits: d72f0627, a8cc1dd7)
+	unsigned int soundID = s_pOpenSL->preloadEffect(pszFilePath);
+
+	if (soundID != FILE_NOT_FOUND)
+ 	{
+        if (s_pOpenSL->getEffectState(soundID) == PLAYSTATE_PLAYING)
 		{
-			if (s_pOpenSL->getEffectState(soundID) == PLAYSTATE_PLAYING)
+			// recreate an effect player
+			if (s_pOpenSL->recreatePlayer(pszFilePath))
 			{
-				// recreate an effect player
-				s_pOpenSL->recreatePlayer(pszFilePath);
-				break;
+				s_pOpenSL->setEffectLooping(soundID, bLoop);
 			}
+		}
+		else
+		{
 			s_pOpenSL->setEffectState(soundID, PLAYSTATE_STOPPED);
 			s_pOpenSL->setEffectState(soundID, PLAYSTATE_PLAYING);
+			s_pOpenSL->setEffectLooping(soundID, bLoop);
 		}
-	} while (0);
-	s_pOpenSL->setEffectLooping(soundID, bLoop);
-	return soundID;
+	}
+
+  	return soundID;
+  	// end BPC Patch
 }
 
 void SimpleAudioEngineOpenSL::pauseEffect(unsigned int nSoundId)
