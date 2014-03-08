@@ -468,6 +468,9 @@ void CCTextureCache::setAsyncImageCallback(void (*callback)(AsyncCallback const 
 
 void CCTextureCache::removeAsyncImage(CCObject * const target)
 {
+    if(s_pCallbacks == nullptr) {
+        return;
+    }
     pthread_mutex_lock(&s_callbacksMutex);
 
     for(Callbacks_t::iterator it(s_pCallbacks->begin()); it != s_pCallbacks->end(); ++it)
