@@ -1,9 +1,15 @@
 #include "OpenSLEngine.h"
 
+// BPC PATCH GI-936 
+// Cocos doesn't support C++11, but we do so I am going to exploit that.
+#include <mutex>
+#include <algorithm>
+#include <set>
+// END BPC PATCH
+
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG,"OPENSL_ENGINE.CPP", __VA_ARGS__)
 
 using namespace std;
-
 
 OpenSLEngine::OpenSLEngine()
  :m_musicVolume(0),
@@ -150,6 +156,58 @@ static EffectList& sharedList()
 	static EffectList s_List;
 	return s_List;
 }
+
+// BPC PATCH GI-936 
+void destroyAudioPlayer(AudioPlayer * player);
+
+class AudioPlayerGarbage
+{
+public:
+	~AudioPlayerGarbage()
+	{
+		cleanup();
+	}
+
+	void markForCleanup(AudioPlayer* player)
+	{
+	    std::lock_guard<std::mutex> guard(m_mutex);
+		m_waitingToDestroy.insert(player);
+	}
+
+	void cleanup()
+	{
+	    std::lock_guard<std::mutex> guard(m_mutex);
+        while(!m_waitingToDestroy.empty())
+	    {
+	        // Get player
+	    	set<AudioPlayer*>::iterator begin = m_waitingToDestroy.begin();
+	    	AudioPlayer* player = *begin;
+
+	        // Remove from shared list if it is still there (e.g. from a stop).
+			for(EffectList::iterator effectList = sharedList().begin(); effectList != sharedList().end(); effectList++)
+			{
+				vector<AudioPlayer*>* effectPlayers = effectList->second;
+				vector<AudioPlayer*>::iterator effectPlayer = find(effectPlayers->begin(), effectPlayers->end(), player);
+				if(effectPlayer != effectPlayers->end())
+				{
+					effectPlayers->erase(effectPlayer);
+					// Destroy it.
+			        destroyAudioPlayer(player);
+			        delete player;
+		        	// Done
+		        	break;
+				}
+			}
+
+			// Remove from our waiting list
+	    	m_waitingToDestroy.erase(begin);
+	    }
+	}
+private:
+	mutex m_mutex;
+	set<AudioPlayer*> m_waitingToDestroy;
+} s_audioPlayerGarbage;
+// END BPC PATCH
 
 unsigned int _Hash(const char *key)
 {
@@ -311,6 +369,11 @@ void destroyAudioPlayer(AudioPlayer * player)
 	if (player && player->fdPlayerObject != NULL)
 	{
 		SLresult result;
+		// BPC PATCH GI-936
+		// Samsung S2 i9100 has an issue when calling stop on a looping sound.
+		// http://stackoverflow.com/questions/9871516/opensl-es-crashes-randomly-on-samsung-galaxy-sii-gt-i9100
+		(*(player->fdPlayerSeek))->SetLoop(player->fdPlayerSeek, false, 0, SL_TIME_UNKNOWN);
+		// END BPC PATCH
 		result = (*(player->fdPlayerPlay))->SetPlayState(player->fdPlayerPlay, SL_PLAYSTATE_STOPPED);
 		assert(SL_RESULT_SUCCESS == result);
 
@@ -380,14 +443,25 @@ void OpenSLEngine::closeEngine()
 	while (p != sharedList().end())
 	{
 		vec = p->second;
-		for (vector<AudioPlayer*>::iterator iter = vec->begin() ; iter != vec->end() ; ++ iter)
+// BPC PATCH GI-936
+		while(!vec->empty())
 		{
-			destroyAudioPlayer(*iter);
+			AudioPlayer* player = vec->back();
+			vec->pop_back();
+			destroyAudioPlayer(player);
+			delete player;
 		}
 		vec->clear();
+		delete vec;
+// END BPC PATCH
 		p++;
 	}
 	sharedList().clear();
+
+// BPC PATCH GI-936
+	// cleanup garbage
+	s_audioPlayerGarbage.cleanup();
+// END BPC PATCH
 
 	// destroy output mix interface
 	if (s_pOutputMixObject)
@@ -411,28 +485,17 @@ void OpenSLEngine::closeEngine()
 /**********************************************************************************
  *   sound effect
  **********************************************************************************/
-typedef struct _CallbackContext
-{
-	vector<AudioPlayer*>* vec;
-	AudioPlayer* player;
-} CallbackContext;
 
-void PlayOverEvent(SLPlayItf caller, void* pContext, SLuint32 playEvent)
+void PlayOverEvent(SLPlayItf caller, void* blob, SLuint32 playEvent)
 {
-	CallbackContext* context = (CallbackContext*)pContext;
+	AudioPlayer* player = static_cast<AudioPlayer*>(blob);
 	if (playEvent == SL_PLAYEVENT_HEADATEND)
 	{
-		vector<AudioPlayer*>::iterator iter;
-		for (iter = (context->vec)->begin() ; iter != (context->vec)->end() ; ++ iter)
-		{
-			if (*iter == context->player)
-			{
-				(context->vec)->erase(iter);
-				break;
-			}
-		}
-		destroyAudioPlayer(context->player);
-		free(context);
+// BPC PATCH GI-936
+		// Can't do anything about the player yet, mark it to be cleaned up the next time we do that.
+		s_audioPlayerGarbage.markForCleanup(player);
+		// But can cleanup context
+// END BPC PATCH
 	}
 }
 
@@ -464,6 +527,15 @@ void setSingleEffectState(AudioPlayer * player, int state)
 		{
 			return;
 		}
+
+		// BPC PATCH GI-936 
+		if(state == SL_PLAYSTATE_STOPPED)
+		{
+			// Stop looping before stopping.
+			(*(player->fdPlayerSeek))->SetLoop(player->fdPlayerSeek, false, 0, SL_TIME_UNKNOWN);
+		}
+		// END BPC PATCH
+
 		result = (*(player->fdPlayerPlay))->SetPlayState(player->fdPlayerPlay, state);
 		assert(SL_RESULT_SUCCESS == result);
 	}
@@ -481,6 +553,11 @@ void resumeSingleEffect(AudioPlayer * player)
 
 bool OpenSLEngine::recreatePlayer(const char* filename)
 {
+	// BPC PATCH GI-936 
+	// Cleanup before creating new players
+	s_audioPlayerGarbage.cleanup();
+	// END BPC PATCH
+
 	unsigned int effectID = _Hash(filename);
 	EffectList::iterator p = sharedList().find(effectID);
 	vector<AudioPlayer*>* vec = p->second;
@@ -488,16 +565,16 @@ bool OpenSLEngine::recreatePlayer(const char* filename)
 	if (!initAudioPlayer(newPlayer, filename))
 	{
 		LOGD("failed to recreate");
+		// BPC PATCH GI-936 
+		delete newPlayer;
+		// END BPC PATCH
 		return false;
 	}
 	vec->push_back(newPlayer);
 
 	// set callback
 	SLresult result;
-	CallbackContext* context = new CallbackContext();
-	context->vec = vec;
-	context->player = newPlayer;
-	result = (*(newPlayer->fdPlayerPlay))->RegisterCallback(newPlayer->fdPlayerPlay, PlayOverEvent, (void*)context);
+	result = (*(newPlayer->fdPlayerPlay))->RegisterCallback(newPlayer->fdPlayerPlay, PlayOverEvent, newPlayer);
 	assert(SL_RESULT_SUCCESS == result);
 
 	result = (*(newPlayer->fdPlayerPlay))->SetCallbackEventsMask(newPlayer->fdPlayerPlay, SL_PLAYEVENT_HEADATEND);
@@ -514,6 +591,10 @@ bool OpenSLEngine::recreatePlayer(const char* filename)
 
 unsigned int OpenSLEngine::preloadEffect(const char * filename)
 {
+	// BPC PATCH GI-936 
+	// Cleanupbefore creating new players
+	s_audioPlayerGarbage.cleanup();
+	// END BPC PATCH
 	unsigned int nID = _Hash(filename);
 	// if already exists
 	EffectList::iterator p = sharedList().find(nID);
@@ -525,7 +606,9 @@ unsigned int OpenSLEngine::preloadEffect(const char * filename)
 	AudioPlayer* player = new AudioPlayer();
 	if (!initAudioPlayer(player, filename))
 	{
-		free(player);
+		// BPC PATCH GI-936 
+		delete player;
+		// END BPC PATCH
 		return FILE_NOT_FOUND;
 	}
 	
@@ -540,23 +623,40 @@ unsigned int OpenSLEngine::preloadEffect(const char * filename)
 
 void OpenSLEngine::unloadEffect(const char * filename)
 {
+	// BPC PATCH GI-936 
+	// Cleanup in case we have dead players.
+	s_audioPlayerGarbage.cleanup();
+	// END BPC PATCH
+
 	unsigned int nID = _Hash(filename);
 
 	EffectList::iterator p = sharedList().find(nID);
 	if (p != sharedList().end())
 	{
 		vector<AudioPlayer*>* vec = p->second;
-		for (vector<AudioPlayer*>::iterator iter = vec->begin() ; iter != vec->end() ; ++ iter)
+		// BPC PATCH GI-936 
+		while(!vec->empty())
 		{
-			destroyAudioPlayer(*iter);
+			AudioPlayer* player = vec->back();
+			vec->pop_back();
+			destroyAudioPlayer(player);
+			delete player;
 		}
-		vec->clear();
+
+		delete vec;
+		// END BPC PATCH
+
 		sharedList().erase(nID);
 	}
 }
 
 int OpenSLEngine::getEffectState(unsigned int effectID)
 {
+	// BPC PATCH GI-936 
+	// Cleanup in case we have dead players.
+	s_audioPlayerGarbage.cleanup();
+	// END BPC PATCH
+
 	int state = PLAYSTATE_UNKNOWN;
 	EffectList::iterator p = sharedList().find(effectID);
 	if (p != sharedList().end())
@@ -571,6 +671,11 @@ int OpenSLEngine::getEffectState(unsigned int effectID)
 
 void OpenSLEngine::setEffectState(unsigned int effectID, int state, bool isClear)
 {
+	// BPC PATCH GI-936 
+	// Cleanup in case we have dead players.
+	s_audioPlayerGarbage.cleanup();
+	// END BPC PATCH
+
 	EffectList::iterator p = sharedList().find(effectID);
 	if (p != sharedList().end())
 	{
@@ -584,9 +689,14 @@ void OpenSLEngine::setEffectState(unsigned int effectID, int state, bool isClear
 				vector<AudioPlayer*>::reverse_iterator r_iter = vec->rbegin();
 				for (int i = 1, size = vec->size() ; i < size ; ++ i)
 				{
-					destroyAudioPlayer(*r_iter);
+					// BPC PATCH GI-936 
+					AudioPlayer* player = *r_iter;
 					r_iter ++;
 					vec->pop_back();
+
+					destroyAudioPlayer(player);
+					delete player;
+					// END BPC PATCH
 				}
 			}
 			else
@@ -607,6 +717,11 @@ void OpenSLEngine::setEffectState(unsigned int effectID, int state, bool isClear
 
 void OpenSLEngine::setAllEffectState(int state)
 {
+	// BPC PATCH GI-936 
+	// Cleanup in case we have dead players.
+	s_audioPlayerGarbage.cleanup();
+	// END BPC PATCH
+
 	EffectList::iterator p;
 	for (p = sharedList().begin(); p != sharedList().end(); p ++)
 	{
@@ -620,6 +735,10 @@ void OpenSLEngine::setAllEffectState(int state)
 
 void OpenSLEngine::resumeEffect(unsigned int effectID)
 {
+	// BPC PATCH GI-936 
+	// Cleanup in case we have dead players.
+	s_audioPlayerGarbage.cleanup();
+	// END BPC PATCH
 	EffectList::iterator p = sharedList().find(effectID);
 	if (p != sharedList().end())
 	{
@@ -633,6 +752,11 @@ void OpenSLEngine::resumeEffect(unsigned int effectID)
 
 void OpenSLEngine::resumeAllEffects()
 {
+	// BPC PATCH GI-936 
+	// Cleanup in case we have dead players.
+	s_audioPlayerGarbage.cleanup();
+	// END BPC PATCH
+
 	int state;
 	EffectList::iterator p;
 	for (p = sharedList().begin(); p != sharedList().end() ; ++ p)
@@ -647,6 +771,11 @@ void OpenSLEngine::resumeAllEffects()
 
 void OpenSLEngine::setEffectLooping(unsigned int effectID, bool isLooping)
 {
+	// BPC PATCH GI-936 
+	// Cleanup in case we have dead players.
+	s_audioPlayerGarbage.cleanup();
+	// END BPC PATCH
+
 	SLresult result;
 	vector<AudioPlayer*>* vec = sharedList()[effectID];
 	assert(NULL != vec);
@@ -664,6 +793,11 @@ void OpenSLEngine::setEffectLooping(unsigned int effectID, bool isLooping)
 
 void OpenSLEngine::setEffectsVolume(float volume)
 {
+	// BPC PATCH GI-936 
+	// Cleanup in case we have dead players.
+	s_audioPlayerGarbage.cleanup();
+	// END BPC PATCH
+
 	assert(volume <= 1.0f && volume >= 0.0f);
 	m_effectVolume = int (RANGE_VOLUME_MILLIBEL * volume) + MIN_VOLUME_MILLIBEL;
 	
