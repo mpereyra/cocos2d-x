@@ -1030,6 +1030,10 @@ CCAffineTransform CCNode::nodeToParentTransform(void)
         }
 
 
+        /*** BPC PATCH - Don't allow non-half positions. ***/
+        x = round(x * 2.0f) / 2.0f;
+        y = round(y * 2.0f) / 2.0f;
+        
         // Build Transform Matrix
         m_tTransform = CCAffineTransformMake( c * m_fScaleX,  s * m_fScaleX,
             -s * m_fScaleY, c * m_fScaleY,
