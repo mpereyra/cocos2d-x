@@ -1,5 +1,7 @@
 #include "OpenSLEngine.h"
 
+// BPC patch GI-917 
+#include <fstream>
 // BPC PATCH GI-936 
 // Cocos doesn't support C++11, but we do so I am going to exploit that.
 #include <mutex>
@@ -344,8 +346,8 @@ bool initAudioPlayer(AudioPlayer* player, const char* filename)
 	if (FILE_NOT_FOUND == fd)
 	{
 		// BPC patch GI-917 (sourced from Cocos commits: 98129dd, a1f5d321)
-		FILE* fp = fopen(filename , "rb");
-		if(fp){
+		std::fstream file(filename , std::fstream::in | std::fstream::binary);
+		if(file.is_open()) {
 			SLDataLocator_URI loc_fd = {SL_DATALOCATOR_URI , (SLchar*)filename};
 			SLDataFormat_MIME format_mime = {SL_DATAFORMAT_MIME, NULL, SL_CONTAINERTYPE_UNSPECIFIED};
 			player->audioSrc.pLocator = &loc_fd;
