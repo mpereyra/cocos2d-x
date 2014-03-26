@@ -7,6 +7,8 @@
 #include <mutex>
 #include <algorithm>
 #include <set>
+#include <memory>
+#include <functional>
 // END BPC PATCH
 
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG,"OPENSL_ENGINE.CPP", __VA_ARGS__)
@@ -183,19 +185,28 @@ public:
 	    {
 	        // Get player
 	    	set<AudioPlayer*>::iterator begin = m_waitingToDestroy.begin();
-	    	AudioPlayer* player = *begin;
+
+			bool should_delete { false };
+			std::unique_ptr<AudioPlayer, std::function<void (AudioPlayer*)> > player
+												{ 	*begin,
+												  	[&](AudioPlayer *ap)
+												  	{ 
+												  		if(should_delete) { delete ap; }
+												   	}
+											    };
 
 	        // Remove from shared list if it is still there (e.g. from a stop).
 			for(EffectList::iterator effectList = sharedList().begin(); effectList != sharedList().end(); effectList++)
 			{
 				vector<AudioPlayer*>* effectPlayers = effectList->second;
-				vector<AudioPlayer*>::iterator effectPlayer = find(effectPlayers->begin(), effectPlayers->end(), player);
+				vector<AudioPlayer*>::iterator effectPlayer = find(effectPlayers->begin(), effectPlayers->end(), player.get());
+
 				if(effectPlayer != effectPlayers->end())
 				{
+					should_delete = true;
 					effectPlayers->erase(effectPlayer);
 					// Destroy it.
-			        destroyAudioPlayer(player);
-			        delete player;
+			        destroyAudioPlayer(player.get());
 		        	// Done
 		        	break;
 				}
