@@ -1,5 +1,9 @@
 #include "OpenSLEngine.h"
 
+// BPC patch GI-917 
+#include <fstream>
+// END BPC PATCH
+
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG,"OPENSL_ENGINE.CPP", __VA_ARGS__)
 
 using namespace std;
@@ -286,8 +290,8 @@ bool initAudioPlayer(AudioPlayer* player, const char* filename)
 	if (FILE_NOT_FOUND == fd)
 	{
 		// BPC patch GI-917 (sourced from Cocos commits: 98129dd, a1f5d321)
-		FILE* fp = fopen(filename , "rb");
-		if(fp){
+		std::fstream file(filename , std::fstream::in | std::fstream::binary);
+		if(file.is_open()) {
 			SLDataLocator_URI loc_fd = {SL_DATALOCATOR_URI , (SLchar*)filename};
 			SLDataFormat_MIME format_mime = {SL_DATAFORMAT_MIME, NULL, SL_CONTAINERTYPE_UNSPECIFIED};
 			player->audioSrc.pLocator = &loc_fd;
