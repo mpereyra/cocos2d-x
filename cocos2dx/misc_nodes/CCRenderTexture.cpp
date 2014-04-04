@@ -456,10 +456,7 @@ bool CCRenderTexture::saveToFile(const char *fileName, tCCImageFormat format)
 /* get buffer as CCImage */
 CCImage* CCRenderTexture::newCCImage()
 {
-    // BPC PATCH : RGB888 texture is still 32 bit, in the CCTexture2D.
-    // Using RGB888 fixes problems with rendering of alpha values.
-    CCAssert(m_ePixelFormat == kCCTexture2DPixelFormat_RGBA8888 ||
-             m_ePixelFormat == kCCTexture2DPixelFormat_RGB888, "only RGBA8888 can be saved as image");
+    CCAssert(m_ePixelFormat == kCCTexture2DPixelFormat_RGBA8888, "only RGBA8888 can be saved as image");
 
     if (NULL == m_pTexture)
     {
