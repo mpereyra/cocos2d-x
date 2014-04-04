@@ -428,7 +428,7 @@ bool CCRenderTexture::saveToFile(const char *szFilePath)
     CCImage *pImage = newCCImage();
     if (pImage)
     {
-        bRet = pImage->saveToFile(szFilePath, kCCImageFormatJPEG);
+        bRet = pImage->saveToFile(szFilePath);
     }
 
     CC_SAFE_DELETE(pImage);
