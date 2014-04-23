@@ -106,6 +106,7 @@ static CDBufferManager *bufferManager = nil;
     [am setMode:kAMM_FxOnly];
     //end BPC patch
     [am pauseBackgroundMusic];
+    [am beginInterruption];
 }    
 
 -(void) resumeBackgroundMusic {
@@ -113,6 +114,7 @@ static CDBufferManager *bufferManager = nil;
     [am setMode:kAMM_FxPlusMusicIfNoOtherAudio];
     //end BPC Patch
     [am resumeBackgroundMusic];
+    [am endInterruption];
 }    
 
 -(void) rewindBackgroundMusic {
