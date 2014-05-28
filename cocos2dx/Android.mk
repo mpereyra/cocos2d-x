@@ -145,17 +145,18 @@ LOCAL_EXPORT_LDLIBS := -llog\
 LOCAL_C_INCLUDES := $(LOCAL_PATH) \
                     $(LOCAL_PATH)/include \
                     $(LOCAL_PATH)/kazmath/include \
-                    $(LOCAL_PATH)/platform/android
+                    $(LOCAL_PATH)/platform/android \
+                    $(LOCAL_PATH)/../../ogre/dependencies/libfreeimage/include/LibPNG \
+                    $(LOCAL_PATH)/../../ogre/dependencies/libfreeimage/include/LibJPEG \
+                    $(LOCAL_PATH)/../../ogre/dependencies/libfreeimage/include/LibTIFF
 
 LOCAL_LDLIBS := -lGLESv2 \
                 -lEGL \
                 -llog \
                 -lz 
 
-LOCAL_WHOLE_STATIC_LIBRARIES := cocos_libpng_static
-LOCAL_WHOLE_STATIC_LIBRARIES += cocos_jpeg_static
-LOCAL_WHOLE_STATIC_LIBRARIES += cocos_libxml2_static
-LOCAL_WHOLE_STATIC_LIBRARIES += cocos_libtiff_static
+LOCAL_WHOLE_STATIC_LIBRARIES := cocos_libxml2_static
+LOCAL_WHOLE_STATIC_LIBRARIES += libfreeimage
 
 # define the macro to compile through support/zip_support/ioapi.c                
 LOCAL_CFLAGS := -DUSE_FILE32API
@@ -164,7 +165,7 @@ LOCAL_EXPORT_CFLAGS := -DUSE_FILE32API
 include $(BUILD_STATIC_LIBRARY)
 
 $(call import-add-path,$(LOCAL_PATH)/platform/third_party/android/prebuilt)
-$(call import-module,libjpeg)
-$(call import-module,libpng)
+$(call import-add-path, $(LOCAL_PATH)/../../ogre/dependencies)
+
 $(call import-module,libxml2)
-$(call import-module,libtiff)
+$(call import-module,libfreeimage)
