@@ -49,9 +49,9 @@ extern PFNGLGENVERTEXARRAYSOESPROC glGenVertexArraysOESEXT;
 extern PFNGLBINDVERTEXARRAYOESPROC glBindVertexArrayOESEXT;
 extern PFNGLDELETEVERTEXARRAYSOESPROC glDeleteVertexArraysOESEXT;
 
-#define glGenVertexArraysOES glGenVertexArraysOESEXT
-#define glBindVertexArrayOES glBindVertexArrayOESEXT
-#define glDeleteVertexArraysOES glDeleteVertexArraysOESEXT
+//#define glGenVertexArraysOES glGenVertexArraysOESEXT
+//#define glBindVertexArrayOES glBindVertexArrayOESEXT
+//#define glDeleteVertexArraysOES glDeleteVertexArraysOESEXT
 
 
 #endif // __CCGL_H__
