@@ -68,6 +68,8 @@ protected:
 private:
     /// todo: void addImageWithAsyncObject(CCAsyncObject* async);
     void addImageAsyncCallBack(float dt);
+    void executeCallbacks(std::string const & filename, CCTexture2D * const texture=nullptr);
+    void decrementAsyncRefCount();
 
 public:
     /* BPC PATCH */
