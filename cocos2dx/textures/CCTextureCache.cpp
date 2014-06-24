@@ -68,6 +68,7 @@ typedef struct _ImageInfo
     CCTextureATC *atcTexture;
     class CCTexturePVR *pvrTexture;
 	CCImage::EImageFormat imageType;
+    bool hasTexture() { return image || dxtTexture || atcTexture || pvrTexture; }
 } ImageInfo;
 
 static void (*s_asyncCallback)(CCTextureCache::AsyncCallback const &) = NULL;
@@ -176,9 +177,8 @@ static void* loadImage(void* data)
             if(!pvr->initWithContentsOfFileAsync(pAsyncStruct->filename.c_str()))
             {
                 CCLOG("unable to load PVR %s", pAsyncStruct->filename.c_str());
-                pvr = NULL;
-                delete pAsyncStruct;
-                continue;
+                delete pvr;
+                pvr = nullptr;
             }
         }
         else if(pAsyncStruct->filename.find(".dxt") != std::string::npos)
@@ -191,9 +191,8 @@ static void* loadImage(void* data)
             if(!dxt)
             {
                 CCLOG("unable to load DXT %s", pAsyncStruct->filename.c_str());
-                dxt = NULL;
-                delete pAsyncStruct;
-                continue;
+                delete dxt;
+                dxt = nullptr;
             }
         }
         else if(pAsyncStruct->filename.find(".atc") != std::string::npos)
@@ -206,9 +205,8 @@ static void* loadImage(void* data)
             if(!atc)
             {
                 CCLOG("unable to load ATC %s", pAsyncStruct->filename.c_str());
-                atc = NULL;
-                delete pAsyncStruct;
-                continue;
+                delete atc;
+                atc = nullptr;
             }
         }
         else
@@ -220,31 +218,28 @@ static void* loadImage(void* data)
             if (imageType == CCImage::kFmtUnKnown)
             {
                 CCLOG("unsupported format %s",filename);
-                delete pAsyncStruct;
-
-                continue;
-            }
-
-            // generate image			
-            pImage = new CCImage();
-            CCLOG("filename: %s", filename);
-            if (! pImage->initWithImageFileThreadSafe(filename, imageType))
-            {
-                delete pImage;
-                delete pAsyncStruct;
-                CCLOG("can not load %s", filename);
-                continue;
+            } else {
+                // generate image
+                pImage = new CCImage();
+                if (! pImage->initWithImageFileThreadSafe(filename, imageType))
+                {
+                    CCLOG("can not load %s", filename);
+                    delete pImage;
+                    pImage=nullptr;
+                }
             }
         }
 
+        
         // generate image info
         ImageInfo *pImageInfo = new ImageInfo();
         pImageInfo->asyncStruct = pAsyncStruct;
+        pImageInfo->imageType = imageType;
+        // if failed to load, all textures below are NULL
         pImageInfo->image = pImage;
         pImageInfo->dxtTexture = dxt;
         pImageInfo->atcTexture = atc;
         pImageInfo->pvrTexture = pvr;
-        pImageInfo->imageType = imageType;
 
         // put the image info into the queue
         pthread_mutex_lock(&s_ImageInfoMutex);
@@ -548,10 +543,18 @@ void CCTextureCache::addImageAsyncCallBack(float dt)
                 pthread_mutex_unlock(&s_ImageInfoMutex);
                 
                 AsyncStruct *pAsyncStruct = pImageInfo->asyncStruct;
-                CCImage *pImage = pImageInfo->image;
-                
                 const char* filename = pAsyncStruct->filename.c_str();
-                
+
+                if(!pImageInfo->hasTexture()) {
+                    executeCallbacks(filename);
+                    delete pAsyncStruct;
+                    delete pImageInfo;
+                    decrementAsyncRefCount();
+                    continue;
+                }
+
+                CCImage *pImage = pImageInfo->image;
+
                 // generate texture in render thread
                 CCTexturePVR *pvrTexture(pImageInfo->pvrTexture);
 #ifdef ANDROID
@@ -613,46 +616,55 @@ void CCTextureCache::addImageAsyncCallBack(float dt)
                     texture->autorelease();
                 }
                 
-                pthread_mutex_lock(&s_callbacksMutex);
-                /* Get a copy of the functors and clear the original. */
-                std::vector<Functor> functors((*s_pCallbacks)[filename]);
-                (*s_pCallbacks).erase(filename);
-                pthread_mutex_unlock(&s_callbacksMutex);
-                
-                for(std::vector<Functor>::iterator it(functors.begin()); it != functors.end(); ++it)
-                {
-                    /* Copy the functor and remove the original. */
-                    Functor const f(*it);
-                    functors.erase(it--);
-                    
-                    CCObject * const target(f.first);
-                    CCTextureCache::AsyncCallback::Func const selector(f.second);
-                    if (target && selector)
-                    {
-                        /* Allow the game to specify its own way to handle/throttle callbacks. */
-                        if(s_asyncCallback)
-                        { s_asyncCallback(CCTextureCache::AsyncCallback(target, selector, texture, filename)); }
-                        else
-                        { (target->*selector)(texture, filename); }
-                        
-                        /* It's important that this was removed from the functors
-                         * collection first, since the target's dtor could look into
-                         * the functor to remove itself, thus causing a double deletion. */
-                        target->release();
-                    }		
-                }
-                
-                if(pImage)
-                { pImage->release(); }
+                executeCallbacks(filename, texture);
+                decrementAsyncRefCount();
                 delete pAsyncStruct;
                 delete pImageInfo;
                 
-                --s_nAsyncRefCount;
-                if (0 == s_nAsyncRefCount)
-                {
-                    CCDirector::sharedDirector()->getScheduler()->unscheduleSelector(schedule_selector(CCTextureCache::addImageAsyncCallBack), this);
-                }
+                if(pImage)
+                { pImage->release(); }
+
+                
             }
+        }
+    }
+}
+
+void CCTextureCache::decrementAsyncRefCount() {
+    --s_nAsyncRefCount;
+    if (0 == s_nAsyncRefCount)
+    {
+        CCDirector::sharedDirector()->getScheduler()->unscheduleSelector(schedule_selector(CCTextureCache::addImageAsyncCallBack), this);
+    }
+}
+
+void CCTextureCache::executeCallbacks(const std::string & filename, cocos2d::CCTexture2D * const texture) {
+    pthread_mutex_lock(&s_callbacksMutex);
+    /* Get a copy of the functors and clear the original. */
+    std::vector<Functor> functors((*s_pCallbacks)[filename]);
+    (*s_pCallbacks).erase(filename);
+    pthread_mutex_unlock(&s_callbacksMutex);
+    
+    for(std::vector<Functor>::iterator it(functors.begin()); it != functors.end(); ++it)
+    {
+        /* Copy the functor and remove the original. */
+        Functor const f(*it);
+        functors.erase(it--);
+        
+        CCObject * const target(f.first);
+        CCTextureCache::AsyncCallback::Func const selector(f.second);
+        if (target && selector)
+        {
+            /* Allow the game to specify its own way to handle/throttle callbacks. */
+            if(s_asyncCallback)
+            { s_asyncCallback(CCTextureCache::AsyncCallback(target, selector, texture, filename)); }
+            else
+            { (target->*selector)(texture, filename); }
+            
+            /* It's important that this was removed from the functors
+             * collection first, since the target's dtor could look into
+             * the functor to remove itself, thus causing a double deletion. */
+            target->release();
         }
     }
 }
