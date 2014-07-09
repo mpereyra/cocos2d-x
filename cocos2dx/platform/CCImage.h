@@ -48,6 +48,7 @@ public:
         // BPC PATCH
         kFmtPVR,
         kFmtDDS,
+        kFmtASTC,
         // END BPC PATCH
         kFmtRawData,
         kFmtUnKnown
