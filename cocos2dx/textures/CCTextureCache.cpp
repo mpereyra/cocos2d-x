@@ -77,7 +77,7 @@ static pthread_t s_loadingThread;
 
 static pthread_mutex_t      s_callbacksMutex;
 static pthread_mutex_t		s_asyncStructQueueMutex;
-static pthread_mutex_t      s_ImageInfoMutex;
+static pthread_mutex_t      s_imageInfoMutex;
 
 static sem_t* s_pSem = NULL;
 static unsigned long s_nAsyncRefCount = 0;
@@ -99,9 +99,9 @@ static sem_t s_sem;
 static bool need_quit = false;
 
 typedef std::map<std::string, std::vector<Functor> > Callbacks_t;
-static Callbacks_t* s_pCallbacks = NULL;
-static std::queue<AsyncStruct*>* s_pAsyncStructQueue = NULL;
-static std::list<ImageInfo*>*   s_pImageQueue = NULL;
+static Callbacks_t s_callbacks;
+static std::queue<AsyncStruct*> s_asyncStructQueue;
+static std::list<ImageInfo*> s_imageQueue;
 
 static CCImage::EImageFormat computeImageFormatType(string& filename)
 {
@@ -141,9 +141,8 @@ static void* loadImage(void* data)
             break;
         }
 
-        std::queue<AsyncStruct*> *pQueue = s_pAsyncStructQueue;
-
         pthread_mutex_lock(&s_asyncStructQueueMutex);// get async struct from queue
+        std::queue<AsyncStruct*> *pQueue = &s_asyncStructQueue;
         if (pQueue->empty())
         {
             pthread_mutex_unlock(&s_asyncStructQueueMutex);
@@ -219,12 +218,12 @@ static void* loadImage(void* data)
             {
                 CCLOG("unsupported format %s",filename);
             } else {
-                // generate image
-                pImage = new CCImage();
-                if (! pImage->initWithImageFileThreadSafe(filename, imageType))
-                {
+            // generate image			
+            pImage = new CCImage();
+            if (! pImage->initWithImageFileThreadSafe(filename, imageType))
+            {
                     CCLOG("can not load %s", filename);
-                    delete pImage;
+                delete pImage;
                     pImage=nullptr;
                 }
             }
@@ -242,9 +241,9 @@ static void* loadImage(void* data)
         pImageInfo->pvrTexture = pvr;
 
         // put the image info into the queue
-        pthread_mutex_lock(&s_ImageInfoMutex);
-        s_pImageQueue->push_back(pImageInfo);
-        pthread_mutex_unlock(&s_ImageInfoMutex);	
+        pthread_mutex_lock(&s_imageInfoMutex);
+        s_imageQueue.push_back(pImageInfo);
+        pthread_mutex_unlock(&s_imageInfoMutex);	
     }
 
     if( s_pSem != NULL )
@@ -256,9 +255,6 @@ static void* loadImage(void* data)
         sem_destroy(s_pSem);
 #endif
         s_pSem = NULL;
-        delete s_pCallbacks;
-        delete s_pAsyncStructQueue;
-        delete s_pImageQueue;
     }
 
     return 0;
@@ -312,6 +308,10 @@ CCTextureCache::CCTextureCache()
 {
 	CCAssert(g_sharedTextureCache == NULL, "Attempted to allocate a second instance of a singleton.");
 	
+    pthread_mutex_init(&s_asyncStructQueueMutex, NULL);
+    pthread_mutex_init(&s_callbacksMutex, NULL);
+    pthread_mutex_init(&s_imageInfoMutex, NULL);
+
     m_pTextures = new CCDictionary();
 }
 
@@ -361,8 +361,8 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target,
     texture = (CCTexture2D*)m_pTextures->objectForKey(fullpath.c_str());
     bool alreadyFailed = m_failedTextures.find(fullpath) != m_failedTextures.end();
 
-    /* s_pCallbacks is lazily initialized. */
-    if(s_pCallbacks && target)
+    /* s_callbacks is lazily initialized. */
+    if(target)
     {
       /* Has this requester already requested a file? (ignore the previous) */
       removeAsyncImage(target);
@@ -399,12 +399,6 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target,
         }
         s_pSem = &s_sem;
 #endif
-        s_pCallbacks = new Callbacks_t();
-        s_pAsyncStructQueue = new queue<AsyncStruct*>();
-        s_pImageQueue = new list<ImageInfo*>();        
-
-		pthread_mutex_init(&s_asyncStructQueueMutex, NULL);
-		pthread_mutex_init(&s_ImageInfoMutex, NULL);
 		pthread_create(&s_loadingThread, NULL, loadImage, NULL);
 
 		need_quit = false;
@@ -420,8 +414,8 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target,
     pthread_mutex_lock(&s_callbacksMutex);
     
     /* Has someone already requested this file? (attach to the previous) */
-    Callbacks_t::iterator const it(s_pCallbacks->find(fullpath));
-    if(it != s_pCallbacks->end())
+    Callbacks_t::iterator const it(s_callbacks.find(fullpath));
+    if(it != s_callbacks.end())
     {
       /* We have multiple requests for the same file. */
       Functor const f(target, selector);
@@ -445,12 +439,12 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target,
 
 	// add async struct into queue
 	pthread_mutex_lock(&s_asyncStructQueueMutex);
-	s_pAsyncStructQueue->push(data);
+	s_asyncStructQueue.push(data);
 
     /* Add callback. */
     Functor const functor(target, selector);
     pthread_mutex_lock(&s_callbacksMutex);
-    (*s_pCallbacks)[fullpath].push_back(functor);
+    s_callbacks[fullpath].push_back(functor);
 
     pthread_mutex_unlock(&s_callbacksMutex);
 	pthread_mutex_unlock(&s_asyncStructQueueMutex);
@@ -463,12 +457,9 @@ void CCTextureCache::setAsyncImageCallback(void (*callback)(AsyncCallback const 
 
 void CCTextureCache::removeAsyncImage(CCObject * const target)
 {
-    if(s_pCallbacks == nullptr) {
-        return;
-    }
     pthread_mutex_lock(&s_callbacksMutex);
 
-    for(Callbacks_t::iterator it(s_pCallbacks->begin()); it != s_pCallbacks->end(); ++it)
+    for(Callbacks_t::iterator it(s_callbacks.begin()); it != s_callbacks.end(); ++it)
     {
       for(std::vector<Functor>::iterator fit(it->second.begin()); fit != it->second.end(); ++fit)
       {
@@ -489,58 +480,58 @@ void CCTextureCache::removeAllAsyncImages()
 {
     /* Wipe out _all the things_. */
     pthread_mutex_lock(&s_asyncStructQueueMutex);
-    pthread_mutex_lock(&s_ImageInfoMutex);
+    pthread_mutex_lock(&s_imageInfoMutex);
     pthread_mutex_lock(&s_callbacksMutex);
-    while(!s_pAsyncStructQueue->empty())
+    while(!s_asyncStructQueue.empty())
     {
-        AsyncStruct * const pAsyncStruct{ s_pAsyncStructQueue->front() };
-        s_pAsyncStructQueue->pop();
+        AsyncStruct * const pAsyncStruct{ s_asyncStructQueue.front() };
+        s_asyncStructQueue.pop();
         delete pAsyncStruct;
     }
-    while(!s_pImageQueue->empty())
+    while(!s_imageQueue.empty())
     {
-        ImageInfo * const pImageInfo{ s_pImageQueue->front() };
-        s_pImageQueue->pop_front();
+        ImageInfo * const pImageInfo{ s_imageQueue.front() };
+        s_imageQueue.pop_front();
         delete pImageInfo;
     }
-    while(!s_pCallbacks->empty())
+    while(!s_callbacks.empty())
     {
-        Callbacks_t::iterator const it{ s_pCallbacks->begin() };
+        Callbacks_t::iterator const it{ s_callbacks.begin() };
         for(auto const &fit : it->second)
         { fit.first->release(); }
-        s_pCallbacks->erase(it);
+        s_callbacks.erase(it);
     }
     pthread_mutex_unlock(&s_callbacksMutex);
-    pthread_mutex_unlock(&s_ImageInfoMutex);
+    pthread_mutex_unlock(&s_imageInfoMutex);
     pthread_mutex_unlock(&s_asyncStructQueueMutex);
 }
 
 void CCTextureCache::addImageAsyncCallBack(float dt)
 {
-    pthread_mutex_lock(&s_ImageInfoMutex);
+    pthread_mutex_lock(&s_imageInfoMutex);
     // the image is generated in loading thread
-    list<ImageInfo*> *imagesQueue = s_pImageQueue;
+    list<ImageInfo*> *imagesQueue = &s_imageQueue;
 
     if (imagesQueue->empty())
     {
-        pthread_mutex_unlock(&s_ImageInfoMutex);
+        pthread_mutex_unlock(&s_imageInfoMutex);
     }
     else
     {
-        pthread_mutex_unlock(&s_ImageInfoMutex);
+        pthread_mutex_unlock(&s_imageInfoMutex);
         while(true)
         {
-            pthread_mutex_lock(&s_ImageInfoMutex);
+            pthread_mutex_lock(&s_imageInfoMutex);
             if(imagesQueue->empty())
             {
-                pthread_mutex_unlock(&s_ImageInfoMutex);
+                pthread_mutex_unlock(&s_imageInfoMutex);
                 return;
             }
             else
             {
                 ImageInfo *pImageInfo = imagesQueue->front();
                 imagesQueue->pop_front();
-                pthread_mutex_unlock(&s_ImageInfoMutex);
+                pthread_mutex_unlock(&s_imageInfoMutex);
                 
                 AsyncStruct *pAsyncStruct = pImageInfo->asyncStruct;
                 const char* filename = pAsyncStruct->filename.c_str();
@@ -554,7 +545,7 @@ void CCTextureCache::addImageAsyncCallBack(float dt)
                 }
 
                 CCImage *pImage = pImageInfo->image;
-
+                
                 // generate texture in render thread
                 CCTexturePVR *pvrTexture(pImageInfo->pvrTexture);
 #ifdef ANDROID
@@ -639,34 +630,34 @@ void CCTextureCache::decrementAsyncRefCount() {
 }
 
 void CCTextureCache::executeCallbacks(const std::string & filename, cocos2d::CCTexture2D * const texture) {
-    pthread_mutex_lock(&s_callbacksMutex);
-    /* Get a copy of the functors and clear the original. */
-    std::vector<Functor> functors((*s_pCallbacks)[filename]);
-    (*s_pCallbacks).erase(filename);
-    pthread_mutex_unlock(&s_callbacksMutex);
-    
-    for(std::vector<Functor>::iterator it(functors.begin()); it != functors.end(); ++it)
-    {
-        /* Copy the functor and remove the original. */
-        Functor const f(*it);
-        functors.erase(it--);
-        
-        CCObject * const target(f.first);
-        CCTextureCache::AsyncCallback::Func const selector(f.second);
-        if (target && selector)
-        {
-            /* Allow the game to specify its own way to handle/throttle callbacks. */
-            if(s_asyncCallback)
-            { s_asyncCallback(CCTextureCache::AsyncCallback(target, selector, texture, filename)); }
-            else
-            { (target->*selector)(texture, filename); }
-            
-            /* It's important that this was removed from the functors
-             * collection first, since the target's dtor could look into
-             * the functor to remove itself, thus causing a double deletion. */
-            target->release();
-        }
-    }
+                pthread_mutex_lock(&s_callbacksMutex);
+                /* Get a copy of the functors and clear the original. */
+                std::vector<Functor> functors(s_callbacks[filename]);
+                s_callbacks.erase(filename);
+                pthread_mutex_unlock(&s_callbacksMutex);
+                
+                for(std::vector<Functor>::iterator it(functors.begin()); it != functors.end(); ++it)
+                {
+                    /* Copy the functor and remove the original. */
+                    Functor const f(*it);
+                    functors.erase(it--);
+                    
+                    CCObject * const target(f.first);
+                    CCTextureCache::AsyncCallback::Func const selector(f.second);
+                    if (target && selector)
+                    {
+                        /* Allow the game to specify its own way to handle/throttle callbacks. */
+                        if(s_asyncCallback)
+                        { s_asyncCallback(CCTextureCache::AsyncCallback(target, selector, texture, filename)); }
+                        else
+                        { (target->*selector)(texture, filename); }
+                        
+                        /* It's important that this was removed from the functors
+                         * collection first, since the target's dtor could look into
+                         * the functor to remove itself, thus causing a double deletion. */
+                        target->release();
+                    }		
+                }
 }
 
 
