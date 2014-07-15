@@ -30,6 +30,7 @@ THE SOFTWARE.
 #include "CCTextureDXT.h"
 #include "CCTextureATC.h"
 #include "CCTexturePVR.h"
+#include "CCTextureASTC.h"
 #include "ccMacros.h"
 #include "CCDirector.h"
 #include "platform/platform.h"
@@ -66,9 +67,10 @@ typedef struct _ImageInfo
 	CCImage		*image;
     CCTextureDXT *dxtTexture;
     CCTextureATC *atcTexture;
+    CCTextureASTC *astcTexture;
     class CCTexturePVR *pvrTexture;
 	CCImage::EImageFormat imageType;
-    bool hasTexture() { return image || dxtTexture || atcTexture || pvrTexture; }
+    bool hasTexture() { return image || dxtTexture || atcTexture || pvrTexture || astcTexture; }
 } ImageInfo;
 
 static void (*s_asyncCallback)(CCTextureCache::AsyncCallback const &) = NULL;
@@ -163,6 +165,7 @@ static void* loadImage(void* data)
         CCTexturePVR *pvr(NULL);
         CCTextureDXT *dxt(NULL);
         CCTextureATC *atc(NULL);
+        CCTextureASTC *astc(NULL);
         CCImage *pImage(NULL);
         CCImage::EImageFormat imageType(CCImage::kFmtUnKnown);
         if(pAsyncStruct->filename.find(".pvr") != std::string::npos)
@@ -208,6 +211,21 @@ static void* loadImage(void* data)
                 atc = nullptr;
             }
         }
+        else if(pAsyncStruct->filename.find(".astc") != std::string::npos)
+        {
+            /* imageType still has to be set for reloadAllTextures(). */
+            imageType = CCImage::kFmtASTC;
+            /* PVR textures are loaded from disk on this (background) thread
+             * and then their GL names will be generated once they get pulled
+             * out onto the main thread. */
+            astc = new CCTextureASTC;
+            if(!astc->initWithContentsOfFileAsync(pAsyncStruct->filename.c_str()))
+            {
+                CCLOG("unable to load ASTC %s", pAsyncStruct->filename.c_str());
+                delete astc;
+                astc = nullptr;
+            }
+        }
         else
         {
             const char *filename = pAsyncStruct->filename.c_str();
@@ -239,6 +257,7 @@ static void* loadImage(void* data)
         pImageInfo->dxtTexture = dxt;
         pImageInfo->atcTexture = atc;
         pImageInfo->pvrTexture = pvr;
+        pImageInfo->astcTexture = astc;
 
         // put the image info into the queue
         pthread_mutex_lock(&s_imageInfoMutex);
@@ -551,6 +570,7 @@ void CCTextureCache::addImageAsyncCallBack(float dt)
 #ifdef ANDROID
                 CCTextureDXT *dxtTexture(pImageInfo->dxtTexture);
                 CCTextureATC *atcTexture(pImageInfo->atcTexture);
+                CCTextureASTC *astcTexture(pImageInfo->astcTexture);
 #endif
                 CCTexture2D *texture(new CCTexture2D);
                 bool success = false;
@@ -578,6 +598,12 @@ void CCTextureCache::addImageAsyncCallBack(float dt)
                     { success = texture->initWithATCFileAsync(atcTexture); }
                     delete atcTexture;
                     atcTexture = NULL;
+                }
+                else if(astcTexture){
+                    if(astcTexture->createGLTexture())
+                    { success = texture->initWithASTCFileAsync(astcTexture); }
+                    delete astcTexture;
+                    astcTexture = NULL;
                 }
 #endif
                 else
@@ -715,6 +741,10 @@ CCTexture2D * CCTextureCache::addImage(const char * path)
             else if(std::string::npos != lowerCase.find(".dds"))
             {
                 texture = this->addDDSImage(fullpath.c_str());
+            }
+            else if(std::string::npos != lowerCase.find(".astc"))
+            {
+                texture = this->addASTCImage(fullpath.c_str());
             }
 #endif
             else
@@ -881,6 +911,37 @@ CCTexture2D * CCTextureCache::addDDSImage(const char* path)
         delete tex;
         return NULL;
 	}
+}
+
+CCTexture2D * CCTextureCache::addASTCImage(const char* path)
+{
+	CCAssert(path != NULL, "TextureCache: fileimage MUST not be nill");
+	CCTexture2D * tex;
+	std::string key(path);
+    
+	if( (tex = (CCTexture2D*)m_pTextures->objectForKey(key)) )
+	{
+		return tex;
+	}
+    
+    // Split up directory and filename
+    std::string fullpath = CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(key.c_str());
+	tex = new CCTexture2D();
+	if( tex->initWithASTCFile(fullpath.c_str()) )
+	{
+#if CC_ENABLE_CACHE_TEXTURE_DATA
+        // cache the texture file name
+        VolatileTexture::addImageTexture(tex, fullpath.c_str(), CCImage::kFmtASTC);
+#endif
+		m_pTextures->setObject(tex, key);
+		tex->autorelease();
+	}
+	else
+	{
+		CCLOG("cocos2d: Couldn't add ASTCImage:%s in CCTextureCache",key.c_str());
+        CC_SAFE_DELETE(tex);
+	}
+    return tex;
 }
 // BPC PATCH END
 #endif

@@ -48,6 +48,7 @@ THE SOFTWARE.
 #include "CCTextureATC.h"
 #include "CCTextureDXT.h"
 #include "CCDDS.h"
+#include "CCTextureASTC.h"
 #endif
 #if CC_ENABLE_CACHE_TEXTURE_DATA
     #include "CCTextureCache.h"
@@ -706,6 +707,37 @@ bool CCTexture2D::initWithATCFileAsync(CCTextureATC * const atc)
     return true;
 }
 
+bool CCTexture2D::initWithASTCFileAsync(CCTextureASTC * const astc)
+{
+    if(!astc)
+        return false;
+    // nothing to do with CCObject::init
+    
+    
+    astc->setRetainName(true); // don't dealloc texture on release
+    m_uName = astc->getName();
+    m_fMaxS = 1.0f;
+    m_fMaxT = 1.0f;
+    m_uPixelsWide = astc->getWidth();
+    m_uPixelsHigh = astc->getHeight();
+    
+    CCConfiguration *conf = CCConfiguration::sharedConfiguration();
+	unsigned const maxTextureSize = conf->getMaxTextureSize();
+    if (m_uPixelsWide > maxTextureSize || m_uPixelsHigh > maxTextureSize)
+	{
+        CCLOG("cocos2d: WARNING: ASTC texture (%u x %u) is bigger than the supported %u x %u", m_uPixelsWide, m_uPixelsHigh, maxTextureSize, maxTextureSize);
+		this->release();
+		return false;
+	}
+    
+    m_tContentSize = CCSizeMake(m_uPixelsWide, m_uPixelsHigh);
+    m_bHasPremultipliedAlpha = false;
+    m_ePixelFormat = astc->getFormat();
+    this->setAntiAliasTexParameters();
+    
+    return true;
+}
+
 // BPC PATCH START
 bool CCTexture2D::initWithDDSFile(const char* file)
 {
@@ -779,6 +811,39 @@ bool CCTexture2D::initWithDDSFile(const char* file)
     
     return bRet;
 }
+
+bool CCTexture2D::initWithASTCFile(const char* file)
+{
+    bool bRet = false;
+    // nothing to do with CCObject::init
+    
+    CCTextureASTC *astc = new cocos2d::CCTextureASTC;
+    bRet = astc->initWithContentsOfFile(file);
+    
+    if (bRet)
+    {
+        astc->setRetainName(true); // don't dealloc texture on release
+        
+        m_uName = astc->getName();
+        m_fMaxS = 1.0f;
+        m_fMaxT = 1.0f;
+        m_uPixelsWide = astc->getWidth();
+        m_uPixelsHigh = astc->getHeight();
+        m_tContentSize = CCSizeMake((float)m_uPixelsWide, (float)m_uPixelsHigh);
+        m_bHasPremultipliedAlpha = false;
+        m_ePixelFormat = astc->getFormat();
+        m_bHasMipmaps = false;
+        
+        astc->release();
+    }
+    else
+    {
+        CCLOG("cocos2d: Couldn't load ASTC image %s", file);
+    }
+    
+    return bRet;
+}
+
 // BPC PATCH END
 #endif
 
