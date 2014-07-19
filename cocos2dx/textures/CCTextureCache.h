@@ -203,6 +203,7 @@ public:
     // BPC PATCH
 #ifdef ANDROID
 	CCTexture2D* addDDSImage(const char* filename);
+    CCTexture2D* addASTCImage(const char* filename);
 #endif
     
     /** Returns a Texture2D object given an PVR filename

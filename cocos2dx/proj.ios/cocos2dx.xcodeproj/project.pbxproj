@@ -289,6 +289,8 @@
 		D29C32AC16A7561100C873BD /* CCDDS.h in Headers */ = {isa = PBXBuildFile; fileRef = D29C32AA16A7561100C873BD /* CCDDS.h */; };
 		D29C32AF16A7571600C873BD /* CCTextureDXT.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D29C32AD16A7571600C873BD /* CCTextureDXT.cpp */; };
 		D29C32B016A7571600C873BD /* CCTextureDXT.h in Headers */ = {isa = PBXBuildFile; fileRef = D29C32AE16A7571600C873BD /* CCTextureDXT.h */; };
+		D3996BFF196B619600B2F1BD /* CCTextureASTC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D3996BFD196B619600B2F1BD /* CCTextureASTC.cpp */; };
+		D3996C00196B619600B2F1BD /* CCTextureASTC.h in Headers */ = {isa = PBXBuildFile; fileRef = D3996BFE196B619600B2F1BD /* CCTextureASTC.h */; };
 		D43F7F8A15C7D8BA00D713FC /* CCTouch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D43F7F8915C7D8BA00D713FC /* CCTouch.cpp */; };
 /* End PBXBuildFile section */
 
@@ -579,6 +581,8 @@
 		D29C32AA16A7561100C873BD /* CCDDS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCDDS.h; sourceTree = "<group>"; };
 		D29C32AD16A7571600C873BD /* CCTextureDXT.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCTextureDXT.cpp; sourceTree = "<group>"; };
 		D29C32AE16A7571600C873BD /* CCTextureDXT.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCTextureDXT.h; sourceTree = "<group>"; };
+		D3996BFD196B619600B2F1BD /* CCTextureASTC.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCTextureASTC.cpp; sourceTree = "<group>"; };
+		D3996BFE196B619600B2F1BD /* CCTextureASTC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCTextureASTC.h; sourceTree = "<group>"; };
 		D43F7F8915C7D8BA00D713FC /* CCTouch.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCTouch.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1123,6 +1127,8 @@
 				D29C32AA16A7561100C873BD /* CCDDS.h */,
 				D29C32AD16A7571600C873BD /* CCTextureDXT.cpp */,
 				D29C32AE16A7571600C873BD /* CCTextureDXT.h */,
+				D3996BFD196B619600B2F1BD /* CCTextureASTC.cpp */,
+				D3996BFE196B619600B2F1BD /* CCTextureASTC.h */,
 			);
 			path = textures;
 			sourceTree = "<group>";
@@ -1326,6 +1332,7 @@
 				D29C32A716A7542B00C873BD /* CCTextureATC.h in Headers */,
 				D29C32AC16A7561100C873BD /* CCDDS.h in Headers */,
 				D29C32B016A7571600C873BD /* CCTextureDXT.h in Headers */,
+				D3996C00196B619600B2F1BD /* CCTextureASTC.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1503,6 +1510,7 @@
 				D29C32A616A7542B00C873BD /* CCTextureATC.cpp in Sources */,
 				D29C32AB16A7561100C873BD /* CCDDS.cpp in Sources */,
 				D29C32AF16A7571600C873BD /* CCTextureDXT.cpp in Sources */,
+				D3996BFF196B619600B2F1BD /* CCTextureASTC.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
