@@ -81,6 +81,27 @@ static pthread_mutex_t      s_callbacksMutex;
 static pthread_mutex_t		s_asyncStructQueueMutex;
 static pthread_mutex_t      s_imageInfoMutex;
 
+static pthread_mutex_t      s_pauseMutex;
+static pthread_cond_t       s_pauseCondition;
+static bool                 s_isPaused{false};
+
+void CCTextureCache::pauseAsync() {
+    pthread_mutex_lock(&s_pauseMutex);
+    if (!s_isPaused) {
+        s_isPaused = true;
+    }
+    pthread_mutex_unlock(&s_pauseMutex);
+}
+
+void CCTextureCache::resumeAsync() {
+    pthread_mutex_lock(&s_pauseMutex);
+    if (s_isPaused) {
+        s_isPaused = false;
+        pthread_cond_signal(&s_pauseCondition);
+    }
+    pthread_mutex_unlock(&s_pauseMutex);
+}
+
 static sem_t* s_pSem = NULL;
 static unsigned long s_nAsyncRefCount = 0;
 
@@ -135,6 +156,13 @@ static void* loadImage(void* data)
 
     while (true)
     {
+        // wait for queue pauses
+        pthread_mutex_lock(&s_pauseMutex);
+        while (s_isPaused) {
+            pthread_cond_wait(&s_pauseCondition, &s_pauseMutex);
+        }
+        pthread_mutex_unlock(&s_pauseMutex);
+
         // wait for rendering thread to ask for loading if s_pAsyncStructQueue is empty
         int semWaitRet = sem_wait(s_pSem);
         if( semWaitRet < 0 )
@@ -330,6 +358,8 @@ CCTextureCache::CCTextureCache()
     pthread_mutex_init(&s_asyncStructQueueMutex, NULL);
     pthread_mutex_init(&s_callbacksMutex, NULL);
     pthread_mutex_init(&s_imageInfoMutex, NULL);
+    pthread_mutex_init(&s_pauseMutex, NULL);
+    pthread_cond_init(&s_pauseCondition, NULL);
 
     m_pTextures = new CCDictionary();
 }
