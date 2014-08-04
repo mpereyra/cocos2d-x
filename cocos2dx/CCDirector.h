@@ -120,6 +120,9 @@ public:
     /** Display the FPS on the bottom-left corner */
     inline void setDisplayStats(bool bDisplayStats) { m_bDisplayStats = bDisplayStats; }
     
+    /** production builds shouldn't even create these */
+    inline void setCreateStatesLabel(bool bCreateStats) { m_bCreateStats = bCreateStats; }
+    
     /** seconds per frame */
     inline float getSecondsPerFrame() { return m_fSecondsPerFrame; }
 
@@ -344,6 +347,7 @@ protected:
     bool m_bLandscape;
     
     bool m_bDisplayStats;
+    bool m_bCreateStats;
     float m_fAccumDt;
     float m_fFrameRate;
     
