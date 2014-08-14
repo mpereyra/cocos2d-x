@@ -3,6 +3,7 @@
 #include "platform/CCFileUtils.h"
 #include "CCTexture2D.h"
 #include <cstring>
+#include "support/zip_support/ZipUtils.h"
 using namespace cocos2d;
 
 #define DDS_MAGIC 0x20534444
@@ -150,7 +151,24 @@ bool CCDDS::initWithContentsOfFile(const char* path) {
     // We own the original data, so clean it up
     m_internallyAllocated = true;
     unsigned long size = 0;
-	m_originalData = CCFileUtils::sharedFileUtils()->getFileData(path, "rb", &size);
+    std::string lowerCase(path);
+    for (unsigned int i = 0; i < lowerCase.length(); ++i)
+    {
+        lowerCase[i] = tolower(lowerCase[i]);
+    }
+    
+    if (lowerCase.find(".ccz") != std::string::npos)
+    {
+        size = ZipUtils::ccInflateCCZFile(path, &m_originalData);
+    }
+    else if (lowerCase.find(".gz") != std::string::npos)
+    {
+        size = ZipUtils::ccInflateGZipFile(path, &m_originalData);
+    }
+    else
+    {
+        m_originalData = CCFileUtils::sharedFileUtils()->getFileData(path, "rb", &size);
+    }
     return initWithData(m_originalData, size);
 }
 
