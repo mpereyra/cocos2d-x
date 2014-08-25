@@ -137,6 +137,9 @@ public:
 
     static void removeAllAsyncImages();
 
+    void pauseAsync();
+    void resumeAsync();
+
     /* Returns a Texture2D object given an CGImageRef image
     * If the image was not previously loaded, it will create a new CCTexture2D object and it will return it.
     * Otherwise it will return a reference of a previously loaded image

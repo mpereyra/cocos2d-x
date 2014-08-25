@@ -147,7 +147,7 @@ class CC_DLL CCNode : public CCObject
      */
     float getScale();
     /** The scale factor of the node. 1.0 is the default scale factor. It modifies the X and Y scale at the same time. */
-    void setScale(float scale);
+    virtual void setScale(float scale);
 
     /** The scale factor of the node. 1.0 is the default scale factor. It only modifies the X scale factor. */
     CC_PROPERTY(float, m_fScaleX, ScaleX)

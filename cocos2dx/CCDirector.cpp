@@ -121,6 +121,7 @@ bool CCDirector::init(void)
     m_pSPFLabel = NULL;
     m_pDrawsLabel = NULL;
     m_bDisplayStats = false;
+    m_bCreateStats = true;
     m_uTotalFrames = m_uFrames = 0;
     m_pszFPS = new char[10];
     m_pLastUpdate = new struct cc_timeval();
@@ -304,7 +305,7 @@ void CCDirector::setOpenGLView(CCEGLView *pobOpenGLView)
         m_obWinSizeInPoints = m_pobOpenGLView->getDesignResolutionSize();
         
         createStatsLabel();
-        
+        CCConfiguration::sharedConfiguration();
         if (m_pobOpenGLView)
         {
             setGLDefaultValues();
@@ -738,7 +739,8 @@ void CCDirector::calculateMPF()
 
 void CCDirector::createStatsLabel()
 {
-    if( m_pFPSLabel && m_pSPFLabel ) 
+    if( !m_bCreateStats) return;
+    if( m_pFPSLabel && m_pSPFLabel )
     {
         //CCTexture2D *texture = m_pFPSLabel->getTexture();
 
