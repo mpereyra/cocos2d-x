@@ -207,7 +207,7 @@ static void* loadImage(void* data)
             if(!pvr->initWithContentsOfFileAsync(pAsyncStruct->filename.c_str()))
             {
                 CCLOG("unable to load PVR %s", pAsyncStruct->filename.c_str());
-                delete pvr;
+                // pvr is released if it failed to init, so no delete here
                 pvr = nullptr;
             }
         }
