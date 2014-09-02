@@ -39,7 +39,10 @@ THE SOFTWARE.
 #include "cocoa/CCObject.h"
 #include <set>
 #include <string>
-
+// BPC PATCH START ewww :(
+#include <vector>
+#include "../../../shared/core/Asset/AssetDescriptor.h"
+// BPC PATCH END
 NS_CC_BEGIN
 
 class CCDictionary;
@@ -70,7 +73,7 @@ public:
      * A texture will be loaded automatically. The texture name will composed by replacing the .plist suffix with .png
      * If you want to use another texture, you should use the addSpriteFramesWithFile:texture method.
      */
-    void addSpriteFramesWithFile(const char *pszPlist, bool forceLowRes=false);
+    void addSpriteFramesWithFile(const char *pszPlist, Bpc::Asset::SizingStyle sizingStyle = Bpc::Asset::SizingStyle::kNative);
 
     /** Adds multiple Sprite Frames from a plist file. The texture will be associated with the created sprite frames.
     @since v0.99.5

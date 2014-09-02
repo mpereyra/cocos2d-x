@@ -229,7 +229,7 @@ void CCSpriteFrameCache::addSpriteFramesWithFile(const char* plist, const char* 
     }
 }
 
-void CCSpriteFrameCache::addSpriteFramesWithFile(const char *pszPlist, bool forceLowRes)
+void CCSpriteFrameCache::addSpriteFramesWithFile(const char *pszPlist, Bpc::Asset::SizingStyle sizingStyle)
 {
     CCAssert(pszPlist, "plist filename should not be NULL");
 
@@ -255,7 +255,7 @@ void CCSpriteFrameCache::addSpriteFramesWithFile(const char *pszPlist, bool forc
 
             // DO NOT build texture path relative to plist file;
             // plist may be in bundle while texture path is downloaded.
-            Bpc::ImageInfo iInfo = Bpc::ImageManager::shared().findImage(texturePath,forceLowRes);
+            Bpc::ImageInfo iInfo = Bpc::ImageManager::shared().findImage(texturePath, sizingStyle);
             if(iInfo.found)
             {
                 texturePath = iInfo.path;
