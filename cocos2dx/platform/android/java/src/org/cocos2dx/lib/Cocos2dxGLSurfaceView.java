@@ -33,7 +33,79 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.inputmethod.InputMethodManager;
 
+import javax.microedition.khronos.egl.EGLDisplay;
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.egl.EGL10;
+
 public class Cocos2dxGLSurfaceView extends GLSurfaceView {
+
+  /* BPC EGL Config Chooser */
+  public class BPCEGLChooser implements GLSurfaceView.EGLConfigChooser {
+    @Override
+    public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display) {
+          int[] oValue = new int[1];
+          int[] configSpec = {
+                  EGL10.EGL_RED_SIZE, 8,
+                  EGL10.EGL_GREEN_SIZE, 8,
+                  EGL10.EGL_BLUE_SIZE, 8,
+                  EGL10.EGL_ALPHA_SIZE, 8,
+                  EGL10.EGL_RENDERABLE_TYPE, 4,//EGL10.EGL_OPENGL_ES2_BIT
+                  EGL10.EGL_NONE
+          };
+
+          if (!egl.eglChooseConfig(display, configSpec, null, 0, oValue)) {
+              throw new IllegalArgumentException("eglChooseConfig failed");
+          }
+
+          int numConfigs = oValue[0];
+          if (numConfigs <= 0) {
+              throw new IllegalArgumentException("No config matches found");
+          }
+
+          EGLConfig[] configs = new EGLConfig[numConfigs];
+          if (!egl.eglChooseConfig(display, configSpec, configs, numConfigs, oValue)) {
+              throw new IllegalArgumentException("eglChooseConfig failed");
+          }
+
+          // We're just looking for the best depth we can find
+          int best = -1;
+          for (int i = 0; i < configs.length; ++i) {
+              int depth = findConfigAttrib(egl, display, configs[i], EGL10.EGL_DEPTH_SIZE, 0);
+
+              final StringBuilder sb = new StringBuilder();
+              sb.append(depth);
+              if (depth == 16 && best == -1) {
+                best = i;
+              }
+              if(depth == 24) {
+                best = i;
+                break;
+              }
+          }
+
+          if (best == -1) {
+              throw new IllegalArgumentException("No config matches found");
+          }
+
+          EGLConfig config = configs.length > 0 ? configs[best] : null;
+          if (config == null) {
+              throw new IllegalArgumentException("No config matches found");
+          }
+          return config;
+      }
+
+      // Helper
+      private int findConfigAttrib(EGL10 egl, EGLDisplay display,
+          EGLConfig config, int attribute, int defaultValue) {
+       int[] oValue = new int[1];
+      if (egl.eglGetConfigAttrib(display, config, attribute, oValue)) {
+          return oValue[0];
+      }
+      return defaultValue;
+    }
+  }
+  /**************************************************************/
+
 	// ===========================================================
 	// Constants
 	// ===========================================================
@@ -60,6 +132,7 @@ public class Cocos2dxGLSurfaceView extends GLSurfaceView {
 	   if you are dragging/panning while pressing the home key.
 	   Setting focus doesn't help, so use this bool on pause/resume. */
 	private boolean mHandleTouches = true;
+  private EGLConfigChooser mConfigChooser = new BPCEGLChooser();
 
 	// ===========================================================
 	// Constructors
@@ -69,6 +142,7 @@ public class Cocos2dxGLSurfaceView extends GLSurfaceView {
 		super(context);
 
 		this.setEGLContextClientVersion(2);
+    this.setEGLConfigChooser(mConfigChooser);
 
 		this.initView();
 	}
@@ -77,6 +151,7 @@ public class Cocos2dxGLSurfaceView extends GLSurfaceView {
 		super(context, attrs);
 
 		this.setEGLContextClientVersion(2);
+    this.setEGLConfigChooser(mConfigChooser);
 
 		this.initView();
 	}
