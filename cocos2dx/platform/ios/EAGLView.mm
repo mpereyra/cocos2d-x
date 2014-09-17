@@ -71,6 +71,9 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 #import "CCIMEDispatcher.h"
 #import "OpenGL_Internal.h"
 #import "CCEGLView.h"
+
+// BPC PATCH
+#include "CCConfiguration.h"
 //CLASS IMPLEMENTATIONS:
 
 #define IOS_MAX_TOUCHES_COUNT     10
@@ -238,7 +241,7 @@ static EAGLView *view = 0;
     context_ = [renderer_ context];
     
 
-    //discardFramebufferSupported_ = [[CCConfiguration sharedConfiguration] supportsDiscardFramebuffer];
+    discardFramebufferSupported_ = cocos2d::CCConfiguration::sharedConfiguration()->supportsDiscardFramebuffer();
     
     CHECK_GL_ERROR();
     
@@ -278,7 +281,6 @@ static EAGLView *view = 0;
     //    -> renderbuffer_ must be the the RENDER BUFFER
 
 #ifdef __IPHONE_4_0
-    
     if (multiSampling_)
     {
         /* Resolve from msaaFramebuffer to resolveFramebuffer */
@@ -304,8 +306,7 @@ static EAGLView *view = 0;
             }
             
             glBindRenderbuffer(GL_RENDERBUFFER, [renderer_ colorRenderBuffer]);
-    
-        }    
+        }
         
         // not MSAA
         else if (depthFormat_ ) {
@@ -315,7 +316,6 @@ static EAGLView *view = 0;
     }
     
 #endif // __IPHONE_4_0
-    
      if(![context_ presentRenderbuffer:GL_RENDERBUFFER])
         {
 //         CCLOG(@"cocos2d: Failed to swap renderbuffer in %s\n", __FUNCTION__);
