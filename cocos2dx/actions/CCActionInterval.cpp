@@ -2378,8 +2378,10 @@ void CCAnimate::update(float t)
             }
             m_nNextFrame = i+1;
 
-            break;
         }
+        // Issue 1438. Could be more than one frame per tick, due to low frame rate or frame delta < 1/FPS
+        else
+            break;
     }
 }
 
