@@ -147,6 +147,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH) \
                     $(LOCAL_PATH)/include \
                     $(LOCAL_PATH)/kazmath/include \
                     $(LOCAL_PATH)/platform/android \
+					$(LOCAL_PATH)/../../../include \
 					$(LOCAL_PATH)/../../ogre/dependencies/include \
                     $(LOCAL_PATH)/../../ogre/dependencies/include/LibPNG \
                     $(LOCAL_PATH)/../../ogre/dependencies/include/LibJPEG \
@@ -161,8 +162,8 @@ LOCAL_WHOLE_STATIC_LIBRARIES += cocos_libxml2_static
 LOCAL_WHOLE_STATIC_LIBRARIES += libfreeimage
 
 # define the macro to compile through support/zip_support/ioapi.c                
-LOCAL_CFLAGS := -DUSE_FILE32API
-LOCAL_EXPORT_CFLAGS := -DUSE_FILE32API
+LOCAL_CFLAGS := -DUSE_FILE32API -DBPC_STATE_CACHE
+LOCAL_EXPORT_CFLAGS := -DUSE_FILE32API -DBPC_STATE_CACHE
 
 include $(BUILD_STATIC_LIBRARY)
 

@@ -29,7 +29,9 @@ THE SOFTWARE.
 
 #include "CCGL.h"
 #include "platform/CCPlatformMacros.h"
-
+#if BPC_STATE_CACHE
+#include "AbstractStateCache.h"
+#endif
 NS_CC_BEGIN
 
 /**
@@ -142,6 +144,9 @@ void CC_DLL ccGLEnable( ccGLServerState flags );
 // end of shaders group
 /// @}
 
+#if BPC_STATE_CACHE
+void CC_DLL setStateCache(Bpc::AbstractStateCache* sharedCache);
+#endif
 NS_CC_END
 
 #endif /* __CCGLSTATE_H__ */
