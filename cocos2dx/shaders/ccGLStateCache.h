@@ -29,7 +29,7 @@ THE SOFTWARE.
 
 #include "CCGL.h"
 #include "platform/CCPlatformMacros.h"
-#if BPC_STATE_CACHE
+#ifdef BPC_STATE_CACHE
 #include "AbstractStateCache.h"
 #endif
 NS_CC_BEGIN
@@ -39,7 +39,7 @@ NS_CC_BEGIN
  * @{
  */
 
-class CCGLProgram;
+//class CCGLProgram;
 
 /** vertex attrib flags */
 enum {
@@ -144,7 +144,11 @@ void CC_DLL ccGLEnable( ccGLServerState flags );
 // end of shaders group
 /// @}
 
-#if BPC_STATE_CACHE
+#ifdef BPC_STATE_CACHE
+void CC_DLL ccBindGLBuffer(GLenum target, GLuint buffer, GLenum attach = 0, bool force = false);
+
+void CC_DLL ccDeleteGLBuffer(GLenum target, GLuint buffer, GLenum attach = 0, bool force = false);
+
 void CC_DLL setStateCache(Bpc::AbstractStateCache* sharedCache);
 #endif
 NS_CC_END

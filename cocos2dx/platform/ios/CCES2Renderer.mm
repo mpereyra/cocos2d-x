@@ -32,7 +32,7 @@
 #import "CCPlatformMacros.h"
 #import "CCES2Renderer.h"
 #import "OpenGL_Internal.h"
-
+#include "ccGLStateCache.h"
 
 @implementation CCES2Renderer
 
@@ -70,8 +70,8 @@
         glGenRenderbuffers(1, &colorRenderbuffer_);
         NSAssert( colorRenderbuffer_, @"Can't create default render buffer");
 
-        glBindFramebuffer(GL_FRAMEBUFFER, defaultFramebuffer_);
-        glBindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer_);
+        cocos2d::ccBindGLBuffer(GL_FRAMEBUFFER, defaultFramebuffer_);
+        cocos2d::ccBindGLBuffer(GL_RENDERBUFFER, colorRenderbuffer_);
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, colorRenderbuffer_);
 
         if (multiSampling_)
@@ -83,7 +83,7 @@
             /* Create the MSAA framebuffer (offscreen) */
             glGenFramebuffers(1, &msaaFramebuffer_);
             NSAssert( msaaFramebuffer_, @"Can't create default MSAA frame buffer");
-            glBindFramebuffer(GL_FRAMEBUFFER, msaaFramebuffer_);
+            cocos2d::ccBindGLBuffer(GL_FRAMEBUFFER, msaaFramebuffer_);
             
         }
 
@@ -96,7 +96,7 @@
 - (BOOL)resizeFromLayer:(CAEAGLLayer *)layer
 {
     // Allocate color buffer backing based on the current layer size
-    glBindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer_);
+    cocos2d::ccBindGLBuffer(GL_RENDERBUFFER, colorRenderbuffer_);
 
     if( ! [context_ renderbufferStorage:GL_RENDERBUFFER fromDrawable:layer] )
     {
@@ -119,11 +119,11 @@
          After rendering, the contents of this will be blitted into ColorRenderbuffer */
         
         //msaaFrameBuffer needs to be binded
-        glBindFramebuffer(GL_FRAMEBUFFER, msaaFramebuffer_);
+        cocos2d::ccBindGLBuffer(GL_FRAMEBUFFER, msaaFramebuffer_);
         glGenRenderbuffers(1, &msaaColorbuffer_);
         NSAssert(msaaFramebuffer_, @"Can't create MSAA color buffer");
         
-        glBindRenderbuffer(GL_RENDERBUFFER, msaaColorbuffer_);
+        cocos2d::ccBindGLBuffer(GL_RENDERBUFFER, msaaColorbuffer_);
         
         glRenderbufferStorageMultisampleAPPLE(GL_RENDERBUFFER, samplesToUse_, pixelFormat_ , backingWidth_, backingHeight_);
         
@@ -146,7 +146,7 @@
             NSAssert(depthBuffer_, @"Can't create depth buffer");
         }
 
-        glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer_);
+        cocos2d::ccBindGLBuffer(GL_RENDERBUFFER, depthBuffer_);
         
         if( multiSampling_ )
             glRenderbufferStorageMultisampleAPPLE(GL_RENDERBUFFER, samplesToUse_, depthFormat_,backingWidth_, backingHeight_);
@@ -156,7 +156,7 @@
         glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer_);
 
         // bind color buffer
-        glBindRenderbuffer(GL_RENDERBUFFER, colorRenderbuffer_);        
+        cocos2d::ccBindGLBuffer(GL_RENDERBUFFER, colorRenderbuffer_);        
     }
 
     CHECK_GL_ERROR();
@@ -207,29 +207,29 @@
 
     // Tear down GL
     if (defaultFramebuffer_) {
-        glDeleteFramebuffers(1, &defaultFramebuffer_);
+        cocos2d::ccDeleteGLBuffer(1, defaultFramebuffer_);
         defaultFramebuffer_ = 0;
     }
 
     if (colorRenderbuffer_) {
-        glDeleteRenderbuffers(1, &colorRenderbuffer_);
+        cocos2d::ccDeleteGLBuffer(1, colorRenderbuffer_);
         colorRenderbuffer_ = 0;
     }
 
     if( depthBuffer_ ) {
-        glDeleteRenderbuffers(1, &depthBuffer_ );
+        cocos2d::ccDeleteGLBuffer(1, depthBuffer_ );
         depthBuffer_ = 0;
     }
     
     if ( msaaColorbuffer_)
     {
-        glDeleteRenderbuffers(1, &msaaColorbuffer_);
+        cocos2d::ccDeleteGLBuffer(1, msaaColorbuffer_);
         msaaColorbuffer_ = 0;
     }
     
     if ( msaaFramebuffer_)
     {
-        glDeleteRenderbuffers(1, &msaaFramebuffer_);
+        cocos2d::ccDeleteGLBuffer(1, msaaFramebuffer_);
         msaaFramebuffer_ = 0;
     }
 

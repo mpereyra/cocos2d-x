@@ -171,7 +171,7 @@
 		1551A731158F2ADE00E66CFE /* CCEGLView.h in Headers */ = {isa = PBXBuildFile; fileRef = 1551A485158F2ADE00E66CFE /* CCEGLView.h */; };
 		1551A732158F2ADE00E66CFE /* CCEGLView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1551A486158F2ADE00E66CFE /* CCEGLView.mm */; };
 		1551A733158F2ADE00E66CFE /* CCES2Renderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 1551A487158F2ADE00E66CFE /* CCES2Renderer.h */; };
-		1551A734158F2ADE00E66CFE /* CCES2Renderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1551A488158F2ADE00E66CFE /* CCES2Renderer.m */; };
+		1551A734158F2ADE00E66CFE /* CCES2Renderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1551A488158F2ADE00E66CFE /* CCES2Renderer.mm */; };
 		1551A735158F2ADE00E66CFE /* CCESRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 1551A489158F2ADE00E66CFE /* CCESRenderer.h */; };
 		1551A736158F2ADE00E66CFE /* CCFileUtils.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1551A48A158F2ADE00E66CFE /* CCFileUtils.mm */; };
 		1551A737158F2ADE00E66CFE /* CCGL.h in Headers */ = {isa = PBXBuildFile; fileRef = 1551A48B158F2ADE00E66CFE /* CCGL.h */; };
@@ -463,7 +463,7 @@
 		1551A485158F2ADE00E66CFE /* CCEGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCEGLView.h; sourceTree = "<group>"; };
 		1551A486158F2ADE00E66CFE /* CCEGLView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CCEGLView.mm; sourceTree = "<group>"; };
 		1551A487158F2ADE00E66CFE /* CCES2Renderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCES2Renderer.h; sourceTree = "<group>"; };
-		1551A488158F2ADE00E66CFE /* CCES2Renderer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCES2Renderer.m; sourceTree = "<group>"; };
+		1551A488158F2ADE00E66CFE /* CCES2Renderer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CCES2Renderer.mm; sourceTree = "<group>"; };
 		1551A489158F2ADE00E66CFE /* CCESRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCESRenderer.h; sourceTree = "<group>"; };
 		1551A48A158F2ADE00E66CFE /* CCFileUtils.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CCFileUtils.mm; sourceTree = "<group>"; };
 		1551A48B158F2ADE00E66CFE /* CCGL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCGL.h; sourceTree = "<group>"; };
@@ -955,7 +955,7 @@
 				1551A485158F2ADE00E66CFE /* CCEGLView.h */,
 				1551A486158F2ADE00E66CFE /* CCEGLView.mm */,
 				1551A487158F2ADE00E66CFE /* CCES2Renderer.h */,
-				1551A488158F2ADE00E66CFE /* CCES2Renderer.m */,
+				1551A488158F2ADE00E66CFE /* CCES2Renderer.mm */,
 				1551A489158F2ADE00E66CFE /* CCESRenderer.h */,
 				1551A48A158F2ADE00E66CFE /* CCFileUtils.mm */,
 				1551A48B158F2ADE00E66CFE /* CCGL.h */,
@@ -1460,7 +1460,7 @@
 				1551A72E158F2ADE00E66CFE /* CCCommon.mm in Sources */,
 				1551A730158F2ADE00E66CFE /* CCDirectorCaller.mm in Sources */,
 				1551A732158F2ADE00E66CFE /* CCEGLView.mm in Sources */,
-				1551A734158F2ADE00E66CFE /* CCES2Renderer.m in Sources */,
+				1551A734158F2ADE00E66CFE /* CCES2Renderer.mm in Sources */,
 				1551A736158F2ADE00E66CFE /* CCFileUtils.mm in Sources */,
 				1551A738158F2ADE00E66CFE /* CCImage.mm in Sources */,
 				1551A739158F2ADE00E66CFE /* CCLock.cpp in Sources */,

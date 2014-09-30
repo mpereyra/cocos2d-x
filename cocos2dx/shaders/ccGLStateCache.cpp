@@ -35,7 +35,7 @@ THE SOFTWARE.
 
 NS_CC_BEGIN
 
-#if BPC_STATE_CACHE
+#ifdef BPC_STATE_CACHE
 static Bpc::AbstractStateCache* bpcStateCache = nullptr;
 #else
 static GLuint    s_uCurrentProjectionMatrix = -1;
@@ -62,7 +62,7 @@ static int      s_eGLServerState = 0;
 
 void ccGLInvalidateStateCache( void )
 {
-#if BPC_STATE_CACHE
+#ifdef BPC_STATE_CACHE
     bpcStateCache->clearCache();
 #else
     kmGLFreeAll();
@@ -86,7 +86,7 @@ void ccGLInvalidateStateCache( void )
 
 void ccGLDeleteProgram( GLuint program )
 {
-#if BPC_STATE_CACHE
+#ifdef BPC_STATE_CACHE
     glDeleteProgram( program ); // TODO
 #else
 #if CC_ENABLE_GL_STATE_CACHE
@@ -100,7 +100,7 @@ void ccGLDeleteProgram( GLuint program )
 
 void ccGLUseProgram( GLuint program )
 {
-#if BPC_STATE_CACHE
+#ifdef BPC_STATE_CACHE
     glUseProgram(program); // TODO
 #else
 #if CC_ENABLE_GL_STATE_CACHE
@@ -117,7 +117,7 @@ void ccGLUseProgram( GLuint program )
 
 void ccGLBlendFunc(GLenum sfactor, GLenum dfactor)
 {
-#if BPC_STATE_CACHE
+#ifdef BPC_STATE_CACHE
     bpcStateCache->setBlendFunc(sfactor, dfactor);
 #else
 #if CC_ENABLE_GL_STATE_CACHE
@@ -134,7 +134,7 @@ void ccGLBlendFunc(GLenum sfactor, GLenum dfactor)
 
 GLenum ccGLGetActiveTexture( void )
 {
-#if BPC_STATE_CACHE
+#ifdef BPC_STATE_CACHE
     return bpcStateCache->getActiveTextureUnit();
 #else
 #if CC_ENABLE_GL_STATE_CACHE
@@ -149,7 +149,7 @@ GLenum ccGLGetActiveTexture( void )
 
 void ccGLActiveTexture( GLenum textureEnum )
 {
-#if BPC_STATE_CACHE
+#ifdef BPC_STATE_CACHE
     bpcStateCache->activateGLTextureUnit(textureEnum);
 #else
 #if CC_ENABLE_GL_STATE_CACHE
@@ -166,7 +166,7 @@ void ccGLActiveTexture( GLenum textureEnum )
 
 void ccGLBindTexture2D( GLuint textureId )
 {
-#if BPC_STATE_CACHE
+#ifdef BPC_STATE_CACHE
     bpcStateCache->bindGLTexture(GL_TEXTURE_2D, textureId);
 #else
 #if CC_ENABLE_GL_STATE_CACHE
@@ -184,7 +184,7 @@ void ccGLBindTexture2D( GLuint textureId )
 
 void ccGLDeleteTexture( GLuint textureId )
 {
-#if BPC_STATE_CACHE
+#ifdef BPC_STATE_CACHE
     bpcStateCache->deleteTexture(textureId);
 #else
 #if CC_ENABLE_GL_STATE_CACHE
@@ -197,7 +197,7 @@ void ccGLDeleteTexture( GLuint textureId )
 
 void ccGLEnable( ccGLServerState flags )
 {
-#if BPC_STATE_CACHE
+#ifdef BPC_STATE_CACHE
     if( flags & CC_GL_BLEND )
         bpcStateCache->setEnabled(GL_BLEND);
     else
@@ -231,7 +231,7 @@ void ccGLEnable( ccGLServerState flags )
 
 void ccGLEnableVertexAttribs( unsigned int flags )
 {
-#if BPC_STATE_CACHE
+#ifdef BPC_STATE_CACHE
     bool enablePosition = flags & kCCVertexAttribFlag_Position;
     bool enableColor = (flags & kCCVertexAttribFlag_Color) != 0 ? true : false;
     bool enableTexCoords = (flags & kCCVertexAttribFlag_TexCoords) != 0 ? true : false;
@@ -293,13 +293,21 @@ void ccGLEnableVertexAttribs( unsigned int flags )
 
 void ccSetProjectionMatrixDirty( void )
 {
-#if BPC_STATE_CACHE
+#ifdef BPC_STATE_CACHE
 #else
     s_uCurrentProjectionMatrix = -1;
 #endif
 }
 
-#if BPC_STATE_CACHE
+#ifdef BPC_STATE_CACHE
+void ccBindGLBuffer(GLenum target, GLuint buffer, GLenum attach, bool force) {
+    bpcStateCache->bindGLBuffer(target, buffer, attach, force);
+}
+
+void ccDeleteGLBuffer(GLenum target, GLuint buffer, GLenum attach, bool force) {
+    bpcStateCache->deleteGLBuffer(target, buffer, attach, force);
+}
+
 void setStateCache(Bpc::AbstractStateCache* sharedCache) {
     bpcStateCache = sharedCache;
 }

@@ -279,7 +279,7 @@ static EAGLView *view = 0;
     // - preconditions
     //    -> context_ MUST be the OpenGL context
     //    -> renderbuffer_ must be the the RENDER BUFFER
-
+    
 #ifdef __IPHONE_4_0
     if (multiSampling_)
     {
@@ -314,7 +314,7 @@ static EAGLView *view = 0;
             glDiscardFramebufferEXT(GL_FRAMEBUFFER, 1, attachments);
         }
     }
-    
+
 #endif // __IPHONE_4_0
      if(![context_ presentRenderbuffer:GL_RENDERBUFFER])
         {
