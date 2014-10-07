@@ -87,7 +87,7 @@ CCTexture2D::~CCTexture2D()
     VolatileTexture::removeTexture(this);
 #endif
 
-	CCLOGINFO("cocos2d: deallocing CCTexture2D %u.", m_uName);
+	CCLOG("cocos2d: deallocing CCTexture2D %u.", m_uName);
     CC_SAFE_RELEASE(m_pShaderProgram);
 
 	if(m_uName)
@@ -550,7 +550,7 @@ bool CCTexture2D::initWithPVRTCData(const void *data, int level, int bpp, bool h
 	}
 
 	glGenTextures(1, &m_uName);
-	glBindTexture(GL_TEXTURE_2D, m_uName);
+	ccGLBindTexture2D(m_uName);
 
 	this->setAntiAliasTexParameters();
 
@@ -643,6 +643,35 @@ void CCTexture2D::PVRImagesHavePremultipliedAlpha(bool haveAlphaPremultiplied)
 {
     PVRHaveAlphaPremultiplied_ = haveAlphaPremultiplied;
 }
+
+// BPC PATCH START
+bool CCTexture2D::initWithGLTexture(GLuint textureName, unsigned width, unsigned height, 
+        CCTexture2DPixelFormat pixelFormat) {
+
+    m_uName = textureName;
+    m_fMaxS = 1.0f;
+    m_fMaxT = 1.0f;
+    m_uPixelsWide = width;
+    m_uPixelsHigh = height;
+
+    CCConfiguration *conf = CCConfiguration::sharedConfiguration();
+	unsigned const maxTextureSize = conf->getMaxTextureSize();
+    if (m_uPixelsWide > maxTextureSize || m_uPixelsHigh > maxTextureSize)
+	{
+        CCLOG("cocos2d: WARNING: Manual GL texture (%u x %u) is bigger than the supported %u x %u", m_uPixelsWide, m_uPixelsHigh, maxTextureSize, maxTextureSize);
+		this->release();
+		return false;
+	}
+
+    m_tContentSize = CCSizeMake(m_uPixelsWide, m_uPixelsHigh);
+    m_bHasPremultipliedAlpha = false;
+    m_ePixelFormat = pixelFormat;
+    m_bHasMipmaps = false;
+    setAntiAliasTexParameters(); // glBinds
+
+    return true;
+}
+// BPC PATCH END
 
 #ifdef ANDROID
 // BPC PATCH START

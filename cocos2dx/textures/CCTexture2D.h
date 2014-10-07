@@ -154,6 +154,7 @@ public:
     bool initWithATCFileAsync(class CCTextureATC * const atc);
     bool initWithDXTFileAsync(class CCTextureDXT * const dxt);
     bool initWithASTCFileAsync(class CCTextureASTC * const astc);
+    bool initWithGLTexture(GLuint textureName, unsigned width, unsigned height, CCTexture2DPixelFormat pixelFormat);
     
 #ifdef ANDROID
     //BPC PATCH

@@ -73,11 +73,11 @@ bool CCTextureATC::createGLTexture() {
     
     if (m_textureName != 0)
     {
-        glDeleteTextures(1, &m_textureName);
+        ccGLDeleteTexture(m_textureName);
     }
     
     glGenTextures(1, &m_textureName);
-    glBindTexture(GL_TEXTURE_2D, m_textureName);
+    ccGLBindTexture2D(m_textureName);
     
     bpcRetry(glCompressedTexImage2D(GL_TEXTURE_2D, 0, m_glFormat, m_width, m_height, 0, \
                            m_dds->getHeaderInfo().pitchOrLinearSize, m_dds->getTextureData()));

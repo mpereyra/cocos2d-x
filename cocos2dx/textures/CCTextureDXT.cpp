@@ -75,11 +75,11 @@ bool CCTextureDXT::createGLTexture() {
     
     if (m_textureName != 0)
     {
-        glDeleteTextures(1, &m_textureName);
+        ccGLDeleteTexture(m_textureName);
     }
     
     glGenTextures(1, &m_textureName);
-    glBindTexture(GL_TEXTURE_2D, m_textureName);
+    ccGLBindTexture2D(m_textureName);
 
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
