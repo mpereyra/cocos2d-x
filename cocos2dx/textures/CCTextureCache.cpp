@@ -113,7 +113,7 @@ static unsigned long s_nAsyncRefCount = 0;
     
 
 #if CC_ASYNC_TEXTURE_CACHE_USE_NAMED_SEMAPHORE
-    #define CC_ASYNC_TEXTURE_CACHE_SEMAPHORE "ccAsync"
+    #define CC_ASYNC_TEXTURE_CACHE_SEMAPHORE "ccAsync2"
 #else
 static sem_t s_sem;
 #endif
