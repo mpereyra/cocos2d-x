@@ -130,9 +130,6 @@ bool CCAnimation::init()
 bool CCAnimation::initWithSpriteFrames(CCArray *pFrames, float delay/* = 0.0f*/)
 {
     CCARRAY_VERIFY_TYPE(pFrames, CCSpriteFrame*);
-    
-//    if(delay == 86400)
-//        printf("AUGUST\n");
 
     m_uLoops = 1;
     m_fDelayPerUnit = delay;
@@ -161,8 +158,6 @@ bool CCAnimation::initWithAnimationFrames(CCArray* arrayOfAnimationFrames, float
 {
     CCARRAY_VERIFY_TYPE(arrayOfAnimationFrames, CCAnimationFrame*);
     
-    if(delayPerUnit == 86400)
-        printf("AUGUST\n");
     m_fDelayPerUnit = delayPerUnit;
     m_uLoops = loops;
 
