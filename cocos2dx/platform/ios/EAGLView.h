@@ -93,6 +93,7 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
     BOOL                    multisampling_;
     unsigned int               requestedSamples_;
     BOOL                    isUseUITextField;
+    BOOL                    skipLayoutSubviews_;
 @private
     NSString *              markedText_;
     CGRect                  caretRect_;
@@ -141,6 +142,8 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 @property(nonatomic,readonly) EAGLContext *context;
 
 @property(nonatomic,readwrite) BOOL multiSampling;
+
+@property(nonatomic, readwrite) BOOL skipLayoutSubviews;
 
 
 /** EAGLView uses double-buffer. This method swaps the buffers */

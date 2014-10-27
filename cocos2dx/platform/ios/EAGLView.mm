@@ -254,6 +254,10 @@ static EAGLView *view = 0;
 
 - (void) layoutSubviews
 {
+    if(self.skipLayoutSubviews) {
+        self.skipLayoutSubviews = NO;
+        return;
+    }
     [renderer_ resizeFromLayer:(CAEAGLLayer*)self.layer];
     size_ = [renderer_ backingSize];
 
@@ -267,6 +271,7 @@ static EAGLView *view = 0;
 
     // Avoid flicker. Issue #350
     //[director performSelectorOnMainThread:@selector(drawScene) withObject:nil waitUntilDone:YES];
+    
     cocos2d::CCDirector::sharedDirector()->drawScene();
 }
 
@@ -551,6 +556,7 @@ static EAGLView *view = 0;
 @synthesize markedTextStyle;
 // @synthesize selectedTextRange;       // must implement
 @synthesize tokenizer;
+@synthesize skipLayoutSubviews;
 
 /* Text may have a selection, either zero-length (a caret) or ranged.  Editing operations are
  * always performed on the text from this selection.  nil corresponds to no selection. */
