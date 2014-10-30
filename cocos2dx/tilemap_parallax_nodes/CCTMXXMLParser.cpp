@@ -34,6 +34,10 @@ THE SOFTWARE.
 #include "support/CCPointExtension.h"
 #include "support/base64.h"
 #include "platform/platform.h"
+// BPC PATCH START ewww :(
+#include "../../../../shared/core/ImageManager.h"
+#include "../../../../shared/view/ScreenUtils.h"
+// BPC PATCH END
 
 using namespace std;
 /*
@@ -300,7 +304,9 @@ bool CCTMXMapInfo::parseXMLFile(const char *xmlFilename)
 
 // the XML parser calls here with all the elements
 void CCTMXMapInfo::startElement(void *ctx, const char *name, const char **atts)
-{    
+{
+    auto const scale = Bpc::ScreenUtils::assetSetToUse() / 4;
+
     CC_UNUSED_PARAM(ctx);
     CCTMXMapInfo *pTMXMapInfo = this;
     std::string elementName = (char*)name;
@@ -336,8 +342,8 @@ void CCTMXMapInfo::startElement(void *ctx, const char *name, const char **atts)
         s.height = (float)atof(valueForKey("height", attributeDict));
         pTMXMapInfo->setMapSize(s);
 
-        s.width = (float)atof(valueForKey("tilewidth", attributeDict));
-        s.height = (float)atof(valueForKey("tileheight", attributeDict));
+        s.width = scale * (float)atof(valueForKey("tilewidth", attributeDict));
+        s.height = scale * (float)atof(valueForKey("tileheight", attributeDict));
         pTMXMapInfo->setTileSize(s);
 
         // The parent element is now "map"
@@ -366,12 +372,12 @@ void CCTMXMapInfo::startElement(void *ctx, const char *name, const char **atts)
         {
             CCTMXTilesetInfo *tileset = new CCTMXTilesetInfo();
             tileset->m_sName = valueForKey("name", attributeDict);
-            tileset->m_uFirstGid = (unsigned int)atoi(valueForKey("firstgid", attributeDict));
-            tileset->m_uSpacing = (unsigned int)atoi(valueForKey("spacing", attributeDict));
-            tileset->m_uMargin = (unsigned int)atoi(valueForKey("margin", attributeDict));
+            tileset->m_uFirstGid = (unsigned int)(atoi(valueForKey("firstgid", attributeDict)));
+            tileset->m_uSpacing = (unsigned int)(scale * atoi(valueForKey("spacing", attributeDict)));
+            tileset->m_uMargin = (unsigned int)(scale * atoi(valueForKey("margin", attributeDict)));
             CCSize s;
-            s.width = (float)atof(valueForKey("tilewidth", attributeDict));
-            s.height = (float)atof(valueForKey("tileheight", attributeDict));
+            s.width = (float)scale * atof(valueForKey("tilewidth", attributeDict));
+            s.height = (float)scale * atof(valueForKey("tileheight", attributeDict));
             tileset->m_tTileSize = s;
 
             pTMXMapInfo->getTilesets()->addObject(tileset);
@@ -412,8 +418,8 @@ void CCTMXMapInfo::startElement(void *ctx, const char *name, const char **atts)
             layer->m_cOpacity = 255;
         }
 
-        float x = (float)atof(valueForKey("x", attributeDict));
-        float y = (float)atof(valueForKey("y", attributeDict));
+        float x = (float)scale * atof(valueForKey("x", attributeDict));
+        float y = (float)scale * atof(valueForKey("y", attributeDict));
         layer->m_tOffset = ccp(x,y);
 
         pTMXMapInfo->getLayers()->addObject(layer);
@@ -428,8 +434,8 @@ void CCTMXMapInfo::startElement(void *ctx, const char *name, const char **atts)
         CCTMXObjectGroup *objectGroup = new CCTMXObjectGroup();
         objectGroup->setGroupName(valueForKey("name", attributeDict));
         CCPoint positionOffset;
-        positionOffset.x = (float)atof(valueForKey("x", attributeDict)) * pTMXMapInfo->getTileSize().width;
-        positionOffset.y = (float)atof(valueForKey("y", attributeDict)) * pTMXMapInfo->getTileSize().height;
+        positionOffset.x = (float)scale * atof(valueForKey("x", attributeDict)) * pTMXMapInfo->getTileSize().width;
+        positionOffset.y = (float)scale * atof(valueForKey("y", attributeDict)) * pTMXMapInfo->getTileSize().height;
         objectGroup->setPositionOffset(positionOffset);
 
         pTMXMapInfo->getObjectGroups()->addObject(objectGroup);
@@ -445,17 +451,23 @@ void CCTMXMapInfo::startElement(void *ctx, const char *name, const char **atts)
 
         // build full path
         std::string imagename = valueForKey("source", attributeDict);
+        auto pos = imagename.find("@4x");
+        if (pos != std::string::npos) {
+            imagename.erase(pos, 3);
+        }
+        auto const & info = Bpc::ImageManager::shared().findImage(imagename);
+        tileset->m_sSourceImage = info.path;
 
-        if (m_sTMXFileName.find_last_of("/") != string::npos)
-        {
-            string dir = m_sTMXFileName.substr(0, m_sTMXFileName.find_last_of("/") + 1);
-            tileset->m_sSourceImage = dir + imagename;
-        }
-        else 
-        {
-            tileset->m_sSourceImage = m_sResources + (m_sResources.size() ? "/" : "") + imagename;
-        }
-    } 
+//        if (m_sTMXFileName.find_last_of("/") != string::npos)
+//        {
+//            string dir = m_sTMXFileName.substr(0, m_sTMXFileName.find_last_of("/") + 1);
+//            tileset->m_sSourceImage = dir + imagename;
+//        }
+//        else 
+//        {
+//            tileset->m_sSourceImage = m_sResources + (m_sResources.size() ? "/" : "") + imagename;
+//        }
+    }
     else if(elementName == "data")
     {
         std::string encoding = valueForKey("encoding", attributeDict);
@@ -510,7 +522,7 @@ void CCTMXMapInfo::startElement(void *ctx, const char *name, const char **atts)
         const char* value = valueForKey("x", attributeDict);
         if( value ) 
         {
-            int x = atoi(value) + (int)objectGroup->getPositionOffset().x;
+            int x = atoi(value)*scale + (int)objectGroup->getPositionOffset().x;
             sprintf(buffer, "%d", x);
             CCString* pStr = new CCString(buffer);
             pStr->autorelease();
@@ -520,10 +532,10 @@ void CCTMXMapInfo::startElement(void *ctx, const char *name, const char **atts)
         // Y
         value = valueForKey("y", attributeDict);
         if( value )  {
-            int y = atoi(value) + (int)objectGroup->getPositionOffset().y;
+            int y = atoi(value)*scale + (int)objectGroup->getPositionOffset().y;
 
             // Correct y position. (Tiled uses Flipped, cocos2d uses Standard)
-            y = (int)(m_tMapSize.height * m_tTileSize.height) - y - atoi(valueForKey("height", attributeDict));
+            y = (int)(m_tMapSize.height * m_tTileSize.height) - y - scale*atoi(valueForKey("height", attributeDict));
             sprintf(buffer, "%d", y);
             CCString* pStr = new CCString(buffer);
             pStr->autorelease();
