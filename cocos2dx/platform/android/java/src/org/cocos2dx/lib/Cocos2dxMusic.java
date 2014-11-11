@@ -107,13 +107,13 @@ public class Cocos2dxMusic {
 		if (this.mBackgroundMediaPlayer == null) {
 			Log.e(Cocos2dxMusic.TAG, "playBackgroundMusic: background media player is null");
 		} else {
-			// if the music is playing or paused, stop it
-			this.mBackgroundMediaPlayer.stop();
-
 			this.mBackgroundMediaPlayer.setLooping(isLoop);
 
 			try {
-				this.mBackgroundMediaPlayer.prepare();
+				// At this point, the MediaPlayer is either:
+				//   A, brand new and prepared
+				//   B, already playing the song we want
+				// Either way, we should be fine to seek and start.
 				this.mBackgroundMediaPlayer.seekTo(0);
 				this.mBackgroundMediaPlayer.start();
 
@@ -131,6 +131,9 @@ public class Cocos2dxMusic {
 			// should set the state, if not, the following sequence will be error
 			// play -> pause -> stop -> resume
 			this.mPaused = false;
+
+			// Stopping requires a full reload now, so this plays into our current flow
+			this.mCurrentPath = "";
 		}
 	}
 
@@ -150,10 +153,7 @@ public class Cocos2dxMusic {
 
 	public void rewindBackgroundMusic() {
 		if (this.mBackgroundMediaPlayer != null) {
-			this.mBackgroundMediaPlayer.stop();
-
 			try {
-				this.mBackgroundMediaPlayer.prepare();
 				this.mBackgroundMediaPlayer.seekTo(0);
 				this.mBackgroundMediaPlayer.start();
 
@@ -232,7 +232,6 @@ public class Cocos2dxMusic {
 				final AssetFileDescriptor assetFileDescritor = this.mContext.getAssets().openFd(pPath);
 				mediaPlayer.setDataSource(assetFileDescritor.getFileDescriptor(), assetFileDescritor.getStartOffset(), assetFileDescritor.getLength());
 			}
-
 			mediaPlayer.prepare();
 
 			mediaPlayer.setVolume(this.mLeftVolume, this.mRightVolume);
