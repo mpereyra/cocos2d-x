@@ -87,5 +87,15 @@ void CCEGLView::setIMEKeyboardState(bool bOpen)
     setKeyboardStateJNI((int)bOpen);
 }
 
+void CCEGLView::setSecureTextEntry(bool bSecure)
+{
+    setSecureTextEntryJNI(bSecure);
+}
+
+void CCEGLView::setKeyboardType(CCTextFieldTTF::KeyboardType type)
+{
+    setKeyboardTypeJNI(static_cast<int>(type));
+}
+
 NS_CC_END
 

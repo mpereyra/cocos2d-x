@@ -28,6 +28,8 @@ extern "C" {
     extern void setKeyboardStateJNI(int bOpen);
     extern void openKeyboardJNI();
     extern void closeKeyboardJNI();
+    extern void setSecureTextEntryJNI(bool bSecure);
+    extern void setKeyboardTypeJNI(int keyboardType); //CCTextFieldTTF::KeyboardType as an int
 }
 
 #endif // __ANDROID_IME_JNI_H__

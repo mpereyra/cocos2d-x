@@ -27,6 +27,7 @@ THE SOFTWARE.
 
 #include "platform/CCCommon.h"
 #include "platform/CCEGLViewProtocol.h"
+#include "text_input_node/CCTextFieldTTF.h"
 
 NS_CC_BEGIN
 
@@ -46,6 +47,8 @@ public:
     virtual void    swapBuffers();
     
     virtual void setIMEKeyboardState(bool bOpen);
+    virtual void setSecureTextEntry(bool bSecure);
+    virtual void setKeyboardType(CCTextFieldTTF::KeyboardType type);
     
     static CCEGLView* sharedOpenGLView();
 
