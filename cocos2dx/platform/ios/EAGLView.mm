@@ -404,13 +404,13 @@ static EAGLView *view = 0;
         return;
     }
     
-    int ids[IOS_MAX_TOUCHES_COUNT] = {0};
+    intptr_t ids[IOS_MAX_TOUCHES_COUNT] = {0};
     float xs[IOS_MAX_TOUCHES_COUNT] = {0.0f};
     float ys[IOS_MAX_TOUCHES_COUNT] = {0.0f};
     
     int i = 0;
     for (UITouch *touch in touches) {
-        ids[i] = (int)touch;
+        ids[i] = (intptr_t)touch;
         xs[i] = [touch locationInView: [touch view]].x * view.contentScaleFactor;;
         ys[i] = [touch locationInView: [touch view]].y * view.contentScaleFactor;;
         ++i;
@@ -424,13 +424,13 @@ static EAGLView *view = 0;
     {
         return;
     }
-    int ids[IOS_MAX_TOUCHES_COUNT] = {0};
+    intptr_t ids[IOS_MAX_TOUCHES_COUNT] = {0};
     float xs[IOS_MAX_TOUCHES_COUNT] = {0.0f};
     float ys[IOS_MAX_TOUCHES_COUNT] = {0.0f};
     
     int i = 0;
     for (UITouch *touch in touches) {
-        ids[i] = (int)touch;
+        ids[i] = (intptr_t)touch;
         xs[i] = [touch locationInView: [touch view]].x * view.contentScaleFactor;;
         ys[i] = [touch locationInView: [touch view]].y * view.contentScaleFactor;;
         ++i;
@@ -445,13 +445,13 @@ static EAGLView *view = 0;
         return;
     }
     
-    int ids[IOS_MAX_TOUCHES_COUNT] = {0};
+    intptr_t ids[IOS_MAX_TOUCHES_COUNT] = {0};
     float xs[IOS_MAX_TOUCHES_COUNT] = {0.0f};
     float ys[IOS_MAX_TOUCHES_COUNT] = {0.0f};
     
     int i = 0;
     for (UITouch *touch in touches) {
-        ids[i] = (int)touch;
+        ids[i] = (intptr_t)touch;
         xs[i] = [touch locationInView: [touch view]].x * view.contentScaleFactor;;
         ys[i] = [touch locationInView: [touch view]].y * view.contentScaleFactor;;
         ++i;
@@ -466,13 +466,13 @@ static EAGLView *view = 0;
         return;
     }
     
-    int ids[IOS_MAX_TOUCHES_COUNT] = {0};
+    intptr_t ids[IOS_MAX_TOUCHES_COUNT] = {0};
     float xs[IOS_MAX_TOUCHES_COUNT] = {0.0f};
     float ys[IOS_MAX_TOUCHES_COUNT] = {0.0f};
     
     int i = 0;
     for (UITouch *touch in touches) {
-        ids[i] = (int)touch;
+        ids[i] = (intptr_t)touch;
         xs[i] = [touch locationInView: [touch view]].x * view.contentScaleFactor;;
         ys[i] = [touch locationInView: [touch view]].y * view.contentScaleFactor;;
         ++i;
