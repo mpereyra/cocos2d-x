@@ -57,4 +57,25 @@ extern "C" {
             t.env->DeleteLocalRef(t.classID);
         }
     }
+
+    extern void setSecureTextEntryJNI(bool bSecure)
+    {
+        JniMethodInfo t;
+
+        if (JniHelper::getStaticMethodInfo(t, "org/cocos2dx/lib/Cocos2dxGLSurfaceView", "setSecureTextEntry", "(I)V")) {
+            t.env->CallStaticVoidMethod(t.classID, t.methodID, (int)bSecure);
+            t.env->DeleteLocalRef(t.classID);
+        }
+    }
+
+    extern void setKeyboardTypeJNI(int keyboardType)
+    {
+        //the java code interprets the passed in int as a CCTextFieldTTF::KeyboardType
+        JniMethodInfo t;
+        
+        if (JniHelper::getStaticMethodInfo(t, "org/cocos2dx/lib/Cocos2dxGLSurfaceView", "setKeyboardType", "(I)V")) {
+            t.env->CallStaticVoidMethod(t.classID, t.methodID, (int)keyboardType);
+            t.env->DeleteLocalRef(t.classID);
+        }
+    }
 }

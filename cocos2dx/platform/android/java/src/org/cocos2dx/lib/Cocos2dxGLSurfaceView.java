@@ -27,6 +27,7 @@ import android.content.Context;
 import android.opengl.GLSurfaceView;
 import android.os.Handler;
 import android.os.Message;
+import android.text.InputType;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -55,6 +56,7 @@ public class Cocos2dxGLSurfaceView extends GLSurfaceView {
 
 	private Cocos2dxRenderer mCocos2dxRenderer;
 	private Cocos2dxEditText mCocos2dxEditText;
+	private static int mInputType = InputType.TYPE_TEXT_VARIATION_NORMAL;
 
 	/* BPC PATCH: onTouchEvent is still called when backgrounded
 	   if you are dragging/panning while pressing the home key.
@@ -95,6 +97,7 @@ public class Cocos2dxGLSurfaceView extends GLSurfaceView {
 						if (null != Cocos2dxGLSurfaceView.this.mCocos2dxEditText && Cocos2dxGLSurfaceView.this.mCocos2dxEditText.requestFocus()) {
 							Cocos2dxGLSurfaceView.this.mCocos2dxEditText.removeTextChangedListener(Cocos2dxGLSurfaceView.sCocos2dxTextInputWraper);
 							Cocos2dxGLSurfaceView.this.mCocos2dxEditText.setText("");
+							Cocos2dxGLSurfaceView.this.mCocos2dxEditText.setInputType(mInputType);
 							final String text = (String) msg.obj;
 							Cocos2dxGLSurfaceView.this.mCocos2dxEditText.append(text);
 							Cocos2dxGLSurfaceView.sCocos2dxTextInputWraper.setOriginText(text);
@@ -107,6 +110,7 @@ public class Cocos2dxGLSurfaceView extends GLSurfaceView {
 
 					case HANDLER_CLOSE_IME_KEYBOARD:
 						if (null != Cocos2dxGLSurfaceView.this.mCocos2dxEditText) {
+							Cocos2dxGLSurfaceView.this.mCocos2dxEditText.setInputType(InputType.TYPE_TEXT_VARIATION_NORMAL);
 							Cocos2dxGLSurfaceView.this.mCocos2dxEditText.removeTextChangedListener(Cocos2dxGLSurfaceView.sCocos2dxTextInputWraper);
 							final InputMethodManager imm = (InputMethodManager) Cocos2dxGLSurfaceView.mCocos2dxGLSurfaceView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
 							imm.hideSoftInputFromWindow(Cocos2dxGLSurfaceView.this.mCocos2dxEditText.getWindowToken(), 0);
@@ -325,6 +329,48 @@ public class Cocos2dxGLSurfaceView extends GLSurfaceView {
 		final Message msg = new Message();
 		msg.what = Cocos2dxGLSurfaceView.HANDLER_CLOSE_IME_KEYBOARD;
 		Cocos2dxGLSurfaceView.sHandler.sendMessage(msg);
+	}
+
+	public static void setSecureTextEntry(int bSecure)
+	{
+		if(bSecure==0)
+		{
+			mInputType &= ~InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
+			mInputType &= ~InputType.TYPE_TEXT_VARIATION_PASSWORD;
+		}else
+		{
+			mInputType |= InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS;
+			mInputType |= InputType.TYPE_TEXT_VARIATION_PASSWORD;
+		}
+	}
+
+	public static void setKeyboardType(int keyboardType)
+	{
+		mInputType &= ~InputType.TYPE_TEXT_VARIATION_NORMAL;
+		mInputType &= ~InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
+		mInputType &= ~InputType.TYPE_TEXT_VARIATION_URI;
+		mInputType &= ~InputType.TYPE_CLASS_NUMBER;
+		mInputType &= ~InputType.TYPE_CLASS_PHONE;
+
+		//keyboardType mapped from CCTextFieldTTF::KeyboardType
+		switch(keyboardType)
+		{
+			case 1:  //kKTEmail
+				mInputType |= InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS;
+			break;
+			case 2:  //kKTURL
+				mInputType |= InputType.TYPE_TEXT_VARIATION_URI;
+			break;
+			case 3:  //kKTNumberPad
+				mInputType |= InputType.TYPE_CLASS_NUMBER;
+			break;
+			case 4:	 //kKTPhonePad
+				mInputType |= InputType.TYPE_CLASS_PHONE;
+			break;
+			default:
+				mInputType |= InputType.TYPE_TEXT_VARIATION_NORMAL;
+			break;
+		}
 	}
 
 	public void insertText(final String pText) {

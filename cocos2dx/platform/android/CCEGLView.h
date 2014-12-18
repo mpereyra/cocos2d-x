@@ -27,6 +27,7 @@ THE SOFTWARE.
 
 #include "cocoa/CCGeometry.h"
 #include "platform/CCEGLViewProtocol.h"
+#include "text_input_node/CCTextFieldTTF.h"
 
 NS_CC_BEGIN
 
@@ -42,7 +43,10 @@ public:
     void    end();
     void    swapBuffers();
     void    setIMEKeyboardState(bool bOpen);
-    
+    void setSecureTextEntry(bool bSecure);
+    void setKeyboardType(CCTextFieldTTF::KeyboardType type);
+
+
     // static function
     /**
     @brief    get the shared main open gl window

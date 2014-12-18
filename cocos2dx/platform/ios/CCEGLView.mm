@@ -79,7 +79,38 @@ void CCEGLView::setIMEKeyboardState(bool bOpen)
     else
     {
         [[EAGLView sharedEGLView] resignFirstResponder];
+        setSecureTextEntry(false);
     }
+}
+
+void CCEGLView::setSecureTextEntry(bool bSecure)
+{
+    [[EAGLView sharedEGLView] setIsUseSecureTextEntry:(bSecure?YES:NO)];
+}
+
+void CCEGLView::setKeyboardType(CCTextFieldTTF::KeyboardType type)
+{
+    UIKeyboardType uikType;
+    
+    switch (type) {
+        case CCTextFieldTTF::kKTEmail:
+            uikType = UIKeyboardTypeEmailAddress;
+            break;
+        case CCTextFieldTTF::kKTURL:
+            uikType = UIKeyboardTypeURL;
+            break;
+        case CCTextFieldTTF::kKTNumberPad:
+            uikType = UIKeyboardTypeNumberPad;
+            break;
+        case CCTextFieldTTF::kKTPhonePad:
+            uikType = UIKeyboardTypePhonePad;
+            break;
+        default:
+            uikType = UIKeyboardTypeDefault;
+            break;
+    }
+    
+    [[EAGLView sharedEGLView] setKeyboardFormat:uikType];
 }
 
 CCEGLView* CCEGLView::sharedOpenGLView()

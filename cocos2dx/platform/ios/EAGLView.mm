@@ -90,6 +90,8 @@ static EAGLView *view = 0;
 @synthesize multiSampling=multiSampling_;
 @synthesize isKeyboardShown=isKeyboardShown_;
 @synthesize keyboardShowNotification = keyboardShowNotification_;
+@synthesize isUseSecureTextEntry = isUseSecureTextEntry_;
+@synthesize keyboardFormat = keyboardFormat_;
 + (Class) layerClass
 {
     return [CAEAGLLayer class];
@@ -135,6 +137,8 @@ static EAGLView *view = 0;
     if((self = [super initWithFrame:frame]))
     {
         isUseUITextField = YES;
+        isUseSecureTextEntry_ = NO;
+        keyboardFormat_ = UIKeyboardTypeDefault;
         pixelformat_ = format;
         depthFormat_ = depth;
         multiSampling_ = sampling;
@@ -508,6 +512,8 @@ static EAGLView *view = 0;
     return [super resignFirstResponder];
 }
 
+
+
 #pragma mark -
 #pragma mark UIKeyInput protocol
 
@@ -542,6 +548,21 @@ static EAGLView *view = 0;
 -(UITextAutocapitalizationType) autocapitalizationType
 {
     return UITextAutocapitalizationTypeNone;
+}
+
+-(UITextAutocorrectionType) autocorrectionType
+{
+    return isUseSecureTextEntry_?UITextAutocorrectionTypeNo:UITextAutocorrectionTypeDefault;
+}
+
+-(BOOL) isSecureTextEntry
+{
+    return isUseSecureTextEntry_;
+}
+
+-(UIKeyboardType) keyboardType
+{
+    return keyboardFormat_;
 }
 
 #pragma mark -

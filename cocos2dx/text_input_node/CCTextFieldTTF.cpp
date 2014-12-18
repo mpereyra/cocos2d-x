@@ -55,6 +55,8 @@ CCTextFieldTTF::CCTextFieldTTF()
 , m_nCharCount(0)
 , m_pInputText(new std::string)
 , m_pPlaceHolder(new std::string)   // prevent CCLabelTTF initWithString assertion
+, m_secureTextEntry(false)
+, m_keyboardType(kKTDefault)
 {
     m_ColorSpaceHolder.r = m_ColorSpaceHolder.g = m_ColorSpaceHolder.b = 127;
 }
@@ -137,6 +139,8 @@ bool CCTextFieldTTF::attachWithIME()
         CCEGLView * pGlView = CCDirector::sharedDirector()->getOpenGLView();
         if (pGlView)
         {
+            if(m_secureTextEntry) pGlView->setSecureTextEntry(true);
+            pGlView->setKeyboardType(m_keyboardType);
             pGlView->setIMEKeyboardState(true);
         }
     }
@@ -152,6 +156,7 @@ bool CCTextFieldTTF::detachWithIME()
         CCEGLView * pGlView = CCDirector::sharedDirector()->getOpenGLView();
         if (pGlView)
         {
+            pGlView->setSecureTextEntry(false);
             pGlView->setIMEKeyboardState(false);
         }
     }
@@ -319,6 +324,28 @@ void CCTextFieldTTF::setPlaceHolder(const char * text)
 const char * CCTextFieldTTF::getPlaceHolder(void)
 {
     return m_pPlaceHolder->c_str();
+}
+
+// secureTextEntry
+void CCTextFieldTTF::setSecureTextEntry(bool value)
+{
+    m_secureTextEntry = value;
+}
+
+bool CCTextFieldTTF::isSecureTextEntry()
+{
+    return m_secureTextEntry;
+}
+
+//keyboardType
+void CCTextFieldTTF::setKeyboardType(KeyboardType type)
+{
+    m_keyboardType = type;
+}
+
+CCTextFieldTTF::KeyboardType CCTextFieldTTF::getKeyboardType()
+{
+    return m_keyboardType;
 }
 
 NS_CC_END

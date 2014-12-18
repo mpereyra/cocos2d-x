@@ -129,6 +129,14 @@ public:
     CC_SYNTHESIZE_READONLY(int, m_nCharCount, CharCount);
     CC_SYNTHESIZE_PASS_BY_REF(ccColor3B, m_ColorSpaceHolder, ColorSpaceHolder);
 
+    enum KeyboardType {
+        kKTDefault = 0,
+        kKTEmail,
+        kKTURL,
+        kKTNumberPad,
+        kKTPhonePad
+    };
+    
     // input text property
 public:
     virtual void setString(const char *text);
@@ -141,6 +149,13 @@ protected:
 public:
     virtual void setPlaceHolder(const char * text);
     virtual const char * getPlaceHolder(void);
+    
+    virtual void setSecureTextEntry(bool value);
+    virtual bool isSecureTextEntry();
+
+    virtual void setKeyboardType(KeyboardType type);
+    virtual KeyboardType getKeyboardType();
+    
 protected:
     std::string * m_pPlaceHolder;
 protected:
@@ -156,6 +171,9 @@ protected:
     virtual void insertText(const char * text, int len);
     virtual void deleteBackward();
     virtual const char * getContentText();
+    
+    bool m_secureTextEntry;
+    KeyboardType m_keyboardType;
 private:
     class LengthStack;
     LengthStack * m_pLens;
