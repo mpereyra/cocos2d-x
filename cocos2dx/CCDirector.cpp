@@ -206,14 +206,14 @@ void CCDirector::drawScene(void)
 {
     // calculate "global" dt
     calculateDeltaTime();
-
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     //tick before glClear: issue #533
     if (! m_bPaused)
     {
         m_pScheduler->update(m_fDeltaTime);
     }
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
 
     /* to avoid flickr, nextScene MUST be here: after tick and before draw.
      XXX: Which bug is this one. It seems that it can't be reproduced with v0.9 */
@@ -907,7 +907,7 @@ void CCDisplayLinkDirector::startAnimation(void)
     }
 
     m_bInvalid = false;
-    CCApplication::sharedApplication()->setAnimationInterval(m_dAnimationInterval);
+    //CCApplication::sharedApplication()->setAnimationInterval(m_dAnimationInterval);
 }
 
 void CCDisplayLinkDirector::mainLoop(void)
