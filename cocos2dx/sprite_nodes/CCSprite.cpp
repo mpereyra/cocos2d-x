@@ -1113,4 +1113,12 @@ CCTexture2D* CCSprite::getTexture(void)
     return m_pobTexture;
 }
 
+#if (defined(COCOS2D_DEBUG) && (COCOS2D_DEBUG > 0)) || DEBUG
+std::vector<const CCObject*> CCSprite::getSharedResources() {
+    std::vector<const CCObject*> result;
+    result.push_back(getTexture());
+    return result;
+}
+#endif
+
 NS_CC_END

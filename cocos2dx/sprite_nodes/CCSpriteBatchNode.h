@@ -155,6 +155,10 @@ public:
     virtual void removeAllChildrenWithCleanup(bool cleanup);
     virtual void sortAllChildren();
     virtual void draw(void);
+#if (defined(COCOS2D_DEBUG) && (COCOS2D_DEBUG > 0)) || DEBUG
+    size_t nodeSize() override;
+    std::vector<const CCObject*> getSharedResources() override;
+#endif
 
 protected:
     /* IMPORTANT XXX IMPORTANT:

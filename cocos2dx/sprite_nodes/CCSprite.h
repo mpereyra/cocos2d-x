@@ -341,6 +341,12 @@ public:
     */
     virtual void setDisplayFrameWithAnimationName(const char *animationName, int frameIndex);
 
+    // BPC PATCH START -
+#if (defined(COCOS2D_DEBUG) && (COCOS2D_DEBUG > 0)) || DEBUG
+    virtual std::vector<const CCObject*> getSharedResources() override;
+#endif
+    // BPC PATCH END
+
 protected:
     virtual void setTextureCoords(CCRect rect);
     virtual void updateBlendFunc(void);

@@ -756,4 +756,16 @@ CCSpriteBatchNode * CCSpriteBatchNode::addSpriteWithoutQuad(CCSprite*child, unsi
     return this;
 }
 
+#if (defined(COCOS2D_DEBUG) && (COCOS2D_DEBUG > 0)) || DEBUG
+size_t CCSpriteBatchNode::nodeSize() {
+    return CCNode::nodeSize() + sizeof(CCTextureAtlas);
+}
+
+std::vector<const CCObject*> CCSpriteBatchNode::getSharedResources() {
+    std::vector<const CCObject*> result = CCNode::getSharedResources();
+    result.push_back(m_pobTextureAtlas->getTexture());
+    return result;
+}
+#endif
+
 NS_CC_END

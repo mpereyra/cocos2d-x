@@ -36,6 +36,7 @@
 #include "shaders/CCGLProgram.h"
 #include "kazmath/kazmath.h"
 #include "script_support/CCScriptSupport.h"
+#include <vector>
 
 NS_CC_BEGIN
 
@@ -48,6 +49,7 @@ class CCRGBAProtocol;
 class CCLabelProtocol;
 class CCScheduler;
 class CCActionManager;
+class CCTexture2D;
 
 /**
  * @addtogroup base_nodes
@@ -248,6 +250,26 @@ public:
 
     /** A tag used to identify the node easily */
     CC_PROPERTY(int, m_nTag, Tag)
+
+// BPC PATCH START - Memory usage debug
+#if (defined(COCOS2D_DEBUG) && (COCOS2D_DEBUG > 0)) || DEBUG
+    struct TagUsage {
+        unsigned int numberOfNodes = 0;
+        size_t bytesUsed = 0;
+        std::set<const CCObject*> shared_resources;
+    };
+    typedef std::map<std::string, TagUsage> DebugData;
+    
+    CC_SYNTHESIZE(std::string, m_bpcTag, BpcTag);
+    virtual size_t nodeSize();
+    virtual std::vector<const CCObject*> getSharedResources();
+    void debugUsage(DebugData& data, std::set<std::string> tags, bool printReport = true);
+    #define SET_BPC_TAG(name)\
+    setBpcTag(name)
+#else
+    #define SET_BPC_TAG(name)
+#endif
+// BPC PATCH END
 
     /** A custom user data pointer */
     CC_PROPERTY(void *, m_pUserData, UserData)

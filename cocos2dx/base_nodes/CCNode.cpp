@@ -84,6 +84,7 @@ CCNode::CCNode(void)
 , m_nOrderOfArrival(0)
 , m_glServerState(CC_GL_BLEND)
 , m_bReorderChildDirty(false)
+, m_bpcTag("")
 {
     // set default scheduler and actionManager
     CCDirector *director = CCDirector::sharedDirector();
@@ -1130,6 +1131,81 @@ void CCNode::updateTransform()
     // Recursively iterate over children
     arrayMakeObjectsPerformSelector(m_pChildren, updateTransform, CCNode*);
 }
+
+// BPC PATCH START - Memory usage debug
+#if (defined(COCOS2D_DEBUG) && (COCOS2D_DEBUG > 0)) || DEBUG
+
+size_t CCNode::nodeSize() {
+    return sizeof(CCNode);
+}
+
+std::vector<const CCObject*> CCNode::getSharedResources() {
+    return std::vector<const CCObject*>();
+}
+
+void CCNode::debugUsage(DebugData& data, std::set<std::string> tags, bool printReport)
+{
+    bool hasDebugTag = m_bpcTag.empty() == false;
+    if (hasDebugTag)
+    {
+        tags.insert(m_bpcTag);
+    }
+
+    // gather usage info for this node
+    for (std::string tag : tags)
+    {
+        TagUsage& usage = data[tag];
+        for (const CCObject* resource : getSharedResources())
+        {
+            usage.shared_resources.insert(resource);
+        }
+        usage.numberOfNodes++;
+        usage.bytesUsed += nodeSize();
+    }
+
+    // recurse over children
+    unsigned int i = 0;
+    if(m_pChildren && m_pChildren->count() > 0)
+    {
+        ccArray *arrayData = m_pChildren->data;
+        for( ; i < arrayData->num; i++ )
+        {
+            CCNode* pNode = (CCNode*) arrayData->arr[i];
+            pNode->debugUsage(data, tags, false);
+        }
+    }
+
+    if (printReport) {
+        CCNode::TagUsage totalUsage = data[m_bpcTag];
+        CCLOG("---- Tag ----  Num nodes           |    Node data mem   |    Textures");
+        for (auto tagUsage : data) {
+            int texMemUsed = 0;
+            int numTex = 0;
+            CCNode::TagUsage& usage = tagUsage.second;
+            for (const CCObject* resource : usage.shared_resources) {
+                if (resource == nullptr) {
+                    continue;
+                }
+                CCTexture2D* texture = const_cast<CCTexture2D*>(dynamic_cast<const CCTexture2D*>(resource)); // because cocos2d-x doens't know what const is for
+                if (texture != nullptr) {
+                    texMemUsed += float(texture->getPixelsHigh() * texture->getPixelsWide()) * (float(texture->bitsPerPixelForFormat())/8);
+                    numTex++;
+                    continue;
+                }
+            }
+            float numNodesPercentage = float(usage.numberOfNodes) / totalUsage.numberOfNodes * 100;
+            float bytesPercentage = float(usage.bytesUsed) / totalUsage.bytesUsed * 100;
+            CCLOG("%12s: %5u nodes (%5.1f%%) | %6.2f MB (%5.1f%%) | %4i %6.2f MB",
+                 tagUsage.first.c_str(),
+                 usage.numberOfNodes, numNodesPercentage,
+                 float(usage.bytesUsed)/(1024*1024), bytesPercentage,
+                 numTex, float(texMemUsed)/(1024*1024));
+        }
+    }
+}
+// BPC PATCH END
+
+#endif
 
 NS_CC_END
 
