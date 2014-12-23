@@ -137,6 +137,13 @@ static void static_stopAllEffects()
     [[SimpleAudioEngine sharedEngine] stopAllEffects];
 }
 
+// BPC PATCH START
+static void static_debugUsage()
+{
+    [[SimpleAudioEngine sharedEngine] debugUsage];
+}
+// BPC PATCH END
+
 namespace CocosDenshion {
 
 static SimpleAudioEngine *s_pEngine;
@@ -276,5 +283,12 @@ void SimpleAudioEngine::stopAllEffects()
 {
     static_stopAllEffects();
 }
+    
+// BPC PATCH START
+void SimpleAudioEngine::debugUsage()
+{
+    static_debugUsage();
+}
+// BPC PATCH END
 
 } // endof namespace CocosDenshion {

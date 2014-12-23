@@ -382,4 +382,9 @@ void SimpleAudioEngine::stopAllEffects()
 	}
 }
 
+void SimpleAudioEngine::debugUsage()
+{
+	
+}
+
 }

@@ -284,6 +284,10 @@ typedef struct _sourceInfo {
 /** Used internally, never call unless you know what you are doing */
 -(void) _soundSourcePreRelease:(CDSoundSource *) soundSource;
 
+// BPC PATCH START
+-(void) debugUsage;
+// BPC PATCH END
+
 @end
 
 #pragma mark CDSoundSource

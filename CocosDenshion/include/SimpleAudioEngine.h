@@ -209,6 +209,10 @@ public:
     @param[in]        pszFilePath        The path of the effect file,or the FileName of T_SoundResInfo
     */
     void unloadEffect(const char* pszFilePath);
+    
+// BPC PATCH START
+    void debugUsage();
+// BPC PATCH END
 };
 
 } // end of namespace CocosDenshion
