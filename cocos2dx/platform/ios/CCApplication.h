@@ -41,7 +41,9 @@ public:
     /**
     @brief    Run the message loop.
     */
-    int run();
+    //BPC PATCH - added virtual.
+    virtual int run();
+    //END BPC PATCH
         
     /**
     @brief    Get the current application instance.
