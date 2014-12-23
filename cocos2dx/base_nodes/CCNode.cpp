@@ -84,7 +84,9 @@ CCNode::CCNode(void)
 , m_nOrderOfArrival(0)
 , m_glServerState(CC_GL_BLEND)
 , m_bReorderChildDirty(false)
+#if DEBUG
 , m_bpcTag("")
+#endif
 {
     // set default scheduler and actionManager
     CCDirector *director = CCDirector::sharedDirector();
