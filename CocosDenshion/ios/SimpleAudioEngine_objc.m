@@ -247,7 +247,7 @@ static CDBufferManager *bufferManager = nil;
 
 // BPC PATCH START
 -(void) debugUsage {
-    soundEngine.debugUsage;
+    [soundEngine debugUsage];
 }
 // BPC PATCH END
 
