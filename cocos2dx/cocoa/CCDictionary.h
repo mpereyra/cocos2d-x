@@ -50,7 +50,7 @@ public:
 
         const char* pStart = pszKey;
         
-        int len = strlen(pszKey);
+        size_t len = strlen(pszKey);
         if (len > MAX_KEY_LEN )
         {
             char* pEnd = (char*)&pszKey[len-1];
