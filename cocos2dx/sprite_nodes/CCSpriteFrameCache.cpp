@@ -262,7 +262,7 @@ void CCSpriteFrameCache::addSpriteFramesWithFile(const char *pszPlist, bool forc
             }
             else //if somehow our image manager can't find it, fallback to default behavior.
             {
-                DLog("texture not found: %s", texturePath.c_str());
+                CCLOG("texture not found: %s", texturePath.c_str());
                 texturePath = CCFileUtils::sharedFileUtils()->fullPathFromRelativeFile(texturePath.c_str(), pszPath);
             }
             // BPC PATCH END
