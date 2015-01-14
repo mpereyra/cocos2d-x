@@ -36,7 +36,6 @@ THE SOFTWARE.
 #include "platform/platform.h"
 // BPC PATCH START ewww :(
 #include "../../../../shared/core/ImageManager.h"
-#include "../../../../shared/view/ScreenUtils.h"
 // BPC PATCH END
 
 using namespace std;
@@ -305,7 +304,7 @@ bool CCTMXMapInfo::parseXMLFile(const char *xmlFilename)
 // the XML parser calls here with all the elements
 void CCTMXMapInfo::startElement(void *ctx, const char *name, const char **atts)
 {
-    auto const scale = Bpc::ScreenUtils::assetSetToUse() / 4;
+    auto const scale = Bpc::ImageManager::assetSetToUse() / 4;
 
     CC_UNUSED_PARAM(ctx);
     CCTMXMapInfo *pTMXMapInfo = this;
