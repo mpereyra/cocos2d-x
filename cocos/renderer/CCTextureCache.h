@@ -194,6 +194,8 @@ private:
     void loadImage();
 
 public:
+    typedef const std::function<void(Texture2D*)>& AsyncCallback;
+    
     struct AsyncStruct
     {
     public:

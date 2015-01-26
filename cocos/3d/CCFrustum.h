@@ -41,7 +41,7 @@ public:
     /**
      * Constructor & Destructor.
      */
-    Frustum(): _initialized(false), _clipZ(true){}
+    Frustum(){}
     ~Frustum(){}
 
     /**
@@ -71,8 +71,8 @@ protected:
     void createPlane(const Camera* camera);
 
     Plane _plane[6];             // clip plane, left, right, top, bottom, near, far
-    bool _clipZ;                // use near and far clip plane
-    bool _initialized;
+    bool _clipZ{true};                // use near and far clip plane
+    bool _initialized{false};
 };
 
 NS_CC_END
