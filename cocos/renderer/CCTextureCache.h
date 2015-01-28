@@ -41,6 +41,10 @@ THE SOFTWARE.
 #include "renderer/CCTexture2D.h"
 #include "platform/CCImage.h"
 
+// BPC PATCH
+#include <set>
+// END BPC PATCH
+
 #if CC_ENABLE_CACHE_TEXTURE_DATA
     #include "platform/CCImage.h"
     #include <list>
@@ -194,7 +198,29 @@ private:
     void loadImage();
 
 public:
-    typedef const std::function<void(Texture2D*)>& AsyncCallback;
+    /* BPC PATCH */
+    /* Sends target/selector to Asio as functor. */
+    struct AsyncCallback
+    {
+        typedef void (Ref::*Func)(Texture2D * const, std::string const &);
+        AsyncCallback(Ref * const targ, Func const sel,
+                      Texture2D * const tex, std::string const &filename);
+        AsyncCallback(AsyncCallback const &ac);
+        ~AsyncCallback();
+        
+        void operator ()();
+        
+        Ref * getTarget() const
+        { return target; }
+        
+    private:
+        AsyncCallback& operator =(AsyncCallback const &) /* = delete */;
+        
+        Ref * const target;
+        Func const selector;
+        Texture2D * const texture;
+        std::string const filename;
+    };
     
     struct AsyncStruct
     {
@@ -204,8 +230,22 @@ public:
         std::string filename;
         std::function<void(Texture2D*)> callback;
     };
+    
+    /*** BPC Patch ***
+     * Removes an asynchronous request for an image, should the target no longer care about it. */
+    void removeAsyncImage(Ref * const target);
+    
+    static void removeAllAsyncImages();
+    
+    void pauseAsync();
+    void resumeAsync();
 
 protected:
+    
+    // BPC PATCH
+    std::set<std::string> m_failedTextures;
+    // END BPC PATCH
+    
     typedef struct _ImageInfo
     {
         AsyncStruct *asyncStruct;
