@@ -706,7 +706,11 @@ void CCDirector::showStats(void)
         {
             if (m_fAccumDt > CC_DIRECTOR_STATS_INTERVAL)
             {
-                sprintf(m_pszFPS, "%.3f", m_fSecondsPerFrame);
+                // simple lowpass average FPS
+                static double avg_fps = 10.0;
+                avg_fps = avg_fps * 0.9 + m_fFrameRate * 0.1;
+                
+                sprintf(m_pszFPS, "%.1f", avg_fps);
                 m_pSPFLabel->setString(m_pszFPS);
                 
                 m_fFrameRate = m_uFrames / m_fAccumDt;
