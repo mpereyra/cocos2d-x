@@ -450,6 +450,7 @@ public:
     FontStroke()
 	    : _strokeEnabled(false)
         , _strokeColor(Color3B::BLACK)
+        , _strokeAlpha(255)
         , _strokeSize(0)
     {}
     
@@ -457,6 +458,8 @@ public:
     bool      _strokeEnabled;
     // stroke color
 	Color3B   _strokeColor;
+    // stroke alpha
+    GLubyte   _strokeAlpha;
     // stroke size
     float     _strokeSize;
     
@@ -476,6 +479,7 @@ public:
         , _vertAlignment(TextVAlignment::TOP)
     	, _dimensions(Size::ZERO)
         , _fontFillColor(Color3B::WHITE)
+        , _fontAlpha(255)
     {}
     
     // font name
@@ -490,6 +494,8 @@ public:
     Size                  _dimensions;
     // font color
     Color3B               _fontFillColor;
+    //font alpha
+    GLubyte               _fontAlpha;
     // font shadow
     FontShadow            _shadow;
     // font stroke
