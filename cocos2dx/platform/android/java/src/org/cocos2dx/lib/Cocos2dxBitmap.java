@@ -225,7 +225,10 @@ public class Cocos2dxBitmap {
 		String[] ret = null;
 		final FontMetricsInt fm = pPaint.getFontMetricsInt();
 		final int heightPerLine = (int) Math.ceil(fm.bottom - fm.top);
-		final int maxLines = pMaxHeight / heightPerLine;
+// BPC PATCH - We would rather display a cropped line of text than nothing at all
+		int maxLines = pMaxHeight / heightPerLine;
+		if (maxLines==0) maxLines = 1;
+// END BPC PATCH
 
 		if (pMaxWidth != 0) {
 			final LinkedList<String> strList = new LinkedList<String>();

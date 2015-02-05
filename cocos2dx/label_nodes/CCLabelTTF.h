@@ -127,7 +127,9 @@ public:
     void setFontSize(float fontSize);
     
     const char* getFontName();
-    void setFontName(const char *fontName);
+    // BPC PATCH - making this virtual
+    virtual void setFontName(const char *fontName);
+    // END BPC PATCH
 
 private:
     void updateTexture();
