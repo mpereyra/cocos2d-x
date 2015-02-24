@@ -517,7 +517,10 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
         if(_isDepthTestFor2D)
         {
             glEnable(GL_DEPTH_TEST);
-            glDepthMask(true);
+            /* BPC PATCH BEGIN */
+            // don't write to depth buffer for 2D objects. Objects marked as 2D will preserve localZOrder (unlike 3D) will check depth buffer, but won't write to it (like transparent objects).
+            glDepthMask(false);
+            /* BPC PATCH END */
         }
         else
         {
@@ -573,7 +576,10 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
         if(_isDepthTestFor2D)
         {
             glEnable(GL_DEPTH_TEST);
-            glDepthMask(true);
+            /* BPC PATCH BEGIN */
+            // don't write to depth buffer for 2D objects. Objects marked as 2D will preserve localZOrder (unlike 3D) will check depth buffer, but won't write to it (like transparent objects).
+            glDepthMask(false);
+            /* BPC PATCH END */
         }
         else
         {
