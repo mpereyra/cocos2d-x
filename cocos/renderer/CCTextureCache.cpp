@@ -95,7 +95,7 @@ std::string TextureCache::getDescription() const
     return StringUtils::format("<TextureCache | Number of textures = %d>", static_cast<int>(_textures.size()));
 }
 
-void TextureCache::addImageAsync(const std::string &path, const std::function<void(Texture2D*)>& callback)
+void TextureCache::addImageAsync(const std::string &path, const std::function<void(Texture2D*)>& callback, Ref * const target)
 {
     Texture2D *texture = nullptr;
 
@@ -114,7 +114,7 @@ void TextureCache::addImageAsync(const std::string &path, const std::function<vo
     // lazy init
     if (_asyncStructQueue == nullptr)
     {             
-        _asyncStructQueue = new queue<AsyncStruct*>();
+        _asyncStructQueue = new deque<AsyncStruct*>();
         _imageInfoQueue   = new deque<ImageInfo*>();        
 
         // create a new thread to load images
@@ -131,11 +131,11 @@ void TextureCache::addImageAsync(const std::string &path, const std::function<vo
     ++_asyncRefCount;
 
     // generate async struct
-    AsyncStruct *data = new (std::nothrow) AsyncStruct(fullpath, callback);
+    AsyncStruct *data = new (std::nothrow) AsyncStruct(fullpath, callback, target);
 
     // add async struct into queue
     _asyncStructQueueMutex.lock();
-    _asyncStructQueue->push(data);
+    _asyncStructQueue->push_back(data);
     _asyncStructQueueMutex.unlock();
 
     _sleepCondition.notify_one();
@@ -172,7 +172,7 @@ void TextureCache::loadImage()
 
     while (true)
     {
-        std::queue<AsyncStruct*> *pQueue = _asyncStructQueue;
+        std::deque<AsyncStruct*> *pQueue = _asyncStructQueue;
         _asyncStructQueueMutex.lock();
         if (pQueue->empty())
         {
@@ -189,7 +189,7 @@ void TextureCache::loadImage()
         else
         {
             asyncStruct = pQueue->front();
-            pQueue->pop();
+            pQueue->pop_front();
             _asyncStructQueueMutex.unlock();
         }        
 
@@ -499,6 +499,28 @@ void TextureCache::removeTextureForKey(const std::string &textureKeyName)
         (it->second)->release();
         _textures.erase(it);
     }
+}
+
+void TextureCache::removeAsyncImage(Ref * const target)
+{
+    _asyncStructQueueMutex.lock();
+    for(auto it(_asyncStructQueue->begin()); it != _asyncStructQueue->end(); ++it) {
+        if((*it)->target == target) {
+            _asyncStructQueue->erase(it);
+            delete (*it);
+        }
+    }
+    _asyncStructQueueMutex.unlock();
+    
+    _imageInfoMutex.lock();
+    for(auto it(_imageInfoQueue->begin()); it != _imageInfoQueue->end(); ++it) {
+        if((*it)->asyncStruct->target == target) {
+            _imageInfoQueue->erase(it);
+            delete (*it)->asyncStruct;
+            delete (*it);
+        }
+    }
+    _imageInfoMutex.unlock();
 }
 
 Texture2D* TextureCache::getTextureForKey(const std::string &textureKeyName) const
