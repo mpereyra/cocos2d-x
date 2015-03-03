@@ -1960,6 +1960,26 @@ Vec2 Node::convertTouchToNodeSpaceAR(Touch *touch) const
     return this->convertToNodeSpaceAR(point);
 }
 
+// BPC PATCH - BEGIN
+
+Vec3 Node::convertToWorldSpace(const Vec3& nodePoint) const
+{
+    Mat4 tmp = getNodeToWorldTransform();
+    Vec3 ret;
+    tmp.transformPoint(nodePoint, &ret);
+    return ret;
+}
+
+Vec3 Node::convertToNodeSpace(const Vec3& worldPoint) const
+{
+    Mat4 tmp = getWorldToNodeTransform();
+    Vec3 ret;
+    tmp.transformPoint(worldPoint,&ret);
+    return ret;
+}
+
+// BPC PATCH - END
+
 void Node::updateTransform()
 {
     // Recursively iterate over children

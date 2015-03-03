@@ -1482,6 +1482,19 @@ public:
      * converts a Touch (world coordinates) into a local coordinate. This method is AR (Anchor Relative).
      */
     Vec2 convertTouchToNodeSpaceAR(Touch * touch) const;
+    
+    // BPC PATCH -- BEGIN
+    /**
+     * Converts a Vec3 to node (local) space coordinates. The result is in Points.
+     */
+    Vec3 convertToNodeSpace(const Vec3& worldPoint) const;
+    
+    /**
+     * Converts a Vec3 to world space coordinates. The result is in Points.
+     */
+    Vec3 convertToWorldSpace(const Vec3& nodePoint) const;
+
+    // BPC PATCH -- END
 
 	/**
      *  Sets an additional transform matrix to the node.
