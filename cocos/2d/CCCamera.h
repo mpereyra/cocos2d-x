@@ -147,6 +147,9 @@ public:
     virtual void onExit() override;
     
     static const Camera* getVisitingCamera() { return _visitingCamera; }
+    /* BPC PATCH*/
+    static void setVisitingCamera(Camera * c) { _visitingCamera = c; }
+    /* end BPC PATCH*/
     static Camera* getDefaultCamera();
 
 CC_CONSTRUCTOR_ACCESS:

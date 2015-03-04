@@ -78,7 +78,9 @@ public:
     const std::vector<BaseLight*>& getLights() const { return _lights; }
     
     /** render the scene */
-    void render(Renderer* renderer);
+    /*BPC PATCH made this virtual*/
+    virtual void render(Renderer* renderer);
+    /* end BPC PATCH*/
     
 CC_CONSTRUCTOR_ACCESS:
     Scene();
