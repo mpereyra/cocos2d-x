@@ -72,6 +72,7 @@ bool CCTMXLayer::initWithTilesetInfo(CCTMXTilesetInfo *tilesetInfo, CCTMXLayerIn
         m_sLayerName = layerInfo->m_sName;
         m_tLayerSize = size;
         m_pTiles = layerInfo->m_pTiles;
+        m_bOwnTiles = !layerInfo->m_bOwnTiles;
         m_uMinGID = layerInfo->m_uMinGID;
         m_uMaxGID = layerInfo->m_uMaxGID;
         m_cOpacity = layerInfo->m_cOpacity;
@@ -110,7 +111,8 @@ CCTMXLayer::CCTMXLayer()
 ,m_pProperties(NULL)
 ,m_sLayerName("")
 ,m_pReusedTile(NULL)
-,m_pAtlasIndexArray(NULL)    
+,m_pAtlasIndexArray(NULL)
+,m_bOwnTiles(false)
 {}
 
 CCTMXLayer::~CCTMXLayer()
@@ -125,7 +127,10 @@ CCTMXLayer::~CCTMXLayer()
         m_pAtlasIndexArray = NULL;
     }
 
-    CC_SAFE_DELETE_ARRAY(m_pTiles);
+    if(m_bOwnTiles)
+    {
+        CC_SAFE_DELETE_ARRAY(m_pTiles);
+    }
 }
 
 CCTMXTilesetInfo * CCTMXLayer::getTileSet()
@@ -142,7 +147,7 @@ void CCTMXLayer::setTileSet(CCTMXTilesetInfo* var)
 
 void CCTMXLayer::releaseMap()
 {
-    if (m_pTiles)
+    if (m_bOwnTiles && m_pTiles)
     {
         delete [] m_pTiles;
         m_pTiles = NULL;

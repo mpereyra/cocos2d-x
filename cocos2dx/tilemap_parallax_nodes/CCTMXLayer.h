@@ -201,6 +201,8 @@ protected:
     
     // used for retina display
     float               m_fContentScaleFactor;
+    
+    bool                m_bOwnTiles;
 };
 
 // end of tilemap_parallax_nodes group
