@@ -126,6 +126,13 @@ THE SOFTWARE.
 #include "platform/CCPlatformConfig.h"
 #include "platform/CCPlatformMacros.h"
 
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_EMSCRIPTEN)
+    #include "platform/emscripten/CCApplication.h"
+    #include "platform/emscripten/CCEGLView.h"
+    #include "platform/emscripten/CCGL.h"
+    #include "platform/emscripten/CCStdC.h"
+#endif // CC_TARGET_PLATFORM == CC_PLATFORM_EMSCRIPTEN
+
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
     #include "platform/ios/CCAccelerometer.h"
     #include "platform/ios/CCApplication.h"
