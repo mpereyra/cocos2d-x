@@ -21,6 +21,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_EMSCRIPTEN)
+
+#include "platform/emscripten/CCFileUtilsEmscripten.h"
+
+#else
+
 #ifndef __CC_FILEUTILS_PLATFORM_H__
 #define __CC_FILEUTILS_PLATFORM_H__
 
@@ -115,3 +122,5 @@ protected:
 NS_CC_END
 
 #endif    // __CC_FILEUTILS_PLATFORM_H__
+
+#endif // else CC_PLATFORM_EMSCRIPTEN

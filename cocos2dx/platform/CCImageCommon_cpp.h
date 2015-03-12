@@ -36,6 +36,11 @@ THE SOFTWARE.
 #include <string>
 #include <ctype.h>
 
+#ifdef EMSCRIPTEN
+#include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
+#endif // EMSCRIPTEN
+
 NS_CC_BEGIN
 
 // premultiply alpha, or the effect will wrong when want to use other pixel format in CCTexture2D,
@@ -216,6 +221,9 @@ bool CCImage::initWithImageData(void * pData,
 
 bool CCImage::_initWithJpgData(void * data, int nSize)
 {
+#ifdef EMSCRIPTEN && ! defined(ALLOW_JPEGS)
+  return FALSE;
+#else
     /* these are standard libjpeg structures for reading(decompression) */
     struct jpeg_decompress_struct cinfo;
     struct jpeg_error_mgr jerr;
@@ -285,6 +293,7 @@ bool CCImage::_initWithJpgData(void * data, int nSize)
 
     CC_SAFE_DELETE_ARRAY(row_pointer[0]);
     return bRet;
+#endif
 }
 
 bool CCImage::_initWithPngData(void * pData, int nDatalen)
@@ -792,6 +801,9 @@ bool CCImage::_saveImageToPNG(const char * pszFilePath, bool bIsToRGB)
 }
 bool CCImage::_saveImageToJPG(const char * pszFilePath)
 {
+#ifdef EMSCRIPTEN && ! defined(ALLOW_JPEGS)
+  return FALSE;
+#else
     bool bRet = false;
     do 
     {
@@ -866,6 +878,7 @@ bool CCImage::_saveImageToJPG(const char * pszFilePath)
         bRet = true;
     } while (0);
     return bRet;
+#endif
 }
 
 NS_CC_END

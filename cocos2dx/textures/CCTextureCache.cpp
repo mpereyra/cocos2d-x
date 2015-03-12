@@ -56,10 +56,6 @@ NS_CC_BEGIN
 
 typedef std::pair<CCObject*, CCTextureCache::AsyncCallback::Func> Functor;
 
-typedef struct _AsyncStruct
-{
-	std::string			filename;
-} AsyncStruct;
 
 typedef struct _ImageInfo
 {
@@ -80,6 +76,11 @@ static pthread_t s_loadingThread;
 static pthread_mutex_t      s_callbacksMutex;
 static pthread_mutex_t		s_asyncStructQueueMutex;
 static pthread_mutex_t      s_imageInfoMutex;
+
+#ifdef EMSCRIPTEN
+// Hack to get ASM.JS validation (no undefined symbols allowed).
+#define pthread_cond_signal(_)
+#endif // EMSCRIPTEN
 
 static pthread_mutex_t      s_pauseMutex;
 static pthread_cond_t       s_pauseCondition;
@@ -164,7 +165,11 @@ static void* loadImage(void* data)
         pthread_mutex_unlock(&s_pauseMutex);
 
         // wait for rendering thread to ask for loading if s_pAsyncStructQueue is empty
+        #ifdef EMSCRIPTEN
+        int semWaitRet = 0;
+        #else
         int semWaitRet = sem_wait(s_pSem);
+        #endif
         if( semWaitRet < 0 )
         {
             CCLOG( "CCTextureCache async thread semaphore error: %s\n", strerror( errno ) );
@@ -297,9 +302,13 @@ static void* loadImage(void* data)
     {
 #if CC_ASYNC_TEXTURE_CACHE_USE_NAMED_SEMAPHORE
         sem_unlink(CC_ASYNC_TEXTURE_CACHE_SEMAPHORE);
+        #ifndef EMSCRIPTEN
         sem_close(s_pSem);
+        #endif // EMSCRIPTEN
 #else
+        #ifndef EMSCRIPTEN
         sem_destroy(s_pSem);
+        #endif
 #endif
         s_pSem = NULL;
     }
@@ -370,7 +379,9 @@ CCTextureCache::~CCTextureCache()
 	need_quit = true;
     if (s_pSem != NULL)
     {
+        #ifndef EMSCRIPTEN
         sem_post(s_pSem);
+        #endif
     }
     
 	CC_SAFE_RELEASE(m_pTextures);
@@ -402,6 +413,12 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target,
 {
 	CCAssert(path != NULL, "TextureCache: fileimage MUST not be NULL");	
 
+#ifdef EMSCRIPTEN // NO async textures
+    CCTexture2D *texture1 = addImage(path, target);
+    std::string const fullpath1 = CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(path);
+    (target->*selector)(texture1, fullpath1);
+    return;
+#endif
 	CCTexture2D *texture = NULL;
 
 	// optimization
@@ -440,7 +457,10 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target,
             return;
 	}
 #else
+        #ifndef EMSCRIPTEN
         int semInitRet = sem_init(&s_sem, 0, 0);
+        #endif
+        int semInitRet = 0;
         if( semInitRet < 0 )
 	{		     
             CCLOG( "CCTextureCache async thread semaphore init error: %s\n", strerror( errno ) );
@@ -448,7 +468,9 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target,
         }
         s_pSem = &s_sem;
 #endif
+        #ifndef EMSCRIPTEN
 		pthread_create(&s_loadingThread, NULL, loadImage, NULL);
+        #endif
 
 		need_quit = false;
     }
@@ -498,7 +520,9 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target,
     pthread_mutex_unlock(&s_callbacksMutex);
 	pthread_mutex_unlock(&s_asyncStructQueueMutex);
 
+    #ifndef EMSCRIPTEN
     sem_post(s_pSem);
+    #endif
 }
 
 void CCTextureCache::setAsyncImageCallback(void (*callback)(AsyncCallback const &))
