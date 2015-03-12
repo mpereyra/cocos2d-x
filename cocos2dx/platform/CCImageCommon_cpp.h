@@ -221,7 +221,7 @@ bool CCImage::initWithImageData(void * pData,
 
 bool CCImage::_initWithJpgData(void * data, int nSize)
 {
-#ifdef EMSCRIPTEN && ! defined(ALLOW_JPEGS)
+#if defined(EMSCRIPTEN) && ! defined(ALLOW_JPEGS)
   return FALSE;
 #else
     /* these are standard libjpeg structures for reading(decompression) */
@@ -801,7 +801,7 @@ bool CCImage::_saveImageToPNG(const char * pszFilePath, bool bIsToRGB)
 }
 bool CCImage::_saveImageToJPG(const char * pszFilePath)
 {
-#ifdef EMSCRIPTEN && ! defined(ALLOW_JPEGS)
+#if defined(EMSCRIPTEN) && ! defined(ALLOW_JPEGS)
   return FALSE;
 #else
     bool bRet = false;
