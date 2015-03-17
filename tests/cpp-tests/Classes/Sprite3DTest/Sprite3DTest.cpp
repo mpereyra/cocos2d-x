@@ -650,8 +650,8 @@ void Sprite3DFakeShadowTest::onTouchesEnded(const std::vector<Touch*>& touches, 
                 Vec3 nearP(location.x, location.y, -1.0f), farP(location.x, location.y, 1.0f);
 
                 auto size = Director::getInstance()->getWinSize();
-                _camera->unproject(size, &nearP, &nearP);
-                _camera->unproject(size, &farP, &farP);
+                nearP = _camera->unproject(nearP);
+                farP = _camera->unproject(farP);
                 Vec3 dir(farP - nearP);
                 float dist=0.0f;
                 float ndd = Vec3::dot(Vec3(0,1,0),dir);
@@ -1025,8 +1025,8 @@ bool Effect3DOutline::init()
 }
 
 Effect3DOutline::Effect3DOutline()
-: _outlineWidth(1.0f)
-, _outlineColor(1, 1, 1)
+: _outlineColor(1, 1, 1)
+, _outlineWidth(1.0f)
 , _sprite(nullptr)
 {
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_WP8 || CC_TARGET_PLATFORM == CC_PLATFORM_WINRT)
@@ -1460,11 +1460,11 @@ void Sprite3DWithSkinOutlineTest::onTouchesEnded(const std::vector<Touch*>& touc
 }
 
 Animate3DTest::Animate3DTest()
-: _hurt(nullptr)
+: _sprite(nullptr)
 , _swim(nullptr)
-, _sprite(nullptr)
-, _moveAction(nullptr)
+, _hurt(nullptr)
 , _elapseTransTime(0.f)
+, _moveAction(nullptr)
 {
     addSprite3D();
     
@@ -1546,8 +1546,9 @@ void Animate3DTest::addSprite3D()
 
 void Animate3DTest::reachEndCallBack()
 {
+    auto s = Director::getInstance()->getWinSize();
     _sprite->stopActionByTag(100);
-    auto inverse = (MoveTo*)_moveAction->reverse();
+    auto inverse = MoveTo::create(4.f, Vec2(s.width - _sprite->getPositionX(), s.height / 2.f));
     inverse->retain();
     _moveAction->release();
     _moveAction = inverse;
@@ -1943,8 +1944,9 @@ void Sprite3DWithOBBPerformanceTest::addNewSpriteWithCoords(Vec2 p)
 
 void Sprite3DWithOBBPerformanceTest::reachEndCallBack()
 {
+    auto s = Director::getInstance()->getWinSize();
     _sprite->stopActionByTag(100);
-    auto inverse = (MoveTo*)_moveAction->reverse();
+    auto inverse = MoveTo::create(4.f, Vec2(s.width - _sprite->getPositionX(), s.height / 2.f));
     inverse->retain();
     _moveAction->release();
     _moveAction = inverse;
