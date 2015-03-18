@@ -99,6 +99,11 @@ public:
     CC_DEPRECATED_ATTRIBUTE bool getPlayBack() const { return _playReverse; }
     CC_DEPRECATED_ATTRIBUTE void setPlayBack(bool reverse) { _playReverse = reverse; }
     
+    
+    /*BPC PATCH*/
+    Animation3D* getAnimation() const { return _animation; }
+    /*END BPC PATCH*/
+    
 CC_CONSTRUCTOR_ACCESS:
     
     Animate3D();
