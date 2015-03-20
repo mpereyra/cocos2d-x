@@ -157,6 +157,11 @@ public:
     void setLightMask(unsigned int mask) { _lightMask = mask; }
     unsigned int getLightMask() const { return _lightMask; }
     
+    /* BPC PATCH BEGIN */
+    void setDepthTestEnabled(bool enabled, bool recursive=false);
+    void setDepthWriteEnabled(bool enabled, bool recursive=false);
+    /* BPC PATCH END */
+
     /**draw*/
     virtual void draw(Renderer *renderer, const Mat4 &transform, uint32_t flags) override;
 

@@ -866,6 +866,38 @@ MeshSkin* Sprite3D::getSkin() const
     return nullptr;
 }
 
+/* BPC PATCH BEGIN */
+void Sprite3D::setDepthTestEnabled(bool enabled, bool recursive) {
+    for(auto mesh : _meshes) {
+        mesh->getMeshCommand().setDepthTestEnabled(enabled);
+    }
+    if(recursive == false)
+        return;
+
+    for(auto child : _children) {
+        Sprite3D* sprite3D = dynamic_cast<Sprite3D*>(child);
+        if(sprite3D) {
+            sprite3D->setDepthTestEnabled(enabled);
+        }
+    }
+}
+
+void Sprite3D::setDepthWriteEnabled(bool enabled, bool recursive) {
+    for(auto mesh : _meshes) {
+        mesh->getMeshCommand().setDepthWriteEnabled(enabled);
+    }
+    if(recursive == false)
+        return;
+
+    for(auto child : _children) {
+        Sprite3D* sprite3D = dynamic_cast<Sprite3D*>(child);
+        if(sprite3D) {
+            sprite3D->setDepthWriteEnabled(enabled);
+        }
+    }
+}
+/* BPC PATCH END */
+
 ///////////////////////////////////////////////////////////////////////////////////
 Sprite3DCache* Sprite3DCache::_cacheInstance = nullptr;
 Sprite3DCache* Sprite3DCache::getInstance()
