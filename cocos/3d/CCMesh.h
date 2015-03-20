@@ -105,6 +105,10 @@ public:
     
     /**get AABB*/
     const AABB& getAABB() const { return _aabb; }
+    
+    /*BPC PATCH*/
+    bool getIsTransparent() const {return _isTransparent;}
+    /*END BPC PATCH*/
 
 CC_CONSTRUCTOR_ACCESS:
     
