@@ -56,6 +56,10 @@ NS_CC_BEGIN
 
 typedef std::pair<CCObject*, CCTextureCache::AsyncCallback::Func> Functor;
 
+typedef struct _AsyncStruct
+{
+  std::string filename;
+} AsyncStruct;
 
 typedef struct _ImageInfo
 {
