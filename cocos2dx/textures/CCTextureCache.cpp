@@ -461,10 +461,12 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target,
             return;
 	}
 #else
-        #ifndef EMSCRIPTEN
-        int semInitRet = sem_init(&s_sem, 0, 0);
-        #endif
+        #ifdef EMSCRIPTEN
         int semInitRet = 0;
+        #else
+        int semInitRet = sem_init(&s_sem, 0, 0);
+        #endif        
+
         if( semInitRet < 0 )
 	{		     
             CCLOG( "CCTextureCache async thread semaphore init error: %s\n", strerror( errno ) );
