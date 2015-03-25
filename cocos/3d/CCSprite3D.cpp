@@ -128,7 +128,13 @@ void Sprite3D::afterAsyncLoad(void* param)
         {
             _meshes.clear();
             _meshVertexDatas.clear();
-            CC_SAFE_RELEASE_NULL(_skeleton);
+            
+            // BPC PATCH BEGIN
+            if(_retainSkeleton == false) {
+                CC_SAFE_RELEASE_NULL(_skeleton);
+            }
+            // BPC PATCH END
+            
             removeAllAttachNode();
             
             //create in the main thread
@@ -180,8 +186,13 @@ bool Sprite3D::loadFromCache(const std::string& path)
         for (auto it : spritedata->meshVertexDatas) {
             _meshVertexDatas.pushBack(it);
         }
-        _skeleton = Skeleton3D::create(spritedata->nodedatas->skeleton);
-        CC_SAFE_RETAIN(_skeleton);
+        
+        // BPC PATCH BEGIN
+        if(_retainSkeleton == false) {
+            _skeleton = Skeleton3D::create(spritedata->nodedatas->skeleton);
+            CC_SAFE_RETAIN(_skeleton);
+        }
+        // BPC PATCH END
         
         for(const auto& it : spritedata->nodedatas->nodes)
         {
@@ -267,7 +278,13 @@ bool Sprite3D::initWithFile(const std::string &path)
 {
     _meshes.clear();
     _meshVertexDatas.clear();
-    CC_SAFE_RELEASE_NULL(_skeleton);
+    
+    // BPC PATCH BEGIN
+    if(_retainSkeleton == false) {
+        CC_SAFE_RELEASE_NULL(_skeleton);
+    }
+    // BPC PATCH END
+    
     removeAllAttachNode();
     
     if (loadFromCache(path))
@@ -312,8 +329,13 @@ bool Sprite3D::initFrom(const NodeDatas& nodeDatas, const MeshDatas& meshdatas, 
             _meshVertexDatas.pushBack(meshvertex);
         }
     }
-    _skeleton = Skeleton3D::create(nodeDatas.skeleton);
-    CC_SAFE_RETAIN(_skeleton);
+    
+    // BPC PATCH BEGIN
+    if(_retainSkeleton == false) {
+         _skeleton = Skeleton3D::create(nodeDatas.skeleton);
+        CC_SAFE_RETAIN(_skeleton);
+    }
+    // BPC PATCH END
     
     for(const auto& it : nodeDatas.nodes)
     {

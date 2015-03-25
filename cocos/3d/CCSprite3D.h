@@ -118,13 +118,17 @@ public:
     /** just rember bind attributes */
     virtual void setGLProgram(GLProgram *glprogram) override;
     
+    
+    // BPC PATCH BEGIN
+    // Virtual so Model3D can extend it, and Model3D with out meshes will return a valid AABB
     /*
      * Get AABB
      * If the sprite has animation, it can't be calculated accuratly,
      * because bone can drive the vertices, we just use the origin vertices
      * to calculate the AABB.
      */
-    const AABB& getAABB() const;
+    virtual const AABB& getAABB() const;
+    // BPC PATCH END
     
     /**
      * Executes an action, and returns the action that is executed. For Sprite3D special logic are needed to take care of Fading.
@@ -222,6 +226,10 @@ protected:
     unsigned int                 _lightMask;
     bool                         _shaderUsingLight; // is current shader using light ?
     bool                         _forceDepthWrite; // Always write to depth buffer
+
+// BPC PATCH BEGIN
+    bool                         _retainSkeleton {false}; // Don't change skeelton when loading new model
+// BPC PATCH END
     
     struct AsyncLoadParam
     {
