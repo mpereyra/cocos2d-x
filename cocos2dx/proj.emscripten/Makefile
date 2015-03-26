@@ -68,7 +68,6 @@ SOURCES = ../CCCamera.cpp \
 ../particle_nodes/CCParticleSystem.cpp \
 ../particle_nodes/CCParticleSystemQuad.cpp \
 ../platform/CCEGLViewProtocol.cpp \
-../platform/CCThread.cpp \
 ../platform/platform.cpp \
 ../script_support/CCScriptSupport.cpp \
 ../shaders/CCGLProgram.cpp \
@@ -97,7 +96,7 @@ SOURCES = ../CCCamera.cpp \
 ../textures/CCTextureASTC.cpp \
 ../textures/CCTextureATC.cpp \
 ../textures/CCTextureAtlas.cpp \
-../textures/CCTextureCache.cpp \
+../platform/emscripten/CCTextureCache.cpp \
 ../textures/CCTextureDXT.cpp \
 ../textures/CCTexturePVR.cpp \
 ../tilemap_parallax_nodes/CCParallaxNode.cpp \
@@ -136,11 +135,6 @@ SOURCES = ../CCCamera.cpp \
 
 ROB_IGNORED= \
 ../platform/emscripten/CCDevice.cpp \
-
-
-
-ROB_NEED_TO_FIX=../platform/emscripten/CCTextureCacheEmscripten.cpp \
-
 
 COCOS_ROOT = ../..
 
