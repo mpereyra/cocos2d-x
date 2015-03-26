@@ -504,20 +504,28 @@ void TextureCache::removeTextureForKey(const std::string &textureKeyName)
 void TextureCache::removeAsyncImage(Ref * const target)
 {
     _asyncStructQueueMutex.lock();
-    for(auto it(_asyncStructQueue->begin()); it != _asyncStructQueue->end(); ++it) {
-        if((*it)->target == target) {
-            _asyncStructQueue->erase(it);
-            delete (*it);
+    auto structIt(_asyncStructQueue->begin());
+    while (structIt != _asyncStructQueue->end()) {
+        if((*structIt)->target == target) {
+            delete (*structIt);
+            structIt = _asyncStructQueue->erase(structIt);
+        }
+        else {
+            ++structIt;
         }
     }
     _asyncStructQueueMutex.unlock();
     
     _imageInfoMutex.lock();
-    for(auto it(_imageInfoQueue->begin()); it != _imageInfoQueue->end(); ++it) {
-        if((*it)->asyncStruct->target == target) {
-            _imageInfoQueue->erase(it);
-            delete (*it)->asyncStruct;
-            delete (*it);
+    auto infoIt(_imageInfoQueue->begin());
+    while (infoIt != _imageInfoQueue->end()) {
+        if((*infoIt)->asyncStruct->target == target) {
+            delete (*infoIt)->asyncStruct;
+            delete (*infoIt);
+            infoIt = _imageInfoQueue->erase(infoIt);
+        }
+        else {
+            ++infoIt;
         }
     }
     _imageInfoMutex.unlock();
