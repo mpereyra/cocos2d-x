@@ -167,6 +167,7 @@ void Animate3D::startWithTarget(Node *target)
                 action->_lastTime = 0.f;
                 
                 s_fadeInAnimates[sprite] = this;
+                s_runningAnimates[sprite] = this;
                 _accTransTime = 0.0f;
                 _state = Animate3D::Animate3DState::FadeIn;
                 _weight = 0.f;
