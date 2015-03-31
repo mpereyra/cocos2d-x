@@ -311,12 +311,12 @@ void Animate3D::removeFromMap()
     if (_target)
     {
         Sprite3D* sprite = static_cast<Sprite3D*>(_target);
-        if (_state == Animate3D::Animate3DState::FadeIn)
-            s_fadeInAnimates.erase(sprite);
-        else if (_state == Animate3D::Animate3DState::FadeOut)
-            s_fadeOutAnimates.erase(sprite);
-        else
-            s_runningAnimates.erase(sprite);
+        
+        /* BPC-PATCH (got rid of all the if/else stuff)*/
+        s_fadeInAnimates.erase(sprite);
+        s_fadeOutAnimates.erase(sprite);
+        s_runningAnimates.erase(sprite);
+        /* END BPC-PATCH*/
     }
 }
 
