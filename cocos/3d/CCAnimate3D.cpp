@@ -231,6 +231,12 @@ void Animate3D::update(float t)
         }
         _lastTime = t;
         
+        /*BPC-PATCH*/
+        if(_isOffScreen) {
+            return;
+        }
+        /*END BPC-PATCH*/
+
         if (_weight > 0.0f)
         {
             float transDst[3], rotDst[4], scaleDst[3];
@@ -296,6 +302,7 @@ Animate3D::Animate3D()
 , _accTransTime(0.0f)
 , _lastTime(0.0f)
 , _originInterval(0.0f)
+, _isOffScreen(false)
 {
     
 }

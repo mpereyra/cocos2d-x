@@ -96,6 +96,10 @@ public:
     /** Removes all actions given its tag and the target */
     void removeAllActionsByTag(int tag, Node *target);
 
+    /* BPC-PATCH */
+    struct _ccArray* getAllActions(const Node* target) const;
+    /* END BPC-PATCH */
+     
     /** Gets an action given its tag an a target
      @return the Action the with the given tag
      */

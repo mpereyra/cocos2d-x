@@ -102,8 +102,9 @@ public:
     
     /*BPC PATCH*/
     Animation3D* getAnimation() const { return _animation; }
+    void setOffScreen(bool isOffScreen) { _isOffScreen = isOffScreen; };
     /*END BPC PATCH*/
-    
+
 CC_CONSTRUCTOR_ACCESS:
     
     Animate3D();
@@ -137,7 +138,11 @@ protected:
     float      _lastTime;     // last t (0 - 1)
     float      _originInterval;// save origin interval time
     std::unordered_map<Bone3D*, Animation3D::Curve*> _boneCurves; //weak ref
-
+    
+    /*BPC PATCH*/
+    bool       _isOffScreen; //pause matrix opporations but update _lastTime
+    /*END BPC PATCH*/
+    
     //sprite animates
     static std::unordered_map<Sprite3D*, Animate3D*> s_fadeInAnimates;
     static std::unordered_map<Sprite3D*, Animate3D*> s_fadeOutAnimates;

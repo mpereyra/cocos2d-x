@@ -315,6 +315,20 @@ void ActionManager::removeAllActionsByTag(int tag, Node *target)
     }
 }
 
+/* BPC-PATCH */
+struct _ccArray* ActionManager::getAllActions(const Node* target) const {
+    tHashElement *element = nullptr;
+    HASH_FIND_PTR(_targets, &target, element);
+    
+    if (element)
+    {
+        return element->actions;
+    }
+    
+    return nullptr;
+}
+/* END BPC-PATCH */
+
 // get
 
 // FIXME: Passing "const O *" instead of "const O&" because HASH_FIND_IT requries the address of a pointer
