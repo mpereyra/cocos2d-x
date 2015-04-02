@@ -38,7 +38,6 @@ THE SOFTWARE.
 #include "shaders/CCGLProgram.h"
 // externals
 #include "kazmath/GL/matrix.h"
-#include <vector>
 
 
 #if CC_NODE_RENDER_SUBPIXEL
@@ -48,44 +47,6 @@ THE SOFTWARE.
 #endif
 
 NS_CC_BEGIN
-
-//BPC Patch Begin -- M2tM
-CCProjectionDetails::CCProjectionDetails(){
-	updateFromStack();
-}
-
-void CCProjectionDetails::updateFromStack(){
-	kmGLGetMatrix(KM_GL_MODELVIEW, &modelView);
-	kmGLGetMatrix(KM_GL_PROJECTION, &projection);
-	glGetIntegerv(GL_VIEWPORT, viewport);
-}
-
-CCPoint CCProjectionDetails::project(const CCPoint &point){
-	CCPoint result;
-	gluProject(point.x, point.y, point.z, &(modelView.mat[0]), &(projection.mat[0]), viewport, &result.x, &result.y, &result.z);
-	
-	result.x/=CCDirector::sharedDirector()->getContentScaleFactor();
-	result.y/=CCDirector::sharedDirector()->getContentScaleFactor();
-	result.z/=CCDirector::sharedDirector()->getContentScaleFactor();
-	
-	return result;
-}
-
-CCPoint CCProjectionDetails::unProject(const CCPoint &point){
-	GLint pixelDepthAtScreenPosition;
-	glReadPixels(static_cast<GLint>(point.x), static_cast<GLint>(point.y), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &pixelDepthAtScreenPosition);
-	
-	CCPoint result;
-	gluUnProject(static_cast<GLint>(point.x), static_cast<GLint>(point.y), pixelDepthAtScreenPosition, &(modelView.mat[0]), &(projection.mat[0]), viewport, &result.x, &result.y, &result.z);
-	
-	result.x*=CCDirector::sharedDirector()->getContentScaleFactor();
-	result.y*=CCDirector::sharedDirector()->getContentScaleFactor();
-	result.z*=CCDirector::sharedDirector()->getContentScaleFactor();
-	
-	return result;
-}
-
-//BPC Patch End -- M2tM
 
 // XXX: Yes, nodes might have a sort problem once every 15 days if the game runs at 60 FPS and each frame sprites are reordered.
 static int s_globalOrderOfArrival = 1;
@@ -472,21 +433,11 @@ void CCNode::setUserData(void *var)
     m_pUserData = var;
 }
 
+
 CCRect CCNode::boundingBox()
 {
-	//BPC Patch - Supporting 3d Nodes by bypassing the regulard 2d matrix stuff cocos used to do - M2tM
-	transform();
-	CCProjectionDetails project;
-	endTransform();
-	
-	std::vector<CCPoint> points(4);
-	
-	points[0] = project.project(CCPoint(0.0, 0.0, m_fVertexZ));
-	points[1] = project.project(CCPoint(m_tContentSize.width, 0.0, m_fVertexZ));
-	points[2] = project.project(CCPoint(0.0, m_tContentSize.height, m_fVertexZ));
-	points[3] = project.project(CCPoint(m_tContentSize.width, m_tContentSize.height, m_fVertexZ));
-	
-	return CCBoundingRectFromPoints(points);
+    CCRect rect = CCRectMake(0, 0, m_tContentSize.width, m_tContentSize.height);
+    return CCRectApplyAffineTransform(rect, nodeToParentTransform());
 }
 
 CCNode * CCNode::node(void)
@@ -795,9 +746,6 @@ void CCNode::visit()
         this->draw();
     }
 
-	//BPC Patch need endTransform now to revert the transform call - M2tM
-	this->endTransform();
-
     // reset for next frame
     m_nOrderOfArrival = 0;
 
@@ -818,20 +766,8 @@ void CCNode::transformAncestors()
     }
 }
 
-//BPC Patch - mirroring the endTransform method, but for ancestors. - M2tM
-void CCNode::endTransformAncestors()
-{
-    if( m_pParent != NULL  )
-    {
-        m_pParent->endTransform();
-        m_pParent->endTransformAncestors();
-    }
-}
-
 void CCNode::transform()
-{
-	//BPC Patch - Adding pushMatrix (3d stuff)
-	kmGLPushMatrix();
+{    
     kmMat4 transfrom4x4;
 
     // Convert 3x3 into 4x4 matrix
@@ -859,6 +795,7 @@ void CCNode::transform()
     }
 
 }
+
 
 void CCNode::onEnter()
 {
@@ -1145,27 +1082,16 @@ CCAffineTransform CCNode::worldToNodeTransform(void)
     return CCAffineTransformInvert(this->nodeToWorldTransform());
 }
 
-CCPoint CCNode::convertToNodeSpace(const CCPoint& point) {
-//BPC Patch -> Using the actual 4x4 transform matrices, not the cached 3x3 one cocos2dx was using. - M2tM
-	transform();
-	CCProjectionDetails project;
-	endTransform();
-	
-	return project.unProject(point);
+CCPoint CCNode::convertToNodeSpace(const CCPoint& worldPoint)
+{
+    CCPoint ret = CCPointApplyAffineTransform(worldPoint, worldToNodeTransform());
+    return ret;
 }
 
-CCPoint CCNode::convertToWorldSpace(const CCPoint& point) {
-//BPC Patch -> Using the actual 4x4 transform matrices, not the cached 3x3 one cocos2dx was using. - M2tM
-	transform();
-	CCProjectionDetails project;
-	endTransform();
-	
-	return project.project(point);
-}
-
-//BPC Patch -> Required method for setting up transformations on 3D nodes.  Check overridden perspective/billboard node methods. - M2tM
-void CCNode::endTransform(void){
-	kmGLPopMatrix();
+CCPoint CCNode::convertToWorldSpace(const CCPoint& nodePoint)
+{
+    CCPoint ret = CCPointApplyAffineTransform(nodePoint, nodeToWorldTransform());
+    return ret;
 }
 
 CCPoint CCNode::convertToNodeSpaceAR(const CCPoint& worldPoint)

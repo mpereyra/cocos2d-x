@@ -66,26 +66,6 @@ enum {
     kCCNodeOnCleanup
 };
 
-/** @brief CCProjectionDetails is a struct used to project and un-project from the current projection matrix state.
- It is a thin wrapper over equivalent opengl calls.
- 
- BPC Patch this class is not cocos native. - M2tM
- */
-
-struct CCProjectionDetails {
-	CCProjectionDetails();
-	
-	void updateFromStack();
-	
-	CCPoint project(const CCPoint &point);
-	CCPoint unProject(const CCPoint &point);
-
-	kmMat4 modelView;
-	kmMat4 projection;
-	GLint viewport[4];
-};
-
-
 /** @brief CCNode is the main element. Anything that gets drawn or contains things that get drawn is a CCNode.
  The most popular CCNodes are: CCScene, CCLayer, CCSprite, CCMenu.
 
@@ -468,8 +448,6 @@ public:
     /** performs OpenGL view-matrix transformation based on position, scale, rotation and other attributes. */
 // BPC PATCH START (just making it virtual)
     virtual void transform(void);
-	//BPC Patch: Added matrix pushing to transform, need to pop - M2tM
-	virtual void endTransform(void);
 // BPC PATCH END
 
     /** performs OpenGL view-matrix transformation of it's ancestors.
@@ -478,8 +456,6 @@ public:
      @since v0.7.2
      */
     void transformAncestors(void);
-	//BPC Patch: Added matrix pushing to transform, need to pop - M2tM
-	void endTransformAncestors();
 
     /** returns a "local" axis aligned bounding box of the node.
      The returned box is relative only to its parent.

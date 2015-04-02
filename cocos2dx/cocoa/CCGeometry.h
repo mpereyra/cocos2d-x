@@ -27,7 +27,6 @@ THE SOFTWARE.
 
 #include "platform/CCPlatformMacros.h"
 #include "CCObject.h"
-#include <vector>
 
 NS_CC_BEGIN
 
@@ -41,19 +40,13 @@ class CC_DLL CCPoint : public CCObject
 public:
     float x;
     float y;
-//BPC Patch let's add a z. -M2tM
-	float z;
 
 public:
     CCPoint();
-//BPC Patch let's add a z. -M2tM
-    CCPoint(float x, float y, float z = 0.0f);
-	
+    CCPoint(float x, float y);
     CCPoint(const CCPoint& other);
     CCPoint& operator= (const CCPoint& other);
     void setPoint(float x, float y);
-//BPC Patch let's add a z. -M2tM
-	void setPoint(float x, float y, float z);
     virtual CCObject* copyWithZone(CCZone* pZone);
     bool equals(const CCPoint& target) const;
 
@@ -114,9 +107,6 @@ public:
     /** @deprecated use CCRect::intersectsRect(const CCRect&) instead, like r1.intersectsRect(r2) */
     CC_DEPRECATED_ATTRIBUTE static bool CCRectIntersectsRect(const CCRect& rectA, const CCRect& rectB);
 };
-
-//BPC Patch - Make a rectangle from the min/max points in a vector of points. - M2tM
-CCRect CCBoundingRectFromPoints(const std::vector<CCPoint> &points);
 
 
 #define CCPointMake(x, y) CCPoint((float)(x), (float)(y))
