@@ -221,9 +221,6 @@ bool CCImage::initWithImageData(void * pData,
 
 bool CCImage::_initWithJpgData(void * data, int nSize)
 {
-#if defined(EMSCRIPTEN) && ! defined(ALLOW_JPEGS)
-  return FALSE;
-#else
     /* these are standard libjpeg structures for reading(decompression) */
     struct jpeg_decompress_struct cinfo;
     struct jpeg_error_mgr jerr;
@@ -244,7 +241,7 @@ bool CCImage::_initWithJpgData(void * data, int nSize)
         jpeg_mem_src( &cinfo, (unsigned char *) data, nSize );
 
         /* reading the image header which contains image information */
-        jpeg_read_header( &cinfo, true );
+        jpeg_read_header( &cinfo, TRUE );
 
         // we only support RGB or grayscale
         if (cinfo.jpeg_color_space != JCS_RGB)
@@ -293,7 +290,6 @@ bool CCImage::_initWithJpgData(void * data, int nSize)
 
     CC_SAFE_DELETE_ARRAY(row_pointer[0]);
     return bRet;
-#endif
 }
 
 bool CCImage::_initWithPngData(void * pData, int nDatalen)
