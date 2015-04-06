@@ -797,9 +797,6 @@ bool CCImage::_saveImageToPNG(const char * pszFilePath, bool bIsToRGB)
 }
 bool CCImage::_saveImageToJPG(const char * pszFilePath)
 {
-#if defined(EMSCRIPTEN) && ! defined(ALLOW_JPEGS)
-  return FALSE;
-#else
     bool bRet = false;
     do 
     {
@@ -874,7 +871,6 @@ bool CCImage::_saveImageToJPG(const char * pszFilePath)
         bRet = true;
     } while (0);
     return bRet;
-#endif
 }
 
 NS_CC_END
