@@ -180,8 +180,10 @@ CC_CONSTRUCTOR_ACCESS:
     
     bool initFrom(const NodeDatas& nodedatas, const MeshDatas& meshdatas, const MaterialDatas& materialdatas);
     
+    /** BPC PATCH **/
     /**load sprite3d from cache, return true if succeed, false otherwise*/
-    bool loadFromCache(const std::string& path);
+    virtual bool loadFromCache(const std::string& path);
+    /** END BPC PATCH **/
     
     /** load file and set it to meshedatas, nodedatas and materialdatas, obj file .mtl file should be at the same directory if exist */
     bool loadFromFile(const std::string& path, NodeDatas* nodedatas, MeshDatas* meshdatas,  MaterialDatas* materialdatas);
