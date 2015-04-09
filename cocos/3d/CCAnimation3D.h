@@ -68,6 +68,7 @@ public:
     
     /**get bone curve*/
     Curve* getBoneCurveByName(const std::string& name) const;
+    std::unordered_map<std::string, Curve*> const & getBoneCurves() const { return _boneCurves;}
     
 CC_CONSTRUCTOR_ACCESS:
     Animation3D();
