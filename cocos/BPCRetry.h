@@ -10,7 +10,7 @@ func; \
 GLenum const err(::glGetError()); \
 if(err == GL_OUT_OF_MEMORY) { \
 CCLOG("OpenGL out of memory error, attempting to clear caches to recover"); \
-cocos2d::CCSpriteFrameCache::sharedSpriteFrameCache()->removeUnusedSpriteFrames(); \
+cocos2d::SpriteFrameCache::getInstance()->removeUnusedSpriteFrames(); \
 cocos2d::Director::getInstance()->purgeCachedData(); \
 cocos2d::Director::getInstance()->getTextureCache()->removeAllTextures(); \
 func; \
