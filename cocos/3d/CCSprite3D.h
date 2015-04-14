@@ -162,8 +162,8 @@ public:
     unsigned int getLightMask() const { return _lightMask; }
     
     /* BPC PATCH BEGIN */
-    void setDepthTestEnabled(bool enabled, bool recursive=false);
-    void setDepthWriteEnabled(bool enabled, bool recursive=false);
+    void setDepthTestEnabled(bool enabled, bool recursive=true);
+    void setDepthWriteEnabled(bool enabled, bool recursive=true);
     /* BPC PATCH END */
 
     /**draw*/
