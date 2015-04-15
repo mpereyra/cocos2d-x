@@ -178,10 +178,6 @@ void MeshCommand::setTransparent(bool value)
     {
         _depthWriteEnabled = false;
     }
-    else
-    {
-        _depthWriteEnabled = true;
-    }
 }
 
 MeshCommand::~MeshCommand()
