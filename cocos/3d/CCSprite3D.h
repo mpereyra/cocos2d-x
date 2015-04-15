@@ -164,6 +164,7 @@ public:
     /* BPC PATCH BEGIN */
     void setDepthTestEnabled(bool enabled, bool recursive=false);
     void setDepthWriteEnabled(bool enabled, bool recursive=false);
+    virtual void setGlobalZOrder(float globalZOrder) override;
     /* BPC PATCH END */
 
     /**draw*/

@@ -658,13 +658,11 @@ void Sprite3D::visit(cocos2d::Renderer *renderer, const cocos2d::Mat4 &parentTra
     uint32_t flags = processParentFlags(parentTransform, parentFlags);
     flags |= FLAGS_RENDER_AS_3D;
     
-    //
     Director* director = Director::getInstance();
     director->pushMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
     director->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW, _modelViewTransform);
     
     bool visibleByCamera = isVisitableByVisitingCamera();
-    
     int i = 0;
     
     if(!_children.empty())
@@ -694,6 +692,17 @@ void Sprite3D::visit(cocos2d::Renderer *renderer, const cocos2d::Mat4 &parentTra
     
     director->popMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
 }
+
+/* BPC Patch */
+void Sprite3D::setGlobalZOrder(float globalZOrder) {
+    Node::setGlobalZOrder(1.0f);
+
+    enumerateChildren(".+", [](Node* node) {
+        node->setGlobalZOrder(1.0f);
+        return false;
+    });
+}
+/* BPC Patch */
 
 void Sprite3D::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
 {
@@ -747,9 +756,21 @@ void Sprite3D::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
 #endif
 
         bool isTransparent = (mesh->_isTransparent || color.a < 1.f);
-        float globalZ = isTransparent ? 0 : _globalZOrder;
-        if (isTransparent)
+
+        /* BPC Patch */
+        float globalZ = _globalZOrder;
+
+        if (isTransparent) {
             flags |= Node::FLAGS_RENDER_AS_3D;
+
+            // If globalZ is positive, then the caller wants to force frontmost rendering, and we
+            // should use their specified global Z order. Otherwise, we force-set it to zero since
+            // we're rendering a transparent mesh.
+            // FIXME: Is this really necessary? It seems we do ordering of the triangles before they
+            // hit the GL command queue.
+            if (globalZ <= 0.0f) globalZ = 0.0f;
+        }
+        /* BPC Patch */
 
         meshCommand.init(globalZ, textureID, programstate, _blend, mesh->getVertexBuffer(), mesh->getIndexBuffer(), mesh->getPrimitiveType(), mesh->getIndexFormat(), mesh->getIndexCount(), transform, flags);
         
@@ -768,6 +789,8 @@ void Sprite3D::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
             meshCommand.setDepthWriteEnabled(true);
         }
         meshCommand.setTransparent(isTransparent);
+        meshCommand.setCullFaceEnabled(!isTransparent);
+        meshCommand.setName(_name);
         renderer->addCommand(&meshCommand);
     }
 }

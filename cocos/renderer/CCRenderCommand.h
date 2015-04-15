@@ -27,6 +27,7 @@
 #define __CCRENDERCOMMAND_H_
 
 #include <stdint.h>
+#include <string>
 
 #include "platform/CCPlatformMacros.h"
 #include "base/ccTypes.h"
@@ -80,6 +81,10 @@ public:
     
     inline float getDepth() const { return _depth; }
     
+    /* BPC Patch */
+    inline void setName(std::string& name) { _name = name; }
+    /* BPC Patch */
+
 protected:
     RenderCommand();
     virtual ~RenderCommand();
@@ -103,6 +108,11 @@ protected:
     
     // depth
     float _depth;
+
+    /* BPC Patch */
+    // name of the Node that set this RenderCommand to work
+    std::string _name;
+    /* BPC Patch */
 };
 
 NS_CC_END
