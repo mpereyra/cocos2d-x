@@ -695,12 +695,7 @@ void Sprite3D::visit(cocos2d::Renderer *renderer, const cocos2d::Mat4 &parentTra
 
 /* BPC Patch */
 void Sprite3D::setGlobalZOrder(float globalZOrder) {
-    Node::setGlobalZOrder(1.0f);
-
-    enumerateChildren(".+", [](Node* node) {
-        node->setGlobalZOrder(1.0f);
-        return false;
-    });
+    Node::setGlobalZOrder(globalZOrder);
 }
 /* BPC Patch */
 

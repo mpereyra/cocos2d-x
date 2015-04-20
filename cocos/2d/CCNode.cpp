@@ -315,6 +315,12 @@ void Node::setGlobalZOrder(float globalZOrder)
     {
         _globalZOrder = globalZOrder;
         _eventDispatcher->setDirtyForNode(this);
+        
+        /*BPC PATCH*/
+        for(auto c : getChildren()){
+            c->setGlobalZOrder(globalZOrder);
+        }
+        /* END BPC PATCH*/
     }
 }
 
