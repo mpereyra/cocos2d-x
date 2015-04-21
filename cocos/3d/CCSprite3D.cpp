@@ -924,6 +924,9 @@ void Sprite3D::setDepthTestEnabled(bool enabled, bool recursive) {
 }
 
 void Sprite3D::setDepthWriteEnabled(bool enabled, bool recursive) {
+    if(enabled == false) {
+        _forceDepthWrite = false;
+    }
     for(auto mesh : _meshes) {
         mesh->getMeshCommand().setDepthWriteEnabled(enabled);
     }
