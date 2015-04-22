@@ -158,6 +158,34 @@ THE SOFTWARE.
 	#include "platform/win32/CCStdC.h"
 #endif // CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT)
+//TODO: AMONN using win81
+#ifdef WINDOWS_81
+#include "platform/win81/CCApplication.h"
+#include "platform/win81/CCEGLView.h"
+#include "platform/win81/CCGL.h"
+#include "platform/win81/CCStdC.h"
+#include "platform/win81/CCAccelerometer.h"
+#include "platform/win81/CCPrecompiledShaders.h"
+#else
+#include "platform/winrt/CCApplication.h"
+#include "platform/winrt/CCEGLView.h"
+#include "platform/winrt/CCGL.h"
+#include "platform/winrt/CCStdC.h"
+#include "platform/winrt/CCAccelerometer.h"
+#include "platform/winrt/CCPrecompiledShaders.h"
+#endif
+#endif // CC_TARGET_PLATFORM == CC_PLATFORM_WINRT
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WP8)
+#include "platform/winrt/CCApplication.h"
+#include "platform/wp8/CCEGLView.h"
+#include "platform/winrt/CCGL.h"
+#include "platform/winrt/CCStdC.h"
+#include "platform/winrt/CCAccelerometer.h"
+#include "platform/winrt/CCPrecompiledShaders.h"
+#endif // CC_TARGET_PLATFORM == CC_PLATFORM_WP8
+
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_MAC)
 	#include "platform/mac/CCAccelerometer.h"
 	#include "platform/mac/CCApplication.h"
