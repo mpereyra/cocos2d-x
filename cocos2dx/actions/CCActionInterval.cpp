@@ -112,8 +112,8 @@ void CCActionInterval::step(float dt)
         m_elapsed += dt;
     }
     
-    this->update(MAX (0,                                  // needed for rewind. elapsed could be negative
-                      MIN(1, m_elapsed /
+    this->update(MAX (float(0),                                  // needed for rewind. elapsed could be negative
+                      MIN(float(1), m_elapsed /
                           MAX(m_fDuration, FLT_EPSILON)   // division by 0
                           )
                       )

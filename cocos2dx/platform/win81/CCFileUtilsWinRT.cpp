@@ -43,14 +43,17 @@ static void _checkPath()
     }
 }
 
+static CCFileUtils* s_pFileUtils = nullptr;
+
 CCFileUtils* CCFileUtils::sharedFileUtils()
 {
-    if (s_sharedFileUtils == NULL)
+    if (s_pFileUtils == NULL)
     {
-        s_sharedFileUtils = new CCFileUtilsWinRT();
-        s_sharedFileUtils->init();
+		CCFileUtilsWinRT* p = new CCFileUtilsWinRT();
+		p->init();
+		s_pFileUtils = p;
     }
-    return s_sharedFileUtils;
+	return s_pFileUtils;
 }
 
 CCFileUtilsWinRT::CCFileUtilsWinRT()
@@ -60,8 +63,8 @@ CCFileUtilsWinRT::CCFileUtilsWinRT()
 bool CCFileUtilsWinRT::init()
 {
     _checkPath();
-    m_strDefaultResRootPath = s_pszResourcePath;
-    return CCFileUtils::init();
+    // m_strDefaultResRootPath = s_pszResourcePath;
+	return true; // CCFileUtils::init();
 }
 
 #if 1
@@ -73,7 +76,7 @@ bool CCFileUtilsWinRT::isFileExist(const std::string& strFilePath)
     std::string strPath = strFilePath;
     if (!isAbsolutePath(strPath))
     { // Not absolute path, add the default root path at the beginning.
-        strPath.insert(0, m_strDefaultResRootPath);
+		strPath.insert(0, s_pszResourcePath);
     }
 
     const char* path = strPath.c_str();
@@ -95,7 +98,7 @@ bool CCFileUtilsWinRT::isFileExist(const std::string& strFilePath)
 	std::string strPath = strFilePath;
     if (!isAbsolutePath(strPath))
     { // Not absolute path, add the default root path at the beginning.
-        strPath.insert(0, m_strDefaultResRootPath);
+		strPath.insert(0, s_pszResourcePath);
     }
 
 #if 0
@@ -120,7 +123,7 @@ bool CCFileUtilsWinRT::isFileExist(const std::string& strFilePath)
     std::string strPath = strFilePath;
     if (!isAbsolutePath(strPath))
     { // Not absolute path, add the default root path at the beginning.
-        strPath.insert(0, m_strDefaultResRootPath);
+		strPath.insert(0, s_pszResourcePath);
     }
     return GetFileAttributesA(strPath.c_str()) != -1 ? true : false;
 #endif
@@ -148,6 +151,27 @@ string CCFileUtilsWinRT::getAppPath()
 {
 	Windows::ApplicationModel::Package^ package = Windows::ApplicationModel::Package::Current;
 	return std::string(PlatformStringToString(package->InstalledLocation->Path));
+}
+
+
+// BPC_PATCH needed for win support to compile
+void CCFileUtils::addSearchPath(const char* path_)
+{
+	std::string strPrefix;
+	std::string path(path_);
+
+	bool isAbsolutePath = path_[0] == '/' ? true : false;
+	if (!isAbsolutePath)
+	{ // Not an absolute path
+		//strPrefix = m_strDefaultResRootPath;
+	}
+	path = strPrefix + path;
+	if (path.length() > 0 && path[path.length() - 1] != '/')
+	{
+		path += "/";
+	}
+
+	//m_searchPathArray.push_back(path);
 }
 
 NS_CC_END

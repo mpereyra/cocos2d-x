@@ -12,6 +12,8 @@ enum TargetPlatform
     kTargetIphone,
     kTargetIpad,
     kTargetBlackBerry,
+	kTargetWinRT,
+	kTargetWP8
 };
 
 /**

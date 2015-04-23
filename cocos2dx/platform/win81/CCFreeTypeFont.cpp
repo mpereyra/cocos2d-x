@@ -583,8 +583,8 @@ unsigned char* CCFreeTypeFont::loadFont(const char *pFontName, unsigned long *si
     {
         path += ".ttf";
     }
-
-	std::string fullpath  = CCFileUtils::sharedFileUtils()->fullPathForFilename(path.c_str());
+	
+	std::string fullpath = CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(path.c_str());
 	return CCFileUtils::sharedFileUtils()->getFileData(fullpath.c_str(), "rb", size);
 }
 

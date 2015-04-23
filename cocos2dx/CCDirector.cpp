@@ -277,7 +277,7 @@ void CCDirector::calculateDeltaTime(void)
     else
     {
         m_fDeltaTime = (now.tv_sec - m_pLastUpdate->tv_sec) + (now.tv_usec - m_pLastUpdate->tv_usec) / 1000000.0f;
-        m_fDeltaTime = MAX(0, m_fDeltaTime);
+        m_fDeltaTime = MAX(float(0), m_fDeltaTime);
     }
 
 #ifdef DEBUG

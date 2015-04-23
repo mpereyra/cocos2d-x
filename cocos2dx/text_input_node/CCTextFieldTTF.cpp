@@ -139,8 +139,9 @@ bool CCTextFieldTTF::attachWithIME()
         CCEGLView * pGlView = CCDirector::sharedDirector()->getOpenGLView();
         if (pGlView)
         {
-            if(m_secureTextEntry) pGlView->setSecureTextEntry(true);
-            pGlView->setKeyboardType(m_keyboardType);
+			// BPC_PATCH not supported
+            // if(m_secureTextEntry) pGlView->setSecureTextEntry(true);
+            // pGlView->setKeyboardType(m_keyboardType);
             pGlView->setIMEKeyboardState(true);
         }
     }
@@ -156,7 +157,8 @@ bool CCTextFieldTTF::detachWithIME()
         CCEGLView * pGlView = CCDirector::sharedDirector()->getOpenGLView();
         if (pGlView)
         {
-            pGlView->setSecureTextEntry(false);
+			// BPC_PATCH not supported
+            // pGlView->setSecureTextEntry(false);
             pGlView->setIMEKeyboardState(false);
         }
     }

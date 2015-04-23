@@ -57,14 +57,19 @@ void CC_DLL CCMessageBox(const char * pszMsg, const char * pszTitle);
 */
 typedef enum LanguageType
 {
-    kLanguageEnglish = 0,
-    kLanguageChinese,
-    kLanguageFrench,
-    kLanguageItalian,
-    kLanguageGerman,
-    kLanguageSpanish,
-    kLanguageRussian,
-    kLanguageKorean
+	kLanguageEnglish = 0,
+	kLanguageChinese,
+	kLanguageFrench,
+	kLanguageItalian,
+	kLanguageGerman,
+	kLanguageSpanish,
+	kLanguageDutch,
+	kLanguageRussian,
+	kLanguageKorean,
+	kLanguageJapanese,
+	kLanguageHungarian,
+	kLanguagePortuguese,
+	kLanguageArabic
 } ccLanguageType;
 
 // end of platform group

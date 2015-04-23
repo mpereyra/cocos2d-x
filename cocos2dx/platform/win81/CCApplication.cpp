@@ -223,9 +223,7 @@ void CCApplication::setResourceRootPath(const std::string& rootResDir)
         m_resourceRootPath += '/';
     }
     CCFileUtils* pFileUtils = CCFileUtils::sharedFileUtils();
-    std::vector<std::string> searchPaths = pFileUtils->getSearchPaths();
-    searchPaths.insert(searchPaths.begin(), m_resourceRootPath);
-    pFileUtils->setSearchPaths(searchPaths);
+	pFileUtils->addSearchPath(m_resourceRootPath.c_str());
 }
 
 const std::string& CCApplication::getResourceRootPath(void)

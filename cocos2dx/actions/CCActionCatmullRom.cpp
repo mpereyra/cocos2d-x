@@ -122,7 +122,7 @@ void CCPointArray::insertControlPoint(CCPoint &controlPoint, unsigned int index)
 
 CCPoint CCPointArray::getControlPointAtIndex(unsigned int index)
 {
-    index = MIN(m_pControlPoints->count()-1, MAX(index, 0));
+    index = MIN(m_pControlPoints->count()-1, MAX(index, unsigned int(0)));
     CCPoint point = *((CCPoint*)m_pControlPoints->objectAtIndex(index));
     
     return point;

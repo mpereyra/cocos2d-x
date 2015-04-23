@@ -101,6 +101,12 @@ public:
     void setPopupNotify(bool bNotify);
     bool isPopupNotify();
     
+	/// BPC_PATCH to bring windows support
+
+#ifdef _MSC_VER
+	virtual void addSearchPath(const char* path);
+#endif
+
 protected:
     CCFileUtils(void)
     {
