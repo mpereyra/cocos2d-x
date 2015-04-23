@@ -24,6 +24,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 
+#ifdef _MSC_VER
+#ifdef DEBUG
+#include <Windows.h>
+#endif
+#endif
 #include "CCTextureCache.h"
 #include "CCTexture2D.h"
 #include "CCDDS.h"
@@ -46,85 +51,95 @@ THE SOFTWARE.
 #include <cctype>
 #include <queue>
 #include <list>
-#include <pthread.h>
-#include <semaphore.h>
 #include <vector>
+#include <memory>
+
+#if (CC_TARGET_PLATFORM != CC_PLATFORM_WINRT) && (CC_TARGET_PLATFORM != CC_PLATFORM_WP8)
+#include <pthread.h>
+#else
+#include "CCPThreadWinRT.h"
+#include <ppl.h>
+#include <ppltasks.h>
+using namespace concurrency;
+#endif
 
 using namespace std;
 
 NS_CC_BEGIN
 
-typedef std::pair<CCObject*, CCTextureCache::AsyncCallback::Func> Functor;
+typedef std::pair<CCObject*, CCTextureCache::AsyncCallback::Func> Functor;              // TINYCO: used for the custom async callbacks
 
 typedef struct _AsyncStruct
 {
-	std::string			filename;
+	std::string            filename;
+	// CCObject    *target;                      TINYCO: callbacks don't use these
+	// SEL_CallFuncO        selector;
 } AsyncStruct;
 
 typedef struct _ImageInfo
 {
 	AsyncStruct *asyncStruct;
-	CCImage		*image;
-    CCTextureDXT *dxtTexture;
-    CCTextureATC *atcTexture;
-    CCTextureASTC *astcTexture;
-    class CCTexturePVR *pvrTexture;
+	CCImage        *image;
 	CCImage::EImageFormat imageType;
-    bool hasTexture() { return image || dxtTexture || atcTexture || pvrTexture || astcTexture; }
+
+	CCTextureDXT *dxtTexture;           // TINYCO: support for more texture formats
+	CCTextureATC *atcTexture;           // TINYCO: support for more texture formats
+	CCTextureASTC *astcTexture;         // TINYCO: support for more texture formats
+	class CCTexturePVR *pvrTexture;     // TINYCO: support for more texture formats
+	bool hasTexture() { return image || dxtTexture || atcTexture || pvrTexture || astcTexture; } // TINYCO: support for more texture formats
+
 } ImageInfo;
 
-static void (*s_asyncCallback)(CCTextureCache::AsyncCallback const &) = NULL;
+static void(*s_asyncCallback)(CCTextureCache::AsyncCallback const &) = NULL;      // TINYCO: single settable callback for getting notifications of texture loads
 
 static pthread_t s_loadingThread;
+static bool      s_loadingThreadCreated{ false };
 
-static pthread_mutex_t      s_callbacksMutex;
-static pthread_mutex_t		s_asyncStructQueueMutex;
-static pthread_mutex_t      s_imageInfoMutex;
+static pthread_mutex_t      s_callbacksMutex;       // TINYCO: for external callbacks
+static pthread_mutex_t      s_pauseMutex;           // TINYCO: for externally pausing the loading
+static pthread_cond_t       s_pauseCondition;       // TINYCO: for externally pausing the loading
+static bool                 s_isPaused{ false };      // TINYCO: for externally pausing the loading
 
-static pthread_mutex_t      s_pauseMutex;
-static pthread_cond_t       s_pauseCondition;
-static bool                 s_isPaused{false};
+static pthread_mutex_t		s_SleepMutex;
+static pthread_cond_t		s_SleepCondition;
 
-void CCTextureCache::pauseAsync() {
-    pthread_mutex_lock(&s_pauseMutex);
-    if (!s_isPaused) {
-        s_isPaused = true;
-    }
-    pthread_mutex_unlock(&s_pauseMutex);
+static pthread_mutex_t      s_asyncStructQueueMutex;
+static pthread_mutex_t      s_ImageInfoMutex;
+
+void CCTextureCache::pauseAsync() {                 // TINYCO: externally pause loading of textures
+	pthread_mutex_lock(&s_pauseMutex);
+	if (!s_isPaused) {
+		s_isPaused = true;
+	}
+	pthread_mutex_unlock(&s_pauseMutex);
 }
 
-void CCTextureCache::resumeAsync() {
-    pthread_mutex_lock(&s_pauseMutex);
-    if (s_isPaused) {
-        s_isPaused = false;
-        pthread_cond_signal(&s_pauseCondition);
-    }
-    pthread_mutex_unlock(&s_pauseMutex);
+void CCTextureCache::resumeAsync() {                // TINYCO: externally pause loading of textures
+	pthread_mutex_lock(&s_pauseMutex);
+	if (s_isPaused) {
+		s_isPaused = false;
+		pthread_cond_signal(&s_pauseCondition);
+	}
+	pthread_mutex_unlock(&s_pauseMutex);
 }
 
-static sem_t* s_pSem = NULL;
+#ifdef EMSCRIPTEN
+// Hack to get ASM.JS validation (no undefined symbols allowed).
+#define pthread_cond_signal(_)
+#endif // EMSCRIPTEN
+
 static unsigned long s_nAsyncRefCount = 0;
-
-#if CC_TARGET_PLATFORM == CC_PLATFORM_IOS
-    #define CC_ASYNC_TEXTURE_CACHE_USE_NAMED_SEMAPHORE 1
-#else
-    #define CC_ASYNC_TEXTURE_CACHE_USE_NAMED_SEMAPHORE 0
-#endif
-    
-
-#if CC_ASYNC_TEXTURE_CACHE_USE_NAMED_SEMAPHORE
-    #define CC_ASYNC_TEXTURE_CACHE_SEMAPHORE "ccAsync"
-#else
-static sem_t s_sem;
-#endif
-
 
 static bool need_quit = false;
 
-typedef std::map<std::string, std::vector<Functor> > Callbacks_t;
-static Callbacks_t s_callbacks;
+typedef std::map<std::string, std::vector<Functor> > Callbacks_t;           // TINYCO: list of callbacks to be called to the external function
+static Callbacks_t s_callbacks;                                             // TINYCO: list of callbacks to be called to the external function
+
+
 static std::queue<AsyncStruct*> s_asyncStructQueue;
-static std::list<ImageInfo*> s_imageQueue;
+//static std::queue<ImageInfo*>*   s_pImageQueue = NULL;                   // TINYCO: uses a list instead of a queue
+static std::list<ImageInfo*>    s_imageQueue;                     // TINYCO: uses a list instead of a queue and also these are initialized on BSS, not allocated on the fly!
+
 
 static CCImage::EImageFormat computeImageFormatType(string& filename)
 {
@@ -138,209 +153,240 @@ static CCImage::EImageFormat computeImageFormatType(string& filename)
 	{
 		ret = CCImage::kFmtPng;
 	}
-    else if ((std::string::npos != filename.find(".tiff")) || (std::string::npos != filename.find(".TIFF")))
-    {
-        ret = CCImage::kFmtTiff;
-    }
+	else if ((std::string::npos != filename.find(".tiff")) || (std::string::npos != filename.find(".TIFF")))
+	{
+		ret = CCImage::kFmtTiff;
+	}
+#if (CC_TARGET_PLATFORM != CC_PLATFORM_WINRT) && (CC_TARGET_PLATFORM != CC_PLATFORM_WP8)
+	else if ((std::string::npos != filename.find(".webp")) || (std::string::npos != filename.find(".WEBP")))
+	{
+		ret = CCImage::kFmtWebp;
+	}
+#endif
 
 	return ret;
 }
 
+static void loadImageData(AsyncStruct *pAsyncStruct)
+{
+#ifdef _MSC_VER
+#ifdef DEBUG
+#if (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP)
+	unsigned long long memused = Windows::System::MemoryManager::AppMemoryUsage;
+	CCLOG("memory used: %u Kb", (unsigned int)(memused / 1024));
+#endif
+#endif
+#endif
+	const char *filename = pAsyncStruct->filename.c_str();
+
+	// TINYCO, support for texture compression
+	/* .compressed is special case. */
+	CCTexturePVR *pvr(NULL);
+	CCTextureDXT *dxt(NULL);
+	CCTextureATC *atc(NULL);
+	CCTextureASTC *astc(NULL);
+	CCImage *pImage(NULL);
+	CCImage::EImageFormat imageType(CCImage::kFmtUnKnown);
+	if (pAsyncStruct->filename.find(".pvr") != std::string::npos)
+	{
+		/* imageType still has to be set for reloadAllTextures(). */
+		imageType = CCImage::kFmtPVR;
+		/* PVR textures are loaded from disk on this (background) thread
+		* and then their GL names will be generated once they get pulled
+		* out onto the main thread. */
+		pvr = new CCTexturePVR;
+		if (!pvr->initWithContentsOfFileAsync(pAsyncStruct->filename.c_str()))
+		{
+			CCLOG("unable to load PVR %s", pAsyncStruct->filename.c_str());
+			// pvr is released if it failed to init, so no delete here
+			pvr = nullptr;
+		}
+	}
+	else if (pAsyncStruct->filename.find(".dxt") != std::string::npos)
+	{
+		imageType = CCImage::kFmtDDS;
+		// These come back 'nude' (new), because we are off the main thread and cannot 'autorelease'
+		CCDDS* dxtDDS = CCDDS::ddsWithContentsOfFileAsync(pAsyncStruct->filename.c_str());
+		dxt = CCTextureDXT::dxtTextureWithDDSAsync(dxtDDS);
+
+		dxtDDS->release();
+		if (!dxt)
+		{
+			CCLOG("unable to load DXT %s", pAsyncStruct->filename.c_str());
+			delete dxt;
+			dxt = nullptr;
+		}
+	}
+	else if (pAsyncStruct->filename.find(".atc") != std::string::npos)
+	{
+		imageType = CCImage::kFmtDDS;
+		// These come back 'nude' (new), because we are off the main thread and cannot 'autorelease'
+		CCDDS* atcDDS = CCDDS::ddsWithContentsOfFileAsync(pAsyncStruct->filename.c_str());
+		atc = CCTextureATC::atcTextureWithDDSAsync(atcDDS);
+		atcDDS->release();
+		if (!atc)
+		{
+			CCLOG("unable to load ATC %s", pAsyncStruct->filename.c_str());
+			delete atc;
+			atc = nullptr;
+		}
+	}
+	else if (pAsyncStruct->filename.find(".astc") != std::string::npos)
+	{
+		/* imageType still has to be set for reloadAllTextures(). */
+		imageType = CCImage::kFmtASTC;
+		/* PVR textures are loaded from disk on this (background) thread
+		* and then their GL names will be generated once they get pulled
+		* out onto the main thread. */
+		astc = new CCTextureASTC;
+		if (!astc->initWithContentsOfFileAsync(pAsyncStruct->filename.c_str()))
+		{
+			CCLOG("unable to load ASTC %s", pAsyncStruct->filename.c_str());
+			delete astc;
+			astc = nullptr;
+		}
+	}
+	// TINYCO: support texture compression
+	else
+	{
+		// compute image type
+		CCImage::EImageFormat imageType = computeImageFormatType(pAsyncStruct->filename);
+		if (imageType == CCImage::kFmtUnKnown)
+		{
+			CCLOG("unsupported format %s", filename);
+			delete pAsyncStruct;
+			return;
+		}
+
+		// generate image            
+		pImage = new CCImage();
+		if (pImage && !pImage->initWithImageFileThreadSafe(filename, imageType))
+		{
+			CC_SAFE_RELEASE(pImage);
+			CCLOG("can not load %s", filename);
+			return;
+		}
+	}
+
+	// generate image info
+	ImageInfo *pImageInfo = new ImageInfo();
+	pImageInfo->asyncStruct = pAsyncStruct;
+	pImageInfo->image = pImage;
+	pImageInfo->imageType = imageType;
+
+	// TINYCO: support texture compression
+	pImageInfo->dxtTexture = dxt;
+	pImageInfo->atcTexture = atc;
+	pImageInfo->pvrTexture = pvr;
+	pImageInfo->astcTexture = astc;
+
+	// put the image info into the queue
+	pthread_mutex_lock(&s_ImageInfoMutex);
+	s_imageQueue.push_back(pImageInfo);           // TINYCO: support external async callback (use list instead of queue
+	pthread_mutex_unlock(&s_ImageInfoMutex);
+}
+
 static void* loadImage(void* data)
 {
-    // create autorelease pool for iOS
-    CCThread thread;
-    thread.createAutoreleasePool();
+	AsyncStruct *pAsyncStruct = NULL;
 
-    AsyncStruct *pAsyncStruct = NULL;
+	while (true)
+	{
+		// TINYCO: wait for queue pauses
+		pthread_mutex_lock(&s_pauseMutex);
+		while (s_isPaused) {
+			pthread_cond_wait(&s_pauseCondition, &s_pauseMutex);
+		}
+		pthread_mutex_unlock(&s_pauseMutex);
+		// TINYCO: wait for queue pauses
 
-    while (true)
-    {
-        // wait for queue pauses
-        pthread_mutex_lock(&s_pauseMutex);
-        while (s_isPaused) {
-            pthread_cond_wait(&s_pauseCondition, &s_pauseMutex);
-        }
-        pthread_mutex_unlock(&s_pauseMutex);
+		// create autorelease pool for iOS
+		CCThread thread;
+		thread.createAutoreleasePool();
 
-        // wait for rendering thread to ask for loading if s_pAsyncStructQueue is empty
-        int semWaitRet = sem_wait(s_pSem);
-        if( semWaitRet < 0 )
-        {
-            CCLOG( "CCTextureCache async thread semaphore error: %s\n", strerror( errno ) );
-            break;
-        }
+		std::queue<AsyncStruct*> *pQueue = &s_asyncStructQueue;
+		pthread_mutex_lock(&s_asyncStructQueueMutex);// get async struct from queue
+		if (pQueue->empty())
+		{
+			pthread_mutex_unlock(&s_asyncStructQueueMutex);
+			if (need_quit) {
+				break;
+			}
+			else {
+				pthread_cond_wait(&s_SleepCondition, &s_SleepMutex);
+				continue;
+			}
+		}
+		else
+		{
+			pAsyncStruct = pQueue->front();
+			pQueue->pop();
+			pthread_mutex_unlock(&s_asyncStructQueueMutex);
+			loadImageData(pAsyncStruct);
+		}
+	}
 
-        pthread_mutex_lock(&s_asyncStructQueueMutex);// get async struct from queue
-        std::queue<AsyncStruct*> *pQueue = &s_asyncStructQueue;
-        if (pQueue->empty())
-        {
-            pthread_mutex_unlock(&s_asyncStructQueueMutex);
-            if (need_quit)
-                break;
-            else
-                continue;
-        }
-        else
-        {
-            pAsyncStruct = pQueue->front();
-            pQueue->pop();
-            pQueue = NULL;
-            pthread_mutex_unlock(&s_asyncStructQueueMutex);
-        }		
+	//    if( s_pAsyncStructQueue != NULL )
+	//  {
 
-        /* .compressed is special case. */
-        CCTexturePVR *pvr(NULL);
-        CCTextureDXT *dxt(NULL);
-        CCTextureATC *atc(NULL);
-        CCTextureASTC *astc(NULL);
-        CCImage *pImage(NULL);
-        CCImage::EImageFormat imageType(CCImage::kFmtUnKnown);
-        if(pAsyncStruct->filename.find(".pvr") != std::string::npos)
-        {
-            /* imageType still has to be set for reloadAllTextures(). */
-            imageType = CCImage::kFmtPVR;
-            /* PVR textures are loaded from disk on this (background) thread
-             * and then their GL names will be generated once they get pulled
-             * out onto the main thread. */
-            pvr = new CCTexturePVR;
-            if(!pvr->initWithContentsOfFileAsync(pAsyncStruct->filename.c_str()))
-            {
-                CCLOG("unable to load PVR %s", pAsyncStruct->filename.c_str());
-                // pvr is released if it failed to init, so no delete here
-                pvr = nullptr;
-            }
-        }
-        else if(pAsyncStruct->filename.find(".dxt") != std::string::npos)
-        {
-            imageType = CCImage::kFmtDDS;
-            // These come back 'nude' (new), because we are off the main thread and cannot 'autorelease'
-            CCDDS* dxtDDS = CCDDS::ddsWithContentsOfFileAsync(pAsyncStruct->filename.c_str());
-            dxt = CCTextureDXT::dxtTextureWithDDSAsync(dxtDDS);
-            dxtDDS->release();
-            if(!dxt)
-            {
-                CCLOG("unable to load DXT %s", pAsyncStruct->filename.c_str());
-                delete dxt;
-                dxt = nullptr;
-            }
-        }
-        else if(pAsyncStruct->filename.find(".atc") != std::string::npos)
-        {
-            imageType = CCImage::kFmtDDS;
-            // These come back 'nude' (new), because we are off the main thread and cannot 'autorelease'
-            CCDDS* atcDDS = CCDDS::ddsWithContentsOfFileAsync(pAsyncStruct->filename.c_str());
-            atc = CCTextureATC::atcTextureWithDDSAsync(atcDDS);
-            atcDDS->release();
-            if(!atc)
-            {
-                CCLOG("unable to load ATC %s", pAsyncStruct->filename.c_str());
-                delete atc;
-                atc = nullptr;
-            }
-        }
-        else if(pAsyncStruct->filename.find(".astc") != std::string::npos)
-        {
-            /* imageType still has to be set for reloadAllTextures(). */
-            imageType = CCImage::kFmtASTC;
-            /* PVR textures are loaded from disk on this (background) thread
-             * and then their GL names will be generated once they get pulled
-             * out onto the main thread. */
-            astc = new CCTextureASTC;
-            if(!astc->initWithContentsOfFileAsync(pAsyncStruct->filename.c_str()))
-            {
-                CCLOG("unable to load ASTC %s", pAsyncStruct->filename.c_str());
-                delete astc;
-                astc = nullptr;
-            }
-        }
-        else
-        {
-            const char *filename = pAsyncStruct->filename.c_str();
+	// TINYCO: the async struct is kept alive (presumably because of the async callbacks?)
+	//  delete s_pAsyncStructQueue;
+	//  s_pAsyncStructQueue = NULL;
+	//  delete s_pImageQueue;
+	//  s_pImageQueue = NULL;
+	//
+	// TINYCO: the mutexes are kept around and not created and re-created
+	//  pthread_mutex_destroy(&s_asyncStructQueueMutex);
+	//  pthread_mutex_destroy(&s_ImageInfoMutex);
+	//  pthread_mutex_destroy(&s_SleepMutex);
+	//  pthread_cond_destroy(&s_SleepCondition);
+	//  }
 
-            // compute image type
-            imageType = computeImageFormatType(pAsyncStruct->filename);
-            if (imageType == CCImage::kFmtUnKnown)
-            {
-                CCLOG("unsupported format %s",filename);
-            } else {
-            // generate image			
-            pImage = new CCImage();
-            if (! pImage->initWithImageFileThreadSafe(filename, imageType))
-            {
-                    CCLOG("can not load %s", filename);
-                delete pImage;
-                    pImage=nullptr;
-                }
-            }
-        }
-
-        
-        // generate image info
-        ImageInfo *pImageInfo = new ImageInfo();
-        pImageInfo->asyncStruct = pAsyncStruct;
-        pImageInfo->imageType = imageType;
-        // if failed to load, all textures below are NULL
-        pImageInfo->image = pImage;
-        pImageInfo->dxtTexture = dxt;
-        pImageInfo->atcTexture = atc;
-        pImageInfo->pvrTexture = pvr;
-        pImageInfo->astcTexture = astc;
-
-        // put the image info into the queue
-        pthread_mutex_lock(&s_imageInfoMutex);
-        s_imageQueue.push_back(pImageInfo);
-        pthread_mutex_unlock(&s_imageInfoMutex);	
-    }
-
-    if( s_pSem != NULL )
-    {
-#if CC_ASYNC_TEXTURE_CACHE_USE_NAMED_SEMAPHORE
-        sem_unlink(CC_ASYNC_TEXTURE_CACHE_SEMAPHORE);
-        sem_close(s_pSem);
-#else
-        sem_destroy(s_pSem);
-#endif
-        s_pSem = NULL;
-    }
-
-    return 0;
+	return 0;
 }
+
 
 // implementation CCTextureCache
 
 // TextureCache - Alloc, Init & Dealloc
 static CCTextureCache *g_sharedTextureCache = NULL;
 
+
+// TINYCO: async callback support
 CCTextureCache::AsyncCallback::AsyncCallback(CCObject * const targ, CCTextureCache::AsyncCallback::Func const sel,
-                                             CCTexture2D * const tex, std::string const &file)
-  : target(targ), selector(sel), texture(tex), filename(file)
+	CCTexture2D * const tex, std::string const &file)
+	: target(targ), selector(sel), texture(tex), filename(file)
 {
-  target->retain();
-  if(texture) {
-    texture->retain();
-  }
+	target->retain();
+	if (texture) {
+		texture->retain();
+	}
 }
 
+// TINYCO: async callback support
 CCTextureCache::AsyncCallback::AsyncCallback(CCTextureCache::AsyncCallback const &ac)
-  : target(ac.target), selector(ac.selector), texture(ac.texture), filename(ac.filename)
+	: target(ac.target), selector(ac.selector), texture(ac.texture), filename(ac.filename)
 {
-  target->retain();
-  if(texture) {
-    texture->retain();
-  }
+	target->retain();
+	if (texture) {
+		texture->retain();
+	}
 }
 
+// TINYCO: async callback support
 CCTextureCache::AsyncCallback::~AsyncCallback()
 {
-  target->release();
-  if(texture) {
-    texture->release();
-  }
+	target->release();
+	if (texture) {
+		texture->release();
+	}
 }
 
+// TINYCO: async callback support
 void CCTextureCache::AsyncCallback::operator ()()
-{ (target->*selector)(texture, filename); }
+{
+	(target->*selector)(texture, filename);
+}
 
 CCTextureCache * CCTextureCache::sharedTextureCache()
 {
@@ -355,24 +401,24 @@ CCTextureCache::CCTextureCache()
 {
 	CCAssert(g_sharedTextureCache == NULL, "Attempted to allocate a second instance of a singleton.");
 	
-    pthread_mutex_init(&s_asyncStructQueueMutex, NULL);
-    pthread_mutex_init(&s_callbacksMutex, NULL);
-    pthread_mutex_init(&s_imageInfoMutex, NULL);
-    pthread_mutex_init(&s_pauseMutex, NULL);
-    pthread_cond_init(&s_pauseCondition, NULL);
+	// TINYCO: keep these around, do not create and re-create
+	pthread_mutex_init(&s_asyncStructQueueMutex, NULL);
+	pthread_mutex_init(&s_ImageInfoMutex, NULL);
+	pthread_mutex_init(&s_SleepMutex, NULL);
+	pthread_cond_init(&s_SleepCondition, NULL);
 
-    m_pTextures = new CCDictionary();
+	// TINYCO: pause support
+	pthread_mutex_init(&s_pauseMutex, NULL);
+	pthread_cond_init(&s_pauseCondition, NULL);
+
+	m_pTextures = new CCDictionary();
 }
 
 CCTextureCache::~CCTextureCache()
 {
 	CCLOGINFO("cocos2d: deallocing CCTextureCache.");
 	need_quit = true;
-    if (s_pSem != NULL)
-    {
-        sem_post(s_pSem);
-    }
-    
+	pthread_cond_signal(&s_SleepCondition);
 	CC_SAFE_RELEASE(m_pTextures);
 }
 
@@ -397,331 +443,406 @@ CCDictionary* CCTextureCache::snapshotTextures()
     return pRet;
 }
 
-void CCTextureCache::addImageAsync(const char *path, CCObject *target,
-                                   CCTextureCache::AsyncCallback::Func const selector)
+// TINYCO: async callbacks support
+//void CCTextureCache::addImageAsync(const char *path, CCObject *target, SEL_CallFuncO selector)
+void CCTextureCache::addImageAsync(const char *path, CCObject *target, CCTextureCache::AsyncCallback::Func const selector)
 {
-	CCAssert(path != NULL, "TextureCache: fileimage MUST not be NULL");	
+#ifdef EMSCRIPTEN
+	CCLOGWARN("Cannot load image %s asynchronously in Emscripten builds.", path);
+	return;
+#endif // EMSCRIPTEN
+
+	CCAssert(path != NULL, "TextureCache: fileimage MUST not be NULL");
 
 	CCTexture2D *texture = NULL;
 
 	// optimization
 
-    std::string const fullpath = CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(path);
-    texture = (CCTexture2D*)m_pTextures->objectForKey(fullpath.c_str());
-    bool alreadyFailed = m_failedTextures.find(fullpath) != m_failedTextures.end();
+	std::string pathKey = path;
 
-    /* s_callbacks is lazily initialized. */
-    if(target)
-    {
-      /* Has this requester already requested a file? (ignore the previous) */
-      removeAsyncImage(target);
-    }
+	pathKey = CCFileUtils::sharedFileUtils()->fullPathFromRelativePath(pathKey.c_str());
+
+	texture = (CCTexture2D*)m_pTextures->objectForKey(pathKey.c_str());
+	std::string fullpath = pathKey;
+
+	bool alreadyFailed = m_failedTextures.find(fullpath) != m_failedTextures.end();        // TINYCO ...
 
 
+	/* TINYCO: s_callbacks is lazily initialized. */
+	if (target)
+	{
+		/* Has this requester already requested a file? (ignore the previous) */
+		removeAsyncImage(target);
+	}
+
+	// TINYCO: shortcut already failed
 	if (texture != NULL || alreadyFailed)
 	{
 		if (target && selector)
 		{
 			(target->*selector)(texture, fullpath);
 		}
-		
+
 		return;
 	}
 
-    // lazy init
-    if (s_pSem == NULL)
-    {             
-#if CC_ASYNC_TEXTURE_CACHE_USE_NAMED_SEMAPHORE
-        s_pSem = sem_open(CC_ASYNC_TEXTURE_CACHE_SEMAPHORE, O_CREAT, 0644, 0);
-        if( s_pSem == SEM_FAILED )
+	// lazy init
+	if (!s_loadingThreadCreated)
 	{
-            CCLOG( "CCTextureCache async thread semaphore init error: %s\n", strerror( errno ) );
-            s_pSem = NULL;
-            return;
-	}
-#else
-        int semInitRet = sem_init(&s_sem, 0, 0);
-        if( semInitRet < 0 )
-	{		     
-            CCLOG( "CCTextureCache async thread semaphore init error: %s\n", strerror( errno ) );
-            return;
-        }
-        s_pSem = &s_sem;
-#endif
+		// TINYCO: keep these around rather than new / delete 
+		// s_pAsyncStructQueue = new queue<AsyncStruct*>();
+		// s_pImageQueue = new queue<ImageInfo*>();        
+
+		// TINYCO: keep the mutexes around instead of creating and re-creating...
+		//pthread_mutex_init(&s_asyncStructQueueMutex, NULL);
+		//pthread_mutex_init(&s_ImageInfoMutex, NULL);
+		//pthread_mutex_init(&s_SleepMutex, NULL);
+		//pthread_cond_init(&s_SleepCondition, NULL);
+		// TINYCO
+
+		s_loadingThreadCreated = true;
+#if (CC_TARGET_PLATFORM != CC_PLATFORM_WINRT) && (CC_TARGET_PLATFORM != CC_PLATFORM_WP8)
 		pthread_create(&s_loadingThread, NULL, loadImage, NULL);
-
+#endif
 		need_quit = false;
-    }
-    
-    /* We'll hold onto the target until the callback is complete. */
-    if(target)
-    {
-        target->retain();
-    }
-    
-    /* Check early for multiple requests. */
-    pthread_mutex_lock(&s_callbacksMutex);
-    
-    /* Has someone already requested this file? (attach to the previous) */
-    Callbacks_t::iterator const it(s_callbacks.find(fullpath));
-    if(it != s_callbacks.end())
-    {
-      /* We have multiple requests for the same file. */
-      Functor const f(target, selector);
-      it->second.push_back(f);
+	}
 
-      pthread_mutex_unlock(&s_callbacksMutex);
-      return;
-    }
-    pthread_mutex_unlock(&s_callbacksMutex);
+	/* TINYCO: We'll hold onto the target until the callback is complete. */
+	if (target)
+	{
+		target->retain();
+	}
 
-    if (0 == s_nAsyncRefCount)
-    {
-        CCDirector::sharedDirector()->getScheduler()->scheduleSelector(schedule_selector(CCTextureCache::addImageAsyncCallBack), this, 0, false);
-    }
+	/* Check early for multiple requests. */
+	pthread_mutex_lock(&s_callbacksMutex);
 
-    ++s_nAsyncRefCount;
+	/* Has someone already requested this file? (attach to the previous) */
+	Callbacks_t::iterator const it(s_callbacks.find(fullpath));
+	if (it != s_callbacks.end())
+	{
+		/* We have multiple requests for the same file. */
+		Functor const f(target, selector);
+		it->second.push_back(f);
+
+		pthread_mutex_unlock(&s_callbacksMutex);
+		return;
+	}
+	pthread_mutex_unlock(&s_callbacksMutex);
+	/* TINYCO */
+
+	if (0 == s_nAsyncRefCount)
+	{
+		CCDirector::sharedDirector()->getScheduler()->scheduleSelector(schedule_selector(CCTextureCache::addImageAsyncCallBack), this, 0, false);
+	}
+
+	++s_nAsyncRefCount;
 
 	// generate async struct
 	AsyncStruct *data = new AsyncStruct();
-    data->filename = fullpath;
+	data->filename = fullpath.c_str();
 
-	// add async struct into queue
+	// TINYCO: not using target and selector
+	//data->target = target;
+	//data->selector = selector;
+
+#if (CC_TARGET_PLATFORM != CC_PLATFORM_WINRT) && (CC_TARGET_PLATFORM != CC_PLATFORM_WP8)
+	// add async struct into queue (TINYCO modifications here)
 	pthread_mutex_lock(&s_asyncStructQueueMutex);
 	s_asyncStructQueue.push(data);
 
-    /* Add callback. */
-    Functor const functor(target, selector);
-    pthread_mutex_lock(&s_callbacksMutex);
-    s_callbacks[fullpath].push_back(functor);
+	/* Add callback. */
+	Functor const functor(target, selector);
+	pthread_mutex_lock(&s_callbacksMutex);
+	s_callbacks[fullpath].push_back(functor);
 
-    pthread_mutex_unlock(&s_callbacksMutex);
+	pthread_mutex_unlock(&s_callbacksMutex);
 	pthread_mutex_unlock(&s_asyncStructQueueMutex);
 
-    sem_post(s_pSem);
+	pthread_cond_signal(&s_SleepCondition);      // THIS is from Cocos2D-x 2.2.5
+#else
+	// WinRT uses an Async Task to load the image since the ThreadPool has a limited number of threads
+	//std::replace( data->filename.begin(), data->filename.end(), '/', '\\'); 
+
+	// We are not scheduling the data into the async structs because it is passed to the loadImageData directly
+	// here
+	Functor const functor(target, selector);
+	pthread_mutex_lock(&s_callbacksMutex);
+	s_callbacks[fullpath].push_back(functor);
+	pthread_mutex_unlock(&s_callbacksMutex);
+
+	create_task([this, data] {
+		try
+		{
+			loadImageData(data);
+		}
+		catch (std::exception& e)
+		{
+			cocos2d::CCLog("Failed to load image data: %s", data->filename);
+			// And do what now??
+		}
+	});
+#endif
 }
 
-void CCTextureCache::setAsyncImageCallback(void (*callback)(AsyncCallback const &))
-{ s_asyncCallback = callback; }
+// TINYCO: set the global async image callback
+void CCTextureCache::setAsyncImageCallback(void(*callback)(AsyncCallback const &))
+{
+	s_asyncCallback = callback;
+}
 
+
+// TINYCO: async callbacks..
 void CCTextureCache::removeAsyncImage(CCObject * const target)
 {
-    pthread_mutex_lock(&s_callbacksMutex);
+	pthread_mutex_lock(&s_callbacksMutex);
 
-    for(Callbacks_t::iterator it(s_callbacks.begin()); it != s_callbacks.end(); ++it)
-    {
-      for(std::vector<Functor>::iterator fit(it->second.begin()); fit != it->second.end(); ++fit)
-      {
-        /* Search for a selector matching the target. */
-        if(fit->first == target) {
-          fit->first->release();
-          it->second.erase(fit--);
-          /* ... continue along, should any other functors
-           * reference the target. */
-        }
-      }
-    }
+	for (Callbacks_t::iterator it(s_callbacks.begin()); it != s_callbacks.end(); ++it)
+	{
+		// TODO,JANI: I believe this was a bug in the original code here. Causes std::vector crashes on MSC
+		// we really need to restart the search in case we remove something. Just "fit--" can get the iterator
+		// to "negative" if it is in position 0 etc.
+		bool removed;
+		do
+		{
+			removed = false;
+			for (std::vector<Functor>::iterator fit(it->second.begin()); fit != it->second.end(); ++fit)
+			{
+				/* Search for a selector matching the target. */
+				if (fit->first == target)
+				{
+					fit->first->release();
+					it->second.erase(fit);
+					removed = true;
+					break;
+				}
+			}
+		} while (removed);
+	}
 
-    pthread_mutex_unlock(&s_callbacksMutex);
+	pthread_mutex_unlock(&s_callbacksMutex);
 }
 
+// TINYCO: async callbacks..
 void CCTextureCache::removeAllAsyncImages()
 {
-    /* Wipe out _all the things_. */
-    pthread_mutex_lock(&s_asyncStructQueueMutex);
-    pthread_mutex_lock(&s_imageInfoMutex);
-    pthread_mutex_lock(&s_callbacksMutex);
-    while(!s_asyncStructQueue.empty())
-    {
-        AsyncStruct * const pAsyncStruct{ s_asyncStructQueue.front() };
-        s_asyncStructQueue.pop();
-        delete pAsyncStruct;
-    }
-    while(!s_imageQueue.empty())
-    {
-        ImageInfo * const pImageInfo{ s_imageQueue.front() };
-        s_imageQueue.pop_front();
-        delete pImageInfo;
-    }
-    while(!s_callbacks.empty())
-    {
-        Callbacks_t::iterator const it{ s_callbacks.begin() };
-        for(auto const &fit : it->second)
-        { fit.first->release(); }
-        s_callbacks.erase(it);
-    }
-    pthread_mutex_unlock(&s_callbacksMutex);
-    pthread_mutex_unlock(&s_imageInfoMutex);
-    pthread_mutex_unlock(&s_asyncStructQueueMutex);
+	/* Wipe out _all the things_. */
+	pthread_mutex_lock(&s_asyncStructQueueMutex);
+	pthread_mutex_lock(&s_ImageInfoMutex);
+	pthread_mutex_lock(&s_callbacksMutex);
+	while (!s_asyncStructQueue.empty())
+	{
+		AsyncStruct * const pAsyncStruct{ s_asyncStructQueue.front() };
+		s_asyncStructQueue.pop();
+		delete pAsyncStruct;
+	}
+	while (!s_imageQueue.empty())
+	{
+		ImageInfo * const pImageInfo{ s_imageQueue.front() };
+		s_imageQueue.pop_front();
+		delete pImageInfo;
+	}
+	while (!s_callbacks.empty())
+	{
+		Callbacks_t::iterator const it{ s_callbacks.begin() };
+		for (auto const &fit : it->second)
+		{
+			fit.first->release();
+		}
+		s_callbacks.erase(it);
+	}
+	pthread_mutex_unlock(&s_callbacksMutex);
+	pthread_mutex_unlock(&s_ImageInfoMutex);
+	pthread_mutex_unlock(&s_asyncStructQueueMutex);
 }
+
 
 void CCTextureCache::addImageAsyncCallBack(float dt)
 {
-    pthread_mutex_lock(&s_imageInfoMutex);
-    // the image is generated in loading thread
-    list<ImageInfo*> *imagesQueue = &s_imageQueue;
+	pthread_mutex_lock(&s_ImageInfoMutex);                  // TINYCO: lock already here
 
-    if (imagesQueue->empty())
-    {
-        pthread_mutex_unlock(&s_imageInfoMutex);
-    }
-    else
-    {
-        pthread_mutex_unlock(&s_imageInfoMutex);
-        while(true)
-        {
-            pthread_mutex_lock(&s_imageInfoMutex);
-            if(imagesQueue->empty())
-            {
-                pthread_mutex_unlock(&s_imageInfoMutex);
-                return;
-            }
-            else
-            {
-                ImageInfo *pImageInfo = imagesQueue->front();
-                imagesQueue->pop_front();
-                pthread_mutex_unlock(&s_imageInfoMutex);
-                
-                AsyncStruct *pAsyncStruct = pImageInfo->asyncStruct;
-                const char* filename = pAsyncStruct->filename.c_str();
+	// the image is generated in loading thread
+	std::list<ImageInfo*> *imagesQueue = &s_imageQueue;     // TINYCO: uses lists
 
-                if(!pImageInfo->hasTexture()) {
-                    executeCallbacks(filename);
-                    delete pAsyncStruct;
-                    delete pImageInfo;
-                    decrementAsyncRefCount();
-                    continue;
-                }
+	if (imagesQueue->empty())
+	{
+		pthread_mutex_unlock(&s_ImageInfoMutex);
+	}
+	else
+	{
+		pthread_mutex_unlock(&s_ImageInfoMutex);
+		while (true)
+		{
+			pthread_mutex_lock(&s_ImageInfoMutex);
+			if (imagesQueue->empty())
+			{
+				pthread_mutex_unlock(&s_ImageInfoMutex);
+				return;
+			}
+			else
+			{
+				ImageInfo *pImageInfo = imagesQueue->front();
+				imagesQueue->pop_front();                   // TINYCO: uses list
+				pthread_mutex_unlock(&s_ImageInfoMutex);
 
-                CCImage *pImage = pImageInfo->image;
-                
-                // generate texture in render thread
-                CCTexturePVR *pvrTexture(pImageInfo->pvrTexture);
-#ifdef ANDROID
-                CCTextureDXT *dxtTexture(pImageInfo->dxtTexture);
-                CCTextureATC *atcTexture(pImageInfo->atcTexture);
-                CCTextureASTC *astcTexture(pImageInfo->astcTexture);
+				AsyncStruct *pAsyncStruct = pImageInfo->asyncStruct;
+				const char* filename = pAsyncStruct->filename.c_str();       // TINYCO: for the callbacks below
+
+				// TINYCO: execute callbacks
+				if (!pImageInfo->hasTexture()) {
+					executeCallbacks(filename);
+					delete pAsyncStruct;
+					delete pImageInfo;
+					decrementAsyncRefCount();
+					continue;
+				}
+
+				CCImage *pImage = pImageInfo->image;
+
+				// TINYCO (texture compression): generate texture in render thread
+				CCTexturePVR *pvrTexture(pImageInfo->pvrTexture);
+
+#if defined(ANDROID) || defined(_MSC_VER)
+				CCTextureDXT *dxtTexture(pImageInfo->dxtTexture);
+				CCTextureATC *atcTexture(pImageInfo->atcTexture);
+				CCTextureASTC *astcTexture(pImageInfo->astcTexture);
 #endif
-                CCTexture2D *texture(new CCTexture2D);
-                bool success = false;
-                
-                if(pvrTexture)
-                {
-                    /* The PVR was created on a separate thread, so it knows no
-                     * GL name yet. Try to create that now. */
-                    if(pvrTexture->createGLTexture())
-                    { success = texture->initWithPVRTexture(pvrTexture); }
-                    delete pvrTexture;
-                    pvrTexture = NULL;
-                }
-#ifdef ANDROID
-                else if(dxtTexture)
-                {
-                    if(dxtTexture->createGLTexture())
-                    { success = texture->initWithDXTFileAsync(dxtTexture); }
-                    delete dxtTexture;
-                    dxtTexture = NULL;
-                }
-                else if(atcTexture)
-                {
-                    if(atcTexture->createGLTexture())
-                    { success = texture->initWithATCFileAsync(atcTexture); }
-                    delete atcTexture;
-                    atcTexture = NULL;
-                }
-                else if(astcTexture){
-                    if(astcTexture->createGLTexture())
-                    { success = texture->initWithASTCFileAsync(astcTexture); }
-                    delete astcTexture;
-                    astcTexture = NULL;
-                }
+				CCTexture2D *texture(new CCTexture2D);
+				bool success = false;
+
+				if (pvrTexture)
+				{
+					/* The PVR was created on a separate thread, so it knows no
+					* GL name yet. Try to create that now. */
+					if (pvrTexture->createGLTexture())
+					{
+						success = texture->initWithPVRTexture(pvrTexture);
+					}
+					delete pvrTexture;
+					pvrTexture = NULL;
+				}
+#if defined(ANDROID) || defined(_MSC_VER)
+				else if (dxtTexture)
+				{
+					if (dxtTexture->createGLTexture())
+					{
+						success = texture->initWithDXTFileAsync(dxtTexture);
+					}
+					delete dxtTexture;
+					dxtTexture = NULL;
+				}
+				else if (atcTexture)
+				{
+					if (atcTexture->createGLTexture())
+					{
+						success = texture->initWithATCFileAsync(atcTexture);
+					}
+					delete atcTexture;
+					atcTexture = NULL;
+				}
+				else if (astcTexture){
+					if (astcTexture->createGLTexture())
+					{
+						success = texture->initWithASTCFileAsync(astcTexture);
+					}
+					delete astcTexture;
+					astcTexture = NULL;
+				}
 #endif
-                else
-                {
+				else
+				{
+					CCImage *pImage = pImageInfo->image;
 #if 0 //TODO: (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
-                    success = texture->initWithImage(pImage, kCCResolutioniPhone);
+					success = texture->initWithImage(pImage, kCCResolutioniPhone);
 #else
-                    success = texture->initWithImage(pImage);
+					success = texture->initWithImage(pImage);
 #endif
-                }
+				}
 
-                if(!success)
-                {
-                    texture = NULL;
-                    CCLOG("Couldn't add %s", pAsyncStruct->filename.c_str());
-                    m_failedTextures.insert(pAsyncStruct->filename);
-                }
-                else
-                {
+				if (!success)
+				{
+					texture = NULL;
+					CCLOG("Couldn't add %s", pAsyncStruct->filename.c_str());
+					m_failedTextures.insert(pAsyncStruct->filename);
+				}
+				else
+				{
 #if CC_ENABLE_CACHE_TEXTURE_DATA
-                    // cache the texture file name
-                    VolatileTexture::addImageTexture(texture, filename, pImageInfo->imageType);
+					// cache the texture file name
+					VolatileTexture::addImageTexture(texture, filename, pImageInfo->imageType);
 #endif
-                    
-                    // cache the texture
-                    m_pTextures->setObject(texture, filename);
-                    texture->autorelease();
-                }
-                
-                executeCallbacks(filename, texture);
-                decrementAsyncRefCount();
-                delete pAsyncStruct;
-                delete pImageInfo;
-                
-                if(pImage)
-                { pImage->release(); }
 
-                
-            }
-        }
-    }
+					// cache the texture
+					m_pTextures->setObject(texture, filename);
+					texture->autorelease();
+
+					// TINYCO: execute callbacks
+					executeCallbacks(filename, texture);
+					decrementAsyncRefCount();
+					delete pAsyncStruct;
+					delete pImageInfo;
+
+					if (pImage)
+					{
+						pImage->release();
+					}
+				}
+			}
+		}
+	}
 }
 
+
+// TINYCO: ref count dec moved out to a function
 void CCTextureCache::decrementAsyncRefCount() {
-    --s_nAsyncRefCount;
-    if (0 == s_nAsyncRefCount)
-    {
-        CCDirector::sharedDirector()->getScheduler()->unscheduleSelector(schedule_selector(CCTextureCache::addImageAsyncCallBack), this);
-    }
+	--s_nAsyncRefCount;
+	if (0 == s_nAsyncRefCount)
+	{
+		CCDirector::sharedDirector()->getScheduler()->unscheduleSelector(schedule_selector(CCTextureCache::addImageAsyncCallBack), this);
+	}
 }
 
+// TINYCO: execute callbacks
 void CCTextureCache::executeCallbacks(const std::string & filename, cocos2d::CCTexture2D * const texture) {
-                pthread_mutex_lock(&s_callbacksMutex);
-                /* Get a copy of the functors and clear the original. */
-                std::vector<Functor> functors(s_callbacks[filename]);
-                s_callbacks.erase(filename);
-                pthread_mutex_unlock(&s_callbacksMutex);
-                
-                for(std::vector<Functor>::iterator it(functors.begin()); it != functors.end(); ++it)
-                {
-                    /* Copy the functor and remove the original. */
-                    Functor const f(*it);
-                    functors.erase(it--);
-                    
-                    CCObject * const target(f.first);
-                    CCTextureCache::AsyncCallback::Func const selector(f.second);
-                    if (target && selector)
-                    {
-                        /* Allow the game to specify its own way to handle/throttle callbacks. */
-                        if(s_asyncCallback)
-                        { s_asyncCallback(CCTextureCache::AsyncCallback(target, selector, texture, filename)); }
-                        else
-                        { (target->*selector)(texture, filename); }
-                        
-                        /* It's important that this was removed from the functors
-                         * collection first, since the target's dtor could look into
-                         * the functor to remove itself, thus causing a double deletion. */
-                        target->release();
-                    }		
-                }
+	pthread_mutex_lock(&s_callbacksMutex);
+	/* Get a copy of the functors and clear the original. */
+	std::vector<Functor> functors(s_callbacks[filename]);
+	s_callbacks.erase(filename);
+	pthread_mutex_unlock(&s_callbacksMutex);
+
+	for (std::vector<Functor>::iterator it(functors.begin()); it != functors.end(); ++it)
+	{
+		/* Copy the functor and remove the original. */
+		Functor const f(*it);
+		//functors.erase(it--);    // TODO,JANI: can't erase here in "mid-flight". Why does it need to be erased anyway?
+
+		CCObject * const target(f.first);
+		CCTextureCache::AsyncCallback::Func const selector(f.second);
+		if (target && selector)
+		{
+			/* Allow the game to specify its own way to handle/throttle callbacks. */
+			if (s_asyncCallback)
+			{
+				s_asyncCallback(CCTextureCache::AsyncCallback(target, selector, texture, filename));
+			}
+			else
+			{
+				(target->*selector)(texture, filename);
+			}
+
+			/* It's important that this was removed from the functors
+			* collection first, since the target's dtor could look into
+			* the functor to remove itself, thus causing a double deletion. */
+			target->release();
+		}
+	}
 }
 
-
+// TINYCO: new variant of addImage
 CCTexture2D* CCTextureCache::addImage(const char* fileimage, CCObject* target) {
-    /* Has this requester already requested a file? (ignore the previous) */
-    CCAssert(target, "cocos2d: target is null, cannot remove async image request");
-    removeAsyncImage(target);
-    return addImage(fileimage);
+	/* Has this requester already requested a file? (ignore the previous) */
+	CCAssert(target, "cocos2d: target is null, cannot remove async image request");
+	removeAsyncImage(target);
+	return addImage(fileimage);
 }
 
 CCTexture2D * CCTextureCache::addImage(const char * path)

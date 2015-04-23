@@ -429,7 +429,7 @@ void CCParticleSystem::initParticle(tCCParticle* particle)
     // timeToLive
     // no negative life. prevent division by 0
     particle->timeToLive = m_fLife + m_fLifeVar * CCRANDOM_MINUS1_1();
-    particle->timeToLive = MAX(float(0), particle->timeToLive);
+    particle->timeToLive = MAX(0.f, particle->timeToLive);
 
     // position
     particle->pos.x = m_tSourcePosition.x + m_tPosVar.x * CCRANDOM_MINUS1_1();
