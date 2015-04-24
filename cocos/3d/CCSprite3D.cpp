@@ -832,18 +832,57 @@ const AABB& Sprite3D::getAABB() const
     else
     {
         _aabb.reset();
-        Mat4 transform(nodeToWorldTransform);
-        for (const auto& it : _meshes) {
-            if (it->isVisible())
-                _aabb.merge(it->getAABB());
+        
+        // Merge mesh and child aabb's in parent space
+        for (const auto& mesh : _meshes) {
+            if (mesh->isVisible())
+                _aabb.merge(mesh->getAABB());
         }
         
-        _aabb.transform(transform);
+        for (auto const & child : _children) {
+            _aabb.merge(child->getNodeToParentAABB());
+        }
+        
+        // convert to world space
+        _aabb.transform(nodeToWorldTransform);
         _nodeToWorldTransform = nodeToWorldTransform;
     }
     
     return _aabb;
 }
+
+/** BPC PATCH BEGIN **/
+const AABB& Sprite3D::getNodeToParentAABB() const {
+    
+    // If nodeToWorldTransform matrix isn't changed, we don't need to transform aabb.
+    if (!_nodeToParentAABBDirty)
+    {
+        return _nodeToParentAABB;
+    }
+    else
+    {
+        _nodeToParentAABB.reset();
+        
+        // Merge mesh and child aabb's in parent space
+        for (const auto& mesh : _meshes) {
+            if (mesh->isVisible())
+                _nodeToParentAABB.merge(mesh->getAABB());
+        }
+        
+        for(auto const & child : _children) {
+            if(child->isVisible()) {
+                _nodeToParentAABB.merge(child->getNodeToParentAABB());
+            }
+        }
+        
+        // convert to parent space
+        _nodeToParentAABB.transform(getNodeToParentTransform());
+        _nodeToParentAABBDirty = false;
+    }
+    
+    return _nodeToParentAABB;
+}
+/** BPC PATCH END **/
 
 Action* Sprite3D::runAction(Action *action)
 {

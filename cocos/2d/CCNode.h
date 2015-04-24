@@ -35,6 +35,7 @@
 #include "base/CCScriptSupport.h"
 #include "math/CCAffineTransform.h"
 #include "math/CCMath.h"
+#include "3d/CCAABB.h"
 
 NS_CC_BEGIN
 
@@ -1089,6 +1090,10 @@ public:
      */
     virtual Rect getBoundingBox() const;
 
+    /** BPC PATCH BEGIN **/
+    virtual const AABB& getNodeToParentAABB() const;
+    /** BPC PATCH END **/
+
     /** @deprecated Use getBoundingBox instead */
     CC_DEPRECATED_ATTRIBUTE inline virtual Rect boundingBox() const { return getBoundingBox(); }
 
@@ -1742,6 +1747,11 @@ protected:
     std::function<void()> _onExitCallback;
     std::function<void()> _onEnterTransitionDidFinishCallback;
     std::function<void()> _onExitTransitionDidStartCallback;
+    
+    /** BPC PATCH BEGIN **/
+    mutable AABB _nodeToParentAABB;
+    mutable bool _nodeToParentAABBDirty {true};
+    /** BPC PATCH END **/
 
 private:
     CC_DISALLOW_COPY_AND_ASSIGN(Node);

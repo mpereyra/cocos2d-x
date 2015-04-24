@@ -152,6 +152,10 @@ public:
      */
     virtual Rect getBoundingBox() const override;
 
+    /** BPC PATCH BEGIN **/
+    const AABB& getNodeToParentAABB() const override;
+    /** BPC PATCH END **/
+
     // set which face is going to cull, GL_BACK, GL_FRONT, GL_FRONT_AND_BACK, default GL_BACK
     void setCullFace(GLenum cullFace);
     // set cull face enable or not
@@ -225,7 +229,9 @@ protected:
 
     mutable AABB                 _aabb;                 // cache current aabb
     mutable Mat4                 _nodeToWorldTransform; // cache the matrix
-    bool                         _aabbDirty;
+    /** BPC PATCH BEGIN **/
+    mutable bool                 _aabbDirty;
+    /** BPC PATCH END **/
     unsigned int                 _lightMask;
     bool                         _shaderUsingLight; // is current shader using light ?
     bool                         _forceDepthWrite; // Always write to depth buffer

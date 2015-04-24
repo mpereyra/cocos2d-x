@@ -867,6 +867,30 @@ Rect Node::getBoundingBox() const
     return RectApplyAffineTransform(rect, getNodeToParentAffineTransform());
 }
 
+/** BPC PATCH BEGIN **/
+const AABB& Node::getNodeToParentAABB() const {
+    // If nodeToWorldTransform matrix isn't changed, we don't need to transform aabb.
+    if (!_nodeToParentAABBDirty)
+    {
+        return _nodeToParentAABB;
+    }
+    else
+    {
+        _nodeToParentAABB.reset();
+        for(auto const & child : _children) {
+            if(child->isVisible()) {
+                _nodeToParentAABB.merge(child->getNodeToParentAABB());
+            }
+        }
+        
+        _nodeToParentAABB.transform(_transform);
+        _nodeToParentAABBDirty = false;
+    }
+    
+    return _nodeToParentAABB;
+}
+/** BPC PATCH END **/
+
 // MARK: Children logic
 
 // lazy allocs
@@ -1833,6 +1857,7 @@ const Mat4& Node::getNodeToParentTransform() const
         }
         
         _transformDirty = false;
+        _nodeToParentAABBDirty = true;
     }
     
     return _transform;
