@@ -28,9 +28,12 @@
 typedef signed char    int8;
 typedef signed short int16;
 typedef signed int int32;
+#ifndef _MSC_VER
+// vs13 complains 'uint32' ambiguous symbol   (this file vs GlyphenUtils)
 typedef unsigned char uint8;
 typedef unsigned short uint16;
 typedef unsigned int uint32;
+#endif
 typedef float float32;
 typedef double float64;
 
