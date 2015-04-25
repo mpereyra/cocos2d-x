@@ -118,7 +118,6 @@ CC_CONSTRUCTOR_ACCESS:
     
     GLProgram* getDefaultGLProgram(bool textured);
     
-    void setGLProgramState(GLProgramState* glProgramState);
     
     MeshCommand& getMeshCommand() { return _meshCommand; }
 
