@@ -108,6 +108,7 @@ public:
     
     /*BPC PATCH*/
     bool getIsTransparent() const {return _isTransparent;}
+    void setGLProgramState(GLProgramState* glProgramState);
     /*END BPC PATCH*/
 
 CC_CONSTRUCTOR_ACCESS:
