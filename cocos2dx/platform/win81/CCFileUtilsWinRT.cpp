@@ -141,7 +141,7 @@ bool CCFileUtilsWinRT::isAbsolutePath(const std::string& strPath)
     return false;
 }
 
-string CCFileUtilsWinRT::getWritablePath()
+string CCFileUtilsWinRT::getWriteablePath()
 {
 	auto localFolderPath = Windows::Storage::ApplicationData::Current->LocalFolder->Path;
 	return std::string(PlatformStringToString(localFolderPath)) + '\\';
@@ -172,6 +172,78 @@ void CCFileUtils::addSearchPath(const char* path_)
 	}
 
 	//m_searchPathArray.push_back(path);
+}
+
+const char* CCFileUtils::fullPathFromRelativePath(const char *pszRelativePath)
+{
+	return pszRelativePath;
+}
+
+const char* CCFileUtils::fullPathFromRelativeFile(const char *pszFilename, const char *pszRelativeFile)
+{
+	std::string relativeFile = pszRelativeFile;
+	CCString *pRet = new CCString();
+	pRet->autorelease();
+	pRet->m_sString = relativeFile.substr(0, relativeFile.rfind('/') + 1);
+	pRet->m_sString += pszFilename;
+	return pRet->m_sString.c_str();
+}
+
+
+unsigned char* CCFileUtils::getFileData(const char* pszFileName, const char* pszMode, unsigned long * pSize)
+{
+	unsigned char * pBuffer = NULL;
+	CCAssert(pszFileName != NULL && pSize != NULL && pszMode != NULL, "Invalid parameters.");
+	*pSize = 0;
+	do
+	{
+		// read the file from hardware
+		std::string fullPath = fullPathFromRelativePath(pszFileName); // TODO wrong?
+		FILE *fp = fopen(fullPath.c_str(), pszMode);
+		CC_BREAK_IF(!fp);
+
+		fseek(fp, 0, SEEK_END);
+		*pSize = ftell(fp);
+		fseek(fp, 0, SEEK_SET);
+		pBuffer = new unsigned char[*pSize];
+		*pSize = fread(pBuffer, sizeof(unsigned char), *pSize, fp);
+		fclose(fp);
+	} while (0);
+
+	if (!pBuffer)
+	{
+		std::string msg = "Get data from file(";
+		msg.append(pszFileName).append(") failed!");
+
+		CCLOG("%s", msg.c_str());
+	}
+	return pBuffer;
+}
+
+static bool s_bPopupNotify = true;
+
+void CCFileUtils::setPopupNotify(bool bNotify)
+{
+	s_bPopupNotify = bNotify;
+}
+
+bool CCFileUtils::isPopupNotify()
+{
+	return s_bPopupNotify;
+}
+
+void CCFileUtils::setResourceDirectory(const char *pszDirectoryName)
+{
+	m_obDirectory = pszDirectoryName;
+	if (m_obDirectory.size() > 0 && m_obDirectory[m_obDirectory.size() - 1] != '/')
+	{
+		m_obDirectory.append("/");
+	}
+}
+
+const char* CCFileUtils::getResourceDirectory()
+{
+	return m_obDirectory.c_str();
 }
 
 NS_CC_END
