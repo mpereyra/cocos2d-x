@@ -44,12 +44,14 @@ THE SOFTWARE.
 #include "shaders/CCGLProgram.h"
 #include "shaders/ccGLStateCache.h"
 #include "shaders/CCShaderCache.h"
-#ifdef ANDROID
+
+#if defined(ANDROID) || defined(_MSC_VER)
 #include "CCTextureATC.h"
 #include "CCTextureDXT.h"
 #include "CCDDS.h"
 #include "CCTextureASTC.h"
 #endif
+
 #if CC_ENABLE_CACHE_TEXTURE_DATA
     #include "CCTextureCache.h"
 #endif
@@ -644,8 +646,9 @@ void CCTexture2D::PVRImagesHavePremultipliedAlpha(bool haveAlphaPremultiplied)
     PVRHaveAlphaPremultiplied_ = haveAlphaPremultiplied;
 }
 
-#ifdef ANDROID
+
 // BPC PATCH START
+#if defined(ANDROID) || defined(_MSC_VER)
 bool CCTexture2D::initWithDXTFileAsync(CCTextureDXT * const dxt)
 {
     if(!dxt)
@@ -737,7 +740,6 @@ bool CCTexture2D::initWithASTCFileAsync(CCTextureASTC * const astc)
     
     return true;
 }
-
 // BPC PATCH START
 bool CCTexture2D::initWithDDSFile(const char* file)
 {
@@ -811,6 +813,7 @@ bool CCTexture2D::initWithDDSFile(const char* file)
     
     return bRet;
 }
+
 
 bool CCTexture2D::initWithASTCFile(const char* file)
 {

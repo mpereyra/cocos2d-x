@@ -246,4 +246,38 @@ const char* CCFileUtils::getResourceDirectory()
 	return m_obDirectory.c_str();
 }
 
+void CCFileUtils::purgeFileUtils()
+{
+	if (s_pFileUtils != NULL)
+	{
+		s_pFileUtils->purgeCachedEntries();
+	}
+
+	CC_SAFE_DELETE(s_pFileUtils);
+}
+
+void CCFileUtils::purgeCachedEntries(){
+
+}
+
+string CCFileUtils::getWriteablePath()
+{
+	assert(0); //not called; overidden above
+	return "";
+}
+
+CCDictionary* ccFileUtils_dictionaryWithContentsOfFileThreadSafe(const char *pFileName)
+{
+	assert(0); // DEPRECATED! Do not call.
+	CCDictionary* pRet = new CCDictionary();
+	return pRet;
+}
+
+CCArray* ccFileUtils_arrayWithContentsOfFileThreadSafe(const char* pFileName)
+{
+	assert(0); // DEPRECATED! Do not call.
+	CCArray* pRet = new CCArray();
+	return pRet;
+}
+
 NS_CC_END

@@ -209,4 +209,19 @@ void SimpleAudioEngine::setEffectsVolume(float volume)
     sharedAudioController()->SetSoundEffectVolume((volume<=0.0f)? 0.0f : volume);
 }
 
+// BPC PATCH START
+void SimpleAudioEngine::debugUsage() {
+	/*
+	int total = 0, nonEmptyBuffers = 0;
+	ALint result;
+	for (int i = 0; i < bufferTotal; i++) {
+		alGetBufferi(_buffers[i].bufferId, AL_SIZE, &result);
+		total += result;
+		if (result>0) nonEmptyBuffers++;
+	}
+	NSLog(@"Total sounds data: %.2fKB (%i/%i buffers used)", (float)total / 1024, nonEmptyBuffers, bufferTotal);
+	*/
+}
+// BPC PATCH END
+
 } // end of namespace CocosDenshion

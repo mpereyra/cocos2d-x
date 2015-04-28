@@ -153,12 +153,12 @@ public:
     bool initWithPVRTexture(class CCTexturePVR * const texture);
     bool initWithATCFileAsync(class CCTextureATC * const atc);
     bool initWithDXTFileAsync(class CCTextureDXT * const dxt);
-    bool initWithASTCFileAsync(class CCTextureASTC * const astc);
-    
-#ifdef ANDROID
+#if defined(ANDROID) || defined(_MSC_VER)
+	bool initWithASTCFileAsync(class CCTextureASTC * const astc);
+	bool initWithASTCFile(const char* file);
+
     //BPC PATCH
     bool initWithDDSFile(const char* file);
-    bool initWithASTCFile(const char* file);
 #endif
 
 
