@@ -876,8 +876,10 @@ const AABB& Sprite3D::getNodeToParentAABB() const {
         }
         
         // convert to parent space
-        _nodeToParentAABB.transform(getNodeToParentTransform());
-        _nodeToParentAABBDirty = false;
+        if (!_nodeToParentAABB.isEmpty()) {
+            _nodeToParentAABB.transform(getNodeToParentTransform());
+            _nodeToParentAABBDirty = false;
+        }
     }
     
     return _nodeToParentAABB;

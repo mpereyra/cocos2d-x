@@ -883,8 +883,10 @@ const AABB& Node::getNodeToParentAABB() const {
             }
         }
         
-        _nodeToParentAABB.transform(_transform);
-        _nodeToParentAABBDirty = false;
+        if (!_nodeToParentAABB.isEmpty()) {
+            _nodeToParentAABB.transform(_transform);
+            _nodeToParentAABBDirty = false;
+        }
     }
     
     return _nodeToParentAABB;
