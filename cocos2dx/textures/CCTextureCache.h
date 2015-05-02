@@ -204,7 +204,7 @@ public:
 #endif // CC_SUPPORT_PVRTC
     
     // BPC PATCH
-#ifdef ANDROID
+#if defined(ANDROID) || defined(_MSC_VER)
 	CCTexture2D* addDDSImage(const char* filename);
     CCTexture2D* addASTCImage(const char* filename);
 #endif

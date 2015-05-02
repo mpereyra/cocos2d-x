@@ -888,7 +888,7 @@ CCTexture2D * CCTextureCache::addImage(const char * path)
 				texture = this->addPVRImage(fullpath.c_str());
 			}
             //BPC PATCH
-#ifdef ANDROID
+#if defined(ANDROID) || defined(_MSC_VER)
             else if(std::string::npos != lowerCase.find(".dds"))
             {
                 texture = this->addDDSImage(fullpath.c_str());
@@ -1027,7 +1027,7 @@ CCTexture2D * CCTextureCache::addPVRImage(const char* path)
     return texture;
 }
 
-#ifdef ANDROID
+#if defined(ANDROID) || defined(_MSC_VER)
 // BPC PATCH START
 CCTexture2D * CCTextureCache::addDDSImage(const char* path)
 {
@@ -1035,7 +1035,7 @@ CCTexture2D * CCTextureCache::addDDSImage(const char* path)
 	CCTexture2D * tex;
 	std::string key(path);
     // remove possible -HD suffix to prevent caching the same image twice (issue #1040)
-    CCFileUtils::sharedFileUtils()->ccRemoveHDSuffixFromFile(key);
+    //CCFileUtils::sharedFileUtils()->ccRemoveHDSuffixFromFile(key);
     
 	if( (tex = (CCTexture2D*)m_pTextures->objectForKey(key)) )
 	{

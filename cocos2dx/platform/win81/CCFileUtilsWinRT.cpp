@@ -266,18 +266,5 @@ string CCFileUtils::getWriteablePath()
 	return "";
 }
 
-CCDictionary* ccFileUtils_dictionaryWithContentsOfFileThreadSafe(const char *pFileName)
-{
-	assert(0); // DEPRECATED! Do not call.
-	CCDictionary* pRet = new CCDictionary();
-	return pRet;
-}
-
-CCArray* ccFileUtils_arrayWithContentsOfFileThreadSafe(const char* pFileName)
-{
-	assert(0); // DEPRECATED! Do not call.
-	CCArray* pRet = new CCArray();
-	return pRet;
-}
 
 NS_CC_END
