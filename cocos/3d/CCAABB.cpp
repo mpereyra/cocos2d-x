@@ -156,6 +156,10 @@ void AABB::updateMinMax(const Vec3* point, ssize_t num)
 
 void AABB::transform(const Mat4& mat)
 {
+    // BPC PATCH BEGIN
+    assert(!isEmpty()); // if we transform an empty bounding box we're in real trouble
+    // BPC PATCH END
+    
     Vec3 corners[8];
 	 // Near face, specified counter-clockwise
     // Left-top-front.
