@@ -56,7 +56,7 @@ int CCApplication::run()
 	update_time = time2millis(&time_struct);
 
     // XXX: Set to 1FPS while debugging
-    emscripten_set_main_loop(&mainLoopIter, 0, 1);
+    emscripten_set_main_loop(&mainLoopIter, 30, 1);
 	
 	return -1;
 }
