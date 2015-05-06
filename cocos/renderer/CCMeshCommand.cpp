@@ -174,6 +174,7 @@ void MeshCommand::setTransparent(bool value)
     //Skip batching for transparent mesh
     _skipBatching = value;
     
+    _forceDepthWrite = false;
     if (_isTransparent && !_forceDepthWrite)
     {
         _depthWriteEnabled = false;

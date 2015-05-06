@@ -107,6 +107,7 @@ public:
     const AABB& getAABB() const { return _aabb; }
     
     /*BPC PATCH*/
+    void setIsTransparent(bool transparent) { _isTransparent = transparent;}
     bool getIsTransparent() const {return _isTransparent;}
     void setGLProgramState(GLProgramState* glProgramState);
     /*END BPC PATCH*/
