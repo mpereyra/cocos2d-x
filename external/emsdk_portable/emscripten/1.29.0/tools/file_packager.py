@@ -620,7 +620,7 @@ if has_preloaded:
             num++;
           }
           total = Math.ceil(total * Module.expectedDataFileDownloads/num);
-          if (Module['setStatus']) Module['setStatus']('Downloading data... (' + loaded + '/' + total + ')');
+          if (Module['setStatus']) Module['setStatus']('Downloading data... (' + loaded/10 + '/' + total + ')');
         } else if (!Module.dataFileDownloads) {
           if (Module['setStatus']) Module['setStatus']('Downloading data...');
         }
