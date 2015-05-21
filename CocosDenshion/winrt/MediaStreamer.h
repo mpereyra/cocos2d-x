@@ -16,6 +16,7 @@ private:
     Windows::Storage::StorageFolder^    m_installedLocation;
     Platform::String^                   m_installedLocationPath;
 
+    bool m_calledStartup{false};
 public:
     Microsoft::WRL::ComPtr<IMFSourceReader> m_reader;
     Microsoft::WRL::ComPtr<IMFMediaType> m_audioType;

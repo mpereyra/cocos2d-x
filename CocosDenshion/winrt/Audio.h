@@ -9,6 +9,7 @@
 
 #include "pch.h"
 #include <map>
+#include "MusicStreamer.h"
 
 static const int STREAMING_BUFFER_SIZE = 65536;
 static const int MAX_BUFFER_COUNT = 3;
@@ -91,12 +92,14 @@ private:
     std::string                 m_backgroundFile;
     bool                        m_backgroundLoop;
 
-    float                       m_soundEffctVolume;
-    float                       m_backgroundMusicVolume;
+    float                       m_soundEffctVolume{0};
+    float                       m_backgroundMusicVolume{0};
 
-    bool                        m_engineExperiencedCriticalError;
+    bool                        m_engineExperiencedCriticalError{false};
     AudioEngineCallbacks        m_musicEngineCallback;
     AudioEngineCallbacks        m_soundEffectEngineCallback;
+
+    std::shared_ptr<MusicStreamer> m_musicStreamer;
 
     unsigned int Hash(const char* key);
 

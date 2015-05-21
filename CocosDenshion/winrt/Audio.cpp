@@ -144,6 +144,8 @@ unsigned int Audio::Hash(const char *key)
 
 void Audio::ReleaseResources()
 {
+    m_musicStreamer.reset();
+
 	if (m_musicMasteringVoice != nullptr) 
     {
         m_musicMasteringVoice->DestroyVoice();
@@ -165,6 +167,9 @@ void Audio::ReleaseResources()
         }
 	}
     m_soundEffects.clear();
+
+    m_musicEngine->Release();
+    m_soundEffectEngine->Release();
 
     m_musicEngine = nullptr;
     m_soundEffectEngine = nullptr;
@@ -209,8 +214,7 @@ void Audio::PlayBackgroundMusic(const char* pszFilePath, bool bLoop)
         return;
     }
 
-    StopBackgroundMusic(true);
-    PlaySoundEffect(pszFilePath, bLoop, m_backgroundID, true);
+    m_musicStreamer = std::make_shared<MusicStreamer>(CCUtf8ToUnicode(m_backgroundFile.c_str(), -1).c_str(), m_musicEngine, m_musicMasteringVoice, m_backgroundMusicVolume);
 }
 
 void Audio::StopBackgroundMusic(bool bReleaseData)
@@ -219,10 +223,9 @@ void Audio::StopBackgroundMusic(bool bReleaseData)
         return;
     }
 
-    StopSoundEffect(m_backgroundID);
+    m_musicStreamer->stopMusic();
+    m_musicStreamer.reset();
 
-    if (bReleaseData)
-        UnloadSoundEffect(m_backgroundID);
 }
 
 void Audio::PauseBackgroundMusic()
@@ -231,7 +234,8 @@ void Audio::PauseBackgroundMusic()
         return;
     }
 
-    PauseSoundEffect(m_backgroundID);
+    if(m_musicStreamer != nullptr)
+        m_musicStreamer->pauseMusic();
 }
 
 void Audio::ResumeBackgroundMusic()
@@ -240,7 +244,8 @@ void Audio::ResumeBackgroundMusic()
         return;
     }
 
-    ResumeSoundEffect(m_backgroundID);
+    if(m_musicStreamer != nullptr)
+        m_musicStreamer->resumeMusic();
 }
 
 void Audio::RewindBackgroundMusic()
@@ -265,10 +270,8 @@ void Audio::SetBackgroundVolume(float volume)
         return;
     }
 
-    if (m_soundEffects.end() != m_soundEffects.find(m_backgroundID))
-    {
-        m_soundEffects[m_backgroundID].m_soundEffectSourceVoice->SetVolume(volume);
-    }
+    if(m_musicStreamer != nullptr)
+        m_musicStreamer->setMusicVolume(volume);
 }
 
 float Audio::GetBackgroundVolume()
@@ -472,16 +475,6 @@ void Audio::PreloadSoundEffect(const char* pszFilePath, bool isMusic)
     }
 
     std::string path(pszFilePath);
-
-    // no MP3 support for CC_PLATFORM_WP8
-#if 0      // TODO,JANI: just testing what happens...
-	std::string::size_type pos = path.find(".mp3");
-    if (pos != path.npos)
-    {
-        path.replace(pos, path.length(), ".wav");
-    }
-#endif
-
     int sound = Hash(pszFilePath);
 
 	if (m_soundEffects.end() != m_soundEffects.find(sound))

@@ -32,6 +32,8 @@ MediaStreamer::MediaStreamer()
 
 MediaStreamer::~MediaStreamer()
 {
+    if(m_calledStartup)
+        MFShutdown();
 }
 
 extern bool windows_is_low_memory_device;
@@ -44,6 +46,7 @@ void MediaStreamer::Initialize(__in const WCHAR* url)
     ThrowIfFailed(
         MFStartup(MF_VERSION)
         );
+    m_calledStartup = true;
 
 	WCHAR filePath[MAX_PATH] = {0};
 	if ((wcslen(url) > 1 && url[1] == ':'))
