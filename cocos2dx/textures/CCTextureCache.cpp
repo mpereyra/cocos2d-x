@@ -157,12 +157,6 @@ static CCImage::EImageFormat computeImageFormatType(string& filename)
 	{
 		ret = CCImage::kFmtTiff;
 	}
-#if (CC_TARGET_PLATFORM != CC_PLATFORM_WINRT) && (CC_TARGET_PLATFORM != CC_PLATFORM_WP8)
-	else if ((std::string::npos != filename.find(".webp")) || (std::string::npos != filename.find(".WEBP")))
-	{
-		ret = CCImage::kFmtWebp;
-	}
-#endif
 
 	return ret;
 }

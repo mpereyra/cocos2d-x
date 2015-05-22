@@ -283,6 +283,8 @@
 		1551A872158F2ADF00E66CFE /* CCTouchHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 1551A627158F2ADE00E66CFE /* CCTouchHandler.h */; };
 		1551A874158F2B4700E66CFE /* cocos2dx-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 1551A873158F2B4700E66CFE /* cocos2dx-Prefix.pch */; };
 		2628297A15EC7064002C4240 /* ccTypeInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 2628297915EC7064002C4240 /* ccTypeInfo.h */; };
+		BCA464D11B0F909600C5F0D4 /* tinyxml2.h in Headers */ = {isa = PBXBuildFile; fileRef = BC99B7DA1B0F8883008A2532 /* tinyxml2.h */; };
+		BCA464D21B0F911500C5F0D4 /* tinyxml2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BC99B7D91B0F8883008A2532 /* tinyxml2.cpp */; };
 		D29C32A616A7542B00C873BD /* CCTextureATC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D29C32A416A7542B00C873BD /* CCTextureATC.cpp */; };
 		D29C32A716A7542B00C873BD /* CCTextureATC.h in Headers */ = {isa = PBXBuildFile; fileRef = D29C32A516A7542B00C873BD /* CCTextureATC.h */; };
 		D29C32AB16A7561100C873BD /* CCDDS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D29C32A916A7561100C873BD /* CCDDS.cpp */; };
@@ -575,6 +577,8 @@
 		1551A627158F2ADE00E66CFE /* CCTouchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCTouchHandler.h; sourceTree = "<group>"; };
 		1551A873158F2B4700E66CFE /* cocos2dx-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "cocos2dx-Prefix.pch"; sourceTree = "<group>"; };
 		2628297915EC7064002C4240 /* ccTypeInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ccTypeInfo.h; sourceTree = "<group>"; };
+		BC99B7D91B0F8883008A2532 /* tinyxml2.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxml2.cpp; sourceTree = "<group>"; };
+		BC99B7DA1B0F8883008A2532 /* tinyxml2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tinyxml2.h; sourceTree = "<group>"; };
 		D29C32A416A7542B00C873BD /* CCTextureATC.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCTextureATC.cpp; sourceTree = "<group>"; };
 		D29C32A516A7542B00C873BD /* CCTextureATC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCTextureATC.h; sourceTree = "<group>"; };
 		D29C32A916A7561100C873BD /* CCDDS.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCDDS.cpp; sourceTree = "<group>"; };
@@ -1058,6 +1062,7 @@
 				1551A5F3158F2ADE00E66CFE /* CCVertex.h */,
 				1551A5F4158F2ADE00E66CFE /* data_support */,
 				1551A5F9158F2ADE00E66CFE /* image_support */,
+				BC99B7D81B0F8882008A2532 /* tinyxml2 */,
 				1551A5FC158F2ADE00E66CFE /* TransformUtils.cpp */,
 				1551A5FD158F2ADE00E66CFE /* TransformUtils.h */,
 				1551A5FE158F2ADE00E66CFE /* zip_support */,
@@ -1164,6 +1169,15 @@
 				1551A627158F2ADE00E66CFE /* CCTouchHandler.h */,
 			);
 			path = touch_dispatcher;
+			sourceTree = "<group>";
+		};
+		BC99B7D81B0F8882008A2532 /* tinyxml2 */ = {
+			isa = PBXGroup;
+			children = (
+				BC99B7D91B0F8883008A2532 /* tinyxml2.cpp */,
+				BC99B7DA1B0F8883008A2532 /* tinyxml2.h */,
+			);
+			path = tinyxml2;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1309,6 +1323,7 @@
 				1551A84F158F2ADF00E66CFE /* ioapi.h in Headers */,
 				1551A851158F2ADF00E66CFE /* unzip.h in Headers */,
 				1551A853158F2ADF00E66CFE /* ZipUtils.h in Headers */,
+				BCA464D11B0F909600C5F0D4 /* tinyxml2.h in Headers */,
 				1551A854158F2ADF00E66CFE /* CCIMEDelegate.h in Headers */,
 				1551A856158F2ADF00E66CFE /* CCIMEDispatcher.h in Headers */,
 				1551A858158F2ADF00E66CFE /* CCTextFieldTTF.h in Headers */,
@@ -1448,6 +1463,7 @@
 				1551A6EB158F2ADE00E66CFE /* CCMotionStreak.cpp in Sources */,
 				1551A6ED158F2ADE00E66CFE /* CCProgressTimer.cpp in Sources */,
 				1551A6EF158F2ADE00E66CFE /* CCRenderTexture.cpp in Sources */,
+				BCA464D21B0F911500C5F0D4 /* tinyxml2.cpp in Sources */,
 				1551A6F1158F2ADE00E66CFE /* CCParticleBatchNode.cpp in Sources */,
 				1551A6F3158F2ADE00E66CFE /* CCParticleExamples.cpp in Sources */,
 				1551A6F5158F2ADE00E66CFE /* CCParticleSystem.cpp in Sources */,

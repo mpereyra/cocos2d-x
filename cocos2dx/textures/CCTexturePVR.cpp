@@ -289,8 +289,8 @@ bool CCTexturePVR::unpackPVRData(unsigned char* data, unsigned int len)
                 dataOffset += packetLength;
                 
                 //Update width and height to the next lower power of two 
-                width = MAX(width >> 1, unsigned int(1));
-				height = MAX(height >> 1, unsigned int(1));
+                width = MAX(width >> 1, (unsigned int)(1));
+				height = MAX(height >> 1, (unsigned int)(1));
             }
             
             //Mark pass as success
@@ -381,8 +381,8 @@ bool CCTexturePVR::createGLTexture()
 			return false;
 		}
         
-		width = MAX(width >> 1, unsigned int(1));
-		height = MAX(height >> 1, unsigned int(1));
+		width = MAX(width >> 1, (unsigned int)(1));
+		height = MAX(height >> 1, (unsigned int)(1));
     }
         
     return true;
