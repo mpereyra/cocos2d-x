@@ -129,13 +129,24 @@ void TextureCache::addImageAsync(const std::string &path, const std::function<vo
     }
 
     ++_asyncRefCount;
+    
+    _asyncStructQueueMutex.lock();
+    auto structIt(_asyncStructQueue->begin());
+    while(structIt != _asyncStructQueue->end()){
+        if((*structIt)->filename == fullpath){
+            (*structIt)->addRequestor(target, callback);
+            break;
+        }else{
+            ++structIt;
+        }
+    }
 
     // generate async struct
-    AsyncStruct *data = new (std::nothrow) AsyncStruct(fullpath, callback, target);
-
-    // add async struct into queue
-    _asyncStructQueueMutex.lock();
-    _asyncStructQueue->push_back(data);
+    if(structIt == _asyncStructQueue->end()){
+        AsyncStruct *data = new (std::nothrow) AsyncStruct(fullpath, callback, target);
+        // add async struct into queue
+        _asyncStructQueue->push_back(data);
+    }
     _asyncStructQueueMutex.unlock();
 
     _sleepCondition.notify_one();
@@ -150,7 +161,10 @@ void TextureCache::unbindImageAsync(const std::string& filename)
         auto found = std::find_if(_imageInfoQueue->begin(), _imageInfoQueue->end(), [&fullpath](ImageInfo* ptr)->bool{ return ptr->asyncStruct->filename == fullpath; });
         if (found != _imageInfoQueue->end())
         {
-            (*found)->asyncStruct->callback = nullptr;
+            for(auto pair : (*found)->asyncStruct->requestorToCallbacks){
+                pair.first->release();
+            }
+            (*found)->asyncStruct->requestorToCallbacks.clear();
         }
     }
     _imageInfoMutex.unlock();
@@ -161,7 +175,13 @@ void TextureCache::unbindAllImageAsync()
     _imageInfoMutex.lock();
     if (_imageInfoQueue && !_imageInfoQueue->empty())
     {
-        std::for_each(_imageInfoQueue->begin(), _imageInfoQueue->end(), [](ImageInfo* ptr) { ptr->asyncStruct->callback = nullptr; });
+        std::for_each(_imageInfoQueue->begin(), _imageInfoQueue->end(),
+              [](ImageInfo* ptr) {
+                    for(auto pair : ptr->asyncStruct->requestorToCallbacks){
+                        pair.first->release();
+                    }
+                  ptr->asyncStruct->requestorToCallbacks.clear();
+              });
     }
     _imageInfoMutex.unlock();
 }
@@ -293,9 +313,10 @@ void TextureCache::addImageAsyncCallBack(float dt)
                 texture = it->second;
         }
         
-        if (asyncStruct->callback)
-        {
-            asyncStruct->callback(texture);
+        for(auto pair : asyncStruct->requestorToCallbacks){
+            if(pair.second){
+                pair.second(texture);
+            }
         }
         
         if(image)
@@ -501,14 +522,21 @@ void TextureCache::removeTextureForKey(const std::string &textureKeyName)
     }
 }
 
-void TextureCache::removeAsyncImage(Ref * const target)
+void TextureCache::removeAsyncImage(Ref * const target, string const & filename)
 {
+    auto key = FileUtils::getInstance()->fullPathForFilename(filename);
+    if(_asyncStructQueue == nullptr) return;
     _asyncStructQueueMutex.lock();
+    
     auto structIt(_asyncStructQueue->begin());
     while (structIt != _asyncStructQueue->end()) {
-        if((*structIt)->target == target) {
-            delete (*structIt);
-            structIt = _asyncStructQueue->erase(structIt);
+        if((*structIt)->filename == filename) {
+            (*structIt)->removeRequestor(target);
+            if((*structIt)->requestorToCallbacks.empty()){
+                delete (*structIt);
+                structIt = _asyncStructQueue->erase(structIt);
+            }
+            break;
         }
         else {
             ++structIt;
@@ -519,10 +547,13 @@ void TextureCache::removeAsyncImage(Ref * const target)
     _imageInfoMutex.lock();
     auto infoIt(_imageInfoQueue->begin());
     while (infoIt != _imageInfoQueue->end()) {
-        if((*infoIt)->asyncStruct->target == target) {
-            delete (*infoIt)->asyncStruct;
-            delete (*infoIt);
-            infoIt = _imageInfoQueue->erase(infoIt);
+        if((*infoIt)->asyncStruct->filename == filename) {
+                if( (*infoIt)->asyncStruct->requestorToCallbacks.empty()){
+                delete (*infoIt)->asyncStruct;
+                delete (*infoIt);
+                infoIt = _imageInfoQueue->erase(infoIt);
+            }
+            break;
         }
         else {
             ++infoIt;

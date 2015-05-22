@@ -225,24 +225,42 @@ public:
     struct AsyncStruct
     {
     public:
-        AsyncStruct(const std::string& fn, std::function<void(Texture2D*)> f, Ref * const targ) : filename(fn), callback(f), target(targ) {
-            if(target)
-                target->retain();
+        using loadedCallback = std::function< void (Texture2D*)>;
+        std::string filename;
+        std::vector<std::pair<Ref * , loadedCallback>> requestorToCallbacks;
+        
+        AsyncStruct(const std::string& fn, std::function<void(Texture2D*)> f, Ref * const targ) : filename(fn){
+            if(targ){
+                targ->retain();
+            }
+            requestorToCallbacks.push_back({targ,f});
         }
         
         ~AsyncStruct() {
-            if(target)
-                target->release();
+            for(auto pair : requestorToCallbacks){
+                if(pair.first){
+                    pair.first->release();
+                }
+            }
         }
 
-        std::string filename;
-        std::function<void(Texture2D*)> callback;
-        Ref * const target {nullptr};
+        
+        void addRequestor(Ref * requestor, loadedCallback f){
+            requestor->retain();
+            requestorToCallbacks.push_back({requestor, f});
+        }
+        void removeRequestor(Ref * requestor){
+            requestorToCallbacks.erase(remove_if(requestorToCallbacks.begin(), requestorToCallbacks.end(), [=](std::pair<Ref* const, loadedCallback> pair){
+                return pair.first == requestor;
+            }), requestorToCallbacks.end());
+        }
+        //std::function<void(Texture2D*)> callback;
+        //Ref * const target {nullptr};
     };
     
     /*** BPC Patch ***
      * Removes an asynchronous request for an image, should the target no longer care about it. */
-    void removeAsyncImage(Ref * const target);
+    void removeAsyncImage(Ref * const target, std::string const & filename);
     
     static void removeAllAsyncImages();
     
