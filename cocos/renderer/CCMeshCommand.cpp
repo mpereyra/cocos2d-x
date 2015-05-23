@@ -280,6 +280,16 @@ void MeshCommand::preBatchDraw()
 }
 void MeshCommand::batchDraw()
 {
+// BPC PATCH BEGIN
+    bool clippingWasEnabled = glIsEnabled(GL_SCISSOR_TEST);
+    if (m_shouldClip) {
+        if (!clippingWasEnabled) {
+            glEnable(GL_SCISSOR_TEST);
+        }
+        cocos2d::Director::getInstance()->getOpenGLView()->setScissorInPoints(m_glBounds.origin.x, m_glBounds.origin.y,
+                                                                              m_glBounds.size.width, m_glBounds.size.height);
+    }
+// BPC PATCH END
     // set render state
     applyRenderState();
     
@@ -301,6 +311,11 @@ void MeshCommand::batchDraw()
     glDrawElements(_primitive, (GLsizei)_indexCount, _indexFormat, 0);
     
     CC_INCREMENT_GL_DRAWN_BATCHES_AND_VERTICES(1, _indexCount);
+// MOAOAR BPC PATCH BEGIN
+    if (m_shouldClip && !clippingWasEnabled) {
+        glDisable(GL_SCISSOR_TEST);
+    }
+// BPC PATCH END
 }
 void MeshCommand::postBatchDraw()
 {
@@ -315,10 +330,31 @@ void MeshCommand::postBatchDraw()
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
+
+}
+
+// BPC PATCH ARRRRRGH
+void MeshCommand::setShouldClip(bool shouldClip) {
+    m_shouldClip = shouldClip;
+}
+
+void MeshCommand::setGlBounds(Rect glBounds) {
+    m_glBounds = glBounds;
 }
 
 void MeshCommand::execute()
 {
+// BPC PATCH ALL THE THINGS
+    bool clippingWasEnabled = glIsEnabled(GL_SCISSOR_TEST);
+    if (m_shouldClip) {
+        if (!clippingWasEnabled) {
+            glEnable(GL_SCISSOR_TEST);
+        }
+        cocos2d::Director::getInstance()->getOpenGLView()->setScissorInPoints(m_glBounds.origin.x, m_glBounds.origin.y,
+                                                                              m_glBounds.size.width, m_glBounds.size.height);
+    }
+// BPC PATCH END
+    
     // set render state
     applyRenderState();
     // Set material
@@ -350,6 +386,12 @@ void MeshCommand::execute()
     restoreRenderState();
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+// MOAR BPC PATCH BEGIN
+    if (m_shouldClip && !clippingWasEnabled) {
+        glDisable(GL_SCISSOR_TEST);
+    }
+// BPC PATCH END
 }
 
 void MeshCommand::buildVAO()

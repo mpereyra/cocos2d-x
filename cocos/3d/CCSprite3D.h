@@ -238,6 +238,8 @@ protected:
 
 // BPC PATCH BEGIN
     bool                         _retainSkeleton {false}; // Don't change skeelton when loading new model
+    bool                         _shouldClip{false}; // argh
+    Rect                         _clippingRect{0,0,0,0}; // nonsense
 // BPC PATCH END
     
     struct AsyncLoadParam

@@ -770,6 +770,14 @@ void Sprite3D::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
         meshCommand.init(globalZ, textureID, programstate, _blend, mesh->getVertexBuffer(), mesh->getIndexBuffer(), mesh->getPrimitiveType(), mesh->getIndexFormat(), mesh->getIndexCount(), transform, flags);
         
         meshCommand.setLightMask(_lightMask);
+        
+// BPC PATCH BEGIN
+        // BRING ME THE EPIDERMAL TISSUE DISRUPTER
+        meshCommand.setShouldClip(_shouldClip);
+        if (_shouldClip) {
+            meshCommand.setGlBounds(_clippingRect);
+        }
+// BPC PATCH END
 
         auto skin = mesh->getSkin();
         if (skin)

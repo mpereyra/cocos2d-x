@@ -68,6 +68,11 @@ public:
     
     void setTransparent(bool value);
     
+// BPC PATCH BEGIN
+    void setShouldClip(bool shouldClip);
+    void setGlBounds(Rect glBounds);
+// BPC PATCH END
+    
     void execute();
     
     //used for bath
@@ -84,6 +89,11 @@ public:
 #endif
 
 protected:
+// THE WORST BPC PATCH BEGINS
+    bool m_shouldClip{false};
+    Rect m_glBounds{0, 0, 0, 0};
+// BPC PATCH THANK GOD IT'S OVER
+    
     //build & release vao
     void buildVAO();
     void releaseVAO();
