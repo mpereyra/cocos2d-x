@@ -224,7 +224,7 @@ THE SOFTWARE.
 #include "support/CCNotificationCenter.h"
 #include "support/CCPointExtension.h"
 #include "support/CCProfiling.h"
-#include "support/CCUserDefault.h"
+#include "support/user_default/CCUserDefault.h"
 #include "support/CCVertex.h"
 
 // text_input_node

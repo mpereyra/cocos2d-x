@@ -230,8 +230,6 @@
 		1551A83D158F2ADF00E66CFE /* CCPointExtension.h in Headers */ = {isa = PBXBuildFile; fileRef = 1551A5EB158F2ADE00E66CFE /* CCPointExtension.h */; };
 		1551A83E158F2ADF00E66CFE /* CCProfiling.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1551A5EC158F2ADE00E66CFE /* CCProfiling.cpp */; };
 		1551A83F158F2ADF00E66CFE /* CCProfiling.h in Headers */ = {isa = PBXBuildFile; fileRef = 1551A5ED158F2ADE00E66CFE /* CCProfiling.h */; };
-		1551A840158F2ADF00E66CFE /* CCUserDefault.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1551A5EE158F2ADE00E66CFE /* CCUserDefault.cpp */; };
-		1551A841158F2ADF00E66CFE /* CCUserDefault.h in Headers */ = {isa = PBXBuildFile; fileRef = 1551A5EF158F2ADE00E66CFE /* CCUserDefault.h */; };
 		1551A842158F2ADF00E66CFE /* ccUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1551A5F0158F2ADE00E66CFE /* ccUtils.cpp */; };
 		1551A843158F2ADF00E66CFE /* ccUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 1551A5F1158F2ADE00E66CFE /* ccUtils.h */; };
 		1551A844158F2ADF00E66CFE /* CCVertex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1551A5F2158F2ADE00E66CFE /* CCVertex.cpp */; };
@@ -285,6 +283,8 @@
 		2628297A15EC7064002C4240 /* ccTypeInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 2628297915EC7064002C4240 /* ccTypeInfo.h */; };
 		BCA464D11B0F909600C5F0D4 /* tinyxml2.h in Headers */ = {isa = PBXBuildFile; fileRef = BC99B7DA1B0F8883008A2532 /* tinyxml2.h */; };
 		BCA464D21B0F911500C5F0D4 /* tinyxml2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = BC99B7D91B0F8883008A2532 /* tinyxml2.cpp */; };
+		BCA465011B14D23B00C5F0D4 /* CCUserDefault.h in Headers */ = {isa = PBXBuildFile; fileRef = BCA464F61B0FEB0300C5F0D4 /* CCUserDefault.h */; };
+		BCA465021B14D25C00C5F0D4 /* CCUserDefault.mm in Sources */ = {isa = PBXBuildFile; fileRef = BCA464F71B0FEB0300C5F0D4 /* CCUserDefault.mm */; };
 		D29C32A616A7542B00C873BD /* CCTextureATC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D29C32A416A7542B00C873BD /* CCTextureATC.cpp */; };
 		D29C32A716A7542B00C873BD /* CCTextureATC.h in Headers */ = {isa = PBXBuildFile; fileRef = D29C32A516A7542B00C873BD /* CCTextureATC.h */; };
 		D29C32AB16A7561100C873BD /* CCDDS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D29C32A916A7561100C873BD /* CCDDS.cpp */; };
@@ -524,8 +524,6 @@
 		1551A5EB158F2ADE00E66CFE /* CCPointExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCPointExtension.h; sourceTree = "<group>"; };
 		1551A5EC158F2ADE00E66CFE /* CCProfiling.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCProfiling.cpp; sourceTree = "<group>"; };
 		1551A5ED158F2ADE00E66CFE /* CCProfiling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCProfiling.h; sourceTree = "<group>"; };
-		1551A5EE158F2ADE00E66CFE /* CCUserDefault.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCUserDefault.cpp; sourceTree = "<group>"; };
-		1551A5EF158F2ADE00E66CFE /* CCUserDefault.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCUserDefault.h; sourceTree = "<group>"; };
 		1551A5F0158F2ADE00E66CFE /* ccUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ccUtils.cpp; sourceTree = "<group>"; };
 		1551A5F1158F2ADE00E66CFE /* ccUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ccUtils.h; sourceTree = "<group>"; };
 		1551A5F2158F2ADE00E66CFE /* CCVertex.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCVertex.cpp; sourceTree = "<group>"; };
@@ -579,6 +577,10 @@
 		2628297915EC7064002C4240 /* ccTypeInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ccTypeInfo.h; sourceTree = "<group>"; };
 		BC99B7D91B0F8883008A2532 /* tinyxml2.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = tinyxml2.cpp; sourceTree = "<group>"; };
 		BC99B7DA1B0F8883008A2532 /* tinyxml2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = tinyxml2.h; sourceTree = "<group>"; };
+		BCA464F51B0FEB0300C5F0D4 /* CCUserDefault.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CCUserDefault.cpp; sourceTree = "<group>"; };
+		BCA464F61B0FEB0300C5F0D4 /* CCUserDefault.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CCUserDefault.h; sourceTree = "<group>"; };
+		BCA464F71B0FEB0300C5F0D4 /* CCUserDefault.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CCUserDefault.mm; sourceTree = "<group>"; };
+		BCA464F81B0FEB0300C5F0D4 /* CCUserDefaultAndroid.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CCUserDefaultAndroid.cpp; sourceTree = "<group>"; };
 		D29C32A416A7542B00C873BD /* CCTextureATC.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCTextureATC.cpp; sourceTree = "<group>"; };
 		D29C32A516A7542B00C873BD /* CCTextureATC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCTextureATC.h; sourceTree = "<group>"; };
 		D29C32A916A7561100C873BD /* CCDDS.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCDDS.cpp; sourceTree = "<group>"; };
@@ -1054,8 +1056,6 @@
 				1551A5EB158F2ADE00E66CFE /* CCPointExtension.h */,
 				1551A5EC158F2ADE00E66CFE /* CCProfiling.cpp */,
 				1551A5ED158F2ADE00E66CFE /* CCProfiling.h */,
-				1551A5EE158F2ADE00E66CFE /* CCUserDefault.cpp */,
-				1551A5EF158F2ADE00E66CFE /* CCUserDefault.h */,
 				1551A5F0158F2ADE00E66CFE /* ccUtils.cpp */,
 				1551A5F1158F2ADE00E66CFE /* ccUtils.h */,
 				1551A5F2158F2ADE00E66CFE /* CCVertex.cpp */,
@@ -1063,6 +1063,7 @@
 				1551A5F4158F2ADE00E66CFE /* data_support */,
 				1551A5F9158F2ADE00E66CFE /* image_support */,
 				BC99B7D81B0F8882008A2532 /* tinyxml2 */,
+				BCA464F41B0FEB0300C5F0D4 /* user_default */,
 				1551A5FC158F2ADE00E66CFE /* TransformUtils.cpp */,
 				1551A5FD158F2ADE00E66CFE /* TransformUtils.h */,
 				1551A5FE158F2ADE00E66CFE /* zip_support */,
@@ -1178,6 +1179,17 @@
 				BC99B7DA1B0F8883008A2532 /* tinyxml2.h */,
 			);
 			path = tinyxml2;
+			sourceTree = "<group>";
+		};
+		BCA464F41B0FEB0300C5F0D4 /* user_default */ = {
+			isa = PBXGroup;
+			children = (
+				BCA464F51B0FEB0300C5F0D4 /* CCUserDefault.cpp */,
+				BCA464F61B0FEB0300C5F0D4 /* CCUserDefault.h */,
+				BCA464F71B0FEB0300C5F0D4 /* CCUserDefault.mm */,
+				BCA464F81B0FEB0300C5F0D4 /* CCUserDefaultAndroid.cpp */,
+			);
+			path = user_default;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1312,7 +1324,6 @@
 				1551A83B158F2ADF00E66CFE /* base64.h in Headers */,
 				1551A83D158F2ADF00E66CFE /* CCPointExtension.h in Headers */,
 				1551A83F158F2ADF00E66CFE /* CCProfiling.h in Headers */,
-				1551A841158F2ADF00E66CFE /* CCUserDefault.h in Headers */,
 				1551A843158F2ADF00E66CFE /* ccUtils.h in Headers */,
 				1551A845158F2ADF00E66CFE /* CCVertex.h in Headers */,
 				1551A847158F2ADF00E66CFE /* ccCArray.h in Headers */,
@@ -1348,6 +1359,7 @@
 				D29C32AC16A7561100C873BD /* CCDDS.h in Headers */,
 				D29C32B016A7571600C873BD /* CCTextureDXT.h in Headers */,
 				D3996C00196B619600B2F1BD /* CCTextureASTC.h in Headers */,
+				BCA465011B14D23B00C5F0D4 /* CCUserDefault.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1498,7 +1510,6 @@
 				1551A83A158F2ADF00E66CFE /* base64.cpp in Sources */,
 				1551A83C158F2ADF00E66CFE /* CCPointExtension.cpp in Sources */,
 				1551A83E158F2ADF00E66CFE /* CCProfiling.cpp in Sources */,
-				1551A840158F2ADF00E66CFE /* CCUserDefault.cpp in Sources */,
 				1551A842158F2ADF00E66CFE /* ccUtils.cpp in Sources */,
 				1551A844158F2ADF00E66CFE /* CCVertex.cpp in Sources */,
 				1551A846158F2ADF00E66CFE /* ccCArray.cpp in Sources */,
@@ -1527,6 +1538,7 @@
 				D29C32AB16A7561100C873BD /* CCDDS.cpp in Sources */,
 				D29C32AF16A7571600C873BD /* CCTextureDXT.cpp in Sources */,
 				D3996BFF196B619600B2F1BD /* CCTextureASTC.cpp in Sources */,
+				BCA465021B14D25C00C5F0D4 /* CCUserDefault.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
