@@ -398,7 +398,7 @@ void CCUserDefault::initXMLFilePath()
 {
     if (! m_sbIsFilePathInitialized)
     {
-        m_sFilePath += CCFileUtils::sharedFileUtils()->getWritablePath() + XML_FILE_NAME;
+        m_sFilePath += CCFileUtils::sharedFileUtils()->getWriteablePath() + XML_FILE_NAME;
         m_sbIsFilePathInitialized = true;
     }    
 }
