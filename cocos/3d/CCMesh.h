@@ -110,6 +110,7 @@ public:
     void setIsTransparent(bool transparent) { _isTransparent = transparent;}
     bool getIsTransparent() const {return _isTransparent;}
     void setGLProgramState(GLProgramState* glProgramState);
+    MeshCommand& getMeshCommand() { return _meshCommand; }
     /*END BPC PATCH*/
 
 CC_CONSTRUCTOR_ACCESS:
@@ -119,8 +120,6 @@ CC_CONSTRUCTOR_ACCESS:
     
     GLProgram* getDefaultGLProgram(bool textured);
     
-    
-    MeshCommand& getMeshCommand() { return _meshCommand; }
 
     /**skin setter*/
     void setSkin(MeshSkin* skin);
