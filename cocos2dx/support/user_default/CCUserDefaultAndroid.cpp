@@ -414,7 +414,7 @@ void CCUserDefault::initXMLFilePath()
     if (! m_sbIsFilePathInitialized)
     {
         // UserDefault.xml is stored in /data/data/<package-path>/ before v2.1.2
-        m_sFilePath += "/data/data/" + getPackageNameJNI() + "/" + XML_FILE_NAME;
+        m_sFilePath += "/data/data/" + string(getPackageNameJNI()) + "/" + XML_FILE_NAME;
         m_sbIsFilePathInitialized = true;
     }
 #endif

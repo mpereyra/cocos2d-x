@@ -28,10 +28,6 @@
 #include "CCPlatformDefine.h"
 #include "platform/CCPlatformConfig.h"
 
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
-#include "platform/android/CCFileUtilsAndroid.h"
-#endif
-
 namespace cocos2d
 {
     /* XXX: pragma pack ??? */
@@ -171,9 +167,6 @@ namespace cocos2d
     class ZipFile
     {
     public:
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
-        friend class CCFileUtilsAndroid;
-#endif
         
         /**
          * Constructor, open zip file and store file list.
