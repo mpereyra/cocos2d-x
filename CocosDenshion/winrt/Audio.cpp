@@ -223,9 +223,10 @@ void Audio::StopBackgroundMusic(bool bReleaseData)
         return;
     }
 
-    m_musicStreamer->stopMusic();
-    m_musicStreamer.reset();
-
+    if(m_musicStreamer != nullptr) {
+        m_musicStreamer->stopMusic();
+        m_musicStreamer.reset();
+    }
 }
 
 void Audio::PauseBackgroundMusic()
