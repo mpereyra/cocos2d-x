@@ -878,6 +878,12 @@ void Renderer::drawBatchedQuads()
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _quadbuffersVBO[1]);
     }
     
+#pragma mark TODO make this changeable at quad command level
+/** BPC PATCH BEGIN **/
+    bool oldDepthTest = _isDepthTestFor2D;
+    setDepthTest(false);
+/** BPC PATCH END **/
+    
     //Start drawing verties in batch
     for(const auto& cmd : _batchQuadCommands)
     {
@@ -924,6 +930,10 @@ void Renderer::drawBatchedQuads()
     
     _batchQuadCommands.clear();
     _numberQuads = 0;
+    
+/** BPC PATCH BEGIN **/
+    setDepthTest(oldDepthTest);
+/** BPC PATCH END **/
 }
 
 void Renderer::flush()
