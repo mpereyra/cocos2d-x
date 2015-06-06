@@ -38,6 +38,26 @@ struct Uniform;
 class EventListenerCustom;
 class EventCustom;
 
+
+//BPC PATCH
+struct StencilMaskOptions{
+    int m_stencilFunc {GL_ALWAYS};
+    int m_opFail {GL_KEEP};
+    int m_opDepthFail{GL_KEEP};
+    int m_opPass{GL_KEEP};
+    int m_ref {0};
+    
+    StencilMaskOptions(){}
+    StencilMaskOptions(int ref, int func, int opF, int opDF, int opP){
+        m_ref = ref;
+        m_stencilFunc = func;
+        m_opFail = opF;
+        m_opDepthFail = opDF;
+        m_opPass = opP;
+    }
+};
+//END BPC PATCH
+    
 //it is a common mesh
 class CC_DLL MeshCommand : public RenderCommand
 {
@@ -69,6 +89,8 @@ public:
     void setTransparent(bool value);
     
 // BPC PATCH BEGIN
+    void setStencilOptions(StencilMaskOptions  opts) {_stencilOptions = opts;}
+    void setStencilTestEnabled(bool value) {_stencilTestEnabled = value; }
     void setShouldClip(bool shouldClip);
     void setGlBounds(Rect glBounds);
 // BPC PATCH END
@@ -143,6 +165,12 @@ protected:
     bool _renderStateDepthTest;
     GLboolean _renderStateDepthWrite;
     GLenum    _renderStateCullFace;
+    
+    
+    //BPC PATCH
+    bool _stencilTestEnabled{false};
+    StencilMaskOptions _stencilOptions;
+    //END BPC PATCH
 
     // ModelView transform
     Mat4 _mv;
