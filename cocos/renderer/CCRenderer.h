@@ -52,13 +52,10 @@ public:
     {
         GLOBALZ_NEG = 0,
         OPAQUE_3D = 1,
-        /* BPC PATCH*/
-        OPAQUE_3D_BACKFRONT = 2,
-        /*END BPC PATCH*/
-        TRANSPARENT_3D = 3,
-        GLOBALZ_ZERO = 4,
-        GLOBALZ_POS = 5,
-        QUEUE_COUNT = 6,
+        TRANSPARENT_3D = 2,
+        GLOBALZ_ZERO = 3,
+        GLOBALZ_POS = 4,
+        QUEUE_COUNT = 5,
     };
 
 public:

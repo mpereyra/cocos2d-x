@@ -56,12 +56,6 @@ static bool compare3DCommand(RenderCommand* a, RenderCommand* b)
     return  a->getDepth() > b->getDepth();
 }
 
-/*BPC PATCH*/
-static bool compare3DBackFrontCommand(RenderCommand * a, RenderCommand* b){
-    return b->getDepth() > a->getDepth();
-}
-/*END BPC PATCH*/
-
 // queue
 
 void RenderQueue::push_back(RenderCommand* command)
@@ -73,14 +67,7 @@ void RenderQueue::push_back(RenderCommand* command)
     }
     else if(z > 0)
     {
-        /* BPC PATCH*/
-        if(z == 1){
-            _commands[QUEUE_GROUP::OPAQUE_3D_BACKFRONT].push_back(command);
-            
-        }else{
-            _commands[QUEUE_GROUP::GLOBALZ_POS].push_back(command);
-        }
-        /*END BPC PATCH*/
+        _commands[QUEUE_GROUP::GLOBALZ_POS].push_back(command);
     }
     else
     {
@@ -117,7 +104,6 @@ void RenderQueue::sort()
 {
     // Don't sort _queue0, it already comes sorted
     std::sort(std::begin(_commands[QUEUE_GROUP::TRANSPARENT_3D]), std::end(_commands[QUEUE_GROUP::TRANSPARENT_3D]), compare3DCommand);
-    std::sort(std::begin(_commands[QUEUE_GROUP::OPAQUE_3D_BACKFRONT]), std::end(_commands[QUEUE_GROUP::OPAQUE_3D_BACKFRONT]), compare3DCommand);
     std::sort(std::begin(_commands[QUEUE_GROUP::GLOBALZ_NEG]), std::end(_commands[QUEUE_GROUP::GLOBALZ_NEG]), compareRenderCommand);
     std::sort(std::begin(_commands[QUEUE_GROUP::GLOBALZ_POS]), std::end(_commands[QUEUE_GROUP::GLOBALZ_POS]), compareRenderCommand);
 }
@@ -577,24 +563,6 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
         }
         flush();
     }
-    
-    /*BPC PATCH*/
-    //process opaque back to front
-    
-    const auto& opaqueQueueBackToFront = queue.getSubQueue(RenderQueue::QUEUE_GROUP::OPAQUE_3D_BACKFRONT);
-    if (opaqueQueueBackToFront.size() > 0)
-    {
-        //Clear depth to achieve layered rendering
-        glDepthMask(true);
-        glEnable(GL_DEPTH_TEST);
-        
-        for (auto it = opaqueQueueBackToFront.cbegin(); it != opaqueQueueBackToFront.cend(); ++it)
-        {
-            processRenderCommand(*it);
-        }
-        flush();
-    }
-    /*END BPC PATCH*/
     
     //
     //Process Global-Z = 0 Queue
