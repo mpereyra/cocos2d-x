@@ -787,12 +787,14 @@ void Sprite3D::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
         }
         //support tint and fade
         meshCommand.setDisplayColor(Vec4(color.r, color.g, color.b, color.a));
-        if (_forceDepthWrite)
+        if (_forceDepthWrite && !isTransparent)
         {
             meshCommand.setDepthWriteEnabled(true);
         }
         meshCommand.setTransparent(isTransparent);
-        meshCommand.setCullFaceEnabled(!isTransparent);
+        /** BPC PATCH BEGIN **/ // we don't want to draw back faces of transparent objects, can refactor if required
+//        meshCommand.setCullFaceEnabled(!isTransparent);
+        /** BPC PATCH END **/
         meshCommand.setName(_name);
         renderer->addCommand(&meshCommand);
     }
