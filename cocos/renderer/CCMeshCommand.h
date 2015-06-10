@@ -70,6 +70,10 @@ public:
     
     CC_DEPRECATED_ATTRIBUTE void init(float globalZOrder, GLuint textureID, GLProgramState* glProgramState, BlendFunc blendType, GLuint vertexBuffer, GLuint indexBuffer, GLenum primitive, GLenum indexType, ssize_t indexCount, const Mat4 &mv);
     
+    /** BPC PATCH BEGIN **/
+    void setOffset(float factor, float units);
+    /** BPC PATCH END **/
+    
     void setCullFaceEnabled(bool enable);
     
     void setCullFace(GLenum cullFace);
@@ -115,6 +119,10 @@ protected:
     bool m_shouldClip{false};
     Rect m_glBounds{0, 0, 0, 0};
 // BPC PATCH THANK GOD IT'S OVER
+    
+/** BPC-PATCH BEGIN **/
+    std::pair<float, float> m_offset {0, 0};
+/** BPC-PATCH END **/
     
     //build & release vao
     void buildVAO();
@@ -165,6 +173,9 @@ protected:
     bool _renderStateDepthTest;
     GLboolean _renderStateDepthWrite;
     GLenum    _renderStateCullFace;
+    /** BPC-PATCH BEGIN **/
+    bool _renderStateOffset;
+    /** BPC-PATCH END **/
     
     
     //BPC PATCH

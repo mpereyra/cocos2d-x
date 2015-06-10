@@ -142,6 +142,13 @@ void MeshCommand::init(float globalOrder,
     init(globalOrder, textureID, glProgramState, blendType, vertexBuffer, indexBuffer, primitive, indexFormat, indexCount, mv, 0);
 }
 
+/** BPC PATCH BEGIN **/
+void MeshCommand::setOffset(float factor, float units)
+{
+    m_offset = {factor, units};
+}
+/** BPC PATCH END **/
+
 void MeshCommand::setCullFaceEnabled(bool enable)
 {
     _cullFaceEnabled = enable;
@@ -229,6 +236,15 @@ void MeshCommand::applyRenderState()
         glStencilFunc(_stencilOptions.m_stencilFunc, _stencilOptions.m_ref, 0xFF); glStencilOp(_stencilOptions.m_opFail, _stencilOptions.m_opDepthFail, _stencilOptions.m_opPass);
         glStencilMask(0xFF);
     }
+    _renderStateCullFace = glIsEnabled(GL_POLYGON_OFFSET_FILL) != GL_FALSE;
+    bool offsetWanted = m_offset.first || m_offset.second;
+    if(offsetWanted != _renderStateCullFace) {
+        offsetWanted ? glEnable(GL_POLYGON_OFFSET_FILL) : glDisable(GL_POLYGON_OFFSET_FILL);
+    }
+    
+    if(offsetWanted) {
+        glPolygonOffset(m_offset.first, m_offset.second);
+    }
     //END BPC PATCH
 }
 
@@ -253,6 +269,13 @@ void MeshCommand::restoreRenderState()
     {
         glDepthMask(_renderStateDepthWrite);
     }
+    
+    /** BPC PATCH BEGIN **/
+    bool offsetWanted = m_offset.first || m_offset.second;
+    if(offsetWanted != _renderStateCullFace) {
+        _renderStateCullFace ? glEnable(GL_POLYGON_OFFSET_FILL) : glDisable(GL_POLYGON_OFFSET_FILL);
+    }
+    /** BPC PATCH END **/
 }
 
 void MeshCommand::genMaterialID(GLuint texID, void* glProgramState, GLuint vertexBuffer, GLuint indexBuffer, const BlendFunc& blend)
