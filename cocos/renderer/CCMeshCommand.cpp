@@ -236,7 +236,7 @@ void MeshCommand::applyRenderState()
         glStencilFunc(_stencilOptions.m_stencilFunc, _stencilOptions.m_ref, 0xFF); glStencilOp(_stencilOptions.m_opFail, _stencilOptions.m_opDepthFail, _stencilOptions.m_opPass);
         glStencilMask(0xFF);
     }
-    _renderStateCullFace = glIsEnabled(GL_POLYGON_OFFSET_FILL) != GL_FALSE;
+    _renderStateOffset = glIsEnabled(GL_POLYGON_OFFSET_FILL) != GL_FALSE;
     bool offsetWanted = m_offset.first || m_offset.second;
     if(offsetWanted != _renderStateCullFace) {
         offsetWanted ? glEnable(GL_POLYGON_OFFSET_FILL) : glDisable(GL_POLYGON_OFFSET_FILL);
@@ -272,8 +272,8 @@ void MeshCommand::restoreRenderState()
     
     /** BPC PATCH BEGIN **/
     bool offsetWanted = m_offset.first || m_offset.second;
-    if(offsetWanted != _renderStateCullFace) {
-        _renderStateCullFace ? glEnable(GL_POLYGON_OFFSET_FILL) : glDisable(GL_POLYGON_OFFSET_FILL);
+    if(offsetWanted != _renderStateOffset) {
+        _renderStateOffset ? glEnable(GL_POLYGON_OFFSET_FILL) : glDisable(GL_POLYGON_OFFSET_FILL);
     }
     /** BPC PATCH END **/
 }
