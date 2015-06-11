@@ -35,8 +35,6 @@ THE SOFTWARE.
 #include "CCApplication.h"
 #include "CCWinRTUtils.h"
 
-#include "DLog.h"
-
 #if (_MSC_VER >= 1800)
 #include <d3d11_2.h>
 #endif

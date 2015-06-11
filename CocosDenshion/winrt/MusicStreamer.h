@@ -9,6 +9,7 @@
 #include <mutex>
 #include <thread>
 #include <atomic>
+#include <queue>
 
 #pragma once
 class MusicStreamer : public IXAudio2VoiceCallback {
