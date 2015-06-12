@@ -181,7 +181,9 @@ CC_CONSTRUCTOR_ACCESS:
     
     bool init();
     
-    bool initWithFile(const std::string &path);
+    //BPC PATCH
+    virtual bool initWithFile(const std::string &path);
+    //END BPC PATCH
     
     bool initFrom(const NodeDatas& nodedatas, const MeshDatas& meshdatas, const MaterialDatas& materialdatas);
     
