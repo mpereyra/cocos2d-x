@@ -36,8 +36,6 @@ MediaStreamer::~MediaStreamer()
         MFShutdown();
 }
 
-extern bool windows_is_low_memory_device;
-
 void MediaStreamer::Initialize(__in const WCHAR* url)
 {
     Microsoft::WRL::ComPtr<IMFMediaType> outputMediaType;
@@ -96,8 +94,15 @@ void MediaStreamer::Initialize(__in const WCHAR* url)
         m_reader->GetCurrentMediaType(MF_SOURCE_READER_FIRST_AUDIO_STREAM, &outputMediaType)
         );
 
-	if (windows_is_low_memory_device)
-	{
+#if WINAPI_FAMILY==WINAPI_FAMILY_PHONE_APP
+    static short lowMemoryDevice = -1;
+    if(lowMemoryDevice == -1) {
+        auto limit = Windows::System::MemoryManager::AppMemoryUsageLimit;
+
+        lowMemoryDevice = (limit < (190 * (1024 * 1024))) ? 1 : 0;
+    }
+
+    if(lowMemoryDevice == 1) {
 		outputMediaType->SetUINT32(MF_MT_AUDIO_NUM_CHANNELS, 1);
 		outputMediaType->SetUINT32(MF_MT_AUDIO_BLOCK_ALIGNMENT, 2);
 		outputMediaType->SetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND, 22050);
@@ -107,6 +112,7 @@ void MediaStreamer::Initialize(__in const WCHAR* url)
 			m_reader->SetCurrentMediaType(MF_SOURCE_READER_FIRST_AUDIO_STREAM, 0, outputMediaType.Get())
 			);
 	}
+#endif
 
 	uint32 formatSize = 0;
     WAVEFORMATEX* waveFormat;

@@ -8,9 +8,6 @@
 #include "pch.h"
 #include "MusicStreamer.h"
 
-// TODO: Surely there is a better way to check this.
-extern bool windows_is_low_memory_device;
-
 /* MS loves exceptions. I don't. Helpful macros to catch
    COM errors, invalidate the stream and gives us a chance to clean up cleanly */
 #define INVALID_RETURN_FAIL(hr) if(FAILED(hr)) { setState(Invalid); return; }
@@ -170,7 +167,15 @@ void MusicStreamer::initialiseFile(_In_ const WCHAR* url) {
     // Get the complete WAVEFORMAT from the Media Type
     INVALID_RETURN_FAIL(m_reader->GetCurrentMediaType(MF_SOURCE_READER_FIRST_AUDIO_STREAM, &outputMediaType));
 
-    if(windows_is_low_memory_device) {
+#if WINAPI_FAMILY==WINAPI_FAMILY_PHONE_APP
+    static short lowMemoryDevice = -1;
+    if(lowMemoryDevice == -1) {
+        auto limit = Windows::System::MemoryManager::AppMemoryUsageLimit;
+
+        lowMemoryDevice = (limit < (190 * (1024 * 1024))) ? 1 : 0;
+    }
+
+    if(lowMemoryDevice == 1) {
         outputMediaType->SetUINT32(MF_MT_AUDIO_NUM_CHANNELS, 1);
         outputMediaType->SetUINT32(MF_MT_AUDIO_BLOCK_ALIGNMENT, 2);
         outputMediaType->SetUINT32(MF_MT_AUDIO_SAMPLES_PER_SECOND, 22050);
@@ -178,6 +183,7 @@ void MusicStreamer::initialiseFile(_In_ const WCHAR* url) {
 
         INVALID_RETURN_FAIL(m_reader->SetCurrentMediaType(MF_SOURCE_READER_FIRST_AUDIO_STREAM, 0, outputMediaType.Get()));
     }
+#endif
 
     uint32 formatSize = 0;
     WAVEFORMATEX* waveFormat;
