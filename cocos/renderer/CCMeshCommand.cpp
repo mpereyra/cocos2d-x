@@ -142,6 +142,13 @@ void MeshCommand::init(float globalOrder,
     init(globalOrder, textureID, glProgramState, blendType, vertexBuffer, indexBuffer, primitive, indexFormat, indexCount, mv, 0);
 }
 
+/** BPC PATCH BEGIN **/
+void MeshCommand::setOffset(float factor, float units)
+{
+    m_offset = {factor, units};
+}
+/** BPC PATCH END **/
+
 void MeshCommand::setCullFaceEnabled(bool enable)
 {
     _cullFaceEnabled = enable;
@@ -217,6 +224,28 @@ void MeshCommand::applyRenderState()
     {
         glDepthMask(_depthWriteEnabled);
     }
+    
+    //BPC PATCH
+    
+    bool stencilEnabled = glIsEnabled(GL_STENCIL_TEST) != GL_FALSE;
+    if(stencilEnabled != _stencilTestEnabled){
+        _stencilTestEnabled ? glEnable(GL_STENCIL_TEST) : glDisable(GL_STENCIL_TEST);
+        
+    }
+    if(_stencilTestEnabled){
+        glStencilFunc(_stencilOptions.m_stencilFunc, _stencilOptions.m_ref, 0xFF); glStencilOp(_stencilOptions.m_opFail, _stencilOptions.m_opDepthFail, _stencilOptions.m_opPass);
+        glStencilMask(0xFF);
+    }
+    _renderStateOffset = glIsEnabled(GL_POLYGON_OFFSET_FILL) != GL_FALSE;
+    bool offsetWanted = m_offset.first || m_offset.second;
+    if(offsetWanted != _renderStateCullFace) {
+        offsetWanted ? glEnable(GL_POLYGON_OFFSET_FILL) : glDisable(GL_POLYGON_OFFSET_FILL);
+    }
+    
+    if(offsetWanted) {
+        glPolygonOffset(m_offset.first, m_offset.second);
+    }
+    //END BPC PATCH
 }
 
 void MeshCommand::restoreRenderState()
@@ -240,6 +269,13 @@ void MeshCommand::restoreRenderState()
     {
         glDepthMask(_renderStateDepthWrite);
     }
+    
+    /** BPC PATCH BEGIN **/
+    bool offsetWanted = m_offset.first || m_offset.second;
+    if(offsetWanted != _renderStateOffset) {
+        _renderStateOffset ? glEnable(GL_POLYGON_OFFSET_FILL) : glDisable(GL_POLYGON_OFFSET_FILL);
+    }
+    /** BPC PATCH END **/
 }
 
 void MeshCommand::genMaterialID(GLuint texID, void* glProgramState, GLuint vertexBuffer, GLuint indexBuffer, const BlendFunc& blend)
@@ -264,7 +300,7 @@ void MeshCommand::preBatchDraw()
     // Set material
     GL::bindTexture2D(_textureID);
     GL::blendFunc(_blendType.src, _blendType.dst);
-
+    
     if (Configuration::getInstance()->supportsShareableVAO() && _vao == 0)
         buildVAO();
     if (_vao)
@@ -280,7 +316,7 @@ void MeshCommand::preBatchDraw()
 }
 void MeshCommand::batchDraw()
 {
-// BPC PATCH BEGIN
+    // BPC PATCH BEGIN
     bool clippingWasEnabled = glIsEnabled(GL_SCISSOR_TEST);
     if (m_shouldClip) {
         if (!clippingWasEnabled) {
@@ -289,7 +325,7 @@ void MeshCommand::batchDraw()
         cocos2d::Director::getInstance()->getOpenGLView()->setScissorInPoints(m_glBounds.origin.x, m_glBounds.origin.y,
                                                                               m_glBounds.size.width, m_glBounds.size.height);
     }
-// BPC PATCH END
+    // BPC PATCH END
     // set render state
     applyRenderState();
     
@@ -303,7 +339,7 @@ void MeshCommand::batchDraw()
     
     _glProgramState->applyGLProgram(_mv);
     _glProgramState->applyUniforms();
-
+    
     if (Director::getInstance()->getRunningScene()->getLights().size() > 0)
         setLightUniforms();
     
@@ -311,11 +347,11 @@ void MeshCommand::batchDraw()
     glDrawElements(_primitive, (GLsizei)_indexCount, _indexFormat, 0);
     
     CC_INCREMENT_GL_DRAWN_BATCHES_AND_VERTICES(1, _indexCount);
-// MOAOAR BPC PATCH BEGIN
+    // MOAOAR BPC PATCH BEGIN
     if (m_shouldClip && !clippingWasEnabled) {
         glDisable(GL_SCISSOR_TEST);
     }
-// BPC PATCH END
+    // BPC PATCH END
 }
 void MeshCommand::postBatchDraw()
 {
@@ -330,7 +366,7 @@ void MeshCommand::postBatchDraw()
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
-
+    
 }
 
 // BPC PATCH ARRRRRGH
@@ -344,7 +380,7 @@ void MeshCommand::setGlBounds(Rect glBounds) {
 
 void MeshCommand::execute()
 {
-// BPC PATCH ALL THE THINGS
+    // BPC PATCH ALL THE THINGS
     bool clippingWasEnabled = glIsEnabled(GL_SCISSOR_TEST);
     if (m_shouldClip) {
         if (!clippingWasEnabled) {
@@ -353,14 +389,14 @@ void MeshCommand::execute()
         cocos2d::Director::getInstance()->getOpenGLView()->setScissorInPoints(m_glBounds.origin.x, m_glBounds.origin.y,
                                                                               m_glBounds.size.width, m_glBounds.size.height);
     }
-// BPC PATCH END
+    // BPC PATCH END
     
     // set render state
     applyRenderState();
     // Set material
     GL::bindTexture2D(_textureID);
     GL::blendFunc(_blendType.src, _blendType.dst);
-
+    
     glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
     _glProgramState->setUniformVec4("u_color", _displayColor);
     
@@ -371,7 +407,7 @@ void MeshCommand::execute()
     }
     
     _glProgramState->apply(_mv);   
-
+    
     if (Director::getInstance()->getRunningScene()->getLights().size() > 0)
         setLightUniforms();
     
@@ -387,11 +423,11 @@ void MeshCommand::execute()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     
-// MOAR BPC PATCH BEGIN
+    // MOAR BPC PATCH BEGIN
     if (m_shouldClip && !clippingWasEnabled) {
         glDisable(GL_SCISSOR_TEST);
     }
-// BPC PATCH END
+    // BPC PATCH END
 }
 
 void MeshCommand::buildVAO()
@@ -439,7 +475,7 @@ void MeshCommand::setLightUniforms()
     if (_glProgramState->getVertexAttribsFlags() & (1 << GLProgram::VERTEX_ATTRIB_NORMAL))
     {
         resetLightUniformValues();
-
+        
         GLint enabledDirLightNum = 0;
         GLint enabledPointLightNum = 0;
         GLint enabledSpotLightNum = 0;
@@ -518,14 +554,14 @@ void MeshCommand::setLightUniforms()
             glProgram->setUniformLocationWith3fv((GLint)glProgram->getUniformLocationForName(s_dirLightUniformColorName), (GLfloat*)(&s_dirLightUniformColorValues[0]), (unsigned int)s_dirLightUniformColorValues.size());
             glProgram->setUniformLocationWith3fv((GLint)glProgram->getUniformLocationForName(s_dirLightUniformDirName), (GLfloat*)(&s_dirLightUniformDirValues[0]), (unsigned int)s_dirLightUniformDirValues.size());
         }
-
+        
         if (0 < maxPointLight)
         {
             glProgram->setUniformLocationWith3fv((GLint)glProgram->getUniformLocationForName(s_pointLightUniformColorName), (GLfloat*)(&s_pointLightUniformColorValues[0]), (unsigned int)s_pointLightUniformColorValues.size());
             glProgram->setUniformLocationWith3fv((GLint)glProgram->getUniformLocationForName(s_pointLightUniformPositionName), (GLfloat*)(&s_pointLightUniformPositionValues[0]), (unsigned int)s_pointLightUniformPositionValues.size());
             glProgram->setUniformLocationWith1fv((GLint)glProgram->getUniformLocationForName(s_pointLightUniformRangeInverseName), (GLfloat*)(&s_pointLightUniformRangeInverseValues[0]), (unsigned int)s_pointLightUniformRangeInverseValues.size());
         }
-
+        
         if (0 < maxSpotLight)
         {
             glProgram->setUniformLocationWith3fv((GLint)glProgram->getUniformLocationForName(s_spotLightUniformColorName), (GLfloat*)(&s_spotLightUniformColorValues[0]), (unsigned int)s_spotLightUniformColorValues.size());
@@ -535,7 +571,7 @@ void MeshCommand::setLightUniforms()
             glProgram->setUniformLocationWith1fv((GLint)glProgram->getUniformLocationForName(s_spotLightUniformOuterAngleCosName), (GLfloat*)(&s_spotLightUniformOuterAngleCosValues[0]), (unsigned int)s_spotLightUniformOuterAngleCosValues.size());
             glProgram->setUniformLocationWith1fv((GLint)glProgram->getUniformLocationForName(s_spotLightUniformRangeInverseName), (GLfloat*)(&s_spotLightUniformRangeInverseValues[0]), (unsigned int)s_spotLightUniformRangeInverseValues.size());
         }
-
+        
         glProgram->setUniformLocationWith3f(glProgram->getUniformLocationForName(s_ambientLightUniformColorName), ambientColor.x, ambientColor.y, ambientColor.z);
     }
     else // normal does not exist
@@ -571,14 +607,14 @@ void MeshCommand::resetLightUniformValues()
     int maxDirLight = conf->getMaxSupportDirLightInShader();
     int maxPointLight = conf->getMaxSupportPointLightInShader();
     int maxSpotLight = conf->getMaxSupportSpotLightInShader();
-
+    
     s_dirLightUniformColorValues.assign(maxDirLight, Vec3::ZERO);
     s_dirLightUniformDirValues.assign(maxDirLight, Vec3::ZERO);
-
+    
     s_pointLightUniformColorValues.assign(maxPointLight, Vec3::ZERO);
     s_pointLightUniformPositionValues.assign(maxPointLight, Vec3::ZERO);
     s_pointLightUniformRangeInverseValues.assign(maxPointLight, 0.0f);
-
+    
     s_spotLightUniformColorValues.assign(maxSpotLight, Vec3::ZERO);
     s_spotLightUniformPositionValues.assign(maxSpotLight, Vec3::ZERO);
     s_spotLightUniformDirValues.assign(maxSpotLight, Vec3::ZERO);

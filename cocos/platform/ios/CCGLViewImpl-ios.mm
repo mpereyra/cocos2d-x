@@ -37,7 +37,7 @@
 NS_CC_BEGIN
 
 void* GLViewImpl::_pixelFormat = kEAGLColorFormatRGB565;
-int GLViewImpl::_depthFormat = GL_DEPTH_COMPONENT16;
+int GLViewImpl::_depthFormat = GL_DEPTH24_STENCIL8_OES;
 
 GLViewImpl* GLViewImpl::createWithEAGLView(void *eaglview)
 {

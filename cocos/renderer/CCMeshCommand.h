@@ -38,6 +38,26 @@ struct Uniform;
 class EventListenerCustom;
 class EventCustom;
 
+
+//BPC PATCH
+struct StencilMaskOptions{
+    int m_stencilFunc {GL_ALWAYS};
+    int m_opFail {GL_KEEP};
+    int m_opDepthFail{GL_KEEP};
+    int m_opPass{GL_KEEP};
+    int m_ref {0};
+    
+    StencilMaskOptions(){}
+    StencilMaskOptions(int ref, int func, int opF, int opDF, int opP){
+        m_ref = ref;
+        m_stencilFunc = func;
+        m_opFail = opF;
+        m_opDepthFail = opDF;
+        m_opPass = opP;
+    }
+};
+//END BPC PATCH
+    
 //it is a common mesh
 class CC_DLL MeshCommand : public RenderCommand
 {
@@ -49,6 +69,10 @@ public:
     void init(float globalZOrder, GLuint textureID, GLProgramState* glProgramState, BlendFunc blendType, GLuint vertexBuffer, GLuint indexBuffer, GLenum primitive, GLenum indexFormat, ssize_t indexCount, const Mat4 &mv, uint32_t flags);
     
     CC_DEPRECATED_ATTRIBUTE void init(float globalZOrder, GLuint textureID, GLProgramState* glProgramState, BlendFunc blendType, GLuint vertexBuffer, GLuint indexBuffer, GLenum primitive, GLenum indexType, ssize_t indexCount, const Mat4 &mv);
+    
+    /** BPC PATCH BEGIN **/
+    void setOffset(float factor, float units);
+    /** BPC PATCH END **/
     
     void setCullFaceEnabled(bool enable);
     
@@ -69,6 +93,8 @@ public:
     void setTransparent(bool value);
     
 // BPC PATCH BEGIN
+    void setStencilOptions(StencilMaskOptions  opts) {_stencilOptions = opts;}
+    void setStencilTestEnabled(bool value) {_stencilTestEnabled = value; }
     void setShouldClip(bool shouldClip);
     void setGlBounds(Rect glBounds);
 // BPC PATCH END
@@ -93,6 +119,10 @@ protected:
     bool m_shouldClip{false};
     Rect m_glBounds{0, 0, 0, 0};
 // BPC PATCH THANK GOD IT'S OVER
+    
+/** BPC-PATCH BEGIN **/
+    std::pair<float, float> m_offset {0, 0};
+/** BPC-PATCH END **/
     
     //build & release vao
     void buildVAO();
@@ -143,6 +173,15 @@ protected:
     bool _renderStateDepthTest;
     GLboolean _renderStateDepthWrite;
     GLenum    _renderStateCullFace;
+    /** BPC-PATCH BEGIN **/
+    bool _renderStateOffset;
+    /** BPC-PATCH END **/
+    
+    
+    //BPC PATCH
+    bool _stencilTestEnabled{false};
+    StencilMaskOptions _stencilOptions;
+    //END BPC PATCH
 
     // ModelView transform
     Mat4 _mv;

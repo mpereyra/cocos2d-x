@@ -655,8 +655,10 @@ void Renderer::clear()
 {
     //Enable Depth mask to make sure glClear clear the depth buffer correctly
     glDepthMask(true);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_STENCIL_TEST);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     glDepthMask(false);
+    glDisable(GL_STENCIL_TEST);
 }
 
 void Renderer::setDepthTest(bool enable)
@@ -878,6 +880,12 @@ void Renderer::drawBatchedQuads()
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _quadbuffersVBO[1]);
     }
     
+#pragma mark TODO make this changeable at quad command level
+/** BPC PATCH BEGIN **/
+    bool oldDepthTest = _isDepthTestFor2D;
+    setDepthTest(false);
+/** BPC PATCH END **/
+    
     //Start drawing verties in batch
     for(const auto& cmd : _batchQuadCommands)
     {
@@ -924,6 +932,10 @@ void Renderer::drawBatchedQuads()
     
     _batchQuadCommands.clear();
     _numberQuads = 0;
+    
+/** BPC PATCH BEGIN **/
+    setDepthTest(oldDepthTest);
+/** BPC PATCH END **/
 }
 
 void Renderer::flush()
