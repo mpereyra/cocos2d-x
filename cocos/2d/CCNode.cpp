@@ -1080,6 +1080,8 @@ void Node::addChildHelper(Node* child, int localZOrder, int tag, const std::stri
     
     child->setParent(this);
     child->setOrderOfArrival(s_globalOrderOfArrival++);
+    child->setCameraMask(getCameraMask());
+    child->setGlobalZOrder(getGlobalZOrder());
     
 #if CC_USE_PHYSICS
     // Recursive add children with which have physics body.
