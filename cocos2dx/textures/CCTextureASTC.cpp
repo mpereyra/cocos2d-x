@@ -42,6 +42,7 @@ CCTextureASTC::CCTextureASTC()
 , m_bRetainName(false)
 , m_uName(0)
 , m_eFormat(kCCTexture2DPixelFormat_PVRTC4)
+, m_data(nullptr)
 {
 }
 

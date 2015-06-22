@@ -139,6 +139,7 @@ CCTexturePVR::CCTexturePVR()
 , m_bHasAlpha(false)
 , m_uName(0)
 , m_eFormat(kCCTexture2DPixelFormat_Default)
+, m_pvrdata(nullptr)
 {
 }
 
