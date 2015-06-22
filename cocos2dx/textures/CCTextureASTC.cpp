@@ -21,7 +21,7 @@
 //only supports 4bpp
 #define GL_COMPRESSED_RGBA_ASTC_6x5_KHR            (0x93B3)
 
-namespace cocos2d {
+NS_CC_BEGIN
 
 /* ASTC header declaration. */
 typedef struct
@@ -203,4 +203,5 @@ CCTextureASTC * CCTextureASTC::create(const char* path)
     
     return pTexture;
 }
-}
+
+NS_CC_END

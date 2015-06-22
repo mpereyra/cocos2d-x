@@ -3,7 +3,7 @@
 #include "platform/CCPlatformMacros.h"
 #include "BPCRetry.h"
 
-using namespace cocos2d;
+NS_CC_BEGIN
 
 CCTextureDXT::CCTextureDXT() :
 m_textureName(0) {
@@ -100,3 +100,5 @@ bool CCTextureDXT::createGLTexture() {
     
     return true;
 }
+
+NS_CC_END

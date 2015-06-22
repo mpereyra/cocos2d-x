@@ -2,7 +2,7 @@
 #include "CCDDS.h"
 #include "BPCRetry.h"
 
-using namespace cocos2d;
+NS_CC_BEGIN
 
 CCTextureATC::CCTextureATC() {
     m_textureName = 0;
@@ -91,3 +91,5 @@ bool CCTextureATC::createGLTexture() {
     
     return true;
 }
+
+NS_CC_END

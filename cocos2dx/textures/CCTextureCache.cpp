@@ -571,6 +571,7 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target, CCTexture
 		}
 		catch (std::exception& e)
 		{
+            CC_UNUSED_PARAM(e);
 			cocos2d::CCLog("Failed to load image data: %s", data->filename);
 			// And do what now??
 		}
