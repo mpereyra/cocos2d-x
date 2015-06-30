@@ -190,7 +190,7 @@ void ccDrawLine( const CCPoint& origin, const CCPoint& destination )
 
     ccGLEnableVertexAttribs( kCCVertexAttribFlag_Position );
 #ifdef EMSCRIPTEN
-    setGLBufferData(vertices, 16);
+    setGLBufferData(vertices, 2 * sizeof(ccVertex2F));
     glVertexAttribPointer(kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, 0, 0);
 #else
     glVertexAttribPointer(kCCVertexAttrib_Position, 2, GL_FLOAT, GL_FALSE, 0, vertices);
