@@ -51,9 +51,6 @@ typedef enum {
  @since v0.99.1
  */
 class CC_DLL CCProgressTimer : public CCNode, public CCRGBAProtocol
-#ifdef EMSCRIPTEN
-, public CCGLBufferedNode
-#endif // EMSCRIPTEN{
 {
 public:
     CCProgressTimer();
