@@ -70,14 +70,6 @@ OBJ_DIR := $(OBJ_DIR)/$(SUBDIR)
 LIB_DIR := $(LIB_DIR)/$(SUBDIR)
 BIN_DIR := $(BIN_DIR)/$(SUBDIR)
 
-
-ifndef V
-LOG_CC = @echo " CC $@";
-LOG_CXX = @echo " CXX $@";
-LOG_AR = @echo " AR $@";
-LOG_LINK = @echo " LINK $@";
-endif
-
 OBJECTS := $(SOURCES:.cpp=.o)
 OBJECTS := $(OBJECTS:.c=.o)
 OBJECTS := $(subst ../,,$(OBJECTS))
