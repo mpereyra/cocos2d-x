@@ -833,7 +833,7 @@ const AABB& Sprite3D::getAABB() const
     Mat4 nodeToWorldTransform(getNodeToWorldTransform());
     
     // If nodeToWorldTransform matrix isn't changed, we don't need to transform aabb.
-    if (memcmp(_nodeToWorldTransform.m, nodeToWorldTransform.m, sizeof(Mat4)) == 0 && !_aabbDirty)
+    if (!_aabbDirty && memcmp(_nodeToWorldTransform.m, nodeToWorldTransform.m, sizeof(Mat4)) == 0)
     {
         return _aabb;
     }
