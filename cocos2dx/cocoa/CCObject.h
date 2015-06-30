@@ -27,10 +27,6 @@ THE SOFTWARE.
 
 #include "platform/CCPlatformMacros.h"
 
-#ifdef EMSCRIPTEN
-#include <GLES2/gl2.h>
-#endif // EMSCRIPTEN
-
 NS_CC_BEGIN
 
 /**

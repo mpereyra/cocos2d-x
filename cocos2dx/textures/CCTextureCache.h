@@ -43,12 +43,6 @@ THE SOFTWARE.
 
 NS_CC_BEGIN
 
-#ifdef EMSCRIPTEN
-    typedef struct _AsyncStruct
-    {
-      std::string filename;
-    } AsyncStruct;
-#endif
 class CCLock;
 class CCImage;
 
