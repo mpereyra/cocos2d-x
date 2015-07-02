@@ -854,6 +854,7 @@ const AABB& Sprite3D::getAABB() const
         // convert to world space
         _aabb.transform(nodeToWorldTransform);
         _nodeToWorldTransform = nodeToWorldTransform;
+        _aabbDirty = false;
     }
     
     return _aabb;
