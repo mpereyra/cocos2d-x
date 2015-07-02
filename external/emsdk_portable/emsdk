@@ -1,14 +1,6 @@
 #!/usr/bin/env python
 
-from __future__ import print_function
-import sys, optparse, subprocess, os, os.path, errno, zipfile, string, json, platform, shutil, tarfile, tempfile, multiprocessing, re, stat
-if sys.version_info >= (3,):
-  from urllib.parse import urljoin
-  from urllib.request import urlopen
-  from urllib.error import HTTPError
-else:
-  from urlparse import urljoin
-  from urllib2 import urlopen, HTTPError
+import sys, optparse, subprocess, urllib2, os, os.path, errno, zipfile, string, json, platform, shutil, tarfile, urlparse, tempfile, multiprocessing
 
 # EMSDK_DEV is a developer mode flag, which, if true, the SDK is downloaded from a 'staging' online source,
 # instead of the public source. New releases are first deployed to the staging source for testing, before 
@@ -17,12 +9,12 @@ else:
 EMSDK_DEV = bool(os.getenv('EMSDK_DEV')) if os.getenv('EMSDK_DEV') != None else False
 
 if EMSDK_DEV:
-  print('EMSDK_DEV active.')
+  print 'EMSDK_DEV active.'
   emsdk_master_server = 'http://clb.demon.fi/emscripten_dev/'
 else:
   emsdk_master_server = 'https://s3.amazonaws.com/mozilla-games/emscripten/'
 
-emsdk_packages_url = urljoin(emsdk_master_server, 'packages/')
+emsdk_packages_url = urlparse.urljoin(emsdk_master_server, 'packages/')
 
 emscripten_git_repo = 'git@github.com:kripken/emscripten.git'
 
@@ -41,10 +33,6 @@ if platform.mac_ver()[0] != '':
   OSX = True
   ENVPATH_SEPARATOR = ':'
 
-CPU_CORES = max(multiprocessing.cpu_count()-1, 1) # Don't saturate all cores to not steal the whole system, but be aggressive.
-
-CMAKE_BUILD_TYPE_OVERRIDE = None
-
 emscripten_config_directory = os.path.expanduser("~/")
 
 EMSDK_SET_ENV = 'emsdk_set_env.bat' if WINDOWS else 'emsdk_set_env.sh'
@@ -56,19 +44,6 @@ if WINDOWS:
     CMAKE_GENERATOR = 'Visual Studio 12'
   else:
     CMAKE_GENERATOR += 'MinGW Makefiles'
-
-# Removes a directory tree even if it was readonly, and doesn't throw exception on failure.
-def remove_tree(d):
-  try:
-    def remove_readonly_and_try_again(func, path, exc_info):
-      if not (os.stat(path).st_mode & stat.S_IWRITE):
-        os.chmod(path, stat.S_IWRITE)
-        func(path)
-      else:
-        raise
-    shutil.rmtree(d, onerror=remove_readonly_and_try_again)
-  except:
-    pass
 
 def win_get_environment_variable(key, system=True):
   prev_path = os.environ['PATH']
@@ -83,10 +58,10 @@ def win_get_environment_variable(key, system=True):
     else: # Register locally from CURRENT USER section.
       folder = win32api.RegOpenKey(win32con.HKEY_CURRENT_USER, 'Environment')
     value = str(win32api.RegQueryValueEx(folder, key)[0])
-  except Exception as e:
+  except Exception, e:
     if e[0] != 2: # 'The system cannot find the file specified.'
-      print('Failed to read environment variable ' + key + ':', file=sys.stderr)
-      print(str(e), file=sys.stderr)
+      print >> sys.stderr, 'Failed to read environment variable ' + key + ':'
+      print >> sys.stderr, str(e)
     win32api.RegCloseKey(folder)
     os.environ['PATH'] = prev_path
     return None
@@ -105,7 +80,7 @@ def win_get_active_environment_variable(key):
   return win_get_environment_variable(key, True)
 
 def win_set_environment_variable(key, value, system=True):
-#  print('set ' + str(key) + '=' + str(value) + ', in system=' + str(system), file=sys.stderr)
+#  print >> sys.stderr, 'set ' + str(key) + '=' + str(value) + ', in system=' + str(system)
   previous_value = win_get_environment_variable(key, system)
   if previous_value == value:
     return # No need to elevate UAC for nothing to set the same value, skip.
@@ -116,7 +91,7 @@ def win_set_environment_variable(key, value, system=True):
         value = subprocess.call(['REG', 'DELETE', 'SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment', '/V', key, '/f'], stdout=subprocess.PIPE)
       else:
         value = subprocess.call(['REG', 'DELETE', 'HKCU\\Environment', '/V', key, '/f'], stdout=subprocess.PIPE)
-    except Exception as e:
+    except Exception, e:
       return
     return
 
@@ -127,11 +102,11 @@ def win_set_environment_variable(key, value, system=True):
       cmd = ['SETX']
     retcode = subprocess.call(cmd + [key, value], stdout=subprocess.PIPE)
     if retcode is not 0:
-      print('ERROR! Failed to set environment variable ' + key + '=' + value + '. You may need to set it manually.', file=sys.stderr)
-  except Exception as e:
-    print('ERROR! Failed to set environment variable ' + key + '=' + value + ':', file=sys.stderr)
-    print(str(e), file=sys.stderr)
-    print('You may need to set it manually.', file=sys.stderr)
+      print >> sys.stderr, 'ERROR! Failed to set environment variable ' + key + '=' + value + '. You may need to set it manually.'
+  except Exception, e:
+    print >> sys.stderr, 'ERROR! Failed to set environment variable ' + key + '=' + value + ':'
+    print >> sys.stderr, str(e)
+    print >> sys.stderr, 'You may need to set it manually.'
 
 def win_delete_environment_variable(key, system=True):
   win_set_environment_variable(key, None, system)
@@ -190,15 +165,15 @@ def run(cmd, cwd=None):
   process = subprocess.Popen(cmd, cwd=cwd, env=os.environ.copy())
   process.communicate()
   if process.returncode != 0:
-    print(str(cmd) + ' failed with error code ' + str(process.returncode) + '!')
+    print str(cmd) + ' failed with error code ' + str(process.returncode) + '!'
   return process.returncode
 
 # http://pythonicprose.blogspot.fi/2009/10/python-extract-targz-archive.html
 def untargz(source_filename, dest_dir, unpack_even_if_exists=False):
   if not unpack_even_if_exists and num_files_in_directory(dest_dir) > 0:
-    print("File '" + source_filename + "' has already been unpacked, skipping.")
+    print "File '" + source_filename + "' has already been unpacked, skipping."
     return True
-  print("Unpacking '" + source_filename + "' to '" + dest_dir + "'")
+  print "Unpacking '" + source_filename + "' to '" + dest_dir + "'"
   mkdir_p(dest_dir)
   run(['tar', '-xvf', sdk_path(source_filename), '--strip', '1'], cwd=dest_dir)
   #tfile = tarfile.open(source_filename, 'r:gz')
@@ -208,9 +183,9 @@ def untargz(source_filename, dest_dir, unpack_even_if_exists=False):
 # http://stackoverflow.com/questions/12886768/simple-way-to-unzip-file-in-python-on-all-oses
 def unzip(source_filename, dest_dir, unpack_even_if_exists=False):
   if not unpack_even_if_exists and num_files_in_directory(dest_dir) > 0:
-    print("File '" + source_filename + "' has already been unpacked, skipping.")
+    print "File '" + source_filename + "' has already been unpacked, skipping."
     return True
-  print("Unpacking '" + source_filename + "' to '" + dest_dir + "'")
+  print "Unpacking '" + source_filename + "' to '" + dest_dir + "'"
   mkdir_p(dest_dir)
   common_subdir = None
   try:
@@ -246,20 +221,20 @@ def unzip(source_filename, dest_dir, unpack_even_if_exists=False):
       if common_subdir:
         try:
           if os.path.exists(dest_dir):
-            remove_tree(dest_dir)
+            shutil.rmtree(dest_dir)
         except:
           pass
         shutil.copytree(os.path.join(unzip_to_dir, common_subdir), dest_dir)
         try:
-          remove_tree(unzip_to_dir)
+          shutil.rmtree(unzip_to_dir)
         except:
           pass
-  except zipfile.BadZipfile as e:
-    print("Unzipping file '" + source_filename + "' failed due to reason: " + str(e) + "! Removing the corrupted zip file.")
+  except zipfile.BadZipfile, e:
+    print "Unzipping file '" + source_filename + "' failed due to reason: " + str(e) + "! Removing the corrupted zip file."
     rmfile(source_filename)
     return False
-  except Exception as e:
-    print("Unzipping file '" + source_filename + "' failed due to reason: " + str(e))
+  except Exception, e:
+    print "Unzipping file '" + source_filename + "' failed due to reason: " + str(e)
     return False
 
   return True
@@ -293,15 +268,15 @@ def download_file(url, dstpath, download_even_if_exists=False):
   file_name = sdk_path(file_name)
 
   if os.path.exists(file_name) and not download_even_if_exists:
-    print("File '" + file_name + "' already downloaded, skipping.")
+    print "File '" + file_name + "' already downloaded, skipping."
     return file_name
   try:
-    u = urlopen(url)
+    u = urllib2.urlopen(url)
     mkdir_p(os.path.dirname(file_name))
     with open(file_name, 'wb') as f: 
       meta = u.info()
       file_size = int(meta.getheaders("Content-Length")[0])
-      print("Downloading: %s from %s Bytes: %s" % (file_name, url, file_size))
+      print "Downloading: %s from %s Bytes: %s" % (file_name, url, file_size)
 
       file_size_dl = 0
       block_sz = 8192
@@ -314,13 +289,13 @@ def download_file(url, dstpath, download_even_if_exists=False):
           f.write(buffer)
           status = r"%10d  [%3.2f%%]" % (file_size_dl, file_size_dl * 100. / file_size)
           status = status + chr(8)*(len(status)+1)
-          print(status, end=' ')
-  except HTTPError as e:
-    print("HTTP error with URL '" + url + "': " + str(e))
+          print status,
+  except urllib2.HTTPError, e:
+    print "HTTP error with URL '" + url + "': " + str(e)
     rmfile(file_name)
     return None
-  except Exception as e:
-    print("Error downloading URL '" + url + "': " + str(e))
+  except Exception, e:
+    print "Error downloading URL '" + url + "': " + str(e)
     rmfile(file_name)
     return None
   return file_name
@@ -330,7 +305,7 @@ def download_text_file(url, dstpath, download_even_if_exists=False):
   fix_lineendings(os.path.join(emsdk_path(), filename))
 
 def run_get_output(cmd, cwd=None):
-  process = subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE, env=os.environ.copy(), universal_newlines=True)
+  process = subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE, env=os.environ.copy())
   (stdout, stderr) = process.communicate()
   return (process.returncode, stdout, stderr)
 
@@ -375,13 +350,13 @@ def GIT(must_succeed=True):
       pass
   if must_succeed:
     if WINDOWS:
-      print("ERROR: git executable was not found. Please install it by typing 'emsdk install git-1.9.4', or alternatively by installing it manually from http://git-scm.com/downloads . If you install git manually, remember to add it to PATH")
+      print "ERROR: git executable was not found. Please install it by typing 'emsdk install git-1.9.4', or alternatively by installing it manually from http://git-scm.com/downloads . If you install git manually, remember to add it to PATH"
     elif OSX:
-      print("ERROR: git executable was not found. Please install git for this operation! This can be done from http://git-scm.com/ , or by installing XCode and then the XCode Command Line Tools (see http://stackoverflow.com/questions/9329243/xcode-4-4-command-line-tools )")
+      print "ERROR: git executable was not found. Please install git for this operation! This can be done from http://git-scm.com/ , or by installing XCode and then the XCode Command Line Tools (see http://stackoverflow.com/questions/9329243/xcode-4-4-command-line-tools )"
     elif LINUX:
-      print("ERROR: git executable was not found. Please install git for this operation! This can be probably be done using your package manager, see http://git-scm.com/book/en/Getting-Started-Installing-Git")
+      print "ERROR: git executable was not found. Please install git for this operation! This can be probably be done using your package manager, see http://git-scm.com/book/en/Getting-Started-Installing-Git"
     else:
-      print("ERROR: git executable was not found. Please install git for this operation!")
+      print "ERROR: git executable was not found. Please install git for this operation!"
     sys.exit(1)
   return '' # Not found
 
@@ -394,7 +369,7 @@ def git_repo_version(repo_path):
 
 def git_clone(url, dstpath):
   if os.path.isdir(os.path.join(dstpath, '.git')):
-    print("Repository '" + url + "' already cloned to directory '" + dstpath + "', skipping.")
+    print "Repository '" + url + "' already cloned to directory '" + dstpath + "', skipping."
     return True
   mkdir_p(dstpath)
   return run([GIT(), 'clone', url, dstpath]) == 0
@@ -402,16 +377,16 @@ def git_clone(url, dstpath):
 def git_checkout_and_pull(repo_path, branch):
   run([GIT(), 'fetch', 'origin'], repo_path)
   try:
-    print("Fetching latest changes to the branch '" + branch + "' for '" + repo_path + "'...")
+    print "Fetching latest changes to the branch '" + branch + "' for '" + repo_path + "'..."
     run([GIT(), 'fetch', 'origin'], repo_path)
 #  run([GIT, 'checkout', '-b', branch, '--track', 'origin/'+branch], repo_path)
     run([GIT(), 'checkout', '--quiet', branch], repo_path) # this line assumes that the user has not gone and manually messed with the repo and added new remotes to ambiguate the checkout.
     run([GIT(), 'merge', '--ff-only', 'origin/'+branch], repo_path) # this line assumes that the user has not gone and made local changes to the repo
   except:
-    print('git operation failed!')
+    print 'git operation failed!'
     return False
-  print("Successfully updated and checked out branch '" + branch + "' on repository '" + repo_path + "'")
-  print("Current repository version: " + git_repo_version(repo_path))
+  print "Successfully updated and checked out branch '" + branch + "' on repository '" + repo_path + "'"
+  print "Current repository version: " + git_repo_version(repo_path)
   return True
 
 def git_clone_checkout_and_pull(url, dstpath, branch):
@@ -420,14 +395,6 @@ def git_clone_checkout_and_pull(url, dstpath, branch):
     return False
   success = git_checkout_and_pull(dstpath, branch)
   return success
-
-# Each tool can have its own build type, or it can be overridden on the command line.
-def decide_cmake_build_type(tool):
-  global CMAKE_BUILD_TYPE_OVERRIDE
-  if CMAKE_BUILD_TYPE_OVERRIDE:
-    return CMAKE_BUILD_TYPE_OVERRIDE
-  else:
-    return tool.cmake_build_type
 
 # The root directory of the build.
 def fastcomp_build_dir(tool):
@@ -439,15 +406,15 @@ def fastcomp_build_dir(tool):
 
   bitness_suffix = '_32' if tool.bitness == 32 else '_64'
 
-  build_dir = 'build_' + tool.git_branch.replace(os.sep, '-') + generator_suffix + bitness_suffix
+  build_dir = 'build_' + tool.git_branch + generator_suffix + bitness_suffix
   return build_dir
 
 # The directory where the binaries are produced.
 def fastcomp_build_bin_dir(tool):
   build_dir = fastcomp_build_dir(tool)
   if WINDOWS and 'Visual Studio' in CMAKE_GENERATOR:
-    old_llvm_bin_dir = os.path.join(build_dir, 'bin\\' + decide_cmake_build_type(tool))
-    new_llvm_bin_dir = os.path.join(build_dir, decide_cmake_build_type(tool) + '\\bin')
+    old_llvm_bin_dir = os.path.join(build_dir, 'bin\\RelWithDebInfo')
+    new_llvm_bin_dir = os.path.join(build_dir, 'RelWithDebInfo\\bin')
     if os.path.exists(os.path.join(tool.install_path, new_llvm_bin_dir)):
       return new_llvm_bin_dir
     if os.path.exists(os.path.join(tool.install_path, old_llvm_bin_dir)): return old_llvm_bin_dir
@@ -474,36 +441,32 @@ def find_msbuild(sln_file):
     if os.path.isfile(p): return p
 
 def make_build(build_root, build_type):
-  global CPU_CORES
-  if CPU_CORES > 1:
-    print('Performing a parallel build with ' + str(CPU_CORES) + ' cores.')
+  cpu_cores = max(multiprocessing.cpu_count()-1, 1) # Don't saturate all cores to not steal the whole system, but be aggressive.
+  if cpu_cores > 1:
+    print 'Performing a parallel build with ' + str(cpu_cores) + ' cores.'
   else:
-    print('Performing a singlethreaded build.')
+    print 'Performing a singlethreaded build.'
   if WINDOWS:
     if 'Visual Studio' in CMAKE_GENERATOR:
       solution_name = subprocess.check_output(['dir', '/b', '*.sln'], shell=True, cwd=build_root).strip()
-# Disabled for now: Don't pass /maxcpucount argument to msbuild, since it looks like when building, msbuild already automatically spawns the full amount of logical
-# cores the system has, and passing the number of logical cores here has been observed to give a quadratic N*N explosion on the number of spawned processes
-# (e.g. on a Core i7 5960X with 16 logical cores, it would spawn 16*16=256 cl.exe processes, which would start crashing when running out of system memory)
-#      make = [find_msbuild(os.path.join(build_root, solution_name)), '/maxcpucount:' + str(CPU_CORES), '/t:Build', '/p:Configuration='+build_type, '/nologo', '/verbosity:minimal', solution_name]
-      make = [find_msbuild(os.path.join(build_root, solution_name)), '/t:Build', '/p:Configuration='+build_type, '/nologo', '/verbosity:minimal', solution_name]      
+      make = [find_msbuild(os.path.join(build_root, solution_name)), '/maxcpucount:' + str(cpu_cores), '/t:Build', '/p:Configuration='+build_type, '/nologo', '/verbosity:minimal', solution_name]
     else:
-      make = ['mingw32-make', '-j' + str(CPU_CORES)]
+      make = ['mingw32-make', '-j' + str(cpu_cores)]
   else:
-    make = ['make', '-j' + str(CPU_CORES)]
+    make = ['make', '-j' + str(cpu_cores)]
 
   # Build
   try:
-    print('Running build: ' + str(make))
+    print 'Running build: ' + str(make)
     ret = subprocess.check_call(make, cwd=build_root, env=make_env)
     if ret != 0:
-      print('Build failed with exit code ' + ret + '!', file=sys.stderr)
-      print('Working directory: ' + build_root, file=sys.stderr)
+      print >> sys.stderr, 'Build failed with exit code ' + ret + '!'
+      print >> sys.stderr, 'Working directory: ' + build_root
       return False
-  except Exception as e:
-    print('Build failed due to exception!', file=sys.stderr)
-    print('Working directory: ' + build_root, file=sys.stderr)
-    print(str(e), file=sys.stderr)
+  except Exception, e:
+    print >> sys.stderr, 'Build failed due to exception!'
+    print >> sys.stderr, 'Working directory: ' + build_root
+    print >> sys.stderr, str(e)
     return False
 
   return True
@@ -515,28 +478,16 @@ def cmake_configure(generator, build_root, src_root, build_type, extra_cmake_arg
     if generator: generator = ['-G', generator]
     else: generator = []
     cmdline = ['cmake'] + generator +  ['-DCMAKE_BUILD_TYPE='+build_type] + extra_cmake_args + [src_root]
-    print('Running CMake: ' + str(cmdline))
+    print 'Running CMake: ' + str(cmdline)
     ret = subprocess.check_call(cmdline, cwd=build_root)
     if ret != 0:
-      print('CMake invocation failed with exit code ' + ret + '!', file=sys.stderr)
-      print('Working directory: ' + build_root, file=sys.stderr)
-      return False  
-  except OSError as e:
-    if e.errno == errno.ENOENT:
-      print(str(e), file=sys.stderr)
-      print('Could not run CMake, perhaps it has not been installed?', file=sys.stderr)
-      if WINDOWS:
-        print('Installing this package requires CMake. Get it from http://www.cmake.org/', file=sys.stderr)
-      elif LINUX:
-        print('Installing this package requires CMake. Get it via your system package manager (e.g. sudo apt-get install cmake), or from http://www.cmake.org/', file=sys.stderr)
-      elif OSX:
-        print('Installing this package requires CMake. Get it via a OSX package manager (Homebrew: "brew install cmake", or MacPorts: "sudo port install cmake"), or from http://www.cmake.org/', file=sys.stderr)        
+      print >> sys.stderr, 'CMake invocation failed with exit code ' + ret + '!'
+      print >> sys.stderr, 'Working directory: ' + build_root
       return False
-    raise
-  except Exception as e:
-    print('CMake invocation failed due to exception!', file=sys.stderr)
-    print('Working directory: ' + build_root, file=sys.stderr)
-    print(str(e), file=sys.stderr)
+  except Exception, e:
+    print >> sys.stderr, 'CMake invocation failed due to exception!'
+    print >> sys.stderr, 'Working directory: ' + build_root
+    print >> sys.stderr, str(e)
     return False
 
   return True
@@ -544,11 +495,9 @@ def cmake_configure(generator, build_root, src_root, build_type, extra_cmake_arg
 def build_fastcomp_tool(tool):
   fastcomp_root = tool.installation_path()
   fastcomp_src_root = os.path.join(fastcomp_root, 'src')
-  success = git_clone_checkout_and_pull(tool.url, fastcomp_src_root, tool.git_branch)
-  if not success: return False
+  git_clone_checkout_and_pull(tool.url, fastcomp_src_root, tool.git_branch)
   clang_root = os.path.join(fastcomp_src_root, 'tools/clang')
-  success = git_clone_checkout_and_pull(tool.clang_url, clang_root, tool.git_branch)
-  if not success: return False
+  git_clone_checkout_and_pull(tool.clang_url, clang_root, tool.git_branch)
   cmake_generator = CMAKE_GENERATOR
   if 'Visual Studio' in CMAKE_GENERATOR and tool.bitness == 64:
     cmake_generator += ' Win64'
@@ -556,7 +505,7 @@ def build_fastcomp_tool(tool):
   build_dir = fastcomp_build_dir(tool)
   build_root = os.path.join(fastcomp_root, build_dir)
 
-  build_type = decide_cmake_build_type(tool)
+  build_type = tool.cmake_build_type
 
   # Configure
   success = cmake_configure(cmake_generator, build_root, fastcomp_src_root, build_type, ['-DLLVM_TARGETS_TO_BUILD=X86;JSBackend', 
@@ -567,26 +516,11 @@ def build_fastcomp_tool(tool):
   success = make_build(build_root, build_type)
   return success
 
-def optimizer_build_root(tool):
-  build_root = tool.installation_path().strip()
-  if build_root.endswith('/') or build_root.endswith('\\'): build_root = build_root[:-1]
-  build_root = build_root + '_' + str(tool.bitness) + 'bit_optimizer'
-  return build_root
-
-def uninstall_optimizer(tool):
-  build_root = optimizer_build_root(tool)
-  print("Deleting path '" + build_root + "'")
-  remove_tree(build_root)
-  os.remove(build_root)
-
-def is_optimizer_installed(tool):
-  build_root = optimizer_build_root(tool)
-  return os.path.exists(build_root)
-
 def build_optimizer_tool(tool):
   src_root = os.path.join(tool.installation_path(), 'tools', 'optimizer')
-  build_root = optimizer_build_root(tool)
-  build_type = decide_cmake_build_type(tool)
+  build_root = os.path.join(tool.installation_path(), 'tools', 'optimizer_build')
+
+  build_type = tool.cmake_build_type
 
   # Configure
   success = cmake_configure(None, build_root, src_root, build_type)
@@ -598,9 +532,9 @@ def build_optimizer_tool(tool):
 
 def download_and_unzip(zipfile, dest_dir, download_even_if_exists=False):
   if not download_even_if_exists and num_files_in_directory(dest_dir) > 0:
-    print("The contents of file '" + zipfile + "' already exist in destination '" + dest_dir + "', skipping.")
+    print "The contents of file '" + zipfile + "' already exist in destination '" + dest_dir + "', skipping."
     return True
-  dst_file = download_file(urljoin(emsdk_packages_url, zipfile), 'zips/', download_even_if_exists)
+  dst_file = download_file(urlparse.urljoin(emsdk_packages_url, zipfile), 'zips/', download_even_if_exists)
   if not dst_file:
     return False
   if zipfile.endswith('.zip'):
@@ -655,7 +589,7 @@ def load_dot_emscripten():
       (key, value) = parse_key_value(line)
       if value != '':
         dot_emscripten[key] = value
-#        print("Got '" + key + "' = '" + value + "'")
+#        print "Got '" + key + "' = '" + value + "'"
     except:
       pass
 
@@ -688,25 +622,25 @@ JS_ENGINES = [NODE_JS]
   
   # Clear old cached emscripten content.
   try:
-    remove_tree(os.path.join(emscripten_config_directory, ".emscripten_cache"))
+    shutil.rmtree(os.path.join(emscripten_config_directory, ".emscripten_cache"), ignore_errors=True)
     os.remove(os.path.join(emscripten_config_directory, ".emscripten_sanity"))
     os.remove(os.path.join(emscripten_config_directory, ".emscripten_cache__last_clear"))
   except:
     pass
 
-  print("The Emscripten configuration file " + os.path.normpath(dot_emscripten_path()) + " has been rewritten with the following contents:")
-  print('')
-  print(cfg.strip())
-  print('')
+  print "The Emscripten configuration file " + os.path.normpath(dot_emscripten_path()) + " has been rewritten with the following contents:"
+  print ''
+  print cfg.strip()
+  print ''
   
   path_add = get_required_path(active_tools)
   if not WINDOWS:
     emsdk_env = os.path.relpath(sdk_path('emsdk_env.sh'))
     if not '/' in emsdk_env:
       emsdk_env = './emsdk_env.sh'
-    print("To conveniently access the selected set of tools from the command line, consider adding the following directories to PATH, or call 'source " + emsdk_env + "' to do this for you.")
-    print('')
-    print('   ' + ENVPATH_SEPARATOR.join(path_add))
+    print "To conveniently access the selected set of tools from the command line, consider adding the following directories to PATH, or call 'source " + emsdk_env + "' to do this for you."
+    print ''
+    print '   ' + ENVPATH_SEPARATOR.join(path_add)
 
 def find_msbuild_dir():
   if 'ProgramFiles' in os.environ and os.environ['ProgramFiles']:
@@ -736,7 +670,7 @@ class Tool:
   def __init__(self, data):
     # Convert the dictionary representation of the tool in 'data' to members of this class for convenience.
     for key in data:
-      if sys.version_info < (3,) and isinstance(data[key], unicode):
+      if isinstance(data[key], unicode):
         setattr(self, key, data[key].encode('Latin-1'))
       else:
         setattr(self, key, data[key])
@@ -750,8 +684,8 @@ class Tool:
   def expand_vars(self, str):
     if WINDOWS and '%MSBuildPlatformsDir%' in str:
       str = str.replace('%MSBuildPlatformsDir%', find_msbuild_dir())
-    if '%cmake_build_type_on_win%' in str:
-      str = str.replace('%cmake_build_type_on_win%', (decide_cmake_build_type(self) + '/') if WINDOWS else '')
+    if '%cmake_build_type%' in str:
+      str = str.replace('%cmake_build_type%', (self.cmake_build_type + '/') if WINDOWS else '')
     if '%installation_dir%' in str:
       str = str.replace('%installation_dir%', sdk_path(self.installation_dir()))
     str = str.replace('%.exe%', '.exe' if WINDOWS else '')
@@ -770,7 +704,7 @@ class Tool:
       pth = self.expand_vars(self.install_path)
       return sdk_path(pth)
     p = self.version
-    if hasattr(self, 'bitness') and (not hasattr(self, 'append_bitness') or self.append_bitness):
+    if hasattr(self, 'bitness'):
       p += '_' + str(self.bitness) + 'bit'
     return sdk_path(os.path.join(self.id, p))
 
@@ -824,7 +758,7 @@ class Tool:
       for tool_name in self.uses:
         tool = find_tool(tool_name)
         if tool == None:
-          print("Manifest error: No tool by name '" + tool_name + "' found! This may indicate an internal SDK error!")
+          print "Manifest error: No tool by name '" + tool_name + "' found! This may indicate an internal SDK error!"
           return False
         if not tool.is_installed():
           return False
@@ -843,8 +777,6 @@ class Tool:
       
       if self.id == 'vs-tool': # vs-tool is a special tool since all versions must be installed to the same dir, so dir name will not differentiate the version.
         return content_exists and get_installed_vstool_version(self.installation_path()) == self.version
-      elif hasattr(self, 'custom_is_installed_script') and self.custom_is_installed_script == 'is_optimizer_installed':
-        return is_optimizer_installed(self)
       else:
         return content_exists
     else:
@@ -871,10 +803,10 @@ class Tool:
     for cfg in activated_cfg:
       cfg = cfg.strip()
       (key, value) = parse_key_value(cfg)
-#      print('activated cfg ' + key + ', value: ' + value)
+#      print 'activated cfg ' + key + ', value: ' + value
 #      if dot_emscripten.has_key(key):
-#        print('dot_emscripten ' + dot_emscripten[key])
-      if key in dot_emscripten and dot_emscripten[key] != value:
+#        print 'dot_emscripten ' + dot_emscripten[key]
+      if dot_emscripten.has_key(key) and dot_emscripten[key] != value:
         return False
     return True
 
@@ -913,7 +845,7 @@ class Tool:
       if len(msbuild_dir) > 0:
         return True
       else:
-        return "Visual Studio 2010 was not found!"
+        return "Visual Studio was not found!"
     else:
       return True
 
@@ -931,22 +863,21 @@ class Tool:
 
   def install(self):
     if self.can_be_installed() != True:
-      print("The tool '" + str(self) + "' is not available due to the reason: " + self.can_be_installed())
+      print "The tool '" + str(self) + "' is not available due to the reason: " + self.can_be_installed()
       return False
 
+    print "Installing '" + str(self) + "'.."
     if self.id == 'sdk':
-      print("Installing SDK '" + str(self) + "'..")
       for tool_name in self.uses:
         tool = find_tool(tool_name)
         if tool == None:
-          print("Manifest error: No tool by name '" + tool_name + "' found! This may indicate an internal SDK error!")
+          print "Manifest error: No tool by name '" + tool_name + "' found! This may indicate an internal SDK error!"
         success = tool.install()
         if not success:
           return False
-      print("Done installing SDK '" + str(self) + "'.")
+        print "Done."
       return True
     else:
-      print("Installing tool '" + str(self) + "'..")
       url = self.download_url()
       if hasattr(self, 'custom_install_script') and self.custom_install_script == 'build_fastcomp':
         success = build_fastcomp_tool(self)
@@ -959,21 +890,21 @@ class Tool:
         download_even_if_exists = (self.id == 'vs-tool')
         success = download_and_unzip(url, self.installation_path(), download_even_if_exists)
       else:
-        dst_file = download_file(urljoin(emsdk_packages_url, self.download_url()), self.installation_path())
+        dst_file = download_file(urlparse.urljoin(emsdk_packages_url, self.download_url()), self.installation_path())
         if dst_file:
           success = True
         else:
           success = False
       if not success:
-        print("Installation failed!")
+        print "Installation failed!"
         return False
-    print("Done installing tool '" + str(self) + "'.")
+    print "Done."
 
     # Sanity check that the installation succeeded, and if so, remove unneeded leftover installation files.
     if self.is_installed():
       self.cleanup_temp_install_files()
     else:
-      print("Warning: The installation of '" + str(self) + "' seems to have failed, but no error was detected. Either something went wrong with the installation, or this may indicate an internal emsdk error.")
+      print "Warning: The installation of '" + str(self) + "' seems to have failed, but no error was detected. Either something went wrong with the installation, or this may indicate an internal emsdk error."
     return True
 
   def cleanup_temp_install_files(self):
@@ -984,22 +915,17 @@ class Tool:
       rmfile(tempzipfile)
 
   def uninstall(self):
-    if not self.is_installed():
-      print("Tool '" + str(self) + "' was not installed. No need to uninstall.")
+    if  not self.is_installed():
+      print "Tool '" + str(self) + "' was not installed. No need to uninstall."
       return
-    print("Uninstalling tool '" + str(self) + "'..")
-    if hasattr(self, 'custom_uninstall_script') and self.custom_uninstall_script == 'uninstall_optimizer':
-      try:
-        uninstall_optimizer(self)
-      except:
-        pass
+    print "Uninstalling tool '" + str(self) + "'.."
     try:
-      print("Deleting path '" + self.installation_path() + "'")
-      remove_tree(self.installation_path())
+      print "Deleting path '" + self.installation_path() + "'"
+      shutil.rmtree(self.installation_path(), ignore_errors=True)
       os.remove(self.installation_path())
     except:
       pass
-    print("Done uninstalling '" + str(self) + "'.")
+    print "Done."
 
   def dependencies(self):
     if not hasattr(self, 'uses'):
@@ -1079,21 +1005,21 @@ def find_used_python():
 
 def update_emsdk():
   if WINDOWS:
-    download_and_unzip(urljoin(emsdk_packages_url, 'emsdk_windows_update.zip'), emsdk_path(), download_even_if_exists=True)
+    download_and_unzip(urlparse.urljoin(emsdk_packages_url, 'emsdk_windows_update.zip'), emsdk_path(), download_even_if_exists=True)
     rmfile('zips/emsdk_windows_update.zip')
   elif OSX or LINUX:
-    download_and_unzip(urljoin(emsdk_packages_url, 'emsdk_unix_update.tar.gz'), emsdk_path(), download_even_if_exists=True)
+    download_and_unzip(urlparse.urljoin(emsdk_packages_url, 'emsdk_unix_update.tar.gz'), emsdk_path(), download_even_if_exists=True)
     rmfile('zips/emsdk_unix_update.tar.gz')
   else:
-    print('Unsupported OS, cannot update!')
+    print 'Unsupported OS, cannot update!'
 
 def load_sdk_manifest():
   global tools
   try:
     manifest = json.loads(open(sdk_path("emsdk_manifest.json"), "r").read())
-  except Exception as e:
-    print('Error parsing emsdk_manifest.json!')
-    print(str(e))
+  except Exception, e:
+    print 'Error parsing emsdk_manifest.json!'
+    print str(e)
     return
   for tool in manifest['tools']:
     t = Tool(tool)
@@ -1122,7 +1048,7 @@ def remove_nonexisting_tools(tool_list, log_errors=True):
     tool = tool_list[i]
     if not tool.is_installed():
       if log_errors:
-        print("The SDK/tool '" + str(tool) + "' cannot be activated since it is not installed! Skipping this tool...")
+        print "The SDK/tool '" + str(tool) + "' cannot be activated since it is not installed! Skipping this tool..."
       tool_list.pop(i)
       continue
     i += 1
@@ -1179,7 +1105,7 @@ def set_active_tools(tools_to_activate, permanently_activate):
       if len(newpath) < 1024:
         win_set_environment_variable('PATH', newpath, system=True)
       else:
-        print('ERROR! The new PATH is more than 1024 characters long! A PATH this long cannot be set via command line: please add the PATHs specified above to system PATH manually via Control Panel.', file=sys.stderr)
+        print >> sys.stderr, 'ERROR! The new PATH is more than 1024 characters long! A PATH this long cannot be set via command line: please add the PATHs specified above to system PATH manually via Control Panel.'
 
   return tools_to_activate
 
@@ -1224,7 +1150,7 @@ def adjusted_path(tools_to_activate, log_additions=False):
   # Existing non-emsdk tools
   existing_path = [item for item in existing_path if not to_unix_path(item).startswith(emsdk_root_path)]
   new_path = [item for item in path_add if not normalized_contains(existing_path, item)]
-  return (ENVPATH_SEPARATOR.join(unique_items(new_path + existing_path)), new_emsdk_tools)
+  return (ENVPATH_SEPARATOR.join(unique_items(existing_path + new_path)), new_emsdk_tools)
 
 def construct_env_windows(tools_to_activate, permanent):
   global emscripten_config_directory
@@ -1234,16 +1160,16 @@ def construct_env_windows(tools_to_activate, permanent):
 # Dont permanently add to PATH, since this will break the whole system if there are more than 1024 chars in PATH.
 # (SETX truncates to set only 1024 chars)
 #  if permanent:
-#    print('SETX PATH "' + newpath + '"')
+#    print 'SETX PATH "' + newpath + '"'
 #  else:
 
   if os.environ['PATH'] != newpath: # Don't bother setting the path if there are no changes.
     env_string += 'SET PATH=' + newpath + '\n'
     if len(added_path) > 0:
-      print('Adding directories to PATH:')
+      print 'Adding directories to PATH:'
       for item in added_path:
-        print('PATH += ' + item)
-      print('')
+        print 'PATH += ' + item
+      print ''
 
   env_vars_to_add = []
   em_config_path = os.path.normpath(os.path.join(emscripten_config_directory, '.emscripten'))
@@ -1263,14 +1189,14 @@ def construct_env_windows(tools_to_activate, permanent):
         env_vars_to_add += [(key, value)]
 
   if len(env_vars_to_add) > 0:
-    print('Setting environment variables:')
+    print 'Setting environment variables:'
     for key, value in env_vars_to_add:
       if permanent:
         env_string += 'SETX ' + key + ' "' + value + '"\n'
       else:
         env_string += 'SET ' + key + '=' + value + '\n'
-      print(key + ' = ' + value)
-    print('')
+      print key + ' = ' + value
+    print ''
   return env_string
 
 def construct_env_unix(tools_to_activate):
@@ -1280,10 +1206,10 @@ def construct_env_unix(tools_to_activate):
   if os.environ['PATH'] != newpath: # Don't bother setting the path if there are no changes.
     env_string += 'export PATH="' + newpath + '"\n'
     if len(added_path) > 0:
-      print('Adding directories to PATH:')
+      print 'Adding directories to PATH:'
       for item in added_path:
-        print('PATH += ' + item)
-      print('')
+        print 'PATH += ' + item
+      print ''
 
   env_vars_to_add = []
   for tool in tools_to_activate:
@@ -1294,11 +1220,11 @@ def construct_env_unix(tools_to_activate):
         env_vars_to_add += [(key, value)]
 
   if len(env_vars_to_add) > 0:
-    print('Setting environment variables:')
+    print 'Setting environment variables:'
     for key, value in env_vars_to_add:
       env_string += 'export ' + key + '="' + value + '"\n'
-      print(key + ' = ' + value)
-    print('')
+      print key + ' = ' + value
+    print ''
   return env_string
 
 
@@ -1311,57 +1237,58 @@ def construct_env(tools_to_activate, permanent):
 def silentremove(filename):
   try:
     os.remove(filename)
-  except OSError as e:
+  except OSError, e:
     if e.errno != errno.ENOENT: raise
 
 def main():
   global emscripten_config_directory
   load_dot_emscripten()
   load_sdk_manifest()
+  usage_str = "usage: %prog --param1 .. --paramn <projectrootdir>"
 
+#  parser = optparse.OptionParser(usage=usage_str)
+#  parser.add_option('update', dest='update', action='store_true', default=False, help='Downloads and installs the latest Emscripten SDK components.')
+#  (options, args) = parser.parse_args(sys.argv)
   if len(sys.argv) <= 1 or sys.argv[1] == 'help':
     if len(sys.argv) <= 1:
-      print(' emsdk: No command given. Please call one of the following:')
+      print ' emsdk: No command given. Please call one of the following:'
     else:
-      print(' emsdk: Available commands:')
+      print ' emsdk: Available commands:'
 
-    print('''
+    print '''
    emsdk list [--old]           - Lists all available SDKs and tools and their
                                   current installation status. With the --old
-                                  parameter, also historical versions are
-                                  shown.
+                                  parameter, also historical versions are shown.
 
    emsdk update                 - Fetches a list of updates from the net (but
                                   does not install them)
 
-   emsdk install [-j<num>] [--build=type] <tool/sdk>
-                                - Downloads and installs the given tool or SDK.
-                                  An optional -j<num> specifier can be used to
-                                  specify the number of cores to use when
-                                  building the tool. (default: use one less
-                                  than the # of detected cores)
+   emsdk install <tool/sdk>     - Downloads and installs the given tool or SDK.
+   emsdk uninstall <tool/sdk>   - Removes the given tool or SDK from disk.
 
-   emsdk uninstall <tool/sdk>   - Removes the given tool or SDK from disk.''')
+   emsdk activate <tool/sdk>    - Activates the given tool or SDK in the
+                                  environment of the current shell.'''
 
     if WINDOWS:
-      print('''
-   emsdk activate [--global] [--embedded] [--build=type] <tool/sdk> 
+      print '''
+   emsdk activate [--global] [--embedded] <tool/sdk> 
 
-                                - Activates the given tool or SDK in the
-                                  environment of the current shell. If the
-                                  --global option is passed, the registration
-                                  is done globally to all users in the system
+                                - Activates the given tool or SDK in
+                                  the environment of the current
+                                  shell. If the --global option is
+                                  passed, the registration is done
+                                  globally to all users in the system
                                   environment. If the --embedded option is
                                   passed, all Emcripten configuration files as
                                   well as the temp, cache and ports directories
                                   are located inside the Emscripten SDK
-                                  directory rather than the user home
-                                  directory.
+                                  directory rather than the user home directory.
 
    emcmdprompt.bat              - Spawns a new command prompt window with the
-                                  Emscripten environment active.''')
+                                  Emscripten environment active.'''
     else:
-      print('''   emsdk activate [--embedded] [--build=type] <tool/sdk>
+      print '''
+   emsdk activate [--embedded] <tool/sdk>
 
                                 - Activates the given tool or SDK in the
                                   environment of the current shell. If the
@@ -1369,57 +1296,25 @@ def main():
                                   configuration files as well as the temp, cache
                                   and ports directories are located inside the
                                   Emscripten SDK directory rather than the user
-                                  home directory.''')
+                                  home directory.'''
 
-    print('''
-       Both commands 'install' and 'activate' accept an optional parameter
-       '--build=type', which can be used to override what kind of installation
-       or activation to perform. Possible values for type are Debug, Release,
-       MinSizeRel or RelWithDebInfo. Note: When overriding a custom build type,
-       be sure to match the same --build= option to both 'install' and
-       'activate' commands and the invocation of 'emsdk_env', or otherwise
-       these commands will default to operating on the default build types,
-       which are Release for the 'master' SDK, and RelWithDebInfo for the
-       'incoming' SDK.''')
     return 1
   cmd = sys.argv[1]
 
-  # Process global args
-  for i in range(2, len(sys.argv)):
-    if sys.argv[i].startswith('--build='):
-      build_type = re.match(r'^--build=(.+)$', sys.argv[i])
-      if build_type:
-        global CMAKE_BUILD_TYPE_OVERRIDE
-        build_type = build_type.group(1)
-        build_types = ['Debug', 'MinSizeRel', 'RelWithDebInfo', 'Release']
-        try:
-          build_type_index = [x.lower() for x in build_types].index(build_type.lower())
-          CMAKE_BUILD_TYPE_OVERRIDE = build_types[build_type_index]
-          sys.argv[i] = ''
-        except:
-          print('Unknown CMake build type "' + build_type + '" specified! Please specify one of ' + str(build_types), file=sys.stderr)
-          return 1
-      else:
-        print("Invalid command line parameter " + sys.argv[i] + ' specified!', file=sys.stderr)
-        return 1
-  sys.argv = [x for x in sys.argv if not len(x) == 0]
-
-  # Replace meta-packages with the real package names.
-  if (cmd == 'update' or cmd == 'install' or cmd == 'activate'):
-    for i in range(2, len(sys.argv)):
-      if sys.argv[i] == 'latest':
-        sys.argv[i] = str(find_latest_sdk())
-      elif sys.argv[i] == 'latest-32bit':
-        sys.argv[i] = str(find_latest_32bit_sdk())
-      elif sys.argv[i] == 'latest-64bit':
-        sys.argv[i] = str(find_latest_64bit_sdk())
+  if (cmd == 'update' or cmd == 'install' or cmd == 'activate') and len(sys.argv) >= 3:
+    if sys.argv[2] == 'latest':
+      sys.argv[2] = str(find_latest_sdk())
+    elif sys.argv[2] == 'latest-32bit':
+      sys.argv[2] = str(find_latest_32bit_sdk())
+    elif sys.argv[2] == 'latest-64bit':
+      sys.argv[2] = str(find_latest_64bit_sdk())
 
   if cmd == 'list':
-    print('')
+    print ''
     show_old = len(sys.argv) >= 3 and sys.argv[2] == '--old'
     has_partially_active_tools = False
     if len(tools) > 0:
-      print('The following individual tools exist:')
+      print 'The following individual tools exist:'
       for tool in tools:
         if tool.is_old and not show_old:
           continue
@@ -1434,28 +1329,28 @@ def main():
           active = '(*)'
           has_partially_active_tools = True
         else: active = '   '
-        print('    ' + active + '    {0: <25}'.format(str(tool)) + installed)
-      print('')
+        print '    ' + active + '    {0: <25}'.format(str(tool)) + installed
+      print ''
     else:
-      print("There are no tools available. Run 'emsdk update' to fetch the latest set of tools.")
-    print('')
+      print "There are no tools available. Run 'emsdk update' to fetch the latest set of tools."
+    print ''
 
     if len(sdks) > 0:
-      print('The following Emscripten SDK versions are available:')
+      print 'The following Emscripten SDK versions are available:'
       for sdk in sdks:
         if sdk.is_old and not show_old:
           continue
         installed = '\tINSTALLED' if sdk.is_installed() else ''
         active = '*' if sdk.is_active() else ' '
-        print('    ' + active + '    {0: <25}'.format(str(sdk)) + installed)
-      print('')
-      print('Items marked with * are activated for the current user.')
+        print '    ' + active + '    {0: <25}'.format(str(sdk)) + installed
+      print ''
+      print 'Items marked with * are activated for the current user.'
       if has_partially_active_tools:
         env_cmd = 'emsdk_env.bat' if WINDOWS else 'source ./emsdk_env.sh'
-        print('Items marked with (*) are selected for use, but your current shell environment is not configured to use them. Type "' + env_cmd + '" to set up your current shell to use them, or call "emsdk activate --global <name_of_sdk>" to permanently activate them.')
+        print 'Items marked with (*) are selected for use, but your current shell environment is not configured to use them. Type "' + env_cmd + '" to set up your current shell to use them, or call "emsdk activate --global <name_of_sdk>" to permanently activate them.'
       if not show_old:
-        print('')
-        print("To access the historical archived versions, type 'emsdk list --old'")
+        print ''
+        print "To access the historical archived versions, type 'emsdk list --old'"
 
     return 0
   elif cmd == 'construct_env':
@@ -1468,7 +1363,7 @@ def main():
     tools_to_activate = process_tool_list(tools_to_activate, log_errors=True)
     env_string = construct_env(tools_to_activate, len(sys.argv) >= 3 and 'perm' in sys.argv[2])
     open(EMSDK_SET_ENV, 'w').write(env_string)
-    if LINUX or OSX: os.chmod(EMSDK_SET_ENV, 0o755)
+    if LINUX or OSX: os.chmod(EMSDK_SET_ENV, 0755)
     return 0
   elif cmd == 'update':
     update_emsdk()
@@ -1477,22 +1372,22 @@ def main():
   elif cmd == 'activate':
     permanently_activate = '--global' in sys.argv
     if permanently_activate:
-      print('Registering active Emscripten environment globally for all users.')
-      print('')
+      print 'Registering active Emscripten environment globally for all users.'
+      print ''
     embed_activation_to_sdk_dir = '--embedded' in sys.argv
     if embed_activation_to_sdk_dir:
       # Activating the emsdk tools locally relative to Emscripten SDK directory.
       emscripten_config_directory = emsdk_path()
-      print('Writing .emscripten configuration file to Emscripten SDK directory ' + emscripten_config_directory)
+      print 'Writing .emscripten configuration file to Emscripten SDK directory ' + emscripten_config_directory
     else:
-      print('Writing .emscripten configuration file to user home directory ' + emscripten_config_directory)
+      print 'Writing .emscripten configuration file to user home directory ' + emscripten_config_directory
       # Remove .emscripten from emsdk dir, since its presence is used to detect whether emsdk is activate in embedded mode or not.
       try:
         os.remove(os.path.join(emsdk_path(), ".emscripten"))
       except:
         pass
 
-    sys.argv = [x for x in sys.argv if not x.startswith('--')]
+    sys.argv = filter(lambda x: not x.startswith('--'), sys.argv)
     # If called without arguments, activate latest versions of all tools
     if len(sys.argv) <= 2:
       tools_to_activate = list(tools)
@@ -1504,49 +1399,35 @@ def main():
         if tool == None:
           tool = find_sdk(sys.argv[i])
         if tool == None:
-          print("Error: No tool or SDK found by name '" + sys.argv[i] + "'.")
+          print "Error: No tool or SDK found by name '" + sys.argv[i] + "'."
           return 1
         tools_to_activate += [tool]
     tools_to_activate = set_active_tools(tools_to_activate, permanently_activate=permanently_activate)
     if WINDOWS and not permanently_activate:
-      print('To permanently register this environment globally to all users in Windows Registry, rerun the command with the option --global.')
+      print 'To permanently register this environment globally to all users in Windows Registry, rerun the command with the option --global.'
     return 0
   elif cmd == 'install':
-    # Process args
-    for i in range(2, len(sys.argv)):
-      if sys.argv[i].startswith('-j'):
-        multicore = re.match(r'^-j(\d+)$', sys.argv[i])
-        if multicore:
-          global CPU_CORES
-          CPU_CORES = int(multicore.group(1))
-          sys.argv[i] = ''
-        else:
-          print("Invalid command line parameter " + sys.argv[i] + ' specified!', file=sys.stderr)
-          return 1
-    sys.argv = [x for x in sys.argv if not len(x) == 0]
     if len(sys.argv) <= 2:
-      print("Missing parameter. Type 'emsdk install <tool name>' to install a tool or an SDK. Type 'emsdk list' to obtain a list of available tools. Type 'emsdk install latest' to automatically install the newest version of the SDK.")
+      print "Missing parameter. Type 'emsdk install <tool name>' to install a tool or an SDK. Type 'emsdk list' to obtain a list of available tools. Type 'emsdk install latest' to automatically install the newest version of the SDK."
       return 1
     tool = find_tool(sys.argv[2])
     if tool == None:
       tool = find_sdk(sys.argv[2])
     if tool == None:
-      print("Error: No tool or SDK found by name '" + sys.argv[2] + "'.")
+      print "Error: No tool or SDK found by name '" + sys.argv[2] + "'."
       return 1
-    success = tool.install()
-    if not success:
-      return 1
+    tool.install()
   elif cmd == 'uninstall':
     if len(sys.argv) <= 2:
-      print("Syntax error. Call 'emsdk uninstall <tool name>'. Call 'emsdk list' to obtain a list of available tools.")
+      print "Syntax error. Call 'emsdk uninstall <tool name>'. Call 'emsdk list' to obtain a list of available tools."
       return 1
     tool = find_tool(sys.argv[2])
     if tool == None:
-      print("Error: Tool by name '" + sys.argv[2] + "' was not found.")
+      print "Error: Tool by name '" + sys.argv[2] + "' was not found."
       return 1
     tool.uninstall()
   else:
-    print("Unknown command '" + cmd + "' given! Type 'emsdk help' to get a list of commands.")
+    print "Unknown command '" + cmd + "' given! Type 'emsdk help' to get a list of commands."
     return 1
 
 if __name__ == '__main__':
