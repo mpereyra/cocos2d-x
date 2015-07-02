@@ -12,7 +12,7 @@ endif
 COCOS_SRC = $(COCOS_ROOT)/cocos2dx
 OBJ_DIR ?= obj
 
-EMSCRIPTEN_VERSION = 1.30.0
+EMSCRIPTEN_VERSION = 1.29.0
 EMSCRIPTEN_ROOT ?= $(realpath $(COCOS_ROOT)/external/emsdk_portable/emscripten/$(EMSCRIPTEN_VERSION))
 PACKAGER := $(EMSCRIPTEN_ROOT)/tools/file_packager.py
 
