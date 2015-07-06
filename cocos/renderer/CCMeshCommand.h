@@ -46,9 +46,11 @@ struct StencilMaskOptions{
     int m_opDepthFail{GL_KEEP};
     int m_opPass{GL_KEEP};
     int m_ref {0};
+    int m_mask {0};
     
     StencilMaskOptions(){}
-    StencilMaskOptions(int ref, int func, int opF, int opDF, int opP){
+    StencilMaskOptions(int ref, int func, int opF, int opDF, int opP, int mask){
+        m_mask = mask;
         m_ref = ref;
         m_stencilFunc = func;
         m_opFail = opF;
