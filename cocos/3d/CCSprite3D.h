@@ -144,7 +144,12 @@ public:
      * Force to write to depth buffer, this is useful if you want to achieve effects like fading.
      */
     void setForceDepthWrite(bool value) { _forceDepthWrite = value; }
-    bool isForceDepthWrite() const { return _forceDepthWrite;};
+    bool isForceDepthWrite() const { return _forceDepthWrite;}
+
+    /** BPC PATCH BEGIN **/
+    void setForceCullFace(bool value) { _forceCullFace = value; }
+    bool isForceCullFace(bool value) { return _forceCullFace; }
+    /** BPC PATCH END **/
     
     /**
      * Returns 2d bounding-box
@@ -237,6 +242,7 @@ protected:
     unsigned int                 _lightMask;
     bool                         _shaderUsingLight; // is current shader using light ?
     bool                         _forceDepthWrite; // Always write to depth buffer
+    bool                         _forceCullFace; // Always write to depth buffer
 
 // BPC PATCH BEGIN
     bool                         _retainSkeleton {false}; // Don't change skeelton when loading new model
