@@ -188,9 +188,10 @@ CC_CONSTRUCTOR_ACCESS:
     
     //BPC PATCH
     virtual bool initWithFile(const std::string &path);
+    virtual bool initFrom(const NodeDatas& nodedatas, const MeshDatas& meshdatas, const MaterialDatas& materialdatas);
     //END BPC PATCH
     
-    bool initFrom(const NodeDatas& nodedatas, const MeshDatas& meshdatas, const MaterialDatas& materialdatas);
+    
     
     /** BPC PATCH **/
     /**load sprite3d from cache, return true if succeed, false otherwise*/
