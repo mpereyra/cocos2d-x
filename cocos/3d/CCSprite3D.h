@@ -144,10 +144,10 @@ public:
     /**
      * Force to write to depth buffer, this is useful if you want to achieve effects like fading.
      */
-    void setForceDepthWrite(bool value) { _forceDepthWrite = value; }
-    bool isForceDepthWrite() const { return _forceDepthWrite;}
-
     /** BPC PATCH BEGIN **/
+    void setForceDepthWrite(bool value, bool recursive=true);
+    bool isForceDepthWrite() const { return _forceDepthWrite;}
+    
     virtual void getSprite3DRecursive(Node* parent, std::set<Sprite3D*>& sprites);
     void setForceCullFace(bool enabled, bool recursive=true);
     bool isForceCullFace() { return _forceCullFace; }

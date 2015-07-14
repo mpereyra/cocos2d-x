@@ -989,6 +989,20 @@ void Sprite3D::setDepthTestEnabled(bool enabled, bool recursive) {
     }
 }
 
+void Sprite3D::setForceDepthWrite(bool enabled, bool recursive) {
+    _forceDepthWrite = enabled;
+    
+    if(recursive) {
+        std::set<Sprite3D*> sprites;
+        getSprite3DRecursive(this, sprites);
+        
+        for(auto sprite : sprites) {
+            sprite->setForceDepthWrite(enabled, false);
+        }
+    }
+
+}
+
 void Sprite3D::setDepthWriteEnabled(bool enabled, bool recursive) {
     if(enabled == false) {
         _forceDepthWrite = false;
