@@ -26,6 +26,7 @@
 #define __CCSPRITE3D_H__
 
 #include <unordered_map>
+#include <set>
 
 #include "base/CCVector.h"
 #include "base/ccTypes.h"
@@ -147,8 +148,9 @@ public:
     bool isForceDepthWrite() const { return _forceDepthWrite;}
 
     /** BPC PATCH BEGIN **/
-    void setForceCullFace(bool value) { _forceCullFace = value; }
-    bool isForceCullFace(bool value) { return _forceCullFace; }
+    virtual void getSprite3DRecursive(Node* parent, std::set<Sprite3D*>& sprites);
+    void setForceCullFace(bool enabled, bool recursive=true);
+    bool isForceCullFace() { return _forceCullFace; }
     /** BPC PATCH END **/
     
     /**
@@ -243,7 +245,7 @@ protected:
     unsigned int                 _lightMask;
     bool                         _shaderUsingLight; // is current shader using light ?
     bool                         _forceDepthWrite; // Always write to depth buffer
-    bool                         _forceCullFace; // Always write to depth buffer
+    bool                         _forceCullFace; // Always cull face even if transparent
 
 // BPC PATCH BEGIN
     bool                         _retainSkeleton {false}; // Don't change skeelton when loading new model

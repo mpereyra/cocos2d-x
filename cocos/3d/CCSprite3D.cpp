@@ -961,6 +961,19 @@ MeshSkin* Sprite3D::getSkin() const
 }
 
 /* BPC PATCH BEGIN */
+
+
+void Sprite3D::getSprite3DRecursive(Node* parent, std::set<Sprite3D*>& sprites){
+    auto s3d = dynamic_cast<Sprite3D*>(parent);
+    if(s3d){
+        sprites.insert(s3d);
+    }
+    
+    for(auto c : parent->getChildren()){
+        getSprite3DRecursive(c, sprites);
+    }
+}
+
 void Sprite3D::setDepthTestEnabled(bool enabled, bool recursive) {
     for(auto mesh : _meshes) {
         mesh->getMeshCommand().setDepthTestEnabled(enabled);
@@ -990,6 +1003,19 @@ void Sprite3D::setDepthWriteEnabled(bool enabled, bool recursive) {
         Sprite3D* sprite3D = dynamic_cast<Sprite3D*>(child);
         if(sprite3D) {
             sprite3D->setDepthWriteEnabled(enabled);
+        }
+    }
+}
+
+void Sprite3D::setForceCullFace(bool enabled, bool recursive) {
+    _forceCullFace = enabled;
+    
+    if(recursive) {
+        std::set<Sprite3D*> sprites;
+        getSprite3DRecursive(this, sprites);
+        
+        for(auto sprite : sprites) {
+            sprite->setForceCullFace(enabled, false);
         }
     }
 }

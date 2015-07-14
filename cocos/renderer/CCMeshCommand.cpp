@@ -180,8 +180,11 @@ void MeshCommand::setTransparent(bool value)
     _isTransparent = value;
     //Skip batching for transparent mesh
     _skipBatching = value;
-    
-    _forceDepthWrite = false;
+
+    /* BPC_PATCH */
+    // If force depth write should do anything it should be to override transparency turning off depth write.
+    // _forceDepthWrite = false;
+    /* BPC_PATCH END */
     if (_isTransparent && !_forceDepthWrite)
     {
         _depthWriteEnabled = false;
