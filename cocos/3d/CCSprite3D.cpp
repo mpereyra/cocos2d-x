@@ -854,6 +854,13 @@ const AABB& Sprite3D::getAABB() const
             _aabb.merge(child->getNodeToParentAABB());
         }
         
+        /** BPC PATCH BEGIN **/
+        // Don't want to keep an invalid boudning box just because we have no visible mesh!
+        if(_aabb.isEmpty()) {
+            _aabb.set({0,0,0}, {0,0,0});
+        }
+        /** BPC PATCH END **/
+        
         // convert to world space
         _aabb.transform(nodeToWorldTransform);
         _nodeToWorldTransform = nodeToWorldTransform;
