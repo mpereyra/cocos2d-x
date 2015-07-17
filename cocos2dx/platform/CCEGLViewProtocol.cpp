@@ -63,12 +63,17 @@ void CCEGLViewProtocol::setDesignResolutionSize(float width, float height, Resol
     {
         return;
     }
-
+    
     m_obDesignResolutionSize.setSize(width, height);
     
+#ifdef EMSCRIPTEN
+    m_fScaleX = m_obCanvasSize.width / m_obDesignResolutionSize.width;
+    m_fScaleY = m_obCanvasSize.height / m_obDesignResolutionSize.height;
+#else
     m_fScaleX = (float)m_obScreenSize.width / m_obDesignResolutionSize.width;
     m_fScaleY = (float)m_obScreenSize.height / m_obDesignResolutionSize.height;
-    
+#endif
+
     if (resolutionPolicy == kResolutionNoBorder)
     {
         m_fScaleX = m_fScaleY = MAX(m_fScaleX, m_fScaleY);
@@ -83,8 +88,12 @@ void CCEGLViewProtocol::setDesignResolutionSize(float width, float height, Resol
     float viewPortW = m_obDesignResolutionSize.width * m_fScaleX;
     float viewPortH = m_obDesignResolutionSize.height * m_fScaleY;
 
+#ifdef EMSCRIPTEN
+    m_obViewPortRect.setRect((m_obCanvasSize.width - viewPortW) / 2, (m_obCanvasSize.height - viewPortH) / 2, viewPortW, viewPortH);
+#else
     m_obViewPortRect.setRect((m_obScreenSize.width - viewPortW) / 2, (m_obScreenSize.height - viewPortH) / 2, viewPortW, viewPortH);
-    
+#endif
+
     m_eResolutionPolicy = resolutionPolicy;
     
 	// reset director's member variables to fit visible rect
@@ -132,6 +141,13 @@ CCPoint CCEGLViewProtocol::getVisibleOrigin() const
         return CCPointZero;
     }
 }
+
+#ifdef EMSCRIPTEN
+void CCEGLViewProtocol::setCanvasSize(float width, float height)
+{
+    m_obCanvasSize = CCSizeMake(width, height);
+}
+#endif
 
 void CCEGLViewProtocol::setTouchDelegate(EGLTouchDelegate * pDelegate)
 {
