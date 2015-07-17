@@ -272,6 +272,7 @@ static BOOL configured = FALSE;
 // Init
 + (CDAudioManager *) sharedManager
 {
+    return NULL;
     @synchronized(self)     {
         if (!sharedManager) {
             if (!configured) {
