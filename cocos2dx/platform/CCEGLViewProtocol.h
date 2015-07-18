@@ -69,6 +69,13 @@ public:
      */
     virtual CCPoint getVisibleOrigin() const;
 
+#ifdef EMSCRIPTEN
+    /**
+     * Sets the visible canvas size separate from frame size
+     */
+    virtual void setCanvasSize(float width, float height);
+#endif
+    
     /**
      * Set the design resolution size.
      * @param width Design resolution width.
@@ -137,6 +144,11 @@ protected:
     CCSize m_obDesignResolutionSize;
     // the view port size
     CCRect m_obViewPortRect;
+    
+#ifdef EMSCRIPTEN
+    CCSize m_obCanvasSize;
+#endif
+    
     // the view name
     char   m_szViewName[50];
 

@@ -36,6 +36,11 @@ THE SOFTWARE.
 #include <string>
 #include <ctype.h>
 
+#ifdef EMSCRIPTEN
+#include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
+#endif // EMSCRIPTEN
+
 NS_CC_BEGIN
 
 // premultiply alpha, or the effect will wrong when want to use other pixel format in CCTexture2D,
@@ -236,7 +241,7 @@ bool CCImage::_initWithJpgData(void * data, int nSize)
         jpeg_mem_src( &cinfo, (unsigned char *) data, nSize );
 
         /* reading the image header which contains image information */
-        jpeg_read_header( &cinfo, true );
+        jpeg_read_header( &cinfo, TRUE );
 
         // we only support RGB or grayscale
         if (cinfo.jpeg_color_space != JCS_RGB)

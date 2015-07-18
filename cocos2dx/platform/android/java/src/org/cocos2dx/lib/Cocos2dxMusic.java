@@ -126,7 +126,11 @@ public class Cocos2dxMusic {
 
 	public void stopBackgroundMusic() {
 		if (this.mBackgroundMediaPlayer != null) {
-			this.mBackgroundMediaPlayer.stop();
+			try {
+				this.mBackgroundMediaPlayer.stop();
+			} catch (final Exception e) {
+				Log.e(Cocos2dxMusic.TAG, "stopBackgroundMusic: IllegalStateException ");
+			}
 
 			// should set the state, if not, the following sequence will be error
 			// play -> pause -> stop -> resume
