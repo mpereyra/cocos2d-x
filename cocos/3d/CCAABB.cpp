@@ -41,7 +41,7 @@ AABB::AABB(const AABB& box)
 	set(box._min,box._max);
 }
 
-Vec3 AABB::getCenter()
+Vec3 AABB::getCenter() const
 {
     Vec3 center;
 	center.x = 0.5f*(_min.x+_max.x);

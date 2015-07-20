@@ -52,7 +52,7 @@ public:
     /**
      * Gets the center point of the bounding box.
      */
-    Vec3 getCenter();
+    Vec3 getCenter() const;
 
     /* Near face, specified counter-clockwise looking towards the origin from the positive z-axis.
      * verts[0] : left top front
