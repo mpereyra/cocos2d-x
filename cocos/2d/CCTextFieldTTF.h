@@ -165,6 +165,7 @@ public:
     virtual void setSecureTextEntry(bool value);
     virtual bool isSecureTextEntry();
     
+    // BPC PATCH - Support custom keyboard modes and secure text entry
     enum KeyboardType {
         kKTDefault = 0,
         kKTEmail,
@@ -175,6 +176,10 @@ public:
     
     virtual void setKeyboardType(KeyboardType type);
     virtual KeyboardType getKeyboardType() const;
+    
+    virtual void setPlatformSecureTextEntry(bool value);
+    virtual bool getPlatformSecureTextEntry() const;
+    // END BPC PATCH
 
     virtual void visit(Renderer *renderer, const Mat4 &parentTransform, uint32_t parentFlags) override;
 
@@ -199,7 +204,10 @@ protected:
     Color4B _colorText;
 
     bool _secureTextEntry;
+    // BPC PATCH
     KeyboardType _keyboardType;
+    bool _platformSecureTextEntry;
+    // END BPC PATCH
 
 private:
     class LengthStack;

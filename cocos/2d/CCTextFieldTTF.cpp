@@ -143,7 +143,7 @@ bool TextFieldTTF::attachWithIME()
         auto pGlView = Director::getInstance()->getOpenGLView();
         if (pGlView)
         {
-            pGlView->setSecureTextEntry(_secureTextEntry);
+            pGlView->setSecureTextEntry(_platformSecureTextEntry);
             pGlView->setIMEKeyboardType(_keyboardType);
 #if (CC_TARGET_PLATFORM != CC_PLATFORM_WP8 && CC_TARGET_PLATFORM != CC_PLATFORM_WINRT)
             pGlView->setIMEKeyboardState(true);
@@ -400,6 +400,18 @@ void TextFieldTTF::setKeyboardType(KeyboardType type)
 TextFieldTTF::KeyboardType TextFieldTTF::getKeyboardType() const
 {
     return _keyboardType;
+}
+
+// secure text entry in this context means we will tell the system keyboard not to
+// remember what we typed for autocompletion
+void TextFieldTTF::setPlatformSecureTextEntry(bool value)
+{
+    _platformSecureTextEntry = value;
+}
+
+bool TextFieldTTF::getPlatformSecureTextEntry() const
+{
+    return _platformSecureTextEntry;
 }
 
 NS_CC_END
