@@ -326,7 +326,6 @@ public class Cocos2dxGLSurfaceView extends GLSurfaceView {
     // ===========================================================
 
     public static void openIMEKeyboard() {
-        Log.d("GLSurfaceView", "~~~ OPEN IME KEYBOARD ~~~");
         final Message msg = new Message();
         msg.what = Cocos2dxGLSurfaceView.HANDLER_OPEN_IME_KEYBOARD;
         msg.obj = Cocos2dxGLSurfaceView.mCocos2dxGLSurfaceView.getContentText();
