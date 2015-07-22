@@ -262,7 +262,9 @@ void Mesh::calcuateAABB()
 
 void Mesh::bindMeshCommand()
 {
-    if (_glProgramState && _meshIndexData && _texture)
+    /* BPC_PATCH */
+    // cocos used to have an && _texture here, but we have meshes with no texture
+    if (_glProgramState && _meshIndexData)
     {
         GLuint texID = _texture ? _texture->getName() : 0;
         _meshCommand.genMaterialID(texID, _glProgramState, _meshIndexData->getVertexBuffer()->getVBO(), _meshIndexData->getIndexBuffer()->getVBO(), _blend);
