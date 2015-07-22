@@ -124,6 +124,16 @@ void GLViewImpl::setIMEKeyboardState(bool bOpen)
     setKeyboardStateJNI((int)bOpen);
 }
 
+void GLViewImpl::setIMEKeyboardType(TextFieldTTF::KeyboardType type)
+{
+    setKeyboardTypeJNI(static_cast<int>(type));
+}
+
+void GLViewImpl::setSecureTextEntry(bool secure)
+{
+    setSecureTextEntryJNI(secure);
+}
+
 NS_CC_END
 
 #endif // CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID

@@ -57,6 +57,7 @@ TextFieldTTF::TextFieldTTF()
 , _placeHolder("")   // prevent Label initWithString assertion
 , _colorText(Color4B::WHITE)
 , _secureTextEntry(false)
+, _keyboardType(kKTDefault)
 {
     _colorSpaceHolder.r = _colorSpaceHolder.g = _colorSpaceHolder.b = 127;
     _colorSpaceHolder.a = 255;
@@ -142,6 +143,8 @@ bool TextFieldTTF::attachWithIME()
         auto pGlView = Director::getInstance()->getOpenGLView();
         if (pGlView)
         {
+            pGlView->setSecureTextEntry(_secureTextEntry);
+            pGlView->setIMEKeyboardType(_keyboardType);
 #if (CC_TARGET_PLATFORM != CC_PLATFORM_WP8 && CC_TARGET_PLATFORM != CC_PLATFORM_WINRT)
             pGlView->setIMEKeyboardState(true);
 #else
@@ -161,6 +164,7 @@ bool TextFieldTTF::detachWithIME()
         auto glView = Director::getInstance()->getOpenGLView();
         if (glView)
         {
+            glView->setSecureTextEntry(false);
 #if (CC_TARGET_PLATFORM != CC_PLATFORM_WP8 && CC_TARGET_PLATFORM != CC_PLATFORM_WINRT)
             glView->setIMEKeyboardState(false);
 #else
@@ -385,6 +389,17 @@ void TextFieldTTF::setSecureTextEntry(bool value)
 bool TextFieldTTF::isSecureTextEntry()
 {
     return _secureTextEntry;
+}
+
+// keyboardType
+void TextFieldTTF::setKeyboardType(KeyboardType type)
+{
+    _keyboardType = type;
+}
+
+TextFieldTTF::KeyboardType TextFieldTTF::getKeyboardType() const
+{
+    return _keyboardType;
 }
 
 NS_CC_END

@@ -212,6 +212,39 @@ void GLViewImpl::setIMEKeyboardState(bool open)
     }
 }
 
+void GLViewImpl::setIMEKeyboardType(TextFieldTTF::KeyboardType type)
+{
+    UIKeyboardType uikType;
+    
+    switch (type)
+    {
+        case TextFieldTTF::kKTEmail:
+            uikType = UIKeyboardTypeEmailAddress;
+            break;
+        case TextFieldTTF::kKTURL:
+            uikType = UIKeyboardTypeURL;
+            break;
+        case TextFieldTTF::kKTNumberPad:
+            uikType = UIKeyboardTypeNumberPad;
+            break;
+        case TextFieldTTF::kKTPhonePad:
+            uikType = UIKeyboardTypePhonePad;
+            break;
+        default:
+            uikType = UIKeyboardTypeDefault;
+            break;
+    }
+    
+    CCEAGLView *eaglview = (CCEAGLView*) _eaglview;
+    [eaglview setKeyboardFormat:uikType];
+}
+
+void GLViewImpl::setSecureTextEntry(bool secure)
+{
+    CCEAGLView *eaglview = (CCEAGLView*) _eaglview;
+    [eaglview setUsesSecureTextEntry:secure ? YES : NO];
+}
+
 NS_CC_END
 
 #endif // CC_PLATFOR_IOS

@@ -28,6 +28,7 @@ THE SOFTWARE.
 
 #include "base/ccTypes.h"
 #include "base/CCEventTouch.h"
+#include "2d/CCTextFieldTTF.h"
 
 #include <vector>
 
@@ -109,6 +110,8 @@ public:
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WP8 || CC_TARGET_PLATFORM == CC_PLATFORM_WINRT)
     virtual void setIMEKeyboardState(bool open, std::string str) = 0;
 #endif
+    virtual void setIMEKeyboardType(TextFieldTTF::KeyboardType type) = 0;
+    virtual void setSecureTextEntry(bool secure) = 0;
     
     virtual bool windowShouldClose() { return false; };
 

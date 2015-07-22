@@ -164,6 +164,17 @@ public:
 
     virtual void setSecureTextEntry(bool value);
     virtual bool isSecureTextEntry();
+    
+    enum KeyboardType {
+        kKTDefault = 0,
+        kKTEmail,
+        kKTURL,
+        kKTNumberPad,
+        kKTPhonePad,
+    };
+    
+    virtual void setKeyboardType(KeyboardType type);
+    virtual KeyboardType getKeyboardType() const;
 
     virtual void visit(Renderer *renderer, const Mat4 &parentTransform, uint32_t parentFlags) override;
 
@@ -188,6 +199,7 @@ protected:
     Color4B _colorText;
 
     bool _secureTextEntry;
+    KeyboardType _keyboardType;
 
 private:
     class LengthStack;

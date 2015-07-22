@@ -93,6 +93,8 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 @synthesize multiSampling=multiSampling_;
 @synthesize isKeyboardShown=isKeyboardShown_;
 @synthesize keyboardShowNotification = keyboardShowNotification_;
+@synthesize usesSecureTextEntry = usesSecureTextEntry_;
+@synthesize keyboardFormat = keyboardFormat_;
 + (Class) layerClass
 {
     return [CAEAGLLayer class];
@@ -133,6 +135,8 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
     if((self = [super initWithFrame:frame]))
     {
         isUseUITextField = YES;
+        usesSecureTextEntry_ = NO;
+        keyboardFormat_ = UIKeyboardTypeDefault;
         pixelformat_ = format;
         depthFormat_ = depth;
         multiSampling_ = sampling;
@@ -527,6 +531,21 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 -(UITextAutocapitalizationType) autocapitalizationType
 {
     return UITextAutocapitalizationTypeNone;
+}
+
+-(UITextAutocorrectionType) autocorrectionType
+{
+    return self.usesSecureTextEntry ? UITextAutocorrectionTypeNo : UITextAutocorrectionTypeDefault;
+}
+
+-(BOOL) isSecureTextEntry
+{
+    return self.usesSecureTextEntry;
+}
+
+-(UIKeyboardType) keyboardType
+{
+    return self.keyboardFormat;
 }
 
 #pragma mark - UITextInput protocol
