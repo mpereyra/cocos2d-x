@@ -57,7 +57,9 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
     // Fields
     // ===========================================================
     
-    private Cocos2dxGLSurfaceView mGLSurfaceView = null;
+    //BPC PATCH: Attempt to preserve GL context onCreate.
+    protected Cocos2dxGLSurfaceView mGLSurfaceView = null;
+    //END BPC PATCH
     private int[] mGLContextAttrs = null;
     private Cocos2dxHandler mHandler = null;   
     private static Cocos2dxActivity sContext = null;
