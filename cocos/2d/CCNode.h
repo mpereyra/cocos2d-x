@@ -1091,7 +1091,7 @@ public:
     virtual Rect getBoundingBox() const;
 
     /** BPC PATCH BEGIN **/
-    virtual const AABB& getNodeToParentAABB() const;
+    virtual const AABB& getNodeToParentAABB(std::vector<std::string> excludeMeshes = {}) const;
     /** BPC PATCH END **/
 
     /** @deprecated Use getBoundingBox instead */
@@ -1750,6 +1750,8 @@ protected:
     
     /** BPC PATCH BEGIN **/
     mutable AABB _nodeToParentAABB;
+    //we need to clear the cached AABB if the caller specifies different exclude meshes
+    mutable std::vector<std::string> _nodeToParentExcludeMeshes;
     mutable bool _nodeToParentAABBDirty {true};
     /** BPC PATCH END **/
 

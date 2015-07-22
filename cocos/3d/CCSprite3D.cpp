@@ -871,10 +871,12 @@ const AABB& Sprite3D::getAABB() const
 }
 
 /** BPC PATCH BEGIN **/
-const AABB& Sprite3D::getNodeToParentAABB() const {
+const AABB& Sprite3D::getNodeToParentAABB(std::vector<std::string> excludeMeshes) const {
     
-    // If nodeToWorldTransform matrix isn't changed, we don't need to transform aabb.
-    if (!_nodeToParentAABBDirty)
+    // If nodeToWorldTransform matrix isn't changed and we are querying the same set of meshes as before, we don't need to transform aabb.
+    if (!_nodeToParentAABBDirty
+        && _nodeToParentExcludeMeshes.size() == excludeMeshes.size()
+        && std::is_permutation(_nodeToParentExcludeMeshes.begin(), _nodeToParentExcludeMeshes.end(), excludeMeshes.begin()))
     {
         return _nodeToParentAABB;
     }
@@ -884,13 +886,14 @@ const AABB& Sprite3D::getNodeToParentAABB() const {
         
         // Merge mesh and child aabb's in parent space
         for (const auto& mesh : _meshes) {
-            if (mesh->isVisible())
+            if (mesh->isVisible()
+                && std::none_of(excludeMeshes.begin(), excludeMeshes.end(), [&mesh](std::string& meshName){return meshName == mesh->getName();}))
                 _nodeToParentAABB.merge(mesh->getAABB());
         }
         
         for(auto const & child : _children) {
             if(child->isVisible()) {
-                _nodeToParentAABB.merge(child->getNodeToParentAABB());
+                _nodeToParentAABB.merge(child->getNodeToParentAABB(excludeMeshes));
             }
         }
         
@@ -898,6 +901,7 @@ const AABB& Sprite3D::getNodeToParentAABB() const {
         if (!_nodeToParentAABB.isEmpty()) {
             _nodeToParentAABB.transform(getNodeToParentTransform());
             _nodeToParentAABBDirty = false;
+            _nodeToParentExcludeMeshes = excludeMeshes;
         }
     }
     
