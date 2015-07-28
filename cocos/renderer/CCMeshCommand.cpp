@@ -166,7 +166,11 @@ void MeshCommand::setDepthTestEnabled(bool enable)
 
 void MeshCommand::setDepthWriteEnabled(bool enable)
 {
-    _forceDepthWrite = enable;
+    /* BPC_PATCH */
+    // _forceDepthWrite seems broken;
+    // it makes it code in setTransparent irrelevant if we set it here
+    // _forceDepthWrite = enable;
+    /* BPC_PATCH END */
     _depthWriteEnabled = enable;
 }
 
