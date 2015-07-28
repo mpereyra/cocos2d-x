@@ -7,9 +7,11 @@ varying mediump vec2 TextureCoordOut;
 varying vec2 TextureCoordOut;
 \n#endif\n
 uniform vec4 u_color;
+uniform float alpha;
 
 void main(void)
 {
     gl_FragColor = texture2D(CC_Texture0, TextureCoordOut) * u_color;
+    gl_FragColor.a *= alpha;
 }
 );

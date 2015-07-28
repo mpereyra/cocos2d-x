@@ -458,6 +458,11 @@ void Sprite3D::genGLProgramState(bool useLight)
             glProgram = GLProgramCache::getInstance()->getGLProgram(shader);
         
         auto programstate = GLProgramState::create(glProgram);
+        
+        // BPC PATCH - Gave some fragment shaders an alpha uniform, initializing it here.
+        programstate->setUniformFloat("alpha", 1.0);
+        //END PATCH
+        
         long offset = 0;
         auto attributeCount = mesh->getMeshVertexAttribCount();
         for (auto k = 0; k < attributeCount; k++) {
