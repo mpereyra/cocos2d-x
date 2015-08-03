@@ -477,13 +477,13 @@ unsigned char* CCFileUtils::getFileData(const char* pszFileName, const char* psz
     do
     {
         // read the file from hardware
-        CCLog("pszFilename %s", pszFileName);
+        // CCLog("pszFilename %s", pszFileName);
         std::string fullPath = fullPathForFilename(pszFileName);
 
-        CCLog("Fullpath %s", fullPath.c_str());
+        // CCLog("Fullpath %s", fullPath.c_str());
         FILE *fp = fopen(fullPath.c_str(), pszMode);
         CC_BREAK_IF(!fp);
-        CCLog("NOBREAK");
+        // CCLog("NOBREAK");
 
         
         fseek(fp,0,SEEK_END);
