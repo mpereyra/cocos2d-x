@@ -621,7 +621,10 @@ std::string TextureCache::getCachedTextureInfo() const
                (long)bpp,
                (long)bytes / 1024);
         
-        buffer += buftmp;
+        // BPC_PATCH
+        // buffer was not big enough
+        // buffer += buftmp;
+        CCLOG("%s", buftmp);
     }
 
     snprintf(buftmp, sizeof(buftmp)-1, "TextureCache dumpDebugInfo: %ld textures, for %lu KB (%.2f MB)\n", (long)count, (long)totalBytes / 1024, totalBytes / (1024.0f*1024.0f));
