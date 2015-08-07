@@ -648,7 +648,6 @@ bool Image::isDDSContainer(const unsigned char* data, ssize_t dataLen)
     S3TCTexHeader *header = (S3TCTexHeader *)data;
     
     if (strncmp(header->fileCode, "DDS", 3) != 0) {
-        CCLOG("cocos2d: the file [%s] is not a dds file!", _filePath.c_str());
         return false;
     }
 
@@ -666,7 +665,6 @@ bool Image::isDXT(const unsigned char * data, ssize_t dataLen)
         return true;
     }
 
-    CCLOG("cocos2d: the file [%s] does not have a DXT{1,3,5} fourcc!", _filePath.c_str());
     return false;
 }
 
@@ -686,7 +684,6 @@ bool Image::isKTXContainer(const unsigned char * data, ssize_t dataLen)
     ATITCTexHeader *atcHeader = (ATITCTexHeader *)data;
 
     if (strncmp(&atcHeader->identifier[1], "KTX", 3) != 0) {
-        CCLOG("cocos2d: the file [%s] is not a KTX file!", _filePath.c_str());
         return false;
     }
 
@@ -703,7 +700,6 @@ bool Image::isATCInsideDDS(const unsigned char * data, ssize_t dataLen)
         return true;
     }
 
-    CCLOG("cocos2d: the file [%s] is not an ATC compressed image!", _filePath.c_str());
     return false;
 }
 
@@ -723,7 +719,6 @@ bool Image::isATITC(const unsigned char *data, ssize_t dataLen)
         return true;
     }
     
-    CCLOG("cocos3d: the file [%s] is not an ATC/DDS/KTX file!", _filePath.c_str());
     return false;
 }
 
@@ -1827,8 +1822,6 @@ bool Image::initWithTGAData(tImageTGA* tgaData)
 
 bool Image::initWithS3TCData(const unsigned char * data, ssize_t dataLen)
 {
-    CCLOG("cocos2d: initWithS3TCData");
-
     /* load the .dds file */
     
     S3TCTexHeader *header = (S3TCTexHeader *)data;
@@ -1951,8 +1944,6 @@ bool Image::initWithS3TCData(const unsigned char * data, ssize_t dataLen)
 
 bool Image::initWithATCInsideKTX(const unsigned char* data, ssize_t dataLen)
 {
-    CCLOG("cocos2d: initWithATCInsideKTX");
-
     /* load the .ktx file */
     ATITCTexHeader* header = (ATITCTexHeader*)data;
 
@@ -2084,15 +2075,12 @@ bool Image::initWithATCInsideKTX(const unsigned char* data, ssize_t dataLen)
 
 bool Image::initWithATCInsideDDS(const unsigned char *data, ssize_t dataLen)
 {
-    CCLOG("initWithATCInsideDDS [filePath=%s]", _filePath.c_str());
-
     const S3TCTexHeader* header = (S3TCTexHeader*)data;
     const struct DDSURFACEDESC2& surfaceDesc = header->ddsd;
 
     _width = surfaceDesc.width;
     _height = surfaceDesc.height;
     _numberOfMipmaps = surfaceDesc.DUMMYUNIONNAMEN2.mipMapCount;
-    CCLOG("initWithATCInsideDDS [_width=%d, _height=%d, _numberOfMipmaps=%d]", _width, _height, _numberOfMipmaps);
     
     if (_width != _height) {
         CCLOG("cocos2d: WARNING: texture is not square! [_filePath=%s]", _filePath.c_str());
@@ -2140,15 +2128,11 @@ bool Image::initWithATCInsideDDS(const unsigned char *data, ssize_t dataLen)
 
 bool Image::initWithATITCData(const unsigned char *data, ssize_t dataLen)
 {
-    CCLOG("cocos2d: initWithATITCData [filePath=%s]", _filePath.c_str());
-
     if (isKTXContainer(data, dataLen)) {
-        CCLOG("isKTXContainer");
         return initWithATCInsideKTX(data, dataLen);
     }
 
     if (isDDSContainer(data, dataLen)) {
-        CCLOG("isDDSContainer");
         return initWithATCInsideDDS(data, dataLen);
     }
 
