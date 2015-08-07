@@ -447,6 +447,21 @@ Texture2D::PixelFormat getDevicePixelFormat(Texture2D::PixelFormat format)
     }
 }
 
+namespace
+{
+    static const uint32_t makeFourCC(char ch0, char ch1, char ch2, char ch3)
+    {
+        const uint32_t fourCC = ((uint32_t)(char)(ch0) | ((uint32_t)(char)(ch1) << 8) | ((uint32_t)(char)(ch2) << 16) | ((uint32_t)(char)(ch3) << 24 ));
+        return fourCC;
+    }
+
+    const uint32_t FOURCC_DXT1 = makeFourCC('D', 'X', 'T', '1');
+    const uint32_t FOURCC_DXT3 = makeFourCC('D', 'X', 'T', '3');
+    const uint32_t FOURCC_DXT5 = makeFourCC('D', 'X', 'T', '5');
+    const uint32_t FOURCC_ATCI = makeFourCC('A', 'T', 'C', 'I');
+    const uint32_t FOURCC_ATCA = makeFourCC('A', 'T', 'C', 'A');
+}
+
 //////////////////////////////////////////////////////////////////////////
 // Implement Image
 //////////////////////////////////////////////////////////////////////////
@@ -628,29 +643,88 @@ bool Image::isEtc(const unsigned char * data, ssize_t dataLen)
 }
 
 
-bool Image::isS3TC(const unsigned char * data, ssize_t dataLen)
+bool Image::isDDSContainer(const unsigned char* data, ssize_t dataLen)
 {
-
     S3TCTexHeader *header = (S3TCTexHeader *)data;
     
-    if (strncmp(header->fileCode, "DDS", 3) != 0)
-    {
-        CCLOG("cocos2d: the file is not a dds file!");
+    if (strncmp(header->fileCode, "DDS", 3) != 0) {
+        CCLOG("cocos2d: the file [%s] is not a dds file!", _filePath.c_str());
         return false;
     }
+
     return true;
 }
 
-bool Image::isATITC(const unsigned char *data, ssize_t dataLen)
+
+bool Image::isDXT(const unsigned char * data, ssize_t dataLen)
 {
-    ATITCTexHeader *header = (ATITCTexHeader *)data;
-    
-    if (strncmp(&header->identifier[1], "KTX", 3) != 0)
-    {
-        CCLOG("cocos3d: the file is not a ktx file!");
+    S3TCTexHeader *header = (S3TCTexHeader *)data;
+
+    if ((header->ddsd.DUMMYUNIONNAMEN4.ddpfPixelFormat.fourCC == FOURCC_DXT1) ||
+        (header->ddsd.DUMMYUNIONNAMEN4.ddpfPixelFormat.fourCC == FOURCC_DXT3) ||
+        (header->ddsd.DUMMYUNIONNAMEN4.ddpfPixelFormat.fourCC == FOURCC_DXT5)) {
+        return true;
+    }
+
+    CCLOG("cocos2d: the file [%s] does not have a DXT{1,3,5} fourcc!", _filePath.c_str());
+    return false;
+}
+
+
+bool Image::isS3TC(const unsigned char * data, ssize_t dataLen)
+{
+    if (isDDSContainer(data, dataLen) && isDXT(data, dataLen)) {
+        return true;
+    }
+
+    return false;
+}
+
+
+bool Image::isKTXContainer(const unsigned char * data, ssize_t dataLen)
+{
+    ATITCTexHeader *atcHeader = (ATITCTexHeader *)data;
+
+    if (strncmp(&atcHeader->identifier[1], "KTX", 3) != 0) {
+        CCLOG("cocos2d: the file [%s] is not a KTX file!", _filePath.c_str());
         return false;
     }
+
     return true;
+}
+
+
+bool Image::isATCInsideDDS(const unsigned char * data, ssize_t dataLen)
+{
+    S3TCTexHeader *header = (S3TCTexHeader *)data;
+
+    if ((header->ddsd.DUMMYUNIONNAMEN4.ddpfPixelFormat.fourCC == FOURCC_ATCA) ||
+        (header->ddsd.DUMMYUNIONNAMEN4.ddpfPixelFormat.fourCC == FOURCC_ATCI)) {
+        return true;
+    }
+
+    CCLOG("cocos2d: the file [%s] is not an ATC compressed image!", _filePath.c_str());
+    return false;
+}
+
+
+bool Image::isATITC(const unsigned char *data, ssize_t dataLen)
+{
+    if (isKTXContainer(data, dataLen)) {
+        // We just assume that if we have a KTX container that this will be an
+        // ATC compressed image. This is technically incorrect, but it's what
+        // cocos2d did before.
+
+        // FIXME: Properly double check the fourcc.
+        return true;
+    }
+
+    if (isATCInsideDDS(data, dataLen)) {
+        return true;
+    }
+    
+    CCLOG("cocos3d: the file [%s] is not an ATC/DDS/KTX file!", _filePath.c_str());
+    return false;
 }
 
 bool Image::isJpg(const unsigned char * data, ssize_t dataLen)
@@ -742,6 +816,7 @@ Image::Format Image::detectFormat(const unsigned char * data, ssize_t dataLen)
     }
     else
     {
+        CCLOG("File format is unknown [filePath=%s]", _filePath.c_str());
         return Format::UNKNOWN;
     }
 }
@@ -1750,22 +1825,10 @@ bool Image::initWithTGAData(tImageTGA* tgaData)
     return ret;
 }
 
-namespace
-{
-    static const uint32_t makeFourCC(char ch0, char ch1, char ch2, char ch3)
-    {
-        const uint32_t fourCC = ((uint32_t)(char)(ch0) | ((uint32_t)(char)(ch1) << 8) | ((uint32_t)(char)(ch2) << 16) | ((uint32_t)(char)(ch3) << 24 ));
-        return fourCC;
-    }
-}
-
 bool Image::initWithS3TCData(const unsigned char * data, ssize_t dataLen)
 {
-    
-    const uint32_t FOURCC_DXT1 = makeFourCC('D', 'X', 'T', '1');
-    const uint32_t FOURCC_DXT3 = makeFourCC('D', 'X', 'T', '3');
-    const uint32_t FOURCC_DXT5 = makeFourCC('D', 'X', 'T', '5');
-    
+    CCLOG("cocos2d: initWithS3TCData");
+
     /* load the .dds file */
     
     S3TCTexHeader *header = (S3TCTexHeader *)data;
@@ -1886,10 +1949,13 @@ bool Image::initWithS3TCData(const unsigned char * data, ssize_t dataLen)
 }
 
 
-bool Image::initWithATITCData(const unsigned char *data, ssize_t dataLen)
+bool Image::initWithATCInsideKTX(const unsigned char* data, ssize_t dataLen)
 {
+    CCLOG("cocos2d: initWithATCInsideKTX");
+
     /* load the .ktx file */
-    ATITCTexHeader *header = (ATITCTexHeader *)data;
+    ATITCTexHeader* header = (ATITCTexHeader*)data;
+
     _width =  header->pixelWidth;
     _height = header->pixelHeight;
     _numberOfMipmaps = header->numberOfMipmapLevels;
@@ -1954,7 +2020,7 @@ bool Image::initWithATITCData(const unsigned char *data, ssize_t dataLen)
         {
             /* decode texture throught hardware */
             
-            CCLOG("this is atitc H decode");
+            CCLOG("this is atitc H decode [filePath=%s]", _filePath.c_str());
             
             switch (header->glInternalFormat)
             {
@@ -1978,7 +2044,7 @@ bool Image::initWithATITCData(const unsigned char *data, ssize_t dataLen)
         {
             /* if it is not gles or device do not support ATITC, decode texture by software */
             
-            CCLOG("cocos2d: Hardware ATITC decoder not present. Using software decoder");
+            CCLOG("cocos2d: Hardware ATITC decoder not present. Using software decoder [filePath=%s]", _filePath.c_str());
             
             int bytePerPixel = 4;
             unsigned int stride = width * bytePerPixel;
@@ -2013,6 +2079,81 @@ bool Image::initWithATITCData(const unsigned char *data, ssize_t dataLen)
     /* end load the mipmaps */
     
     return true;
+}
+
+
+bool Image::initWithATCInsideDDS(const unsigned char *data, ssize_t dataLen)
+{
+    CCLOG("initWithATCInsideDDS [filePath=%s]", _filePath.c_str());
+
+    const S3TCTexHeader* header = (S3TCTexHeader*)data;
+    const struct DDSURFACEDESC2& surfaceDesc = header->ddsd;
+
+    _width = surfaceDesc.width;
+    _height = surfaceDesc.height;
+    _numberOfMipmaps = surfaceDesc.DUMMYUNIONNAMEN2.mipMapCount;
+    CCLOG("initWithATCInsideDDS [_width=%d, _height=%d, _numberOfMipmaps=%d]", _width, _height, _numberOfMipmaps);
+    
+    if (_width != _height) {
+        CCLOG("cocos2d: WARNING: texture is not square! [_filePath=%s]", _filePath.c_str());
+    }
+
+    unsigned char *pixelData = (unsigned char *)(data + sizeof(S3TCTexHeader));
+    
+    if (Configuration::getInstance()->supportsATITC()) {
+        _dataLen = dataLen - sizeof(S3TCTexHeader);
+        _data = static_cast<unsigned char*>(malloc(_dataLen * sizeof(unsigned char)));
+        memcpy((void*)_data, (void*)pixelData, _dataLen);
+    } else {
+        CCLOG("cocos2d: ATC compression is not supported in hardware. Software decoding not supported.");
+        return false;
+    }
+
+    // caculate the data length
+    int width = _width;
+    int height = _height;
+    int encodeOffset = 0;
+    int decodeOffset = 0;
+
+    for (int i = 0; (i < _numberOfMipmaps) && ((width != 0) || (height != 0)); ++i) {
+        if (width == 0) width = 1;
+        if (height == 0) height = 1;
+        
+        // See also
+        // <https://www.khronos.org/registry/gles/extensions/AMD/AMD_compressed_ATC_texture.txt>.
+        // We only support ATC_RGBA_EXPLICIT_ALPHA_AMD, so the
+        // block size multiplier is always 16.
+        int size = ((width + 3) / 4) * ((height + 3) / 4) * 16;
+        
+        _renderFormat = Texture2D::PixelFormat::ATC_EXPLICIT_ALPHA;
+        _mipmaps[i].address = (unsigned char *)(_data + encodeOffset);
+        _mipmaps[i].len = size;
+
+        encodeOffset += size;
+        width >>= 1;
+        height >>= 1;
+    }
+
+    return true;
+}
+
+
+bool Image::initWithATITCData(const unsigned char *data, ssize_t dataLen)
+{
+    CCLOG("cocos2d: initWithATITCData [filePath=%s]", _filePath.c_str());
+
+    if (isKTXContainer(data, dataLen)) {
+        CCLOG("isKTXContainer");
+        return initWithATCInsideKTX(data, dataLen);
+    }
+
+    if (isDDSContainer(data, dataLen)) {
+        CCLOG("isDDSContainer");
+        return initWithATCInsideDDS(data, dataLen);
+    }
+
+    CCLOG("cocos2d: file is not a DDS or KTX container! [filePath=%s]", _filePath.c_str());
+    return false;
 }
 
 bool Image::initWithPVRData(const unsigned char * data, ssize_t dataLen)
