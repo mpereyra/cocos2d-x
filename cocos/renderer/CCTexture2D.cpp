@@ -109,6 +109,11 @@ namespace {
         PixelFormatInfoMapValue(Texture2D::PixelFormat::ATC_INTERPOLATED_ALPHA, Texture2D::PixelFormatInfo(GL_ATC_RGBA_INTERPOLATED_ALPHA_AMD,
             0xFFFFFFFF, 0xFFFFFFFF, 8, true, false)),
 #endif
+#ifndef GL_COMPRESSED_RGBA_ASTC_6x5_KHR
+#define GL_COMPRESSED_RGBA_ASTC_6x5_KHR 0x93B3
+#endif
+        PixelFormatInfoMapValue(Texture2D::PixelFormat::ASTC_RGBA, Texture2D::PixelFormatInfo(GL_COMPRESSED_RGBA_ASTC_6x5_KHR,
+            0xFFFFFFFF, 0xFFFFFFFF, 4, true, false)),
     };
 }
 
@@ -755,7 +760,8 @@ bool Texture2D::initWithImage(Image *image, PixelFormat format)
     {
         if (pixelFormat != image->getRenderFormat())
         {
-            CCLOG("cocos2d: WARNING: This image is compressed and we cann't convert it for now");
+          CCLOG("cocos2d: WARNING: This image is compressed and we cann't convert it for now [filename=%s, pixelFormat=%d, renderFormat=%d].",
+                image->getFilePath().c_str(), pixelFormat, image->getRenderFormat());
         }
 
         initWithData(tempData, tempDataLen, image->getRenderFormat(), imageWidth, imageHeight, imageSize);

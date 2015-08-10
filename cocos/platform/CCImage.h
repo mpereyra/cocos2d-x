@@ -91,6 +91,8 @@ public:
         TGA,
         //! Raw Data
         RAW_DATA,
+        //! ASTC
+        ASTC,
         //! Unknown format
         UNKNOWN
     };
@@ -126,6 +128,7 @@ public:
     inline MipmapInfo*       getMipmaps()            { return _mipmaps; }
     inline bool              hasPremultipliedAlpha() { return _hasPremultipliedAlpha; }
     CC_DEPRECATED_ATTRIBUTE inline bool isPremultipliedAlpha()  { return _hasPremultipliedAlpha;   }
+    inline const std::string& getFilePath() const { return _filePath; }
 
     int                      getBitPerPixel();
     bool                     hasAlpha();
@@ -163,6 +166,7 @@ protected:
     bool initWithATCInsideDDS(const unsigned char *data, ssize_t dataLen);
     bool initWithATCInsideKTX(const unsigned char *data, ssize_t dataLen);
 
+    bool initWithASTCData(const unsigned char * data, ssize_t dataLen);
 
     typedef struct sImageTGA tImageTGA;
     bool initWithTGAData(tImageTGA* tgaData);
@@ -214,7 +218,6 @@ protected:
     bool isPvr(const unsigned char * data, ssize_t dataLen);
     bool isEtc(const unsigned char * data, ssize_t dataLen);
 
-
     bool isS3TC(const unsigned char * data,ssize_t dataLen);
     bool isDXT(const unsigned char * data,ssize_t dataLen);
     bool isDDSContainer(const unsigned char * data,ssize_t dataLen);
@@ -222,6 +225,8 @@ protected:
     bool isATITC(const unsigned char *data, ssize_t dataLen);
     bool isKTXContainer(const unsigned char *data, ssize_t dataLen);
     bool isATCInsideDDS(const unsigned char *data, ssize_t dataLen);
+
+    bool isAstc(const unsigned char *data, ssize_t dataLen);
 };
 
 // end of platform group

@@ -370,6 +370,18 @@ namespace
     
 #pragma pack(pop)
 
+/* ASTC header declaration. */
+struct ASTCTexHeader
+{
+    unsigned char  magic[4];
+    unsigned char  blockdim_x;
+    unsigned char  blockdim_y;
+    unsigned char  blockdim_z;
+    unsigned char  xsize[3];   /* x-size = xsize[0] + xsize[1] + xsize[2] */
+    unsigned char  ysize[3];   /* x-size, y-size and z-size are given in texels */
+    unsigned char  zsize[3];   /* block count is inferred */
+};
+
 }
 //s3tc struct end
 
@@ -460,6 +472,9 @@ namespace
     const uint32_t FOURCC_DXT5 = makeFourCC('D', 'X', 'T', '5');
     const uint32_t FOURCC_ATCI = makeFourCC('A', 'T', 'C', 'I');
     const uint32_t FOURCC_ATCA = makeFourCC('A', 'T', 'C', 'A');
+
+    // See also <http://community.arm.com/thread/3981>
+    const uint32_t FOURCC_ASTC = 0x5CA1AB13;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -496,6 +511,8 @@ bool Image::initWithImageFile(const std::string& path)
     bool ret = false;
     _filePath = FileUtils::getInstance()->fullPathForFilename(path);
 
+    CCLOG("Image::initWithImageFile [_filePath=%s]", _filePath.c_str());
+
 #ifdef EMSCRIPTEN
     // Emscripten includes a re-implementation of SDL that uses HTML5 canvas
     // operations underneath. Consequently, loading images via IMG_Load (an SDL
@@ -531,6 +548,8 @@ bool Image::initWithImageFileThreadSafe(const std::string& fullpath)
 {
     bool ret = false;
     _filePath = fullpath;
+
+    CCLOG("Image::initWithImageFileThreadSafe [_filePath=%s]", _filePath.c_str());
 
     Data data = FileUtils::getInstance()->getDataFromFile(fullpath);
 
@@ -573,28 +592,40 @@ bool Image::initWithImageData(const unsigned char * data, ssize_t dataLen)
         switch (_fileType)
         {
         case Format::PNG:
+            CCLOG("Format::PNG [filePath=%s]", _filePath.c_str());
             ret = initWithPngData(unpackedData, unpackedLen);
             break;
         case Format::JPG:
+            CCLOG("Format::JPG [filePath=%s]", _filePath.c_str());
             ret = initWithJpgData(unpackedData, unpackedLen);
             break;
         case Format::TIFF:
+            CCLOG("Format::TIFF [filePath=%s]", _filePath.c_str());
             ret = initWithTiffData(unpackedData, unpackedLen);
             break;
         case Format::WEBP:
+            CCLOG("Format::WEBP [filePath=%s]", _filePath.c_str());
             ret = initWithWebpData(unpackedData, unpackedLen);
             break;
         case Format::PVR:
+            CCLOG("Format::PVR [filePath=%s]", _filePath.c_str());
             ret = initWithPVRData(unpackedData, unpackedLen);
             break;
         case Format::ETC:
+            CCLOG("Format::ETC [filePath=%s]", _filePath.c_str());
             ret = initWithETCData(unpackedData, unpackedLen);
             break;
         case Format::S3TC:
+            CCLOG("Format::S3TC [filePath=%s]", _filePath.c_str());
             ret = initWithS3TCData(unpackedData, unpackedLen);
             break;
         case Format::ATITC:
+            CCLOG("Format::ATITC [filePath=%s]", _filePath.c_str());
             ret = initWithATITCData(unpackedData, unpackedLen);
+            break;
+        case Format::ASTC:
+            CCLOG("Format::ASTC [filePath=%s]", _filePath.c_str());
+            ret = initWithASTCData(unpackedData, unpackedLen);
             break;
         default:
             {
@@ -775,6 +806,19 @@ bool Image::isPvr(const unsigned char * data, ssize_t dataLen)
     return memcmp(&headerv2->pvrTag, gPVRTexIdentifier, strlen(gPVRTexIdentifier)) == 0 || CC_SWAP_INT32_BIG_TO_HOST(headerv3->version) == 0x50565203;
 }
 
+bool Image::isAstc(const unsigned char* data, ssize_t dataLen)
+{
+    if (dataLen <= sizeof(ASTCTexHeader)) {
+        return false;
+    }
+
+    const ASTCTexHeader* header = (const ASTCTexHeader*)(data);
+    return (header->magic[0] == 0x13) &&
+            (header->magic[1] == 0xAB) &&
+            (header->magic[2] == 0xA1) &&
+            (header->magic[3] == 0x5C);
+}
+
 Image::Format Image::detectFormat(const unsigned char * data, ssize_t dataLen)
 {
     if (isPng(data, dataLen))
@@ -808,6 +852,10 @@ Image::Format Image::detectFormat(const unsigned char * data, ssize_t dataLen)
     else if (isATITC(data, dataLen))
     {
         return Format::ATITC;
+    }
+    else if (isAstc(data, dataLen))
+    {
+        return Format::ASTC;
     }
     else
     {
@@ -2193,6 +2241,43 @@ bool Image::initWithWebpData(const unsigned char * data, ssize_t dataLen)
 #endif // CC_USE_WEBP
 }
 
+bool Image::initWithASTCData(const unsigned char* data, ssize_t dataLen)
+{
+    if (!Configuration::getInstance()->supportsASTC()) {
+        CCLOG("cocos2d: ATC compression is not supported in hardware. Software decoding not supported.");
+        return false;
+    }
+
+    const ASTCTexHeader* header = (const ASTCTexHeader*) data;
+
+    // Traverse the file structure.
+    if (!(header->blockdim_x == 6 && header->blockdim_y == 5)) {
+        CCLOG("Unsupported astc block dimensions; only 6*5 block (4bpp) is supported");
+        return false;
+    }
+    
+    // Merge x, y, z-sizes from 3 chars into one integer value.
+    int width  = header->xsize[0] + (header->xsize[1] << 8) + (header->xsize[2] << 16);
+    int height = header->ysize[0] + (header->ysize[1] << 8) + (header->ysize[2] << 16);
+    int zsize  = header->zsize[0] + (header->zsize[1] << 8) + (header->zsize[2] << 16);
+
+    // Compute number of blocks in each direction.
+    int xblocks = (width + header->blockdim_x - 1) / header->blockdim_x;
+    int yblocks = (height + header->blockdim_y - 1) / header->blockdim_y;
+    int zblocks = (zsize + header->blockdim_z - 1) / header->blockdim_z;
+    
+    // Each block is encoded on 16 bytes, so calculate total compressed image data size.
+    _dataLen = xblocks * yblocks * zblocks << 4;
+    _data = static_cast<unsigned char*>(malloc(_dataLen * sizeof(unsigned char)));
+    memcpy((void*)_data, (void*)(data + sizeof(ASTCTexHeader)), _dataLen);
+
+    _hasPremultipliedAlpha = false;
+    _width = width;
+    _height = height;
+    _renderFormat = Texture2D::PixelFormat::ASTC_RGBA;
+
+    return true;
+}
 
 bool Image::initWithRawData(const unsigned char * data, ssize_t dataLen, int width, int height, int bitsPerComponent, bool preMulti)
 {
