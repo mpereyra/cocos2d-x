@@ -75,7 +75,7 @@ void Bone3D::updateWorldMat()
 
 const Mat4& Bone3D::getWorldMat()
 {
-    if (_worldDirty)
+    //if (_worldDirty)
     {
         updateLocalMat();
         if (_parent)

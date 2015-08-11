@@ -104,7 +104,7 @@ public:
     GLuint getIndexBuffer() const;
     
     /**get AABB*/
-    const AABB& getAABB() const { return _aabb; }
+    const AABB& getAABB() const { calcuateAABB(); return _aabb; }
     
     /*BPC PATCH*/
     void setIsTransparent(bool transparent) { _isTransparent = transparent;}
@@ -128,7 +128,7 @@ CC_CONSTRUCTOR_ACCESS:
     /**name setter*/
     void setName(const std::string& name) { _name = name; }
  
-    void calcuateAABB();
+    void calcuateAABB() const;
     
     void bindMeshCommand();
 protected:
@@ -142,7 +142,7 @@ protected:
     GLProgramState* _glProgramState;
     MeshCommand     _meshCommand;
     BlendFunc       _blend;
-    AABB         _aabb;
+    mutable AABB         _aabb;
     std::function<void()> _visibleChanged;
 };
 

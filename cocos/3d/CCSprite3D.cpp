@@ -879,13 +879,13 @@ const AABB& Sprite3D::getAABB() const
 const AABB& Sprite3D::getNodeToParentAABB(std::vector<std::string> excludeMeshes) const {
     
     // If nodeToWorldTransform matrix isn't changed and we are querying the same set of meshes as before, we don't need to transform aabb.
-    if (!_nodeToParentAABBDirty
+    /*if (!_nodeToParentAABBDirty
         && _nodeToParentExcludeMeshes.size() == excludeMeshes.size()
         && std::is_permutation(_nodeToParentExcludeMeshes.begin(), _nodeToParentExcludeMeshes.end(), excludeMeshes.begin()))
     {
         return _nodeToParentAABB;
     }
-    else
+    else*/
     {
         _nodeToParentAABB.reset();
         

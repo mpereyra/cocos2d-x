@@ -223,7 +223,7 @@ void Mesh::setGLProgramState(GLProgramState* glProgramState)
     }
 }
 
-void Mesh::calcuateAABB()
+void Mesh::calcuateAABB() const
 {
     if (_meshIndexData)
     {
@@ -254,6 +254,10 @@ void Mesh::calcuateAABB()
             
             if (root)
             {
+                const Mat4& boneMat = root->getWorldMat();
+                const Mat4& skinMat = _skin->getInvBindPose(root);
+                const Mat4& compositeMat = boneMat * skinMat;
+                
                 _aabb.transform(root->getWorldMat() * _skin->getInvBindPose(root));
             }
         }
