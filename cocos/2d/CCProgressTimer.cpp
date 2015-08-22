@@ -496,6 +496,10 @@ Vec2 ProgressTimer::boundaryTexCoord(char index)
 
 void ProgressTimer::onDraw(const Mat4 &transform, uint32_t flags)
 {
+    /*BPC PATCH*/
+    bool oldDepthTest = glIsEnabled(GL_DEPTH_TEST) != GL_FALSE;;
+    glDisable(GL_DEPTH_TEST);
+    /*END BPC PATCH*/
 
     getGLProgram()->use();
     getGLProgram()->setUniformsForBuiltins(transform);
@@ -530,13 +534,20 @@ void ProgressTimer::onDraw(const Mat4 &transform, uint32_t flags)
             CC_INCREMENT_GL_DRAWN_BATCHES_AND_VERTICES(2,_vertexDataCount);
         }
     }
+    
+    
+    /*BPC PATCH*/
+    if(oldDepthTest){
+        glEnable(GL_DEPTH_TEST);
+    }
+    /*END BPC PATCH*/
 }
 
 void ProgressTimer::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
 {
     if( ! _vertexData || ! _sprite)
         return;
-
+    
     _customCommand.init(_globalZOrder, transform, flags);
     _customCommand.func = CC_CALLBACK_0(ProgressTimer::onDraw, this, transform, flags);
     renderer->addCommand(&_customCommand);
