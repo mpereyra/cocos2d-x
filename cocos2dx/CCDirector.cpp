@@ -138,6 +138,8 @@ bool CCDirector::init(void)
 
     m_fContentScaleFactor = 1.0f;
 
+    resetDetectedNegativeDeltaTime();
+    
     // scheduler
     m_pScheduler = new CCScheduler();
     // action manager
@@ -276,7 +278,17 @@ void CCDirector::calculateDeltaTime(void)
     }
     else
     {
+        static const float MIN_NEGATIVE_DT = -60.0f;
+        
         m_fDeltaTime = (now.tv_sec - m_pLastUpdate->tv_sec) + (now.tv_usec - m_pLastUpdate->tv_usec) / 1000000.0f;
+        if(m_fDeltaTime < 0)
+        {
+            m_bSumNegativeDeltaTime += m_fDeltaTime;
+            if(m_bSumNegativeDeltaTime < MIN_NEGATIVE_DT)
+            {
+                m_bDetectedNegativeDeltaTime = true;
+            }
+        }
         m_fDeltaTime = MAX(0, m_fDeltaTime);
     }
 
@@ -829,6 +841,12 @@ void CCDirector::setScheduler(CCScheduler* pScheduler)
         CC_SAFE_RELEASE(m_pScheduler);
         m_pScheduler = pScheduler;
     }
+}
+
+void CCDirector::resetDetectedNegativeDeltaTime()
+{
+    m_bDetectedNegativeDeltaTime = false;
+    m_bSumNegativeDeltaTime = 0;
 }
 
 CCScheduler* CCDirector::getScheduler()

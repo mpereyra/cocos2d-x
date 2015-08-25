@@ -293,6 +293,9 @@ public:
     */
     void setContentScaleFactor(float scaleFactor);
     float getContentScaleFactor(void);
+    
+    inline bool getDetectedNegativeDeltaTime() { return m_bDetectedNegativeDeltaTime; }
+    void resetDetectedNegativeDeltaTime(); // only allow outside peeps to set to false
 
 public:
     /** CCScheduler associated with this director
@@ -405,6 +408,10 @@ protected:
     
     // CCEGLViewProtocol will recreate stats labels to fit visible rect
     friend class CCEGLViewProtocol;
+    
+    // Flag to check if we calculated negative dt before the engine caps it to 0.
+    bool m_bDetectedNegativeDeltaTime;
+    float m_bSumNegativeDeltaTime;
 };
 
 /** 
