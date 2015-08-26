@@ -254,7 +254,7 @@ Sprite3D::Sprite3D()
 , _aabbDirty(true)
 , _lightMask(-1)
 , _shaderUsingLight(false)
-, _forceDepthWrite(true)
+, _forceDepthWrite(false)
 , _forceCullFace(false)
 {
 }
@@ -783,6 +783,11 @@ void Sprite3D::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
         if (_shouldClip) {
             meshCommand.setGlBounds(_clippingRect);
         }
+        meshCommand.setTransparent(isTransparent);
+        bool shouldWriteDepth = mesh->boolFromWriteMode(mesh->getDepthWriteMode());
+        bool cullFaceEnabled = mesh->boolFromWriteMode(mesh->getCullFaceMode());
+        meshCommand.setDepthWriteEnabled(shouldWriteDepth);
+        meshCommand.setCullFaceEnabled(cullFaceEnabled);
 // BPC PATCH END
 
         auto skin = mesh->getSkin();
@@ -793,14 +798,18 @@ void Sprite3D::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
         }
         //support tint and fade
         meshCommand.setDisplayColor(Vec4(color.r, color.g, color.b, color.a));
+        
+        /*
         if (_forceDepthWrite)
         {
             meshCommand.setDepthWriteEnabled(true);
         }
+        meshCommand.setDepthWriteEnabled(!isTransparent || _forceDepthWrite);
         meshCommand.setTransparent(isTransparent);
-        /** BPC PATCH BEGIN **/
         meshCommand.setCullFaceEnabled(!isTransparent || _forceCullFace);
-        /** BPC PATCH END **/
+         */
+        
+        
         meshCommand.setName(_name);
         renderer->addCommand(&meshCommand);
     }
@@ -934,10 +943,14 @@ void Sprite3D::setCullFace(GLenum cullFace)
     }
 }
 
-void Sprite3D::setCullFaceEnabled(bool enable)
+
+void Sprite3D::setCullFaceEnabled(bool enabled){
+    //no op use the other one
+}
+void Sprite3D::setCullFaceEnabled(GLWriteMode mode)
 {
     for (auto& it : _meshes) {
-        it->getMeshCommand().setCullFaceEnabled(enable);
+        it->setCullFaceMode(mode);
     }
 }
 
@@ -1006,25 +1019,15 @@ void Sprite3D::setDepthTestEnabled(bool enabled, bool recursive) {
 }
 
 void Sprite3D::setForceDepthWrite(bool enabled, bool recursive) {
-    _forceDepthWrite = enabled;
-    
-    if(recursive) {
-        std::set<Sprite3D*> sprites;
-        getSprite3DRecursive(this, sprites);
-        
-        for(auto sprite : sprites) {
-            sprite->setForceDepthWrite(enabled, false);
-        }
+    if(!enabled){
+        return; //no-op
     }
-
+    setDepthWriteEnabled(GLWriteMode::AlwaysOn, recursive);
 }
 
-void Sprite3D::setDepthWriteEnabled(bool enabled, bool recursive) {
-    if(enabled == false) {
-        _forceDepthWrite = false;
-    }
+void Sprite3D::setDepthWriteEnabled(GLWriteMode mode, bool recursive) {
     for(auto mesh : _meshes) {
-        mesh->getMeshCommand().setDepthWriteEnabled(enabled);
+        mesh->setDepthWriteMode(mode);
     }
     if(recursive == false)
         return;
@@ -1032,13 +1035,21 @@ void Sprite3D::setDepthWriteEnabled(bool enabled, bool recursive) {
     for(auto child : _children) {
         Sprite3D* sprite3D = dynamic_cast<Sprite3D*>(child);
         if(sprite3D) {
-            sprite3D->setDepthWriteEnabled(enabled);
+            sprite3D->setDepthWriteEnabled(mode);
         }
     }
 }
 
 void Sprite3D::setForceCullFace(bool enabled, bool recursive) {
     _forceCullFace = enabled;
+    
+    if(!enabled){
+        return; //no-op
+    }
+    
+    for(auto mesh : _meshes){
+        mesh->setCullFaceMode(GLWriteMode::AlwaysOn);
+    }
     
     if(recursive) {
         std::set<Sprite3D*> sprites;

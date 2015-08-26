@@ -38,11 +38,12 @@
 #include "3d/CCAABB.h"
 #include "3d/CCBundle3DData.h"
 #include "3d/CCMeshVertexIndexData.h"
+#include "3d/CCMesh.h"
 
 
 NS_CC_BEGIN
 
-class Mesh;
+//class Mesh;
 class Texture2D;
 class MeshSkin;
 class AttachNode;
@@ -166,7 +167,8 @@ public:
     // set which face is going to cull, GL_BACK, GL_FRONT, GL_FRONT_AND_BACK, default GL_BACK
     void setCullFace(GLenum cullFace);
     // set cull face enable or not
-    void setCullFaceEnabled(bool enable);
+    void setCullFaceEnabled(bool enabled);
+    void setCullFaceEnabled(GLWriteMode mode);
     
     /** light mask getter & setter, light works only when _lightmask & light's flag is true, default value of _lightmask is 0xffff */
     void setLightMask(unsigned int mask) { _lightMask = mask; }
@@ -174,7 +176,7 @@ public:
     
     /* BPC PATCH BEGIN */
     void setDepthTestEnabled(bool enabled, bool recursive=true);
-    void setDepthWriteEnabled(bool enabled, bool recursive=true);
+    void setDepthWriteEnabled(GLWriteMode mode, bool recursive=true);
     virtual void setGlobalZOrder(float globalZOrder) override;
     /* BPC PATCH END */
 

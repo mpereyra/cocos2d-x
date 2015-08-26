@@ -44,6 +44,13 @@ class GLProgram;
 /** 
  * Mesh: contains ref to index buffer, GLProgramState, texture, skin, blend function, aabb and so on
  */
+
+enum class GLWriteMode{
+    Default,  //based on transparency
+    AlwaysOn,
+    AlwaysOff,
+};
+
 class CC_DLL Mesh : public Ref
 {
     friend class Sprite3D;
@@ -111,6 +118,22 @@ public:
     bool getIsTransparent() const {return _isTransparent;}
     void setGLProgramState(GLProgramState* glProgramState);
     MeshCommand& getMeshCommand() { return _meshCommand; }
+    
+    GLWriteMode getDepthWriteMode() const {return m_depthWriteMode;}
+    void setDepthWriteMode(GLWriteMode mode) {m_depthWriteMode = mode;}
+    GLWriteMode getCullFaceMode() const {return m_cullFaceMode;}
+    void setCullFaceMode(GLWriteMode mode){m_cullFaceMode = mode;}
+    
+    bool boolFromWriteMode(GLWriteMode mode) const{
+        switch(mode){
+            case GLWriteMode::Default:
+                return !getIsTransparent();
+            case GLWriteMode::AlwaysOn:
+                return true;
+            case GLWriteMode::AlwaysOff:
+                return false;
+        }
+    }
     /*END BPC PATCH*/
 
 CC_CONSTRUCTOR_ACCESS:
@@ -131,6 +154,11 @@ CC_CONSTRUCTOR_ACCESS:
     void calcuateAABB();
     
     void bindMeshCommand();
+    
+    /*BPC-PATCH*/
+    GLWriteMode m_depthWriteMode{GLWriteMode::Default};
+    GLWriteMode m_cullFaceMode{GLWriteMode::Default};
+    /*END BPC-PATCH*/
 protected:
     Texture2D* _texture;  //texture that submesh is using
     MeshSkin*  _skin;     //skin
