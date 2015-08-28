@@ -1,0 +1,1 @@
+/usr/bin/cc   -fPIC -Wall -W -Wno-unused-parameter -Wwrite-strings -Wmissing-field-initializers -pedantic -Wno-long-long -Wcovered-switch-default -O2 -g -DNDEBUG -Wl,-search_paths_first -Wl,-headerpad_max_install_names    -Wl,-dead_strip CMakeFiles/count.dir/count.c.o  -o ../../bin/count  -Wl,-rpath,@executable_path/../lib 
