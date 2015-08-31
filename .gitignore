@@ -85,4 +85,4 @@ tools/jenkins_scripts/mac/android/userconf.ini
 # Ignore Emscripten libs
 /lib/
 /external/emsdk_portable/clang/tag-e1.34.1/build_tag-e1.34.1_64/lib/
-external/emsdk_portable/clang/tag-e1.34.1/build_tag-e1.34.1_64/tools/clang/lib/
+/external/emsdk_portable/clang/tag-e1.34.1/build_tag-e1.34.1_64/tools/clang/lib/

@@ -6,8 +6,6 @@
 *.pyc
 *.bc
 
-node_modules/
-
 # Ignore generated files
 
 tests/fake/
