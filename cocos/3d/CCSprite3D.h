@@ -161,7 +161,8 @@ public:
     virtual Rect getBoundingBox() const override;
 
     /** BPC PATCH BEGIN **/
-    const AABB& getNodeToParentAABB(std::vector<std::string> excludeMeshes = {}) const override;
+    AABB skinAABB(Mesh const * mesh) const;
+    const AABB& getNodeToParentAABB(std::vector<std::string> excludeMeshes = {}, bool force = false) const override;
     /** BPC PATCH END **/
 
     // set which face is going to cull, GL_BACK, GL_FRONT, GL_FRONT_AND_BACK, default GL_BACK
@@ -178,6 +179,7 @@ public:
     void setDepthTestEnabled(bool enabled, bool recursive=true);
     void setDepthWriteEnabled(GLWriteMode mode, bool recursive=true);
     virtual void setGlobalZOrder(float globalZOrder) override;
+    void setSkinAABB(bool active){ m_skinAABB = active; }
     /* BPC PATCH END */
 
     /**draw*/
@@ -193,6 +195,10 @@ CC_CONSTRUCTOR_ACCESS:
     //BPC PATCH
     virtual bool initWithFile(const std::string &path);
     virtual bool initFrom(const NodeDatas& nodedatas, const MeshDatas& meshdatas, const MaterialDatas& materialdatas);
+    
+    
+    
+    bool m_skinAABB {false};
     //END BPC PATCH
     
     

@@ -1091,7 +1091,7 @@ public:
     virtual Rect getBoundingBox() const;
 
     /** BPC PATCH BEGIN **/
-    virtual const AABB& getNodeToParentAABB(std::vector<std::string> excludeMeshes = {}) const;
+    virtual const AABB& getNodeToParentAABB(std::vector<std::string> excludeMeshes = {}, bool force= false) const;
     /** BPC PATCH END **/
 
     /** @deprecated Use getBoundingBox instead */

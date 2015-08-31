@@ -885,10 +885,42 @@ const AABB& Sprite3D::getAABB() const
 }
 
 /** BPC PATCH BEGIN **/
-const AABB& Sprite3D::getNodeToParentAABB(std::vector<std::string> excludeMeshes) const {
+AABB Sprite3D::skinAABB(Mesh const * mesh) const{
+    AABB aabb = mesh->getAABB();
+    if(mesh->getSkin()){
+        Vec4 * mp = mesh->getSkin()->getMatrixPalette();
+        //get the index for the bone and figure out which part of the mp it is using
+        auto pos = mesh->getName().find_last_of("_");
+        std::string cleaned = mesh->getName().substr(0, pos);
+        std::transform(cleaned.begin(), cleaned.end(), cleaned.begin(), ::tolower);
+        for(int i = 0; i < mesh->getSkin()->getBoneCount(); ++i){
+            auto b  = mesh->getSkin()->getBoneByIndex(i);
+            std::string bonename = b->getName();
+            std::transform(bonename.begin(), bonename.end(), bonename.begin(), ::tolower);
+            
+            if(bonename.find(cleaned) != std::string::npos){
+                int idx = i * 3;
+                //only apply translation? either this or transpose of this
+                Mat4 rootBoneTransform(
+                                       1, 0, 0, mp[idx].w,
+                                       0, 1, 0, mp[idx+1].w,
+                                       0, 0, 1, mp[idx+2].w,
+                                       0, 0, 0, 1
+                                       );
+                aabb.transform(rootBoneTransform);
+                break;
+            }
+            
+        }
+    }
+    return aabb;
+}
+
+const AABB& Sprite3D::getNodeToParentAABB(std::vector<std::string> excludeMeshes, bool force) const {
     
     // If nodeToWorldTransform matrix isn't changed and we are querying the same set of meshes as before, we don't need to transform aabb.
-    if (!_nodeToParentAABBDirty
+    _nodeToParentAABBDirty = m_skinAABB ? true : _nodeToParentAABBDirty;
+    if (!force && !_nodeToParentAABBDirty
         && _nodeToParentExcludeMeshes.size() == excludeMeshes.size()
         && std::is_permutation(_nodeToParentExcludeMeshes.begin(), _nodeToParentExcludeMeshes.end(), excludeMeshes.begin()))
     {
@@ -901,13 +933,15 @@ const AABB& Sprite3D::getNodeToParentAABB(std::vector<std::string> excludeMeshes
         // Merge mesh and child aabb's in parent space
         for (const auto& mesh : _meshes) {
             if (mesh->isVisible()
-                && std::none_of(excludeMeshes.begin(), excludeMeshes.end(), [&mesh](std::string& meshName){return meshName == mesh->getName();}))
-                _nodeToParentAABB.merge(mesh->getAABB());
+                && std::none_of(excludeMeshes.begin(), excludeMeshes.end(), [&mesh](std::string& meshName){return meshName == mesh->getName();})){
+                auto mb = m_skinAABB ? skinAABB(mesh) : mesh->getAABB();
+                _nodeToParentAABB.merge(mb);
+            }
         }
         
         for(auto const & child : _children) {
             if(child->isVisible()) {
-                _nodeToParentAABB.merge(child->getNodeToParentAABB(excludeMeshes));
+                _nodeToParentAABB.merge(child->getNodeToParentAABB(excludeMeshes, force));
             }
         }
         

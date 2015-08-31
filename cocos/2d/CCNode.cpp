@@ -868,9 +868,9 @@ Rect Node::getBoundingBox() const
 }
 
 /** BPC PATCH BEGIN **/
-const AABB& Node::getNodeToParentAABB(std::vector<std::string> excludeMeshes) const {
+const AABB& Node::getNodeToParentAABB(std::vector<std::string> excludeMeshes, bool force) const {
     // If nodeToWorldTransform matrix isn't changed and we are querying the same set of meshes as before, we don't need to transform aabb.
-    if (!_nodeToParentAABBDirty
+    if (!force && !_nodeToParentAABBDirty
         && _nodeToParentExcludeMeshes.size() == excludeMeshes.size()
         && std::is_permutation(_nodeToParentExcludeMeshes.begin(), _nodeToParentExcludeMeshes.end(), excludeMeshes.begin()))
     {
@@ -881,7 +881,7 @@ const AABB& Node::getNodeToParentAABB(std::vector<std::string> excludeMeshes) co
         _nodeToParentAABB.reset();
         for(auto const & child : _children) {
             if(child->isVisible()) {
-                _nodeToParentAABB.merge(child->getNodeToParentAABB(excludeMeshes));
+                _nodeToParentAABB.merge(child->getNodeToParentAABB(excludeMeshes, force));
             }
         }
         
