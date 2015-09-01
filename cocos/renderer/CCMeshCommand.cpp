@@ -233,16 +233,16 @@ void MeshCommand::applyRenderState()
     bool stencilEnabled = glIsEnabled(GL_STENCIL_TEST) != GL_FALSE;
     if(stencilEnabled != _stencilTestEnabled){
         _stencilTestEnabled ? glEnable(GL_STENCIL_TEST) : glDisable(GL_STENCIL_TEST);
-        
+        if(_stencilTestEnabled)
+            glStencilMask(0xFF); // called less often than below, for performance
     }
     if(_stencilTestEnabled){
         glStencilFunc(_stencilOptions.m_stencilFunc, _stencilOptions.m_ref, _stencilOptions.m_mask);
         glStencilOp(_stencilOptions.m_opFail, _stencilOptions.m_opDepthFail, _stencilOptions.m_opPass);
-        glStencilMask(0xFF);
     }
     _renderStateOffset = glIsEnabled(GL_POLYGON_OFFSET_FILL) != GL_FALSE;
     bool offsetWanted = m_offset.first || m_offset.second;
-    if(offsetWanted != _renderStateCullFace) {
+    if(offsetWanted != _renderStateOffset) {
         offsetWanted ? glEnable(GL_POLYGON_OFFSET_FILL) : glDisable(GL_POLYGON_OFFSET_FILL);
     }
     
