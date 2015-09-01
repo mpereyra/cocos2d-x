@@ -1,4 +1,4 @@
-TARGET = libcocos2d.so
+TARGET = libcocos2d.js
 
 INCLUDES += \
 			-I../platform/third_party/linux/libfreetype2 \

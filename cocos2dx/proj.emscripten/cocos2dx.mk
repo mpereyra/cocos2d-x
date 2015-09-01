@@ -28,8 +28,8 @@ ARFLAGS = cr
 ##JSLIBS := --js-library $(COCOS_SRC)/platform/emscripten/CCTextureCacheEmscripten.js
 #EXPORTED_FLAGS := -s EXPORTED_FUNCTIONS="['_malloc','_free','_main']"
 
-CCFLAGS  += -MMD -Wall -fPIC -Qunused-arguments -Wno-overloaded-virtual -s TOTAL_MEMORY=268435456 -s VERBOSE=1 -U__native_client__ -Wno-deprecated-declarations $(EXPORTED_FLAGS) $(JSLIBS) -s DISABLE_EXCEPTION_CATCHING=0
-CXXFLAGS += -MMD -Wall -fPIC -Qunused-arguments -Wno-overloaded-virtual -s TOTAL_MEMORY=268435456 -s VERBOSE=1 -U__native_client__ -Wno-deprecated-declarations $(EXPORTED_FLAGS) $(JSLIBS) -s DISABLE_EXCEPTION_CATCHING=0 -std=c++11
+CCFLAGS  += -MMD -Wall -fPIC -Qunused-arguments -Wno-overloaded-virtual -s TOTAL_MEMORY=268435456 -s VERBOSE=1 -U__native_client__ -Wno-deprecated-declarations $(EXPORTED_FLAGS) $(JSLIBS) -s DISABLE_EXCEPTION_CATCHING=0 -s MAIN_MODULE=1
+CXXFLAGS += -MMD -Wall -fPIC -Qunused-arguments -Wno-overloaded-virtual -s TOTAL_MEMORY=268435456 -s VERBOSE=1 -U__native_client__ -Wno-deprecated-declarations $(EXPORTED_FLAGS) $(JSLIBS) -s DISABLE_EXCEPTION_CATCHING=0 -std=c++11 -s MAIN_MODULE=1
 
 LIB_DIR = $(COCOS_ROOT)/lib/emscripten
 BIN_DIR = bin
