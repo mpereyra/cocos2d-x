@@ -129,12 +129,6 @@ void Sprite3D::afterAsyncLoad(void* param)
             _meshes.clear();
             _meshVertexDatas.clear();
             
-            // BPC PATCH BEGIN
-            if(_retainSkeleton == false) {
-                CC_SAFE_RELEASE_NULL(_skeleton);
-            }
-            // BPC PATCH END
-            
             removeAllAttachNode();
             
             //create in the main thread
@@ -156,7 +150,10 @@ void Sprite3D::afterAsyncLoad(void* param)
                     }
                     
                     Sprite3DCache::getInstance()->addSprite3DData(asyncParam->modlePath, data);
-                    meshdatas = nullptr;
+                    if (meshdatas) {
+                        delete meshdatas;
+                        meshdatas = nullptr;
+                    }
                     materialdatas = nullptr;
                     nodeDatas = nullptr;
                 }
@@ -189,6 +186,7 @@ bool Sprite3D::loadFromCache(const std::string& path)
         
         // BPC PATCH BEGIN
         if(_retainSkeleton == false) {
+            CC_SAFE_RELEASE_NULL(_skeleton);
             _skeleton = Skeleton3D::create(spritedata->nodedatas->skeleton);
             CC_SAFE_RETAIN(_skeleton);
         }
@@ -281,12 +279,6 @@ bool Sprite3D::initWithFile(const std::string &path)
     _meshes.clear();
     _meshVertexDatas.clear();
     
-    // BPC PATCH BEGIN
-    if(_retainSkeleton == false) {
-        CC_SAFE_RELEASE_NULL(_skeleton);
-    }
-    // BPC PATCH END
-    
     removeAllAttachNode();
     
     if (loadFromCache(path))
@@ -334,6 +326,7 @@ bool Sprite3D::initFrom(const NodeDatas& nodeDatas, const MeshDatas& meshdatas, 
     
     // BPC PATCH BEGIN
     if(_retainSkeleton == false) {
+        CC_SAFE_RELEASE_NULL(_skeleton);
          _skeleton = Skeleton3D::create(nodeDatas.skeleton);
         CC_SAFE_RETAIN(_skeleton);
     }
@@ -1104,6 +1097,29 @@ void Sprite3DCache::removeAllSprite3DData()
     }
     _spriteDatas.clear();
 }
+
+// BPC PATCH BEGIN
+void Sprite3DCache::removeUnusedSprite3DData()
+{
+    //When things are loaded from cache, they retain all meshVertexData objects, so we can just check the first element.
+    for (auto it = _spriteDatas.cbegin(); it != _spriteDatas.cend(); ) {
+        if (it->second->meshVertexDatas.empty()) {
+            ++it;
+            continue;
+        }
+        
+        MeshVertexData* data= it->second->meshVertexDatas.at(0);
+        if (data->getReferenceCount() == 1) {
+            CCLOG("cocos2d: Sprite3DCache: removing unused Sprite3DData: %s", it->first.c_str());
+            
+            delete it->second;
+            _spriteDatas.erase(it++);
+        } else {
+            ++it;
+        }
+    }
+}
+// BPC PATCH END
 
 Sprite3DCache::Sprite3DCache()
 {

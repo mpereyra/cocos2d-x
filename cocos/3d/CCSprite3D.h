@@ -299,6 +299,9 @@ public:
     void removeSprite3DData(const std::string& key);
     
     void removeAllSprite3DData();
+// BPC PATCH BEGIN
+    void removeUnusedSprite3DData();
+// BPC PATCH END
     
     CC_CONSTRUCTOR_ACCESS:
     Sprite3DCache();

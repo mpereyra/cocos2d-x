@@ -49,7 +49,26 @@ struct MeshVertexAttrib
 };
 
 
-struct ModelData;
+//BPC PATCH BEGIN
+/** model node data, since 3.3 */
+struct ModelData
+{
+    std::string subMeshId;
+    std::string matrialId;
+    std::vector<std::string> bones;
+    std::vector<Mat4>        invBindPose;
+    
+    virtual ~ModelData()
+    {
+        resetData();
+    }
+    virtual void resetData()
+    {
+        bones.clear();
+        invBindPose.clear();
+    }
+};
+
 /** Node data, since 3.3 */
 struct NodeData
 {
@@ -70,35 +89,26 @@ struct NodeData
         {
             delete it;
         }
+        for (auto& it : modelNodeDatas)
+        {
+            delete it;
+        }
         children.clear();
     }
 
 };
-
-/** model node data, since 3.3 */
-struct ModelData
-{
-    std::string subMeshId;
-    std::string matrialId;
-    std::vector<std::string> bones;
-    std::vector<Mat4>        invBindPose;
-    
-    virtual ~ModelData()
-    {
-        resetData();
-    }
-    virtual void resetData()
-    {
-        bones.clear();
-        invBindPose.clear();
-    }
-};
+//BPC PATCH END
 
 /** node datas, since 3.3 */
 struct NodeDatas
 {
     std::vector<NodeData*> skeleton; //skeleton
     std::vector<NodeData*> nodes; // nodes, CCNode, Sprite3D or part of Sprite3D
+    
+    ~NodeDatas()
+    {
+        resetData();
+    }
     
     void resetData()
     {
