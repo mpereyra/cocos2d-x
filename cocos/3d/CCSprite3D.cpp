@@ -252,7 +252,7 @@ Sprite3D::Sprite3D()
 , _aabbDirty(true)
 , _lightMask(-1)
 , _shaderUsingLight(false)
-, _forceDepthWrite(true)
+, _forceDepthWrite(false)
 , _forceCullFace(false)
 {
 }
@@ -776,6 +776,11 @@ void Sprite3D::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
         if (_shouldClip) {
             meshCommand.setGlBounds(_clippingRect);
         }
+        meshCommand.setTransparent(isTransparent);
+        bool shouldWriteDepth = mesh->boolFromWriteMode(mesh->getDepthWriteMode());
+        bool cullFaceEnabled = mesh->boolFromWriteMode(mesh->getCullFaceMode());
+        meshCommand.setDepthWriteEnabled(shouldWriteDepth);
+        meshCommand.setCullFaceEnabled(cullFaceEnabled);
 // BPC PATCH END
 
         auto skin = mesh->getSkin();
@@ -786,14 +791,18 @@ void Sprite3D::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
         }
         //support tint and fade
         meshCommand.setDisplayColor(Vec4(color.r, color.g, color.b, color.a));
+        
+        /*
         if (_forceDepthWrite)
         {
             meshCommand.setDepthWriteEnabled(true);
         }
+        meshCommand.setDepthWriteEnabled(!isTransparent || _forceDepthWrite);
         meshCommand.setTransparent(isTransparent);
-        /** BPC PATCH BEGIN **/
         meshCommand.setCullFaceEnabled(!isTransparent || _forceCullFace);
-        /** BPC PATCH END **/
+         */
+        
+        
         meshCommand.setName(_name);
         renderer->addCommand(&meshCommand);
     }
@@ -869,10 +878,42 @@ const AABB& Sprite3D::getAABB() const
 }
 
 /** BPC PATCH BEGIN **/
-const AABB& Sprite3D::getNodeToParentAABB(std::vector<std::string> excludeMeshes) const {
+AABB Sprite3D::skinAABB(Mesh const * mesh) const{
+    AABB aabb = mesh->getAABB();
+    if(mesh->getSkin()){
+        Vec4 * mp = mesh->getSkin()->getMatrixPalette();
+        //get the index for the bone and figure out which part of the mp it is using
+        auto pos = mesh->getName().find_last_of("_");
+        std::string cleaned = mesh->getName().substr(0, pos);
+        std::transform(cleaned.begin(), cleaned.end(), cleaned.begin(), ::tolower);
+        for(int i = 0; i < mesh->getSkin()->getBoneCount(); ++i){
+            auto b  = mesh->getSkin()->getBoneByIndex(i);
+            std::string bonename = b->getName();
+            std::transform(bonename.begin(), bonename.end(), bonename.begin(), ::tolower);
+            
+            if(bonename.find(cleaned) != std::string::npos){
+                int idx = i * 3;
+                //only apply translation? either this or transpose of this
+                Mat4 rootBoneTransform(
+                                       1, 0, 0, mp[idx].w,
+                                       0, 1, 0, mp[idx+1].w,
+                                       0, 0, 1, mp[idx+2].w,
+                                       0, 0, 0, 1
+                                       );
+                aabb.transform(rootBoneTransform);
+                break;
+            }
+            
+        }
+    }
+    return aabb;
+}
+
+const AABB& Sprite3D::getNodeToParentAABB(std::vector<std::string> excludeMeshes, bool force) const {
     
     // If nodeToWorldTransform matrix isn't changed and we are querying the same set of meshes as before, we don't need to transform aabb.
-    if (!_nodeToParentAABBDirty
+    _nodeToParentAABBDirty = m_skinAABB ? true : _nodeToParentAABBDirty;
+    if (!force && !_nodeToParentAABBDirty
         && _nodeToParentExcludeMeshes.size() == excludeMeshes.size()
         && std::is_permutation(_nodeToParentExcludeMeshes.begin(), _nodeToParentExcludeMeshes.end(), excludeMeshes.begin()))
     {
@@ -885,13 +926,15 @@ const AABB& Sprite3D::getNodeToParentAABB(std::vector<std::string> excludeMeshes
         // Merge mesh and child aabb's in parent space
         for (const auto& mesh : _meshes) {
             if (mesh->isVisible()
-                && std::none_of(excludeMeshes.begin(), excludeMeshes.end(), [&mesh](std::string& meshName){return meshName == mesh->getName();}))
-                _nodeToParentAABB.merge(mesh->getAABB());
+                && std::none_of(excludeMeshes.begin(), excludeMeshes.end(), [&mesh](std::string& meshName){return meshName == mesh->getName();})){
+                auto mb = m_skinAABB ? skinAABB(mesh) : mesh->getAABB();
+                _nodeToParentAABB.merge(mb);
+            }
         }
         
         for(auto const & child : _children) {
             if(child->isVisible()) {
-                _nodeToParentAABB.merge(child->getNodeToParentAABB(excludeMeshes));
+                _nodeToParentAABB.merge(child->getNodeToParentAABB(excludeMeshes, force));
             }
         }
         
@@ -927,10 +970,14 @@ void Sprite3D::setCullFace(GLenum cullFace)
     }
 }
 
-void Sprite3D::setCullFaceEnabled(bool enable)
+
+void Sprite3D::setCullFaceEnabled(bool enabled){
+    //no op use the other one
+}
+void Sprite3D::setCullFaceEnabled(GLWriteMode mode)
 {
     for (auto& it : _meshes) {
-        it->getMeshCommand().setCullFaceEnabled(enable);
+        it->setCullFaceMode(mode);
     }
 }
 
@@ -999,25 +1046,15 @@ void Sprite3D::setDepthTestEnabled(bool enabled, bool recursive) {
 }
 
 void Sprite3D::setForceDepthWrite(bool enabled, bool recursive) {
-    _forceDepthWrite = enabled;
-    
-    if(recursive) {
-        std::set<Sprite3D*> sprites;
-        getSprite3DRecursive(this, sprites);
-        
-        for(auto sprite : sprites) {
-            sprite->setForceDepthWrite(enabled, false);
-        }
+    if(!enabled){
+        return; //no-op
     }
-
+    setDepthWriteEnabled(GLWriteMode::AlwaysOn, recursive);
 }
 
-void Sprite3D::setDepthWriteEnabled(bool enabled, bool recursive) {
-    if(enabled == false) {
-        _forceDepthWrite = false;
-    }
+void Sprite3D::setDepthWriteEnabled(GLWriteMode mode, bool recursive) {
     for(auto mesh : _meshes) {
-        mesh->getMeshCommand().setDepthWriteEnabled(enabled);
+        mesh->setDepthWriteMode(mode);
     }
     if(recursive == false)
         return;
@@ -1025,13 +1062,21 @@ void Sprite3D::setDepthWriteEnabled(bool enabled, bool recursive) {
     for(auto child : _children) {
         Sprite3D* sprite3D = dynamic_cast<Sprite3D*>(child);
         if(sprite3D) {
-            sprite3D->setDepthWriteEnabled(enabled);
+            sprite3D->setDepthWriteEnabled(mode);
         }
     }
 }
 
 void Sprite3D::setForceCullFace(bool enabled, bool recursive) {
     _forceCullFace = enabled;
+    
+    if(!enabled){
+        return; //no-op
+    }
+    
+    for(auto mesh : _meshes){
+        mesh->setCullFaceMode(GLWriteMode::AlwaysOn);
+    }
     
     if(recursive) {
         std::set<Sprite3D*> sprites;
