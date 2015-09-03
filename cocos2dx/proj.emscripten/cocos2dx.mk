@@ -28,8 +28,12 @@ ARFLAGS = cr
 ##JSLIBS := --js-library $(COCOS_SRC)/platform/emscripten/CCTextureCacheEmscripten.js
 #EXPORTED_FLAGS := -s EXPORTED_FUNCTIONS="['_malloc','_free','_main']"
 
-CCFLAGS  += -MMD -Wall -fPIC -Qunused-arguments -Wno-overloaded-virtual -s TOTAL_MEMORY=268435456 -s VERBOSE=1 -U__native_client__ -Wno-deprecated-declarations $(EXPORTED_FLAGS) $(JSLIBS) -s DISABLE_EXCEPTION_CATCHING=0
-CXXFLAGS += -MMD -Wall -fPIC -Qunused-arguments -Wno-overloaded-virtual -s TOTAL_MEMORY=268435456 -s VERBOSE=1 -U__native_client__ -Wno-deprecated-declarations $(EXPORTED_FLAGS) $(JSLIBS) -s DISABLE_EXCEPTION_CATCHING=0 -std=c++11
+CCFLAGS  += -MMD -Wall -fPIC -Qunused-arguments -s TOTAL_MEMORY=268435456 -s VERBOSE=1 -U__native_client__ -Wno-deprecated-declarations $(EXPORTED_FLAGS) $(JSLIBS) -s DISABLE_EXCEPTION_CATCHING=0 -s NO_EXIT_RUNTIME=1 -s INLINING_LIMIT=1
+CXXFLAGS += -MMD -Wall -fPIC -Qunused-arguments -s TOTAL_MEMORY=268435456 -s VERBOSE=1 -U__native_client__ -Wno-deprecated-declarations $(EXPORTED_FLAGS) $(JSLIBS) -s DISABLE_EXCEPTION_CATCHING=0 -std=c++11 -s NO_EXIT_RUNTIME=1 -s INLINING_LIMIT=1
+
+WARNINGFLAGS = -Wno-overloaded-virtual -Wno-unused-result -Wno-inconsistent-missing-override
+CCFLAGS  += $(WARNINGFLAGS)
+CXXFLAGS += $(WARNINGFLAGS)
 
 LIB_DIR = $(COCOS_ROOT)/lib/emscripten
 BIN_DIR = bin
@@ -55,13 +59,13 @@ CXXFLAGS += -O1 -s GL_UNSAFE_OPTS=0 -s INVOKE_RUN=0
 DEFINES += -D_DEBUG -DCOCOS2D_DEBUG=0 -DCP_USE_DOUBLES=0 -DDEBUG=1
 SUBDIR := debug
 else ifeq ($(ADHOC), 1)
-CCFLAGS += -O2 -s GL_UNSAFE_OPTS=0
-CXXFLAGS += -O2 -s GL_UNSAFE_OPTS=0
+CCFLAGS += -Os -s GL_UNSAFE_OPTS=0
+CXXFLAGS += -Os -s GL_UNSAFE_OPTS=0
 DEFINES += -DNDEBUG -DCP_USE_DOUBLES=0 -DADHOC=1 -DSUPPRESS_DLOG=1
 SUBDIR := adhoc
 else ifeq ($(RELEASE), 1)
-CCFLAGS += -O2 -s GL_UNSAFE_OPTS=0
-CXXFLAGS += -O2 -s GL_UNSAFE_OPTS=0
+CCFLAGS += -Os -s GL_UNSAFE_OPTS=0
+CXXFLAGS += -Os -s GL_UNSAFE_OPTS=0
 DEFINES += -DNDEBUG -DCP_USE_DOUBLES=0 -DSUPPRESS_DLOG=1
 SUBDIR := release
 endif
