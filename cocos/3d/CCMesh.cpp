@@ -269,7 +269,6 @@ void Mesh::bindMeshCommand()
         GLuint texID = _texture ? _texture->getName() : 0;
         _meshCommand.genMaterialID(texID, _glProgramState, _meshIndexData->getVertexBuffer()->getVBO(), _meshIndexData->getIndexBuffer()->getVBO(), _blend);
         _meshCommand.setCullFaceEnabled(true);
-        _meshCommand.setDepthTestEnabled(true);
     }
 }
 
