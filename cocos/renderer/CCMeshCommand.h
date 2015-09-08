@@ -177,6 +177,7 @@ protected:
     GLenum    _renderStateCullFace;
     /** BPC-PATCH BEGIN **/
     bool _renderStateOffset;
+    bool _renderStateStencilEnabled {false};
     /** BPC-PATCH END **/
     
     

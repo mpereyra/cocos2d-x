@@ -597,6 +597,13 @@ void LayerColor::onDraw(const Mat4& transform, uint32_t flags)
     
     GL::enableVertexAttribs( GL::VERTEX_ATTRIB_FLAG_POSITION | GL::VERTEX_ATTRIB_FLAG_COLOR );
     
+    /*BPC PATCH*/
+    bool depthEnabled = glIsEnabled(GL_DEPTH_TEST) != GL_FALSE;
+    if(depthEnabled){
+        glDisable(GL_DEPTH_TEST);
+    }
+    /*END BPC PATCH*/
+    
     //
     // Attributes
     //
@@ -615,6 +622,12 @@ void LayerColor::onDraw(const Mat4& transform, uint32_t flags)
     GL::blendFunc( _blendFunc.src, _blendFunc.dst );
 
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    
+    /*BPC PATCH*/
+    if(depthEnabled){
+        glEnable(GL_DEPTH_TEST);
+    }
+    /*END BPC PATCH*/
 
     CC_INCREMENT_GL_DRAWN_BATCHES_AND_VERTICES(1,4);
 }
