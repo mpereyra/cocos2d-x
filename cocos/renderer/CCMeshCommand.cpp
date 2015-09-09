@@ -39,6 +39,7 @@
 #include "renderer/CCTexture2D.h"
 #include "renderer/ccGLStateCache.h"
 #include "xxhash.h"
+#include <stdlib.h>
 
 NS_CC_BEGIN
 
@@ -115,6 +116,10 @@ void MeshCommand::init(float globalZOrder,
     
     _globalOrder = globalZOrder;
     _textureID = textureID;
+    if(_textureID==0){
+        CCLOG("texID 0");
+    }
+    
     _blendType = blendType;
     _glProgramState = glProgramState;
     
@@ -191,6 +196,28 @@ void MeshCommand::setTransparent(bool value)
     }
 }
 
+bool cachedEnable(GLenum key, bool want){
+    
+    static std::map<GLenum, bool> currentState;
+    
+    auto it = currentState.find(key);
+    if(it == currentState.end()){
+        currentState.insert({key,want});
+        want? glEnable(key) : glDisable(key);
+        return true;
+    }
+
+    //found value; make the change if necessary
+    bool& found = it->second;
+    if(want!=found){
+        want ? glEnable(key) : glDisable(key);
+        found = want;
+        return true;
+    }
+
+    return false; //no change was made
+}
+
 MeshCommand::~MeshCommand()
 {
     releaseVAO();
@@ -199,29 +226,33 @@ MeshCommand::~MeshCommand()
 #endif
 }
 
+static char buffer[100] = "";
 void MeshCommand::applyRenderState()
 {
-    _renderStateCullFaceEnabled = glIsEnabled(GL_CULL_FACE) != GL_FALSE;
-    _renderStateDepthTest = glIsEnabled(GL_DEPTH_TEST) != GL_FALSE;
+#if CC_TARGET_PLATFORM != CC_PLATFORM_ANDROID
+    sprintf ( buffer, "%u", _textureID );
+    glPushGroupMarkerEXT(0, buffer);
+#endif
+    
+//    _renderStateCullFaceEnabled = glIsEnabled(GL_CULL_FACE) != GL_FALSE;
+//    _renderStateDepthTest = glIsEnabled(GL_DEPTH_TEST) != GL_FALSE;
+    
+    
+    
+    
     glGetBooleanv(GL_DEPTH_WRITEMASK, &_renderStateDepthWrite);
     GLint cullface;
     glGetIntegerv(GL_CULL_FACE_MODE, &cullface);
     _renderStateCullFace = (GLenum)cullface;
     
-    if (_cullFaceEnabled != _renderStateCullFaceEnabled)
-    {
-        _cullFaceEnabled ? glEnable(GL_CULL_FACE) : glDisable(GL_CULL_FACE);
-    }
+    cachedEnable(GL_CULL_FACE, _cullFaceEnabled);
     
     if (_cullFace != _renderStateCullFace)
     {
         glCullFace(_cullFace);
     }
     
-    if (_depthTestEnabled != _renderStateDepthTest)
-    {
-        _depthTestEnabled ? glEnable(GL_DEPTH_TEST) : glDisable(GL_DEPTH_TEST);
-    }
+    cachedEnable(GL_DEPTH_TEST, _depthTestEnabled);
     
     if (_depthWriteEnabled != _renderStateDepthWrite)
     {
@@ -229,23 +260,17 @@ void MeshCommand::applyRenderState()
     }
     
     //BPC PATCH
-    
-    bool stencilEnabled = glIsEnabled(GL_STENCIL_TEST) != GL_FALSE;
-    if(stencilEnabled != _stencilTestEnabled){
-        _stencilTestEnabled ? glEnable(GL_STENCIL_TEST) : glDisable(GL_STENCIL_TEST);
-        if(_stencilTestEnabled)
+    bool changed = cachedEnable(GL_STENCIL_TEST, _stencilTestEnabled);
+    if(changed && _stencilTestEnabled){
             glStencilMask(0xFF); // called less often than below, for performance
     }
     if(_stencilTestEnabled){
         glStencilFunc(_stencilOptions.m_stencilFunc, _stencilOptions.m_ref, _stencilOptions.m_mask);
         glStencilOp(_stencilOptions.m_opFail, _stencilOptions.m_opDepthFail, _stencilOptions.m_opPass);
     }
-    _renderStateOffset = glIsEnabled(GL_POLYGON_OFFSET_FILL) != GL_FALSE;
-    bool offsetWanted = m_offset.first || m_offset.second;
-    if(offsetWanted != _renderStateOffset) {
-        offsetWanted ? glEnable(GL_POLYGON_OFFSET_FILL) : glDisable(GL_POLYGON_OFFSET_FILL);
-    }
     
+    bool offsetWanted = m_offset.first || m_offset.second;
+    cachedEnable(GL_POLYGON_OFFSET_FILL, offsetWanted);
     if(offsetWanted) {
         glPolygonOffset(m_offset.first, m_offset.second);
     }
@@ -254,20 +279,24 @@ void MeshCommand::applyRenderState()
 
 void MeshCommand::restoreRenderState()
 {
-    if (_cullFaceEnabled != _renderStateCullFaceEnabled)
-    {
-        _renderStateCullFaceEnabled ? glEnable(GL_CULL_FACE) : glDisable(GL_CULL_FACE);
-    }
+#if CC_TARGET_PLATFORM != CC_PLATFORM_ANDROID
+    glPopGroupMarkerEXT();
+#endif
+    
+//    if (_cullFaceEnabled != _renderStateCullFaceEnabled)
+//    {
+//        _renderStateCullFaceEnabled ? glEnable(GL_CULL_FACE) : glDisable(GL_CULL_FACE);
+//    }
     
     if (_cullFace != _renderStateCullFace)
     {
         glCullFace(_renderStateCullFace);
     }
     
-    if (_depthTestEnabled != _renderStateDepthTest)
-    {
-        _renderStateDepthTest ? glEnable(GL_DEPTH_TEST) : glDisable(GL_DEPTH_TEST);
-    }
+//    if (_depthTestEnabled != _renderStateDepthTest)
+//    {
+//        _renderStateDepthTest ? glEnable(GL_DEPTH_TEST) : glDisable(GL_DEPTH_TEST);
+//    }
     
     if (_depthWriteEnabled != _renderStateDepthWrite)
     {
@@ -277,7 +306,7 @@ void MeshCommand::restoreRenderState()
     /** BPC PATCH BEGIN **/
     bool offsetWanted = m_offset.first || m_offset.second;
     if(offsetWanted != _renderStateOffset) {
-        _renderStateOffset ? glEnable(GL_POLYGON_OFFSET_FILL) : glDisable(GL_POLYGON_OFFSET_FILL);
+//        _renderStateOffset ? glEnable(GL_POLYGON_OFFSET_FILL) : glDisable(GL_POLYGON_OFFSET_FILL);
     }
     /** BPC PATCH END **/
 }
@@ -302,7 +331,9 @@ void MeshCommand::MatrixPalleteCallBack( GLProgram* glProgram, Uniform* uniform)
 void MeshCommand::preBatchDraw()
 {
     // Set material
-    GL::bindTexture2D(_textureID);
+    if(_textureID!=0){
+        GL::bindTexture2D(_textureID);
+    }
     GL::blendFunc(_blendType.src, _blendType.dst);
     
     if (Configuration::getInstance()->supportsShareableVAO() && _vao == 0)
@@ -321,11 +352,12 @@ void MeshCommand::preBatchDraw()
 void MeshCommand::batchDraw()
 {
     // BPC PATCH BEGIN
-    bool clippingWasEnabled = glIsEnabled(GL_SCISSOR_TEST);
+    cachedEnable(GL_SCISSOR_TEST,m_shouldClip);
+//    bool clippingWasEnabled = glIsEnabled(GL_SCISSOR_TEST);
     if (m_shouldClip) {
-        if (!clippingWasEnabled) {
-            glEnable(GL_SCISSOR_TEST);
-        }
+//        if (!clippingWasEnabled) {
+//            glEnable(GL_SCISSOR_TEST);
+//        }
         cocos2d::Director::getInstance()->getOpenGLView()->setScissorInPoints(m_glBounds.origin.x, m_glBounds.origin.y,
                                                                               m_glBounds.size.width, m_glBounds.size.height);
     }
@@ -352,9 +384,9 @@ void MeshCommand::batchDraw()
     
     CC_INCREMENT_GL_DRAWN_BATCHES_AND_VERTICES(1, _indexCount);
     // MOAOAR BPC PATCH BEGIN
-    if (m_shouldClip && !clippingWasEnabled) {
-        glDisable(GL_SCISSOR_TEST);
-    }
+//    if (m_shouldClip && !clippingWasEnabled) {
+//        glDisable(GL_SCISSOR_TEST);
+//    }
     // BPC PATCH END
 }
 void MeshCommand::postBatchDraw()
@@ -385,11 +417,12 @@ void MeshCommand::setGlBounds(Rect glBounds) {
 void MeshCommand::execute()
 {
     // BPC PATCH ALL THE THINGS
-    bool clippingWasEnabled = glIsEnabled(GL_SCISSOR_TEST);
+//    bool clippingWasEnabled = glIsEnabled(GL_SCISSOR_TEST);
+    cachedEnable(GL_SCISSOR_TEST,m_shouldClip);
     if (m_shouldClip) {
-        if (!clippingWasEnabled) {
-            glEnable(GL_SCISSOR_TEST);
-        }
+//        if (!clippingWasEnabled) {
+//            glEnable(GL_SCISSOR_TEST);
+//        }
         cocos2d::Director::getInstance()->getOpenGLView()->setScissorInPoints(m_glBounds.origin.x, m_glBounds.origin.y,
                                                                               m_glBounds.size.width, m_glBounds.size.height);
     }
@@ -428,9 +461,9 @@ void MeshCommand::execute()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     
     // MOAR BPC PATCH BEGIN
-    if (m_shouldClip && !clippingWasEnabled) {
-        glDisable(GL_SCISSOR_TEST);
-    }
+//    if (m_shouldClip && !clippingWasEnabled) {
+//        glDisable(GL_SCISSOR_TEST);
+//    }
     // BPC PATCH END
 }
 
