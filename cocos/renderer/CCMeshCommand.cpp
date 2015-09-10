@@ -230,8 +230,8 @@ void MeshCommand::applyRenderState()
     
     //BPC PATCH
     
-    bool stencilEnabled = glIsEnabled(GL_STENCIL_TEST) != GL_FALSE;
-    if(stencilEnabled != _stencilTestEnabled){
+    _renderStateStencilEnabled = glIsEnabled(GL_STENCIL_TEST) != GL_FALSE;
+    if(_renderStateStencilEnabled != _stencilTestEnabled){
         _stencilTestEnabled ? glEnable(GL_STENCIL_TEST) : glDisable(GL_STENCIL_TEST);
         if(_stencilTestEnabled)
             glStencilMask(0xFF); // called less often than below, for performance
@@ -274,10 +274,15 @@ void MeshCommand::restoreRenderState()
         glDepthMask(_renderStateDepthWrite);
     }
     
+    
     /** BPC PATCH BEGIN **/
     bool offsetWanted = m_offset.first || m_offset.second;
     if(offsetWanted != _renderStateOffset) {
         _renderStateOffset ? glEnable(GL_POLYGON_OFFSET_FILL) : glDisable(GL_POLYGON_OFFSET_FILL);
+    }
+    
+    if(_stencilTestEnabled != _renderStateStencilEnabled){
+        _renderStateStencilEnabled ? glEnable(GL_STENCIL_TEST) : glDisable(GL_STENCIL_TEST);
     }
     /** BPC PATCH END **/
 }
