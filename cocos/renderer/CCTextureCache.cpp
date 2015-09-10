@@ -130,25 +130,42 @@ void TextureCache::addImageAsync(const std::string &path, const std::function<vo
 
     ++_asyncRefCount;
     
-    _asyncStructQueueMutex.lock();
-    auto structIt(_asyncStructQueue->begin());
-    while(structIt != _asyncStructQueue->end()){
-        if((*structIt)->filename == fullpath){
-            (*structIt)->addRequestor(target, callback);
+    bool found = false;
+    _imageInfoMutex.lock();
+    auto infoIt(_imageInfoQueue->begin());
+    while (infoIt != _imageInfoQueue->end()) {
+        if((*infoIt)->asyncStruct->filename == fullpath) {
+            (*infoIt)->asyncStruct->addRequestor(target, callback);
+            found = true;
             break;
-        }else{
-            ++structIt;
+        }
+        else {
+            ++infoIt;
         }
     }
-
-    // generate async struct
-    if(structIt == _asyncStructQueue->end()){
-        AsyncStruct *data = new (std::nothrow) AsyncStruct(fullpath, callback, target);
-        // add async struct into queue
-        _asyncStructQueue->push_back(data);
+    _imageInfoMutex.unlock();
+    
+    if(found == false) {
+        _asyncStructQueueMutex.lock();
+        auto structIt(_asyncStructQueue->begin());
+        while(structIt != _asyncStructQueue->end()){
+            if((*structIt)->filename == fullpath){
+                (*structIt)->addRequestor(target, callback);
+                found = true;
+                break;
+            }else{
+                ++structIt;
+            }
+        }
+        // generate async struct
+        if(found == false){
+            AsyncStruct *data = new (std::nothrow) AsyncStruct(fullpath, callback, target);
+            // add async struct into queue
+            _asyncStructQueue->push_back(data);
+        }
+        _asyncStructQueueMutex.unlock();
     }
-    _asyncStructQueueMutex.unlock();
-
+    
     _sleepCondition.notify_one();
 }
 
