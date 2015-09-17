@@ -882,29 +882,13 @@ AABB Sprite3D::skinAABB(Mesh const * mesh) const{
     AABB aabb = mesh->getAABB();
     if(mesh->getSkin()){
         Vec4 * mp = mesh->getSkin()->getMatrixPalette();
-        //get the index for the bone and figure out which part of the mp it is using
-        auto pos = mesh->getName().find_last_of("_");
-        std::string cleaned = mesh->getName().substr(0, pos);
-        std::transform(cleaned.begin(), cleaned.end(), cleaned.begin(), ::tolower);
-        for(int i = 0; i < mesh->getSkin()->getBoneCount(); ++i){
-            auto b  = mesh->getSkin()->getBoneByIndex(i);
-            std::string bonename = b->getName();
-            std::transform(bonename.begin(), bonename.end(), bonename.begin(), ::tolower);
-            
-            if(bonename.find(cleaned) != std::string::npos){
-                int idx = i * 3;
-                //only apply translation? either this or transpose of this
-                Mat4 rootBoneTransform(
-                                       1, 0, 0, mp[idx].w,
-                                       0, 1, 0, mp[idx+1].w,
-                                       0, 0, 1, mp[idx+2].w,
-                                       0, 0, 0, 1
-                                       );
-                aabb.transform(rootBoneTransform);
-                break;
-            }
-            
-        }
+        Mat4 rootBoneTransform(
+                               1, 0, 0, mp[0].w,
+                               0, 1, 0, mp[0+1].w,
+                               0, 0, 1, mp[0+2].w,
+                               0, 0, 0, 1
+                               );
+        aabb.transform(rootBoneTransform);
     }
     return aabb;
 }
