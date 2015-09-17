@@ -180,6 +180,7 @@ public:
     void setDepthWriteEnabled(GLWriteMode mode, bool recursive=true);
     virtual void setGlobalZOrder(float globalZOrder) override;
     void setSkinAABB(bool active){ m_skinAABB = active; }
+    void setAllowCulling(bool cull) {m_allowCulling = cull; }
     /* BPC PATCH END */
 
     /**draw*/
@@ -199,6 +200,8 @@ CC_CONSTRUCTOR_ACCESS:
     
     
     bool m_skinAABB {false};
+    
+    bool m_allowCulling {true};
     //END BPC PATCH
     
     
