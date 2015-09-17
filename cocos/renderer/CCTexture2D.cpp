@@ -760,8 +760,8 @@ bool Texture2D::initWithImage(Image *image, PixelFormat format)
     {
         if (pixelFormat != image->getRenderFormat())
         {
-          CCLOG("cocos2d: WARNING: This image is compressed and we cann't convert it for now [filename=%s, pixelFormat=%d, renderFormat=%d].",
-                image->getFilePath().c_str(), pixelFormat, image->getRenderFormat());
+            // this log triggered for every PVR; not sure of its purpose.
+            //CCLOG("cocos2d: WARNING: This image is compressed and we can't convert it for now [filename=%s, pixelFormat=%d, renderFormat=%d].", image->getFilePath().c_str(), pixelFormat, image->getRenderFormat());
         }
 
         initWithData(tempData, tempDataLen, image->getRenderFormat(), imageWidth, imageHeight, imageSize);
