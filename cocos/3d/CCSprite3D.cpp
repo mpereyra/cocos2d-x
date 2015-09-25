@@ -764,9 +764,9 @@ void Sprite3D::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
             // hit the GL command queue.
             if (globalZ <= 0.0f) globalZ = 0.0f;
         }
-        /* BPC Patch */
 
-        meshCommand.init(globalZ, textureID, programstate, _blend, mesh->getVertexBuffer(), mesh->getIndexBuffer(), mesh->getPrimitiveType(), mesh->getIndexFormat(), mesh->getIndexCount(), transform, flags);
+        meshCommand.init(globalZ, textureID, programstate, mesh->getBlendFunc(), mesh->getVertexBuffer(), mesh->getIndexBuffer(), mesh->getPrimitiveType(), mesh->getIndexFormat(), mesh->getIndexCount(), transform, flags);
+        /* BPC Patch */
         
         meshCommand.setLightMask(_lightMask);
         
@@ -776,6 +776,7 @@ void Sprite3D::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
         if (_shouldClip) {
             meshCommand.setGlBounds(_clippingRect);
         }
+        
         meshCommand.setTransparent(isTransparent);
         bool shouldWriteDepth = mesh->boolFromWriteMode(mesh->getDepthWriteMode());
         bool cullFaceEnabled = mesh->boolFromWriteMode(mesh->getCullFaceMode());
