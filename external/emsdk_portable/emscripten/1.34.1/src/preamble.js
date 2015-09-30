@@ -1519,6 +1519,9 @@ function removeRunDependency(id) {
   if (Module['monitorRunDependencies']) {
     Module['monitorRunDependencies'](runDependencies);
   }
+  if (Module['updateLoadingPart2removeRunDependency']) {
+    Module['updateLoadingPart2removeRunDependency']();
+  }
 #if ASSERTIONS
   if (id) {
     assert(runDependencyTracking[id]);
