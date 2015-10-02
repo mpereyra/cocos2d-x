@@ -140,10 +140,20 @@ protected: varType varName;\
 public: virtual varType get##funName(void);\
 public: virtual void set##funName(varType var);
 
+#define CC_PROPERTY_OVERRIDE(varType, varName, funName)\
+protected: varType varName;\
+public: virtual varType get##funName(void) override;\
+public: virtual void set##funName(varType var) override;
+
 #define CC_PROPERTY_PASS_BY_REF(varType, varName, funName)\
 protected: varType varName;\
 public: virtual const varType& get##funName(void);\
 public: virtual void set##funName(const varType& var);
+
+#define CC_PROPERTY_PASS_BY_REF_OVERRIDE(varType, varName, funName)\
+protected: varType varName;\
+public: virtual const varType& get##funName(void) override;\
+public: virtual void set##funName(const varType& var) override;
 
 /** CC_SYNTHESIZE_READONLY is used to declare a protected variable.
  We can use getter to read the variable.

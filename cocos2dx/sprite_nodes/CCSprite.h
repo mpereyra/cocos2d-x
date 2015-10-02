@@ -84,11 +84,11 @@ class CC_DLL CCSprite : public CCNode, public CCTextureProtocol, public CCRGBAPr
 #endif // EMSCRIPTEN
 {
     /** Opacity: conforms to CCRGBAProtocol protocol */
-    CC_PROPERTY(GLubyte, m_nOpacity, Opacity)
+    CC_PROPERTY_OVERRIDE(GLubyte, m_nOpacity, Opacity)
     /** Color: conforms with CCRGBAProtocol protocol */
-    CC_PROPERTY_PASS_BY_REF(ccColor3B, m_sColor, Color);
+    CC_PROPERTY_PASS_BY_REF_OVERRIDE(ccColor3B, m_sColor, Color);
 public:
-    virtual void draw(void);
+    virtual void draw(void) override;
 
 public:
     // attributes
@@ -126,9 +126,9 @@ public:
     inline const CCPoint& getOffsetPosition(void) { return m_obOffsetPosition; }
 
     /** conforms to CCTextureProtocol protocol */
-    inline ccBlendFunc getBlendFunc(void) { return m_sBlendFunc; }
+    inline ccBlendFunc getBlendFunc(void) override { return m_sBlendFunc; }
     /** conforms to CCTextureProtocol protocol */
-    inline void setBlendFunc(ccBlendFunc blendFunc) { m_sBlendFunc = blendFunc; }
+    inline void setBlendFunc(ccBlendFunc blendFunc) override { m_sBlendFunc = blendFunc; }
 
 public:
     /** Creates an sprite with a texture.
@@ -214,26 +214,26 @@ public:
     virtual ~CCSprite(void);
     virtual bool init(void);
 
-    virtual void removeChild(CCNode* pChild, bool bCleanup);
-    virtual void removeAllChildrenWithCleanup(bool bCleanup);
-    virtual void reorderChild(CCNode *pChild, int zOrder);
-    virtual void addChild(CCNode *pChild);
-    virtual void addChild(CCNode *pChild, int zOrder);
-    virtual void addChild(CCNode *pChild, int zOrder, int tag);
-    virtual void sortAllChildren();
+    virtual void removeChild(CCNode* pChild, bool bCleanup) override;
+    virtual void removeAllChildrenWithCleanup(bool bCleanup) override;
+    virtual void reorderChild(CCNode *pChild, int zOrder) override;
+    virtual void addChild(CCNode *pChild) override;
+    virtual void addChild(CCNode *pChild, int zOrder) override;
+    virtual void addChild(CCNode *pChild, int zOrder, int tag) override;
+    virtual void sortAllChildren() override;
 
     virtual void setDirtyRecursively(bool bValue);
-    virtual void setPosition(const CCPoint& pos);
-    virtual void setRotation(float fRotation);
-    virtual void setSkewX(float sx);
-    virtual void setSkewY(float sy);
-    virtual void setScaleX(float fScaleX);
-    virtual void setScaleY(float fScaleY);
-    virtual void setScale(float fScale);
-    virtual void setVertexZ(float fVertexZ);
-    virtual void setAnchorPoint(const CCPoint& anchor);
+    virtual void setPosition(const CCPoint& pos) override;
+    virtual void setRotation(float fRotation) override;
+    virtual void setSkewX(float sx) override;
+    virtual void setSkewY(float sy) override;
+    virtual void setScaleX(float fScaleX) override;
+    virtual void setScaleY(float fScaleY) override;
+    virtual void setScale(float fScale) override;
+    virtual void setVertexZ(float fVertexZ) override;
+    virtual void setAnchorPoint(const CCPoint& anchor) override;
     virtual void ignoreAnchorPointForPosition(bool value);
-    virtual void setVisible(bool bVisible);
+    virtual void setVisible(bool bVisible) override;
     /* BPC PATCH - made setFlip virtual */
     virtual void setFlipX(bool bFlipX);
     virtual void setFlipY(bool bFlipY);
@@ -259,12 +259,12 @@ public:
     void updateColor(void);
     // RGBAProtocol
     /** opacity: conforms to CCRGBAProtocol protocol */
-    virtual void setOpacityModifyRGB(bool bValue);
-    virtual bool isOpacityModifyRGB(void);
+    virtual void setOpacityModifyRGB(bool bValue) override;
+    virtual bool isOpacityModifyRGB(void) override;
 
     // CCTextureProtocol
-    virtual void setTexture(CCTexture2D *texture);
-    virtual CCTexture2D* getTexture(void);
+    virtual void setTexture(CCTexture2D *texture) override;
+    virtual CCTexture2D* getTexture(void) override;
 
     /** Initializes an sprite with a texture.
      The rect used will be the size of the texture.
@@ -307,7 +307,7 @@ public:
     // BatchNode methods
 
     /** updates the quad according the the rotation, position, scale values. */
-    virtual void updateTransform(void);
+    virtual void updateTransform(void) override;
 
     /** updates the texture rect of the CCSprite in points. 
     It will call setTextureRect:rotated:untrimmedSize with rotated = NO, and utrimmedSize = rect.size.

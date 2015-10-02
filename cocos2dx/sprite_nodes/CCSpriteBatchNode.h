@@ -140,21 +140,21 @@ public:
     /* Sprites use this to start sortChildren, don't call this manually */
     void reorderBatch(bool reorder);
     // CCTextureProtocol
-    virtual CCTexture2D* getTexture(void);
-    virtual void setTexture(CCTexture2D *texture);
-    virtual void setBlendFunc(ccBlendFunc blendFunc);
-    virtual ccBlendFunc getBlendFunc(void);
+    virtual CCTexture2D* getTexture(void) override;
+    virtual void setTexture(CCTexture2D *texture) override;
+    virtual void setBlendFunc(ccBlendFunc blendFunc) override;
+    virtual ccBlendFunc getBlendFunc(void) override;
 
-    virtual void visit(void);
-    virtual void addChild(CCNode * child);
-    virtual void addChild(CCNode * child, int zOrder);
-    virtual void addChild(CCNode * child, int zOrder, int tag);
-    virtual void reorderChild(CCNode * child, int zOrder);
+    virtual void visit(void) override;
+    virtual void addChild(CCNode * child) override;
+    virtual void addChild(CCNode * child, int zOrder) override;
+    virtual void addChild(CCNode * child, int zOrder, int tag) override;
+    virtual void reorderChild(CCNode * child, int zOrder) override;
         
-    virtual void removeChild(CCNode* child, bool cleanup);
-    virtual void removeAllChildrenWithCleanup(bool cleanup);
-    virtual void sortAllChildren();
-    virtual void draw(void);
+    virtual void removeChild(CCNode* child, bool cleanup) override;
+    virtual void removeAllChildrenWithCleanup(bool cleanup) override;
+    virtual void sortAllChildren() override;
+    virtual void draw(void) override;
 #if (defined(COCOS2D_DEBUG) && (COCOS2D_DEBUG > 0)) || DEBUG
     size_t nodeSize() override;
     std::vector<const CCObject*> getSharedResources() override;
