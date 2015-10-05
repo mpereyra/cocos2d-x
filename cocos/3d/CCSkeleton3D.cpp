@@ -216,6 +216,7 @@ void Bone3D::updateLocalMat()
             else
             {
                 float invTotal = 1.f / total;
+                bool moreThenTwo = _blendStates.size() > 2;
                 for (const auto& it : _blendStates)
                 {
                     float weight = (it.weight * invTotal);
@@ -223,6 +224,9 @@ void Bone3D::updateLocalMat()
                     scale.x += it.localScale.x * weight;
                     scale.y += it.localScale.y * weight;
                     scale.z += it.localScale.z * weight;
+                    //I'm assuming right now that we aren't blending more then 2 weights on a bone
+                    //just in case falling back to the old method of calculating the rotation
+                    if(!moreThenTwo) continue;
                     if (!quat.isZero())
                     {
                         Quaternion& q = _blendStates[0].localRot;
@@ -230,6 +234,18 @@ void Bone3D::updateLocalMat()
                             weight = -weight;
                     }
                     quat = Quaternion(it.localRot.x * weight + quat.x, it.localRot.y * weight + quat.y, it.localRot.z * weight + quat.z, it.localRot.w * weight + quat.w);
+                }
+                
+                if(!moreThenTwo){
+                    Quaternion & q1 = _blendStates[0].localRot;
+                    Quaternion & q2 = _blendStates[1].localRot;
+                    float weight1 = _blendStates[0].weight;
+                    float weight2 = _blendStates[1].weight;
+                    if(weight1 > weight2){
+                        Quaternion::slerp(q1, q2, 1.0f - (weight1/ (weight1+weight2)), &quat);
+                    }else{
+                        Quaternion::slerp(q1, q2, (weight2/ (weight1+weight2)), &quat);
+                    }
                 }
                 quat.normalize();
             }

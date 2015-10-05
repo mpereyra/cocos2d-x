@@ -318,6 +318,11 @@ void Node::setGlobalZOrder(float globalZOrder)
         
         /*BPC PATCH*/
         for(auto c : getChildren()){
+            //skip if we already overrode this z-order
+            //for this node. may or may not break shit but
+            //giving it a try
+            int childZOrder = c->getGlobalZOrder();
+            if(childZOrder != 0) continue;
             c->setGlobalZOrder(globalZOrder);
         }
         /* END BPC PATCH*/

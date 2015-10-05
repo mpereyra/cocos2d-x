@@ -702,7 +702,7 @@ void Sprite3D::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
 {
 #if CC_USE_CULLING
     // camera clipping
-    if(!Camera::getVisitingCamera()->isVisibleInFrustum(&this->getAABB()))
+    if(m_allowCulling && !Camera::getVisitingCamera()->isVisibleInFrustum(&this->getAABB()))
         return;
 #endif
     
@@ -764,9 +764,9 @@ void Sprite3D::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
             // hit the GL command queue.
             if (globalZ <= 0.0f) globalZ = 0.0f;
         }
-        /* BPC Patch */
 
-        meshCommand.init(globalZ, textureID, programstate, _blend, mesh->getVertexBuffer(), mesh->getIndexBuffer(), mesh->getPrimitiveType(), mesh->getIndexFormat(), mesh->getIndexCount(), transform, flags);
+        meshCommand.init(globalZ, textureID, programstate, mesh->getBlendFunc(), mesh->getVertexBuffer(), mesh->getIndexBuffer(), mesh->getPrimitiveType(), mesh->getIndexFormat(), mesh->getIndexCount(), transform, flags);
+        /* BPC Patch */
         
         meshCommand.setLightMask(_lightMask);
         
@@ -776,6 +776,7 @@ void Sprite3D::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
         if (_shouldClip) {
             meshCommand.setGlBounds(_clippingRect);
         }
+        
         meshCommand.setTransparent(isTransparent);
         bool shouldWriteDepth = mesh->boolFromWriteMode(mesh->getDepthWriteMode());
         bool cullFaceEnabled = mesh->boolFromWriteMode(mesh->getCullFaceMode());
@@ -882,29 +883,13 @@ AABB Sprite3D::skinAABB(Mesh const * mesh) const{
     AABB aabb = mesh->getAABB();
     if(mesh->getSkin()){
         Vec4 * mp = mesh->getSkin()->getMatrixPalette();
-        //get the index for the bone and figure out which part of the mp it is using
-        auto pos = mesh->getName().find_last_of("_");
-        std::string cleaned = mesh->getName().substr(0, pos);
-        std::transform(cleaned.begin(), cleaned.end(), cleaned.begin(), ::tolower);
-        for(int i = 0; i < mesh->getSkin()->getBoneCount(); ++i){
-            auto b  = mesh->getSkin()->getBoneByIndex(i);
-            std::string bonename = b->getName();
-            std::transform(bonename.begin(), bonename.end(), bonename.begin(), ::tolower);
-            
-            if(bonename.find(cleaned) != std::string::npos){
-                int idx = i * 3;
-                //only apply translation? either this or transpose of this
-                Mat4 rootBoneTransform(
-                                       1, 0, 0, mp[idx].w,
-                                       0, 1, 0, mp[idx+1].w,
-                                       0, 0, 1, mp[idx+2].w,
-                                       0, 0, 0, 1
-                                       );
-                aabb.transform(rootBoneTransform);
-                break;
-            }
-            
-        }
+        Mat4 rootBoneTransform(
+                               1, 0, 0, mp[0].w,
+                               0, 1, 0, mp[0+1].w,
+                               0, 0, 1, mp[0+2].w,
+                               0, 0, 0, 1
+                               );
+        aabb.transform(rootBoneTransform);
     }
     return aabb;
 }
