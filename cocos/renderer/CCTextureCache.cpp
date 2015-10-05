@@ -53,6 +53,27 @@ NS_CC_BEGIN
 
 // implementation TextureCache
 
+static pthread_mutex_t      s_pauseMutex;
+static pthread_cond_t       s_pauseCondition;
+static bool                 s_isPaused{false};
+
+void TextureCache::pauseAsync() {
+    pthread_mutex_lock(&s_pauseMutex);
+    if (!s_isPaused) {
+        s_isPaused = true;
+    }
+    pthread_mutex_unlock(&s_pauseMutex);
+}
+
+void TextureCache::resumeAsync() {
+    pthread_mutex_lock(&s_pauseMutex);
+    if (s_isPaused) {
+        s_isPaused = false;
+        pthread_cond_signal(&s_pauseCondition);
+    }
+    pthread_mutex_unlock(&s_pauseMutex);
+}
+
 TextureCache * TextureCache::getInstance()
 {
     return Director::getInstance()->getTextureCache();
@@ -65,6 +86,8 @@ TextureCache::TextureCache()
 , _needQuit(false)
 , _asyncRefCount(0)
 {
+    pthread_mutex_init(&s_pauseMutex, NULL);
+    pthread_cond_init(&s_pauseCondition, NULL);
 }
 
 TextureCache::~TextureCache()
@@ -206,9 +229,15 @@ void TextureCache::unbindAllImageAsync()
 void TextureCache::loadImage()
 {
     AsyncStruct *asyncStruct = nullptr;
-
     while (true)
     {
+        // wait for queue pauses
+        pthread_mutex_lock(&s_pauseMutex);
+        while (s_isPaused) {
+            pthread_cond_wait(&s_pauseCondition, &s_pauseMutex);
+        }
+        pthread_mutex_unlock(&s_pauseMutex);
+        
         std::deque<AsyncStruct*> *pQueue = _asyncStructQueue;
         _asyncStructQueueMutex.lock();
         if (pQueue->empty())
