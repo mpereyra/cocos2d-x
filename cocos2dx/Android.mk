@@ -158,9 +158,12 @@ LOCAL_WHOLE_STATIC_LIBRARIES += cocos_jpeg_static
 LOCAL_WHOLE_STATIC_LIBRARIES += cocos_libxml2_static
 LOCAL_WHOLE_STATIC_LIBRARIES += cocos_libtiff_static
 
-# define the macro to compile through support/zip_support/ioapi.c                
-LOCAL_CFLAGS := -DUSE_FILE32API
+# define the macro to compile through support/zip_support/ioapi.c                L
+LOCAL_CFLAGS := -DUSE_FILE32API -fvisibility=hidden
 LOCAL_EXPORT_CFLAGS := -DUSE_FILE32API
+
+# Uncomment to compile with ARM instruction set instead of Thumb
+#LOCAL_ARM_MODE := arm
 
 include $(BUILD_STATIC_LIBRARY)
 
