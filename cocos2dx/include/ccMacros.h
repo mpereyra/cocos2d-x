@@ -35,7 +35,8 @@ THE SOFTWARE.
 #include "CCStdC.h"
 
 #ifndef CCAssert
-#define CCAssert(cond, msg)         CC_ASSERT(cond)
+extern void (*CCAssertOverrideFunc)(const void * msg);
+#define CCAssert(cond, msg) if(!(cond)) { CCAssertOverrideFunc(&msg); }
 #endif  // CCAssert
 
 #include "ccConfig.h"
