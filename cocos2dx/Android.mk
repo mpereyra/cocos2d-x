@@ -159,8 +159,13 @@ LOCAL_WHOLE_STATIC_LIBRARIES += cocos_libxml2_static
 LOCAL_WHOLE_STATIC_LIBRARIES += cocos_libtiff_static
 
 # define the macro to compile through support/zip_support/ioapi.c                L
-LOCAL_CFLAGS := -DUSE_FILE32API -fvisibility=hidden
+LOCAL_CFLAGS := -DUSE_FILE32API
 LOCAL_EXPORT_CFLAGS := -DUSE_FILE32API
+
+ifneq ($(NDK_DEBUG),1)
+LOCAL_CFLAGS += -fvisibility=hidden -fvisibility-inlines-hidden
+LOCAL_CPPFLAGS += -fvisibility=hidden -fvisibility-inlines-hidden
+endif
 
 # Uncomment to compile with ARM instruction set instead of Thumb
 #LOCAL_ARM_MODE := arm
