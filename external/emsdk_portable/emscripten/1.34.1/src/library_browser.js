@@ -580,6 +580,15 @@ mergeInto(LibraryManager.library, {
 
         if (event.type === 'touchstart' || event.type === 'touchend' || event.type === 'touchmove') {
           var touch = event.touch;
+          if(touch === undefined)
+          {
+            // Try to see if there's a 'touches' (Known case: Chrome on Windows 10 touch screen)
+            var touches = event.touches;
+            if((touches !== undefined) && (touches.length > 0))
+            {
+              touch = touches[0]; // Took me 3 days to find you, you elusive, elusive devil
+            }
+          }
           if (touch === undefined) {
             return; // the "touch" property is only defined in SDL
 
@@ -601,6 +610,11 @@ mergeInto(LibraryManager.library, {
             Browser.lastTouches[touch.identifier] = last;
             Browser.touches[touch.identifier] = coords;
           } 
+
+          Browser.mouseMovementX = coords.x - Browser.mouseX;
+          Browser.mouseMovementY = coords.y - Browser.mouseY;
+          Browser.mouseX = coords.x;
+          Browser.mouseY = coords.y;
           return;
         }
 

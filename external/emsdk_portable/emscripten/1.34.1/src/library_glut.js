@@ -201,7 +201,9 @@ var LibraryGLUT = {
     onMouseButtonDown: function(event) {
       Browser.calculateMouseEvent(event);
 
-      GLUT.buttons |= (1 << event['button']);
+      var isTouchDevice = 'ontouchstart' in document.documentElement;
+      var eventButton = isTouchDevice ? 0 : event['button']; // default touches to 'left click'
+      GLUT.buttons |= (1 << eventButton);
 
       if (event.target == Module["canvas"] && GLUT.mouseFunc) {
         try {
@@ -209,19 +211,21 @@ var LibraryGLUT = {
         } catch (e) {}
         event.preventDefault();
         GLUT.saveModifiers(event);
-        Runtime.dynCall('viiii', GLUT.mouseFunc, [event['button'], 0/*GLUT_DOWN*/, Browser.mouseX, Browser.mouseY]);
+        Runtime.dynCall('viiii', GLUT.mouseFunc, [eventButton, 0/*GLUT_DOWN*/, Browser.mouseX, Browser.mouseY]);
       }
     },
 
     onMouseButtonUp: function(event) {
       Browser.calculateMouseEvent(event);
 
-      GLUT.buttons &= ~(1 << event['button']);
+      var isTouchDevice = 'ontouchstart' in document.documentElement;
+      var eventButton = isTouchDevice ? 0 : event['button']; // default touches to 'left click'
+      GLUT.buttons &= ~(1 << eventButton);
 
       if (GLUT.mouseFunc) {
         event.preventDefault();
         GLUT.saveModifiers(event);
-        Runtime.dynCall('viiii', GLUT.mouseFunc, [event['button'], 1/*GLUT_UP*/, Browser.mouseX, Browser.mouseY]);
+        Runtime.dynCall('viiii', GLUT.mouseFunc, [eventButton, 1/*GLUT_UP*/, Browser.mouseX, Browser.mouseY]);
       }
     },
 
