@@ -309,15 +309,16 @@ var LibraryGLUT = {
       window.addEventListener("touchmove", GLUT.onMousemove, true);
       window.addEventListener("touchstart", GLUT.onMouseButtonDown, true);
       window.addEventListener("touchend", GLUT.onMouseButtonUp, true);
-    } else {
-      window.addEventListener("mousemove", GLUT.onMousemove, true);
-      window.addEventListener("mousedown", GLUT.onMouseButtonDown, true);
-      window.addEventListener("mouseup", GLUT.onMouseButtonUp, true);
-      // IE9, Chrome, Safari, Opera
-      window.addEventListener("mousewheel", GLUT.onMouseWheel, true);
-      // Firefox
-      window.addEventListener("DOMMouseScroll", GLUT.onMouseWheel, true);
     }
+
+    // Touch devices want these too, because it could be a hybrid that uses both touch and mouse (argh)
+    window.addEventListener("mousemove", GLUT.onMousemove, true);
+    window.addEventListener("mousedown", GLUT.onMouseButtonDown, true);
+    window.addEventListener("mouseup", GLUT.onMouseButtonUp, true);
+    // IE9, Chrome, Safari, Opera
+    window.addEventListener("mousewheel", GLUT.onMouseWheel, true);
+    // Firefox
+    window.addEventListener("DOMMouseScroll", GLUT.onMouseWheel, true);
 
     Browser.resizeListeners.push(function(width, height) {
       if (GLUT.reshapeFunc) {
@@ -332,15 +333,17 @@ var LibraryGLUT = {
         window.removeEventListener("touchmove", GLUT.onMousemove, true);
         window.removeEventListener("touchstart", GLUT.onMouseButtonDown, true);
         window.removeEventListener("touchend", GLUT.onMouseButtonUp, true);
-      } else {
-        window.removeEventListener("mousemove", GLUT.onMousemove, true);
-        window.removeEventListener("mousedown", GLUT.onMouseButtonDown, true);
-        window.removeEventListener("mouseup", GLUT.onMouseButtonUp, true);
-        // IE9, Chrome, Safari, Opera
-        window.removeEventListener("mousewheel", GLUT.onMouseWheel, true);
-        // Firefox
-        window.removeEventListener("DOMMouseScroll", GLUT.onMouseWheel, true);
-      }
+      } 
+
+      // Touch devices want these too, because it could be a hybrid that uses both touch and mouse (argh)
+      window.removeEventListener("mousemove", GLUT.onMousemove, true);
+      window.removeEventListener("mousedown", GLUT.onMouseButtonDown, true);
+      window.removeEventListener("mouseup", GLUT.onMouseButtonUp, true);
+      // IE9, Chrome, Safari, Opera
+      window.removeEventListener("mousewheel", GLUT.onMouseWheel, true);
+      // Firefox
+      window.removeEventListener("DOMMouseScroll", GLUT.onMouseWheel, true);
+
       Module["canvas"].width = Module["canvas"].height = 1;
     });
   },
