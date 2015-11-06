@@ -6,6 +6,9 @@ LOCAL_MODULE := cocos2dxandroid_static
 
 LOCAL_MODULE_FILENAME := libcocos2dandroid
 
+#turn off thumb for extra speed
+LOCAL_ARM_MODE := arm
+
 LOCAL_SRC_FILES := \
 CCApplication-android.cpp \
 CCCommon-android.cpp \

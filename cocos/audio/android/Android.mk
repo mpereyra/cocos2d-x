@@ -5,6 +5,9 @@ LOCAL_MODULE := cocosdenshion_static
 
 LOCAL_MODULE_FILENAME := libcocosdenshion
 
+#turn off thumb for extra speed
+LOCAL_ARM_MODE := arm
+
 LOCAL_SRC_FILES := cddSimpleAudioEngine.cpp \
                    ccdandroidUtils.cpp \
                    jni/cddandroidAndroidJavaEngine.cpp
@@ -23,6 +26,9 @@ include $(CLEAR_VARS)
 LOCAL_MODULE := audioengine_static
 
 LOCAL_MODULE_FILENAME := libaudioengine
+
+#turn off thumb for extra speed
+LOCAL_ARM_MODE := arm
 
 LOCAL_SRC_FILES := AudioEngine-inl.cpp \
                    ../AudioEngine.cpp
