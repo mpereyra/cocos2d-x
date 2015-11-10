@@ -873,6 +873,17 @@ Rect Node::getBoundingBox() const
 }
 
 /** BPC PATCH BEGIN **/
+Vec3 Node::getAdditionalPosition() const{
+    cocos2d::Vec3 trans;
+    _additionalTransform.getTranslation(&trans);
+    return trans;
+}
+
+Vec3 Node::getRealPosition() const{
+    cocos2d::Vec3 additional = getAdditionalPosition();
+    return (getPosition3D() + additional);
+}
+
 const AABB& Node::getNodeToParentAABB(std::vector<std::string> excludeMeshes, bool force) const {
     // If nodeToWorldTransform matrix isn't changed and we are querying the same set of meshes as before, we don't need to transform aabb.
     if (!force && !_nodeToParentAABBDirty

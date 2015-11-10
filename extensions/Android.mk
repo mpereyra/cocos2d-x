@@ -5,6 +5,9 @@ LOCAL_MODULE    := cocos_extension_static
 
 LOCAL_MODULE_FILENAME := libextension
 
+#turn off thumb for extra speed
+LOCAL_ARM_MODE := arm
+
 LOCAL_SRC_FILES := \
 assets-manager/AssetsManager.cpp \
 assets-manager/Downloader.cpp \

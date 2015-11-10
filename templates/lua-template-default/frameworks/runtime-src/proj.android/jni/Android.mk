@@ -6,6 +6,9 @@ LOCAL_MODULE := cocos2dlua_shared
 
 LOCAL_MODULE_FILENAME := libcocos2dlua
 
+#turn off thumb for extra speed
+LOCAL_ARM_MODE := arm
+
 LOCAL_SRC_FILES := \
 ../../Classes/AppDelegate.cpp \
 ../../Classes/ide-support/SimpleConfigParser.cpp \

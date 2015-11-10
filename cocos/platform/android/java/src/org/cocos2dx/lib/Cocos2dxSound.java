@@ -34,6 +34,7 @@ import java.util.concurrent.Semaphore;
 import com.chukong.cocosplay.client.CocosPlayClient;
 
 import android.content.Context;
+import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.util.Log;
@@ -290,12 +291,14 @@ public class Cocos2dxSound {
 
     public int createSoundIDFromAsset(final String path) {
         int soundID = Cocos2dxSound.INVALID_SOUND_ID;
-
+        
         try {
             if (path.startsWith("/")) {
                 soundID = this.mSoundPool.load(path, 0);
             } else {
-                soundID = this.mSoundPool.load(this.mContext.getAssets().openFd(path), 0);
+                AssetFileDescriptor afd = this.mContext.getAssets().openFd(path);
+                soundID = this.mSoundPool.load(afd, 0);
+                afd.close();
             }
         } catch (final Exception e) {
             soundID = Cocos2dxSound.INVALID_SOUND_ID;

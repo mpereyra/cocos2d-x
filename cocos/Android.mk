@@ -12,6 +12,9 @@ else
 MATHNEONFILE := math/MathUtil.cpp
 endif
 
+#turn off thumb for extra speed
+LOCAL_ARM_MODE := arm
+
 LOCAL_SRC_FILES := \
 cocos2d.cpp \
 2d/CCAction.cpp \
@@ -246,6 +249,9 @@ include $(BUILD_STATIC_LIBRARY)
 #==============================================================
 
 include $(CLEAR_VARS)
+
+#turn off thumb for extra speed
+LOCAL_ARM_MODE := arm
 
 LOCAL_MODULE := cocos2dx_static
 LOCAL_MODULE_FILENAME := libcocos2d

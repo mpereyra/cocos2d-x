@@ -370,6 +370,12 @@ public:
      * returns the position (X,Y,Z) in its parent's coordinate system
      */
     virtual Vec3 getPosition3D() const;
+    
+    
+    /*BPC PATCH*/
+    Vec3 getAdditionalPosition() const;
+    Vec3 getRealPosition() const;
+    /*END BPC PATCH*/
 
     /**
      * Sets the 'z' coordinate in the position. It is the OpenGL Z vertex value.
