@@ -58,6 +58,16 @@ struct StencilMaskOptions{
         m_opPass = opP;
     }
 };
+
+struct PolygonOffset {
+    PolygonOffset(double factor, double units) {
+        m_factor = factor;
+        m_units = units;
+    }
+    double m_factor {0};
+    double m_units {0};
+    bool empty() { return m_factor == 0 && m_units == 0; }
+};
 //END BPC PATCH
     
 //it is a common mesh
@@ -73,6 +83,7 @@ public:
     CC_DEPRECATED_ATTRIBUTE void init(float globalZOrder, GLuint textureID, GLProgramState* glProgramState, BlendFunc blendType, GLuint vertexBuffer, GLuint indexBuffer, GLenum primitive, GLenum indexType, ssize_t indexCount, const Mat4 &mv);
     
     /** BPC PATCH BEGIN **/
+    void setOffset(PolygonOffset const & offset);
     void setOffset(float factor, float units);
     /** BPC PATCH END **/
     
@@ -123,7 +134,7 @@ protected:
 // BPC PATCH THANK GOD IT'S OVER
     
 /** BPC-PATCH BEGIN **/
-    std::pair<float, float> m_offset {0, 0};
+    PolygonOffset m_offset {0, 0};
 /** BPC-PATCH END **/
     
     //build & release vao

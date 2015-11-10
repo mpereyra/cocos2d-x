@@ -143,6 +143,10 @@ void MeshCommand::init(float globalOrder,
 }
 
 /** BPC PATCH BEGIN **/
+void MeshCommand::setOffset(PolygonOffset const & offset) {
+    m_offset = offset;
+}
+
 void MeshCommand::setOffset(float factor, float units)
 {
     m_offset = {factor, units};
@@ -241,13 +245,12 @@ void MeshCommand::applyRenderState()
         glStencilOp(_stencilOptions.m_opFail, _stencilOptions.m_opDepthFail, _stencilOptions.m_opPass);
     }
     _renderStateOffset = glIsEnabled(GL_POLYGON_OFFSET_FILL) != GL_FALSE;
-    bool offsetWanted = m_offset.first || m_offset.second;
-    if(offsetWanted != _renderStateOffset) {
-        offsetWanted ? glEnable(GL_POLYGON_OFFSET_FILL) : glDisable(GL_POLYGON_OFFSET_FILL);
+    if(m_offset.empty() == _renderStateOffset) {
+        m_offset.empty() ? glDisable(GL_POLYGON_OFFSET_FILL) : glEnable(GL_POLYGON_OFFSET_FILL);
     }
     
-    if(offsetWanted) {
-        glPolygonOffset(m_offset.first, m_offset.second);
+    if(m_offset.empty() == false) {
+        glPolygonOffset(m_offset.m_factor, m_offset.m_units);
     }
     //END BPC PATCH
 }
@@ -276,8 +279,7 @@ void MeshCommand::restoreRenderState()
     
     
     /** BPC PATCH BEGIN **/
-    bool offsetWanted = m_offset.first || m_offset.second;
-    if(offsetWanted != _renderStateOffset) {
+    if(m_offset.empty() == _renderStateOffset) {
         _renderStateOffset ? glEnable(GL_POLYGON_OFFSET_FILL) : glDisable(GL_POLYGON_OFFSET_FILL);
     }
     
