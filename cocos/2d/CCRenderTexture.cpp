@@ -34,7 +34,7 @@ THE SOFTWARE.
 #include "base/CCEventListenerCustom.h"
 #include "base/CCEventDispatcher.h"
 #include "renderer/CCRenderer.h"
-
+#include "renderer/CCTextureCache.h"
 
 NS_CC_BEGIN
 
