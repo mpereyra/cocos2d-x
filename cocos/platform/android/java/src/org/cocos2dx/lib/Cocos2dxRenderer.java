@@ -27,6 +27,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.opengl.GLSurfaceView;
+import android.util.Log;
 
 import org.cocos2dx.lib.Cocos2dxHelper;
 public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
@@ -71,6 +72,7 @@ public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceCreated(final GL10 GL10, final EGLConfig EGLConfig) {
+        Log.d("OHAD", "onSurfaceCreated");
         Cocos2dxRenderer.nativeInit(this.mScreenWidth, this.mScreenHeight);
         this.mLastTickInNanoSeconds = System.nanoTime();
         mNativeInitCompleted = true;
@@ -79,6 +81,8 @@ public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceChanged(final GL10 GL10, final int width, final int height) {
         Cocos2dxRenderer.nativeOnSurfaceChanged(width, height);
+        //Log.d("OHAD", "calling nativBpcResume");
+        Cocos2dxRenderer.nativeBPCResume();
     }
 
     @Override
@@ -121,6 +125,7 @@ public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
     private static native void nativeOnSurfaceChanged(final int width, final int height);
     private static native void nativeOnPause();
     private static native void nativeOnResume();
+    private static native void nativeBPCResume();
 
     public void handleActionDown(final int id, final float x, final float y) {
         Cocos2dxRenderer.nativeTouchesBegin(id, x, y);
