@@ -318,7 +318,7 @@ public:
     
     // reload all shaders, this function is designed for android
     // when opengl context lost, so don't call it.
-    void reset();
+    virtual void reset();
     
     inline const GLuint getProgram() const { return _program; }
 

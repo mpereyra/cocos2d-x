@@ -72,16 +72,17 @@ public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceCreated(final GL10 GL10, final EGLConfig EGLConfig) {
-        Log.d("OHAD", "onSurfaceCreated");
         Cocos2dxRenderer.nativeInit(this.mScreenWidth, this.mScreenHeight);
         this.mLastTickInNanoSeconds = System.nanoTime();
+        if(mNativeInitCompleted){ //we dont need to do this the first time only on restarts...
+            Cocos2dxRenderer.nativeOnRegainedGLContext();
+        }
         mNativeInitCompleted = true;
     }
 
     @Override
     public void onSurfaceChanged(final GL10 GL10, final int width, final int height) {
         Cocos2dxRenderer.nativeOnSurfaceChanged(width, height);
-        //Log.d("OHAD", "calling nativBpcResume");
         Cocos2dxRenderer.nativeBPCResume();
     }
 
@@ -126,6 +127,7 @@ public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
     private static native void nativeOnPause();
     private static native void nativeOnResume();
     private static native void nativeBPCResume();
+    private static native void nativeOnRegainedGLContext();
 
     public void handleActionDown(final int id, final float x, final float y) {
         Cocos2dxRenderer.nativeTouchesBegin(id, x, y);
