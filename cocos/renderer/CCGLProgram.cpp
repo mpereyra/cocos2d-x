@@ -920,10 +920,9 @@ void GLProgram::setUniformsForBuiltins(const Mat4 &matrixMV)
     }
 
     if(_flags.usesTime) {
-        // This doesn't give the most accurate global time value.
-        // Cocos2D doesn't store a high precision time value, so this will have to do.
-        // Getting Mach time per frame per shader using time could be extremely expensive.
-        float time = _director->getTotalFrames() * _director->getAnimationInterval();
+        /** BPC PATCH **/
+        float time = _director->getAccumulatedDeltaTime();
+        /** BPC PATCH - END **/
         
         setUniformLocationWith4f(_builtInUniforms[GLProgram::UNIFORM_TIME], time/10.0, time, time*2, time*4);
         setUniformLocationWith4f(_builtInUniforms[GLProgram::UNIFORM_SIN_TIME], time/8.0, time/4.0, time/2.0, sinf(time));

@@ -386,6 +386,10 @@ public:
     /* Gets delta time since last tick to main loop */
 	float getDeltaTime() const;
     
+    /** BPC PATCH **/
+    float getAccumulatedDeltaTime() const { return _accumDt; }
+    /** BPC PATCH - END **/
+    
     /**
      *  get Frame Rate
      */

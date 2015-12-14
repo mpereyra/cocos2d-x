@@ -1127,15 +1127,8 @@ void Director::showStats()
         prevDeltaTime = dt;
         _frameRate = 1/dt;
 
-        // Probably we don't need this anymore since
-        // the framerate is using a low-pass filter
-        // to make the FPS stable
-        if (_accumDt > CC_DIRECTOR_STATS_INTERVAL)
-        {
-            sprintf(buffer, "%.1f / %.3f", _frameRate, _secondsPerFrame);
-            _FPSLabel->setString(buffer);
-            _accumDt = 0;
-        }
+        sprintf(buffer, "%.1f / %.3f", _frameRate, _secondsPerFrame);
+        _FPSLabel->setString(buffer);
 
         auto currentCalls = (unsigned long)_renderer->getDrawnBatches();
         auto currentVerts = (unsigned long)_renderer->getDrawnVertices();
