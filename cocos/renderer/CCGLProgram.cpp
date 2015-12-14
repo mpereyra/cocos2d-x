@@ -949,6 +949,11 @@ void GLProgram::reset()
     }
     
     _hashForUniforms.clear();
+    
+    
+    //bpc patch
+    _userUniforms.clear();
+    _vertexAttribs.clear();
 }
 
 NS_CC_END
