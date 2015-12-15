@@ -268,6 +268,10 @@ void Director::drawScene()
     //tick before glClear: issue #533
     if (! _paused)
     {
+        // BPC PATCH moved from Show Stats
+        _accumDt += _deltaTime;
+        //END BPC PATCH
+        
         _scheduler->update(_deltaTime);
         _eventDispatcher->dispatchEvent(_eventAfterUpdate);
     }
@@ -1117,7 +1121,7 @@ void Director::showStats()
     static float prevDeltaTime  = 0.016f; // 60FPS
     static const float FPS_FILTER = 0.10f;
 
-    _accumDt += _deltaTime;
+    
     
     if (_displayStats && _FPSLabel && _drawnBatchesLabel && _drawnVerticesLabel)
     {
