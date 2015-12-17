@@ -608,29 +608,29 @@ void CCParticleSystem::update(float dt)
                 // Mode A: gravity, direction, tangential accel & radial accel
                 if (m_nEmitterMode == kCCParticleModeGravity) 
                 {
-                    CCPoint tmp, radial, tangential;
-
-                    radial = CCPointZero;
+                    float rx = 0, ry = 0;
                     // radial acceleration
                     if (p->pos.x || p->pos.y)
                     {
-                        radial = ccpNormalize(p->pos);
+                        static CCPoint radial = ccpNormalize(p->pos);
+                        rx = radial.x;
+                        ry = radial.y;
                     }
-                    tangential = radial;
-                    radial = ccpMult(radial, p->modeA.radialAccel);
+
+                    float tx = rx, ty = ry;
+                    rx *= p->modeA.radialAccel;
+                    ry *= p->modeA.radialAccel;
 
                     // tangential acceleration
-                    float newy = tangential.x;
-                    tangential.x = -tangential.y;
-                    tangential.y = newy;
-                    tangential = ccpMult(tangential, p->modeA.tangentialAccel);
+                    float newy = tx;
+                    tx = -ty * p->modeA.tangentialAccel;
+                    ty = newy * p->modeA.tangentialAccel;
 
                     // (gravity + radial + tangential) * dt
-                    tmp = ccpAdd( ccpAdd( radial, tangential), modeA.gravity);
-                    tmp = ccpMult( tmp, dt);
-                    p->modeA.dir = ccpAdd( p->modeA.dir, tmp);
-                    tmp = ccpMult(p->modeA.dir, dt);
-                    p->pos = ccpAdd( p->pos, tmp );
+                    p->modeA.dir.x += (modeA.gravity.x + rx + tx) * dt;
+                    p->modeA.dir.y += (modeA.gravity.y + ry + ty) * dt;
+                    p->pos.x += dt * p->modeA.dir.x;
+                    p->pos.y += dt * p->modeA.dir.y;
                 }
 
                 // Mode B: radius movement
@@ -665,8 +665,8 @@ void CCParticleSystem::update(float dt)
 
                 if (m_ePositionType == kCCPositionTypeFree || m_ePositionType == kCCPositionTypeRelative) 
                 {
-                    CCPoint diff = ccpSub( currentPosition, p->startPos );
-                    newPos = ccpSub(p->pos, diff);
+                    newPos.x = p->pos.x - (currentPosition.x - p->startPos.x);
+                    newPos.y = p->pos.y - (currentPosition.y - p->startPos.y);
                 } 
                 else
                 {
