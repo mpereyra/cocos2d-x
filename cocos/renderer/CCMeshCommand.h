@@ -66,7 +66,7 @@ struct PolygonOffset {
     }
     double m_factor {0};
     double m_units {0};
-    bool empty() { return m_factor == 0 && m_units == 0; }
+    bool empty() const { return m_factor == 0 && m_units == 0; }
 };
 //END BPC PATCH
     
@@ -85,6 +85,9 @@ public:
     /** BPC PATCH BEGIN **/
     void setOffset(PolygonOffset const & offset);
     void setOffset(float factor, float units);
+    PolygonOffset const & getOffset() {
+        return m_offset;
+    }
     /** BPC PATCH END **/
     
     void setCullFaceEnabled(bool enable);
