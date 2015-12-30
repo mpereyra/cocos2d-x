@@ -112,7 +112,7 @@ bool ActionInterval::isDone() const
 
 void ActionInterval::step(float dt)
 {
-    if (_firstTick)
+    if (_firstTick && !_ignoreFirstTick)
     {
         _firstTick = false;
         _elapsed = 0;
