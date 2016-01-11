@@ -223,7 +223,25 @@ public:
 
     /** Touch events are handled by default; if you want to customize your handlers, please override these functions: */
     virtual void handleTouchesBegin(int num, intptr_t ids[], float xs[], float ys[]);
+    /** Touch events are handled by default; if you want to customize your handlers, please override this function.
+     *
+     * @param num The number of touch.
+     * @param ids The identity of the touch.
+     * @param xs The points of x.
+     * @param ys The points of y.
+     */
     virtual void handleTouchesMove(int num, intptr_t ids[], float xs[], float ys[]);
+    
+    /** Touch events are handled by default; if you want to customize your handlers, please override this function.
+     *
+     * @param num The number of touch.
+     * @param ids The identity of the touch.
+     * @param xs The points of x.
+     * @param ys The points of y.
+     * @param fs The force of 3d touches.
+     # @param ms The maximum force of 3d touches
+     */
+    virtual void handleTouchesMove(int num, intptr_t ids[], float xs[], float ys[], float fs[], float ms[]);
     virtual void handleTouchesEnd(int num, intptr_t ids[], float xs[], float ys[]);
     virtual void handleTouchesCancel(int num, intptr_t ids[], float xs[], float ys[]);
 
