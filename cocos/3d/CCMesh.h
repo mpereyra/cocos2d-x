@@ -123,6 +123,8 @@ public:
     void setDepthWriteMode(GLWriteMode mode) {m_depthWriteMode = mode;}
     GLWriteMode getCullFaceMode() const {return m_cullFaceMode;}
     void setCullFaceMode(GLWriteMode mode){m_cullFaceMode = mode;}
+    float getGlobalZ() const {return m_globalZ;}
+    void setGlobalZ(float zVal) {m_globalZ = zVal;}
     
     bool boolFromWriteMode(GLWriteMode mode) const{
         switch(mode){
@@ -158,6 +160,7 @@ CC_CONSTRUCTOR_ACCESS:
     /*BPC-PATCH*/
     GLWriteMode m_depthWriteMode{GLWriteMode::Default};
     GLWriteMode m_cullFaceMode{GLWriteMode::Default};
+    float m_globalZ{std::numeric_limits<float>::max()};
     /*END BPC-PATCH*/
 protected:
     Texture2D* _texture;  //texture that submesh is using

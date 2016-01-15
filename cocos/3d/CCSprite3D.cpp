@@ -753,6 +753,8 @@ void Sprite3D::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
 
         /* BPC Patch */
         float globalZ = _globalZOrder;
+        if (mesh->getGlobalZ() != std::numeric_limits<float>::max())
+            globalZ = mesh->getGlobalZ();
 
         if (isTransparent) {
             flags |= Node::FLAGS_RENDER_AS_3D;
