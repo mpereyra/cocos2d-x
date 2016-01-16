@@ -54,6 +54,7 @@ static CDBufferManager *bufferManager = nil;
 {
     if((self=[super init])) {
         am = [CDAudioManager sharedManager];
+        [am setResignBehavior:kAMRBStopPlay autoHandle:YES]; // fix stopping user music on short sleep
         soundEngine = am.soundEngine;
         bufferManager = [[CDBufferManager alloc] initWithEngine:soundEngine];
         mute_ = NO;
