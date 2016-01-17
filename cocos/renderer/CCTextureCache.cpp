@@ -658,18 +658,19 @@ std::string TextureCache::getCachedTextureInfo() const
         auto bytes = tex->getPixelsWide() * tex->getPixelsHigh() * bpp / 8;
         totalBytes += bytes;
         count++;
-        snprintf(buftmp,sizeof(buftmp)-1,"\"%s\" rc=%lu id=%lu %lu x %lu @ %ld bpp => %lu KB\n",
+        
+        const long kb = long(bytes) / 1024;
+        const bool big = kb >= 512;
+        snprintf(buftmp,sizeof(buftmp)-1,"%lu %s \"%s\" rc=%lu id=%lu %lu x %lu @ %ld bpp \n",
+                kb,
+                 big? "!KB!" : "KB:",
                it->first.c_str(),
                (long)tex->getReferenceCount(),
                (long)tex->getName(),
                (long)tex->getPixelsWide(),
                (long)tex->getPixelsHigh(),
-               (long)bpp,
-               (long)bytes / 1024);
+               (long)bpp);
         
-        // BPC_PATCH
-        // buffer was not big enough
-        // buffer += buftmp;
         CCLOG("%s", buftmp);
     }
 
