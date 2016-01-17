@@ -685,7 +685,7 @@ static BOOL configured = FALSE;
                 if (self.willPlayBackgroundMusic) {
                     for( CDLongAudioSource *audioSource in audioSourceChannels) {
                         if (audioSource->systemPaused) {
-                            [audioSource resume];
+                            [audioSource play];  // was "resume" but resume does not play stopped sounds
                             audioSource->systemPaused = NO;
                         }
                     }
