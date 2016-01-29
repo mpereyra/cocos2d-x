@@ -212,7 +212,7 @@ CC_CONSTRUCTOR_ACCESS:
     /** END BPC PATCH **/
     
     /** load file and set it to meshedatas, nodedatas and materialdatas, obj file .mtl file should be at the same directory if exist */
-    bool loadFromFile(const std::string& path, NodeDatas* nodedatas, MeshDatas* meshdatas,  MaterialDatas* materialdatas);
+    virtual bool loadFromFile(const std::string& path, NodeDatas* nodedatas, MeshDatas* meshdatas,  MaterialDatas* materialdatas);
 
     /**
      * Visits this Sprite3D's children and draw them recursively.
