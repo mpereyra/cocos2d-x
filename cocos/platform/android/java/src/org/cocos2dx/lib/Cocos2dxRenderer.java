@@ -62,8 +62,15 @@ public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
     }
 
     public void setScreenWidthAndHeight(final int surfaceWidth, final int surfaceHeight) {
-        this.mScreenWidth = surfaceWidth;
-        this.mScreenHeight = surfaceHeight;
+        /* BPC PATCH */
+        if (Cocos2dxRenderer.nativeIsLandscape() && surfaceHeight > surfaceWidth) {
+            this.mScreenWidth = surfaceHeight;
+            this.mScreenHeight = surfaceWidth;
+        } else {
+            this.mScreenWidth = surfaceWidth;
+            this.mScreenHeight = surfaceHeight;
+        }
+        /* END BPC PATCH */
     }
 
     // ===========================================================
@@ -126,8 +133,11 @@ public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
     private static native void nativeOnSurfaceChanged(final int width, final int height);
     private static native void nativeOnPause();
     private static native void nativeOnResume();
+    /* BPC PATCH METHODS */
     private static native void nativeBPCResume();
     private static native void nativeOnRegainedGLContext();
+    private static native boolean nativeIsLandscape();
+    /* END BPC PATCH */
 
     public void handleActionDown(final int id, final float x, final float y) {
         Cocos2dxRenderer.nativeTouchesBegin(id, x, y);
