@@ -38,6 +38,7 @@ THE SOFTWARE.
 #include "base/CCEventType.h"
 #include "base/CCDirector.h"
 #include "base/CCEventDispatcher.h"
+#include "base/ccMacros.h"
 
 NS_CC_BEGIN
 
@@ -345,11 +346,18 @@ void GLProgramState::updateUniformsAndAttributes()
     CCASSERT(_glprogram, "invalid glprogram");
     if(_uniformAttributeValueDirty)
     {
-        for(auto& uniformLocation : _uniformsByName)
-        {
-            _uniforms[uniformLocation.second]._uniform = _glprogram->getUniform(uniformLocation.first);
+        /* BPC PATCH */
+        /* This will run when we lose our context, so we need to rebuild both
+         * maps from the updated GL program. */
+        _uniforms.clear();
+        _uniformsByName.clear();
+        for(auto &uniform : _glprogram->_userUniforms) {
+            UniformValue value(&uniform.second, _glprogram);
+            _uniforms[uniform.second.location] = value;
+            _uniformsByName[uniform.first] = uniform.second.location;
         }
-        
+        /* BPC PATCH */
+
         _vertexAttribsFlags = 0;
         for(auto& attributeValue : _attributes)
         {
@@ -420,7 +428,11 @@ UniformValue* GLProgramState::getUniformValue(const std::string &name)
     updateUniformsAndAttributes();
     const auto itr = _uniformsByName.find(name);
     if (itr != _uniformsByName.end())
-        return &_uniforms[itr->second];
+    {
+        auto const uitr(_uniforms.find(itr->second));
+        CCASSERT(uitr != _uniforms.end(), "invalid uniform cache");
+        return &uitr->second;
+    }
     return nullptr;
 }
 
