@@ -220,8 +220,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH) \
                     $(LOCAL_PATH)/../external/edtaa3func \
                     $(LOCAL_PATH)/../external/xxhash \
                     $(LOCAL_PATH)/../external/ConvertUTF \
-                    $(LOCAL_PATH)/../external/nslog \
-                    $(LOCAL_PATH)/../plugin/publish/protocols/android
+                    $(LOCAL_PATH)/../external/nslog
 
 LOCAL_EXPORT_LDLIBS := -lGLESv2 \
                        -llog \
