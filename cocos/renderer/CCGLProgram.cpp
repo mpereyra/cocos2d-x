@@ -43,6 +43,9 @@ THE SOFTWARE.
 #include "CCPrecompiledShaders.h"
 #endif
 
+#include "../../../shared/common/DLog.h"
+#include "../../../shared/common/GLUtils.h"
+
 NS_CC_BEGIN
 
 const char* GLProgram::SHADER_NAME_POSITION_TEXTURE_COLOR = "ShaderPositionTextureColor";
@@ -160,6 +163,7 @@ GLProgram::~GLProgram()
 
     if (_program) 
     {
+        /* This tends to fail on EngineController restart. */
         GL::deleteProgram(_program);
     }
 
@@ -168,6 +172,15 @@ GLProgram::~GLProgram()
         free(e.second.first);
     }
     _hashForUniforms.clear();
+
+    /* Since this seems to fail only when restarting EngineController, we will
+     * ignore these errrors and let the world keep turning. */
+    while(true)
+    {
+      auto const err(::glGetError());
+      if(err == GL_NO_ERROR)
+      { break; }
+    }
 }
 
 bool GLProgram::initWithByteArrays(const GLchar* vShaderByteArray, const GLchar* fShaderByteArray)
@@ -226,6 +239,8 @@ bool GLProgram::initWithByteArrays(const GLchar* vShaderByteArray, const GLchar*
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WP8) || defined(WP8_SHADER_COMPILER)
     _shaderId = CCPrecompiledShaders::getInstance()->addShaders(vShaderByteArray, fShaderByteArray);
 #endif
+
+    glCheck();
 
     return true;
 }
@@ -295,6 +310,7 @@ void GLProgram::bindPredefinedVertexAttribs()
     for(int i=0; i<size;i++) {
         glBindAttribLocation(_program, attribute_locations[i].location, attribute_locations[i].attributeName);
     }
+    glCheck();
 }
 
 void GLProgram::parseVertexAttribs()
@@ -333,6 +349,7 @@ void GLProgram::parseVertexAttribs()
         glGetProgramInfoLog(_program, sizeof(ErrorLog), NULL, ErrorLog);
         CCLOG("Error linking shader program: '%s'\n", ErrorLog);
     }
+    glCheck();
 }
 
 void GLProgram::parseUniforms()
@@ -392,7 +409,7 @@ void GLProgram::parseUniforms()
         CCLOG("Error linking shader program: '%s'\n", ErrorLog);
 
     }
-
+    glCheck();
 }
 
 Uniform* GLProgram::getUniform(const std::string &name)
@@ -477,6 +494,8 @@ bool GLProgram::compileShader(GLuint * shader, GLenum type, const GLchar* source
 
         return false;;
     }
+    glCheck();
+
     return (status == GL_TRUE);
 }
 
@@ -493,6 +512,7 @@ GLint GLProgram::getUniformLocation(const std::string &attributeName) const
 void GLProgram::bindAttribLocation(const std::string &attributeName, GLuint index) const
 {
     glBindAttribLocation(_program, index, attributeName.c_str());
+    glCheck();
 }
 
 void GLProgram::updateUniforms()
@@ -616,6 +636,9 @@ static std::string logForOpenGLShader(GLuint shader)
     ret = logBytes;
 
     free(logBytes);
+
+    glCheck();
+
     return ret;
 }
 
@@ -634,6 +657,9 @@ static std::string logForOpenGLProgram(GLuint program)
     ret = logBytes;
 
     free(logBytes);
+
+    glCheck();
+
     return ret;
 }
 
@@ -708,6 +734,7 @@ void GLProgram::setUniformLocationWith1i(GLint location, GLint i1)
     {
         glUniform1i( (GLint)location, i1);
     }
+    glCheck();
 }
 
 void GLProgram::setUniformLocationWith2i(GLint location, GLint i1, GLint i2)
@@ -719,6 +746,7 @@ void GLProgram::setUniformLocationWith2i(GLint location, GLint i1, GLint i2)
     {
         glUniform2i( (GLint)location, i1, i2);
     }
+    glCheck();
 }
 
 void GLProgram::setUniformLocationWith3i(GLint location, GLint i1, GLint i2, GLint i3)
@@ -730,6 +758,7 @@ void GLProgram::setUniformLocationWith3i(GLint location, GLint i1, GLint i2, GLi
     {
         glUniform3i( (GLint)location, i1, i2, i3);
     }
+    glCheck();
 }
 
 void GLProgram::setUniformLocationWith4i(GLint location, GLint i1, GLint i2, GLint i3, GLint i4)
@@ -741,6 +770,7 @@ void GLProgram::setUniformLocationWith4i(GLint location, GLint i1, GLint i2, GLi
     {
         glUniform4i( (GLint)location, i1, i2, i3, i4);
     }
+    glCheck();
 }
 
 void GLProgram::setUniformLocationWith2iv(GLint location, GLint* ints, unsigned int numberOfArrays)
@@ -751,6 +781,7 @@ void GLProgram::setUniformLocationWith2iv(GLint location, GLint* ints, unsigned 
     {
         glUniform2iv( (GLint)location, (GLsizei)numberOfArrays, ints );
     }
+    glCheck();
 }
 
 void GLProgram::setUniformLocationWith3iv(GLint location, GLint* ints, unsigned int numberOfArrays)
@@ -761,6 +792,7 @@ void GLProgram::setUniformLocationWith3iv(GLint location, GLint* ints, unsigned 
     {
         glUniform3iv( (GLint)location, (GLsizei)numberOfArrays, ints );
     }
+    glCheck();
 }
 
 void GLProgram::setUniformLocationWith4iv(GLint location, GLint* ints, unsigned int numberOfArrays)
@@ -771,6 +803,7 @@ void GLProgram::setUniformLocationWith4iv(GLint location, GLint* ints, unsigned 
     {
         glUniform4iv( (GLint)location, (GLsizei)numberOfArrays, ints );
     }
+    glCheck();
 }
 
 void GLProgram::setUniformLocationWith1f(GLint location, GLfloat f1)
@@ -781,6 +814,7 @@ void GLProgram::setUniformLocationWith1f(GLint location, GLfloat f1)
     {
         glUniform1f( (GLint)location, f1);
     }
+    glCheck();
 }
 
 void GLProgram::setUniformLocationWith2f(GLint location, GLfloat f1, GLfloat f2)
@@ -792,6 +826,7 @@ void GLProgram::setUniformLocationWith2f(GLint location, GLfloat f1, GLfloat f2)
     {
         glUniform2f( (GLint)location, f1, f2);
     }
+    glCheck();
 }
 
 void GLProgram::setUniformLocationWith3f(GLint location, GLfloat f1, GLfloat f2, GLfloat f3)
@@ -803,6 +838,7 @@ void GLProgram::setUniformLocationWith3f(GLint location, GLfloat f1, GLfloat f2,
     {
         glUniform3f( (GLint)location, f1, f2, f3);
     }
+    glCheck();
 }
 
 void GLProgram::setUniformLocationWith4f(GLint location, GLfloat f1, GLfloat f2, GLfloat f3, GLfloat f4)
@@ -814,6 +850,7 @@ void GLProgram::setUniformLocationWith4f(GLint location, GLfloat f1, GLfloat f2,
     {
         glUniform4f( (GLint)location, f1, f2, f3,f4);
     }
+    glCheck();
 }
 
 
@@ -825,6 +862,7 @@ void GLProgram::setUniformLocationWith1fv( GLint location, const GLfloat* floats
     {
         glUniform1fv( (GLint)location, (GLsizei)numberOfArrays, floats );
     }
+    glCheck();
 }
 
 void GLProgram::setUniformLocationWith2fv(GLint location, const GLfloat* floats, unsigned int numberOfArrays)
@@ -835,6 +873,7 @@ void GLProgram::setUniformLocationWith2fv(GLint location, const GLfloat* floats,
     {
         glUniform2fv( (GLint)location, (GLsizei)numberOfArrays, floats );
     }
+    glCheck();
 }
 
 void GLProgram::setUniformLocationWith3fv(GLint location, const GLfloat* floats, unsigned int numberOfArrays)
@@ -845,6 +884,7 @@ void GLProgram::setUniformLocationWith3fv(GLint location, const GLfloat* floats,
     {
         glUniform3fv( (GLint)location, (GLsizei)numberOfArrays, floats );
     }
+    glCheck();
 }
 
 void GLProgram::setUniformLocationWith4fv(GLint location, const GLfloat* floats, unsigned int numberOfArrays)
@@ -855,6 +895,7 @@ void GLProgram::setUniformLocationWith4fv(GLint location, const GLfloat* floats,
     {
         glUniform4fv( (GLint)location, (GLsizei)numberOfArrays, floats );
     }
+    glCheck();
 }
 
 void GLProgram::setUniformLocationWithMatrix2fv(GLint location, const GLfloat* matrixArray, unsigned int numberOfMatrices) {
@@ -864,6 +905,7 @@ void GLProgram::setUniformLocationWithMatrix2fv(GLint location, const GLfloat* m
     {
         glUniformMatrix2fv( (GLint)location, (GLsizei)numberOfMatrices, GL_FALSE, matrixArray);
     }
+    glCheck();
 }
 
 void GLProgram::setUniformLocationWithMatrix3fv(GLint location, const GLfloat* matrixArray, unsigned int numberOfMatrices) {
@@ -873,6 +915,7 @@ void GLProgram::setUniformLocationWithMatrix3fv(GLint location, const GLfloat* m
     {
         glUniformMatrix3fv( (GLint)location, (GLsizei)numberOfMatrices, GL_FALSE, matrixArray);
     }
+    glCheck();
 }
 
 
@@ -884,6 +927,7 @@ void GLProgram::setUniformLocationWithMatrix4fv(GLint location, const GLfloat* m
     {
         glUniformMatrix4fv( (GLint)location, (GLsizei)numberOfMatrices, GL_FALSE, matrixArray);
     }
+    glCheck();
 }
 
 void GLProgram::setUniformsForBuiltins()
