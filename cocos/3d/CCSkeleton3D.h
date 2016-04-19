@@ -28,6 +28,7 @@
 #include "3d/CCBundle3DData.h"
 #include "base/CCRef.h"
 #include "base/CCVector.h"
+#include <unordered_map>
 
 
 NS_CC_BEGIN
@@ -221,6 +222,11 @@ protected:
     Vector<Bone3D*> _bones; // bones
 
     Vector<Bone3D*> _rootBones;
+    
+    // BPC PATCH BEGIN
+    // fast lookup into _bones
+    std::unordered_map<std::string, Bone3D*> _nameToBoneMap;
+    // BPC PATCH END
 };
 
 NS_CC_END

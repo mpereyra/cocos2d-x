@@ -298,6 +298,17 @@ Bone3D* Skeleton3D::getBoneByIndex(unsigned int index) const
 }
 Bone3D* Skeleton3D::getBoneByName(const std::string& id) const
 {
+    // BPC PATCH BEGIN
+    auto indexCache = _nameToBoneMap.find(id);
+    if(indexCache != _nameToBoneMap.end())
+        return indexCache->second;
+    
+    if(_nameToBoneMap.size() == _bones.size())
+        return nullptr;
+    
+    // old search logic left for sanity checks
+    // BPC PATCH END
+    
     //search from bones
     for (auto it : _bones) {
         if (it->getName() == id)
@@ -341,11 +352,17 @@ void Skeleton3D::removeAllBones()
 {
     _bones.clear();
     _rootBones.clear();
+    // BPC PATCH BEGIN
+    _nameToBoneMap.clear();
+    // BPC PATCH END
 }
 
 void Skeleton3D::addBone(Bone3D* bone)
 {
     _bones.pushBack(bone);
+    // BPC PATCH BEGIN
+    _nameToBoneMap.insert(std::make_pair(bone->getName(), bone));
+    // BPC PATCH END
 }
 
 Bone3D* Skeleton3D::createBone3D(const NodeData& nodedata)
@@ -356,7 +373,7 @@ Bone3D* Skeleton3D::createBone3D(const NodeData& nodedata)
         bone->addChildBone(child);
         child->_parent = bone;
     }
-    _bones.pushBack(bone);
+    addBone(bone); // <- BPC PATCH (replace push_back)
     bone->_oriPose = nodedata.transform;
     return bone;
 }
