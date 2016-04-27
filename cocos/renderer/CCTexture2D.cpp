@@ -582,6 +582,11 @@ bool Texture2D::initWithMipmaps(MipmapInfo* mipmaps, int mipmapsNum, PixelFormat
         CCLOG("cocos2d: WARNING: PVRTC/ETC images are not supported");
         return false;
     }
+    
+    // BPC PATCH 1x1 PVRs causin' GPU crash
+    CCASSERT(!info.compressed || pixelsWide*pixelsHigh > 1, "cocos2d: Compressed image is invalid 1x1 size");
+    if(info.compressed && pixelsWide*pixelsHigh == 1)
+        return false;
 
     //Set the row align only when mipmapsNum == 1 and the data is uncompressed
     if (mipmapsNum == 1 && !info.compressed)
@@ -752,9 +757,7 @@ bool Texture2D::initWithImage(Image *image, PixelFormat format)
             CCLOG("cocos2d: WARNING: This image has more than 1 mipmaps and we will not convert the data format");
         }
 
-        initWithMipmaps(image->getMipmaps(), image->getNumberOfMipmaps(), image->getRenderFormat(), imageWidth, imageHeight);
-        
-        return true;
+        return initWithMipmaps(image->getMipmaps(), image->getNumberOfMipmaps(), image->getRenderFormat(), imageWidth, imageHeight);
     }
     else if (image->isCompressed())
     {
@@ -764,8 +767,7 @@ bool Texture2D::initWithImage(Image *image, PixelFormat format)
             //CCLOG("cocos2d: WARNING: This image is compressed and we can't convert it for now [filename=%s, pixelFormat=%d, renderFormat=%d].", image->getFilePath().c_str(), pixelFormat, image->getRenderFormat());
         }
 
-        initWithData(tempData, tempDataLen, image->getRenderFormat(), imageWidth, imageHeight, imageSize);
-        return true;
+        return initWithData(tempData, tempDataLen, image->getRenderFormat(), imageWidth, imageHeight, imageSize);
     }
     else
     {
@@ -774,7 +776,7 @@ bool Texture2D::initWithImage(Image *image, PixelFormat format)
 
         pixelFormat = convertDataToFormat(tempData, tempDataLen, renderFormat, pixelFormat, &outTempData, &outTempDataLen);
 
-        initWithData(outTempData, outTempDataLen, pixelFormat, imageWidth, imageHeight, imageSize);
+        const bool inited = initWithData(outTempData, outTempDataLen, pixelFormat, imageWidth, imageHeight, imageSize);
 
 
         if (outTempData != nullptr && outTempData != tempData)
@@ -786,7 +788,7 @@ bool Texture2D::initWithImage(Image *image, PixelFormat format)
         // set the premultiplied tag
         _hasPremultipliedAlpha = image->hasPremultipliedAlpha();
         
-        return true;
+        return inited;
     }
 }
 
@@ -1347,6 +1349,9 @@ const char* Texture2D::getStringForFormat() const
 
 		case Texture2D::PixelFormat::PVRTC4:
 			return  "PVRTC4";
+            
+        case Texture2D::PixelFormat::PVRTC4A:
+            return  "PVRTC4A";
 
 		case Texture2D::PixelFormat::PVRTC2:
 			return  "PVRTC2";

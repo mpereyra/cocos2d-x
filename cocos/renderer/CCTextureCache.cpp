@@ -407,6 +407,11 @@ Texture2D * TextureCache::addImage(const std::string &path)
 
             bool bRet = image->initWithImageFile(fullpath);
             CC_BREAK_IF(!bRet);
+            
+            // BPC PATCH - 1x1 PVRs causin' gpu errors
+            if(image->isCompressed() && image->getWidth() * image->getHeight() == 1) {
+                break;
+            }
 
             texture = new (std::nothrow) Texture2D();
 
