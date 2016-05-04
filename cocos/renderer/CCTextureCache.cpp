@@ -378,6 +378,14 @@ void TextureCache::addImageAsyncCallBack(float dt)
             Director::getInstance()->getScheduler()->unschedule(CC_SCHEDULE_SELECTOR(TextureCache::addImageAsyncCallBack), this);
         }
     }
+    
+    /* BPC_PATCH */
+    if(dt < 1 && _asyncRefCount>0){
+        // Kludge! repeat up to 5 times on fast devices
+        // instead of one per frame
+        addImageAsyncCallBack(dt + 1/5.0);
+    }
+    /* BPC_PATCH */
 }
 
 Texture2D * TextureCache::addImage(const std::string &path)
