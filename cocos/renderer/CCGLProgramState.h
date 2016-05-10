@@ -210,7 +210,8 @@ protected:
     UniformValue* getUniformValue(GLint uniformLocation);
     
     bool _uniformAttributeValueDirty;
-    std::unordered_map<std::string, GLint> _uniformsByName;
+    // BPC PATCH <string,GLint> to <string,UniformValue*>
+    std::unordered_map<std::string, UniformValue*> _uniformsByName;
     std::unordered_map<GLint, UniformValue> _uniforms;
     std::unordered_map<std::string, VertexAttribValue> _attributes;
     std::unordered_map<std::string, int> _boundTextureUnits;

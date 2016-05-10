@@ -210,7 +210,7 @@ void ClippingNode::drawFullScreenQuadClearStencil()
     
     auto glProgram = GLProgramCache::getInstance()->getGLProgram(GLProgram::SHADER_NAME_POSITION_U_COLOR);
     
-    int colorLocation = glProgram->getUniformLocation("u_color");
+    int colorLocation = glProgram->getBuiltInUniformLocation(GLProgram::UNIFORM_BPC_COLOR);
     CHECK_GL_ERROR_DEBUG();
     
     Color4F color(1, 1, 1, 1);

@@ -340,11 +340,13 @@ void MeshCommand::batchDraw()
     // set render state
     applyRenderState();
     
-    _glProgramState->setUniformVec4("u_color", _displayColor);
+    const GLint colorLoc = _glProgramState->getGLProgram()->getBuiltInUniformLocation(GLProgram::UNIFORM_BPC_COLOR);
+    _glProgramState->setUniformVec4(colorLoc, _displayColor);
     
     if (_matrixPaletteSize && _matrixPalette)
     {
-        _glProgramState->setUniformCallback("u_matrixPalette", CC_CALLBACK_2(MeshCommand::MatrixPalleteCallBack, this));
+        const GLint mpLoc = _glProgramState->getGLProgram()->getBuiltInUniformLocation(GLProgram::UNIFORM_BPC_MATRIX_PALETTE);
+        _glProgramState->setUniformCallback(mpLoc, CC_CALLBACK_2(MeshCommand::MatrixPalleteCallBack, this));
         
     }
     
@@ -409,11 +411,13 @@ void MeshCommand::execute()
     GL::blendFunc(_blendType.src, _blendType.dst);
     
     glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
-    _glProgramState->setUniformVec4("u_color", _displayColor);
+    const GLint colorLoc = _glProgramState->getGLProgram()->getBuiltInUniformLocation(GLProgram::UNIFORM_BPC_COLOR);
+    _glProgramState->setUniformVec4(colorLoc, _displayColor);
     
     if (_matrixPaletteSize && _matrixPalette)
     {
-        _glProgramState->setUniformCallback("u_matrixPalette", CC_CALLBACK_2(MeshCommand::MatrixPalleteCallBack, this));
+        const GLint mpLoc = _glProgramState->getGLProgram()->getBuiltInUniformLocation(GLProgram::UNIFORM_BPC_MATRIX_PALETTE);
+        _glProgramState->setUniformCallback(mpLoc, CC_CALLBACK_2(MeshCommand::MatrixPalleteCallBack, this));
         
     }
     
@@ -608,7 +612,8 @@ void MeshCommand::setLightUniforms()
         {
             ambient.x /= 255.f; ambient.y /= 255.f; ambient.z /= 255.f;
         }
-        glProgram->setUniformLocationWith4f(glProgram->getUniformLocationForName("u_color"), _displayColor.x * ambient.x, _displayColor.y * ambient.y, _displayColor.z * ambient.z, _displayColor.w);
+        const GLint colorLoc = glProgram->getBuiltInUniformLocation(GLProgram::UNIFORM_BPC_COLOR);
+        glProgram->setUniformLocationWith4f(colorLoc, _displayColor.x * ambient.x, _displayColor.y * ambient.y, _displayColor.z * ambient.z, _displayColor.w);
     }
 }
 

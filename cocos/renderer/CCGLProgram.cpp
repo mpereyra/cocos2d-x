@@ -533,6 +533,14 @@ void GLProgram::updateUniforms()
     _builtInUniforms[UNIFORM_SAMPLER1] = glGetUniformLocation(_program, UNIFORM_NAME_SAMPLER1);
     _builtInUniforms[UNIFORM_SAMPLER2] = glGetUniformLocation(_program, UNIFORM_NAME_SAMPLER2);
     _builtInUniforms[UNIFORM_SAMPLER3] = glGetUniformLocation(_program, UNIFORM_NAME_SAMPLER3);
+    
+    _builtInUniforms[UNIFORM_BPC_COLOR] = glGetUniformLocation(_program, "u_color");
+    _builtInUniforms[UNIFORM_BPC_ALPHA] = glGetUniformLocation(_program, "alpha");
+    _builtInUniforms[UNIFORM_BPC_WORLD_VIEW] = glGetUniformLocation(_program, "worldViewMat");
+    _builtInUniforms[UNIFORM_BPC_MATRIX_PALETTE] = glGetUniformLocation(_program, "u_matrixPalette");
+    
+    for(int i = UNIFORM_BPC_CUSTOM_1; i < UNIFORM_MAX; ++i)
+        _builtInUniforms[i] = -1;
 
     _flags.usesP = _builtInUniforms[UNIFORM_P_MATRIX] != -1;
     _flags.usesMV = _builtInUniforms[UNIFORM_MV_MATRIX] != -1;

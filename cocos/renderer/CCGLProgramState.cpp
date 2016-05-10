@@ -314,10 +314,13 @@ bool GLProgramState::init(GLProgram* glprogram)
         _attributes[attrib.first] = value;
     }
 
+    _uniforms.reserve(_glprogram->_userUniforms.size());
     for(auto &uniform : _glprogram->_userUniforms) {
         UniformValue value(&uniform.second, _glprogram);
-        _uniforms[uniform.second.location] = value;
-        _uniformsByName[uniform.first] = uniform.second.location;
+        _uniforms.insert(std::make_pair(uniform.second.location, value));
+    }
+    for(auto &uniform : _uniforms) {
+        _uniformsByName[uniform.second._uniform->name] = &uniform.second;
     }
 
     return true;
@@ -351,10 +354,13 @@ void GLProgramState::updateUniformsAndAttributes()
          * maps from the updated GL program. */
         _uniforms.clear();
         _uniformsByName.clear();
+        _uniforms.reserve(_glprogram->_userUniforms.size());
         for(auto &uniform : _glprogram->_userUniforms) {
             UniformValue value(&uniform.second, _glprogram);
-            _uniforms[uniform.second.location] = value;
-            _uniformsByName[uniform.first] = uniform.second.location;
+            _uniforms.insert(std::make_pair(uniform.second.location, value));
+        }
+        for(auto &uniform : _uniforms) {
+            _uniformsByName[uniform.second._uniform->name] = &uniform.second;
         }
         /* BPC PATCH */
 
@@ -416,6 +422,9 @@ void GLProgramState::setGLProgram(GLProgram *glprogram)
 
 UniformValue* GLProgramState::getUniformValue(GLint uniformLocation)
 {
+    // BPC PATCH early-out for obviously invalid uniform indices
+    if(uniformLocation == -1) return nullptr;
+    
     updateUniformsAndAttributes();
     const auto itr = _uniforms.find(uniformLocation);
     if (itr != _uniforms.end())
@@ -429,9 +438,8 @@ UniformValue* GLProgramState::getUniformValue(const std::string &name)
     const auto itr = _uniformsByName.find(name);
     if (itr != _uniformsByName.end())
     {
-        auto const uitr(_uniforms.find(itr->second));
-        CCASSERT(uitr != _uniforms.end(), "invalid uniform cache");
-        return &uitr->second;
+        // BPC PATCh return itr->second instead of 2nd map lookup
+        return itr->second;
     }
     return nullptr;
 }
@@ -488,8 +496,8 @@ void GLProgramState::setUniformCallback(GLint uniformLocation, const std::functi
     auto v = getUniformValue(uniformLocation);
     if (v)
         v->setCallback(callback);
-    else
-        CCLOG("cocos2d: warning: Uniform at location not found: %i", uniformLocation);
+//    else
+//        CCLOG("cocos2d: warning: Uniform at location not found: %i", uniformLocation);
 }
 
 void GLProgramState::setUniformFloat(const std::string &uniformName, float value)
@@ -506,8 +514,8 @@ void GLProgramState::setUniformFloat(GLint uniformLocation, float value)
     auto v = getUniformValue(uniformLocation);
     if (v)
         v->setFloat(value);
-    else
-        CCLOG("cocos2d: warning: Uniform at location not found: %i", uniformLocation);
+//    else
+//        CCLOG("cocos2d: warning: Uniform at location not found: %i", uniformLocation);
 }
 
 void GLProgramState::setUniformInt(const std::string &uniformName, int value)
@@ -543,8 +551,8 @@ void GLProgramState::setUniformVec2(GLint uniformLocation, const Vec2& value)
     auto v = getUniformValue(uniformLocation);
     if (v)
         v->setVec2(value);
-    else
-        CCLOG("cocos2d: warning: Uniform at location not found: %i", uniformLocation);
+//    else
+//        CCLOG("cocos2d: warning: Uniform at location not found: %i", uniformLocation);
 }
 
 void GLProgramState::setUniformVec3(const std::string &uniformName, const Vec3& value)
@@ -561,8 +569,8 @@ void GLProgramState::setUniformVec3(GLint uniformLocation, const Vec3& value)
     auto v = getUniformValue(uniformLocation);
     if (v)
         v->setVec3(value);
-    else
-        CCLOG("cocos2d: warning: Uniform at location not found: %i", uniformLocation);
+//    else
+//        CCLOG("cocos2d: warning: Uniform at location not found: %i", uniformLocation);
 }
 
 void GLProgramState::setUniformVec4(const std::string &uniformName, const Vec4& value)
@@ -579,8 +587,8 @@ void GLProgramState::setUniformVec4(GLint uniformLocation, const Vec4& value)
     auto v = getUniformValue(uniformLocation);
     if (v)
         v->setVec4(value);
-    else
-        CCLOG("cocos2d: warning: Uniform at location not found: %i", uniformLocation);
+//    else
+//        CCLOG("cocos2d: warning: Uniform at location not found: %i", uniformLocation);
 }
 
 void GLProgramState::setUniformMat4(const std::string &uniformName, const Mat4& value)
@@ -597,8 +605,8 @@ void GLProgramState::setUniformMat4(GLint uniformLocation, const Mat4& value)
     auto v = getUniformValue(uniformLocation);
     if (v)
         v->setMat4(value);
-    else
-        CCLOG("cocos2d: warning: Uniform at location not found: %i", uniformLocation);
+//    else
+//        CCLOG("cocos2d: warning: Uniform at location not found: %i", uniformLocation);
 }
 
 // Textures
@@ -653,7 +661,7 @@ void GLProgramState::setUniformTexture(GLint uniformLocation, GLuint textureId)
     }
     else
     {
-        CCLOG("cocos2d: warning: Uniform at location not found: %i", uniformLocation);
+//        CCLOG("cocos2d: warning: Uniform at location not found: %i", uniformLocation);
     }
 }
 

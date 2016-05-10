@@ -110,6 +110,17 @@ public:
         UNIFORM_SAMPLER1,
         UNIFORM_SAMPLER2,
         UNIFORM_SAMPLER3,
+        
+        UNIFORM_BPC_COLOR, // "u_color"
+        UNIFORM_BPC_ALPHA, // "alpha"
+        UNIFORM_BPC_MATRIX_PALETTE, // "u_matrixPalette"
+        UNIFORM_BPC_WORLD_VIEW, // "worldViewMat"
+        
+        UNIFORM_BPC_CUSTOM_1,
+        UNIFORM_BPC_CUSTOM_2,
+        UNIFORM_BPC_CUSTOM_3,
+        UNIFORM_BPC_CUSTOM_4,
+        UNIFORM_BPC_CUSTOM_5,
 
         UNIFORM_MAX,
     };
@@ -212,6 +223,9 @@ public:
 
     /** calls glGetUniformLocation() */
     GLint getUniformLocation(const std::string& attributeName) const;
+    
+    /** BPC PATCH expanded _builtInUniforms */
+    GLint getBuiltInUniformLocation(size_t index) const { return _builtInUniforms[index]; }
 
     /** links the glProgram */
     bool link();
