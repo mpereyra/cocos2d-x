@@ -100,8 +100,7 @@ const Mat4& Camera::getProjectionMatrix() const
 const Mat4& Camera::getViewMatrix() const
 {
     Mat4 viewInv(getNodeToWorldTransform());
-    static int count = sizeof(float) * 16;
-    if (memcmp(viewInv.m, _viewInv.m, count) != 0)
+    if (memcmp(viewInv.m, _viewInv.m, sizeof(viewInv.m)) != 0)
     {
         _viewProjectionDirty = true;
         _frustumDirty = true;
@@ -327,9 +326,17 @@ bool Camera::isVisibleInFrustum(const AABB* aabb) const
 
 float Camera::getDepthInView(const Mat4& transform) const
 {
-    Mat4 camWorldMat = getNodeToWorldTransform();
-    const Mat4 &viewMat = camWorldMat.getInversed();
-    float depth = -(viewMat.m[2] * transform.m[12] + viewMat.m[6] * transform.m[13] + viewMat.m[10] * transform.m[14] + viewMat.m[14]);
+    // BPC PATCH mat4 inverse-dot is now now a transpose-dot + dot
+    // NOTE! this assumes the view matrix is orthogonal so SKEW views WILL BREAK
+    const Mat4 viewMat = getNodeToWorldTransform();
+
+    // view-transpose.z dot transform.z
+    const float distAlongView = viewMat.m[8] * transform.m[12] + viewMat.m[9] * transform.m[13] + viewMat.m[10] * transform.m[14];
+
+    // view.z dot view.position
+    const float cameraDepthOffset = viewMat.m[12] * viewMat.m[8] + viewMat.m[13] * viewMat.m[9] + viewMat.m[14] * viewMat.m[10];
+    
+    const float depth = -(distAlongView - cameraDepthOffset);
     return depth;
 }
 
