@@ -148,6 +148,12 @@ void bindTexture2D(GLuint textureId)
 
 void bindTexture2DN(GLuint textureUnit, GLuint textureId)
 {
+    
+    if(textureId==0){
+        cocos2d::log("Trying to bind texture 0");
+        return;
+    }
+    
 #if CC_ENABLE_GL_STATE_CACHE
     CCASSERT(textureUnit < MAX_ACTIVE_TEXTURE, "textureUnit is too big");
     if (s_currentBoundTexture[textureUnit] != textureId)
