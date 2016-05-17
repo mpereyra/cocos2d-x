@@ -837,6 +837,21 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
                                    end.size.height);
     notiInfo.duration = (float)aniDuration;
     
+    /** BPC PATCH BEGIN **/
+    // The iPhone simulator seems like it doesn't invoke this with UIKeyboardWillShowNotification if you have [Keyboard]>[Connect Hardware Keyboard] enabled.
+    // It apparently takes private API to detect if you have this enabled and honestly it's not worth the effort to include that code here.
+#if (TARGET_IPHONE_SIMULATOR)
+    if (!isKeyboardShown_) {
+        if (type == UIKeyboardWillHideNotification) {
+            type = UIKeyboardWillShowNotification;
+        }
+        else if (type == UIKeyboardDidHideNotification) {
+            type = UIKeyboardDidHideNotification;
+        }
+    }
+#endif
+    /** BPC PATCH END **/
+    
     cocos2d::IMEDispatcher* dispatcher = cocos2d::IMEDispatcher::sharedDispatcher();
     if (UIKeyboardWillShowNotification == type) 
     {
