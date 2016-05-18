@@ -883,7 +883,8 @@ const AABB& Sprite3D::getAABB() const
 /** BPC PATCH BEGIN **/
 AABB Sprite3D::skinAABB(Mesh const * mesh) const{
     AABB aabb = mesh->getAABB();
-    if(mesh->getSkin()){
+    if(mesh->getSkin() && mesh->getSkin()->getBoneCount() > 0){
+        // bone > 0 implies getMatrixPaletteSize() >= 3 ^
         Vec4 * mp = mesh->getSkin()->getMatrixPalette();
         Mat4 rootBoneTransform(
                                1, 0, 0, mp[0].w,
