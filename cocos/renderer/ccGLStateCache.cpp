@@ -150,7 +150,7 @@ void bindTexture2DN(GLuint textureUnit, GLuint textureId)
 {
     
     if(textureId==0){
-        cocos2d::log("Trying to bind texture 0");
+        CCLOG("Trying to bind texture 0");
         return;
     }
     
