@@ -263,6 +263,7 @@ void TextureCache::loadImage()
         bool generateImage = false;
 
         auto it = _textures.find(asyncStruct->filename);
+        Texture2D* foundtex = nullptr;
         if( it == _textures.end() )
         {
            _imageInfoMutex.lock();
@@ -278,6 +279,9 @@ void TextureCache::loadImage()
            _imageInfoMutex.unlock();
            if(infoSize == 0 || pos == infoSize)
                generateImage = true;
+        } else {
+            // texture was in cache - keep it alive until callback completes
+            foundtex = it->second;
         }
 
         if (generateImage)
@@ -297,6 +301,10 @@ void TextureCache::loadImage()
         ImageInfo *imageInfo = new (std::nothrow) ImageInfo();
         imageInfo->asyncStruct = asyncStruct;
         imageInfo->image = image;
+        // BPC PATCH
+        // need to keep texture alive if already in cache
+        imageInfo->setTexture(foundtex);
+        // END BPC PATCH
 
         // put the image info into the queue
         _imageInfoMutex.lock();
@@ -355,8 +363,12 @@ void TextureCache::addImageAsyncCallBack(float dt)
         else
         {
             auto it = _textures.find(asyncStruct->filename);
-            if(it != _textures.end())
+            if(it != _textures.end()) {
                 texture = it->second;
+            } else {
+                // should never happen
+                CCASSERT(false, "No image, but texture missing from cache");
+            }
         }
         
         for(auto pair : asyncStruct->requestorToCallbacks){

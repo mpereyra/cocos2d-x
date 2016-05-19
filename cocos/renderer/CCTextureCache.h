@@ -276,7 +276,19 @@ protected:
     typedef struct _ImageInfo
     {
         AsyncStruct *asyncStruct;
-        Image        *image;
+        Image        *image = nullptr;
+        // BPC PATCH
+        // need to keep texture alive if already in cache
+        Texture2D   *foundTex = nullptr;
+        
+        void setTexture(Texture2D   *foundTexIn){
+            if (foundTexIn){
+                foundTex  = foundTexIn;
+                foundTex->retain();
+            }
+        };
+        ~_ImageInfo() {  CC_SAFE_RELEASE(foundTex); }
+        // END BPC PATCH
     } ImageInfo;
     
     std::thread* _loadingThread;
