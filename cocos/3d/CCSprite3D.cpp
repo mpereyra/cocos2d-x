@@ -805,8 +805,10 @@ void Sprite3D::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
         meshCommand.setCullFaceEnabled(!isTransparent || _forceCullFace);
          */
         
-        
-        meshCommand.setName(_name);
+#ifndef NDEBUG
+        const std::string& name = _name + "." + mesh->getName();
+        meshCommand.setName(name);
+#endif
         renderer->addCommand(&meshCommand);
     }
 }
