@@ -261,7 +261,8 @@ void TextureCache::loadImage()
 
         Image *image = nullptr;
         bool generateImage = false;
-
+        bool passedToOtherTask = false;
+        
         auto it = _textures.find(asyncStruct->filename);
         Texture2D* foundtex = nullptr;
         if( it == _textures.end() )
@@ -273,12 +274,17 @@ void TextureCache::loadImage()
            for (; pos < infoSize; pos++)
            {
                imageInfo = (*_imageInfoQueue)[pos];
-               if(imageInfo->asyncStruct->filename.compare(asyncStruct->filename) == 0)
+               if(imageInfo->asyncStruct->filename.compare(asyncStruct->filename) == 0){
+                   // found a dupe already processed; give our callback to them
+                   for(const auto& reqPair : asyncStruct->requestorToCallbacks){
+                       imageInfo->asyncStruct->addRequestor(reqPair.first, reqPair.second);
+                   }
+                   passedToOtherTask = true;
                    break;
+               }
            }
            _imageInfoMutex.unlock();
-           if(infoSize == 0 || pos == infoSize)
-               generateImage = true;
+           generateImage = !passedToOtherTask;
         } else {
             // texture was in cache - keep it alive until callback completes
             foundtex = it->second;
@@ -297,6 +303,11 @@ void TextureCache::loadImage()
             }
         }    
 
+        if (passedToOtherTask){
+            delete asyncStruct;
+            continue;
+        }
+        
         // generate image info
         ImageInfo *imageInfo = new (std::nothrow) ImageInfo();
         imageInfo->asyncStruct = asyncStruct;
@@ -305,6 +316,8 @@ void TextureCache::loadImage()
         // need to keep texture alive if already in cache
         imageInfo->setTexture(foundtex);
         // END BPC PATCH
+        
+        CCASSERT(image!=nullptr||foundtex!=nullptr, "image not passed but not created");
 
         // put the image info into the queue
         _imageInfoMutex.lock();

@@ -82,7 +82,7 @@ public:
     inline float getDepth() const { return _depth; }
     
     /* BPC Patch */
-    inline void setName(std::string& name) { _name = name; }
+    inline void setName(const std::string& name) { _name = name; }
     /* BPC Patch */
 
 protected:
