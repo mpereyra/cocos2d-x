@@ -375,13 +375,8 @@ void TextureCache::addImageAsyncCallBack(float dt)
         }
         else
         {
-            auto it = _textures.find(asyncStruct->filename);
-            if(it != _textures.end()) {
-                texture = it->second;
-            } else {
-                // should never happen
-                CCASSERT(false, "No image, but texture missing from cache");
-            }
+            texture = imageInfo->foundTex;
+            CCASSERT(texture!=nullptr, "No image, no texture for callback.");
         }
         
         for(auto pair : asyncStruct->requestorToCallbacks){
