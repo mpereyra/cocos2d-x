@@ -820,11 +820,11 @@ void Scheduler::resumeTargets(const std::set<void*>& targetsToResume)
 
 void Scheduler::performFunctionInCocosThread(const std::function<void ()> &function)
 {
-    _performMutex.lock();
 
+    std::lock_guard<std::mutex> lock(_performMutex);
+    
     _functionsToPerform.push_back(function);
-
-    _performMutex.unlock();
+    
 }
 
 // main loop
