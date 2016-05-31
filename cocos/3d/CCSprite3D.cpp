@@ -142,8 +142,8 @@ void Sprite3D::afterAsyncLoad(void* param)
                 {
                     //add to cache
                     auto data = new (std::nothrow) Sprite3DCache::Sprite3DData();
-                    data->materialdatas = materialdatas;
-                    data->nodedatas = nodeDatas;
+                    data->materialdatas.reset(materialdatas);
+                    data->nodedatas.reset(nodeDatas);
                     data->meshVertexDatas = _meshVertexDatas;
                     for (const auto mesh : _meshes) {
                         data->glProgramStates.pushBack(mesh->getGLProgramState());
@@ -284,30 +284,27 @@ bool Sprite3D::initWithFile(const std::string &path)
     if (loadFromCache(path))
         return true;
     
-    MeshDatas* meshdatas = new (std::nothrow) MeshDatas();
-    MaterialDatas* materialdatas = new (std::nothrow) MaterialDatas();
-    NodeDatas*   nodeDatas = new (std::nothrow) NodeDatas();
-    if (loadFromFile(path, nodeDatas, meshdatas, materialdatas))
+    std::unique_ptr<MeshDatas> meshdatas{ new MeshDatas() };
+    std::unique_ptr<MaterialDatas> materialdatas{ new MaterialDatas() };
+    std::unique_ptr<NodeDatas> nodeDatas{ new NodeDatas() };
+    if (loadFromFile(path, nodeDatas.get(), meshdatas.get(), materialdatas.get()))
     {
         if (initFrom(*nodeDatas, *meshdatas, *materialdatas))
         {
             //add to cache
             auto data = new (std::nothrow) Sprite3DCache::Sprite3DData();
-            data->materialdatas = materialdatas;
-            data->nodedatas = nodeDatas;
+            data->materialdatas = std::move(materialdatas);
+            data->nodedatas = std::move(nodeDatas);
             data->meshVertexDatas = _meshVertexDatas;
             for (const auto mesh : _meshes) {
                 data->glProgramStates.pushBack(mesh->getGLProgramState());
             }
-            
+
             Sprite3DCache::getInstance()->addSprite3DData(path, data);
             return true;
         }
     }
-    delete meshdatas;
-    delete materialdatas;
-    delete nodeDatas;
-    
+
     return false;
 }
 

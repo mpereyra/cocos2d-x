@@ -286,14 +286,10 @@ public:
     {
         Vector<MeshVertexData*>   meshVertexDatas;
         Vector<GLProgramState*>   glProgramStates;
-        NodeDatas*      nodedatas;
-        MaterialDatas*  materialdatas;
+        std::unique_ptr<NodeDatas>      nodedatas;
+        std::unique_ptr<MaterialDatas>  materialdatas;
         ~Sprite3DData()
         {
-            if (nodedatas)
-                delete nodedatas;
-            if (materialdatas)
-                delete materialdatas;
             meshVertexDatas.clear();
             glProgramStates.clear();
         }
