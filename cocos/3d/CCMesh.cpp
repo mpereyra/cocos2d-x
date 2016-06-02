@@ -223,6 +223,23 @@ void Mesh::setGLProgramState(GLProgramState* glProgramState)
     }
 }
 
+/*
+ BPC Temp Patch:
+ We've been getting lucky up till now when calculating skined aabbs on characters'
+ body meshes. We run into issues when the skinned hierarchy has no true root bone. 
+ The skeleton root is always jt_all_bind, but there is no skinning influence on that
+ bone. So, the jt_hips_bind is the actual root of the body mesh as far as skinning
+ goes. However, some rigs will have a bone that's a sibling of jt_hips_bind. If
+ "_skin->_skinBones.at(0)" grabs that sibling bone, we'll be using the wrong bone as 
+ the root. IDEALLY, we would redo the character rigs to make those bones be children 
+ of the hips or add influence to the jt_all_bind so that there is a true root, but 
+ that would break every animation. Sooooo, this is an ugly hack to fix the issue 
+ temporarily for the next release. Search for the hips first, then fall back to the
+ old logic for finding the root. Possible future fixes would be in the exporter or
+ fbx->c3b converter, ordering the bones in a way we expect.  
+ */
+static const std::string ROOT_BONE_HINT = "jt_hips_bind";
+
 void Mesh::calcuateAABB()
 {
     if (_meshIndexData)
@@ -235,7 +252,9 @@ void Mesh::calcuateAABB()
             Mat4 invBindPose;
             if (_skin->_skinBones.size())
             {
-                root = _skin->_skinBones.at(0);
+                root = _skin->getBoneByName(ROOT_BONE_HINT);
+                if (!root)
+                    root = _skin->_skinBones.at(0);
                 while (root) {
                     auto parent = root->getParentBone();
                     bool parentInSkinBone = false;
