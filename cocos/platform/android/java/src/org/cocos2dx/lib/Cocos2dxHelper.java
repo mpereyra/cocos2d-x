@@ -221,7 +221,7 @@ public class Cocos2dxHelper {
         // getting java.lang.IllegalStateException here in prod; can not reproduce
         try {
             return Cocos2dxHelper.sCocos2dMusic.isBackgroundMusicPlaying();
-        } catch (Exception e) { {
+        } catch (Exception e) {
             return false;
         }
     }
