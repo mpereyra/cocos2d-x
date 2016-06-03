@@ -218,7 +218,12 @@ public class Cocos2dxHelper {
     }
 
     public static boolean isBackgroundMusicPlaying() {
-        return Cocos2dxHelper.sCocos2dMusic.isBackgroundMusicPlaying();
+        // getting java.lang.IllegalStateException here in prod; can not reproduce
+        try {
+            return Cocos2dxHelper.sCocos2dMusic.isBackgroundMusicPlaying();
+        } catch (Exception e) { {
+            return false;
+        }
     }
 
     public static float getBackgroundMusicVolume() {
