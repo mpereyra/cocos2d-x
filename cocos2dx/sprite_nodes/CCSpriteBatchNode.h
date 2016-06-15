@@ -140,10 +140,10 @@ public:
     /* Sprites use this to start sortChildren, don't call this manually */
     void reorderBatch(bool reorder);
     // CCTextureProtocol
-    virtual CCTexture2D* getTexture(void) override;
+    virtual CCTexture2D* getTexture(void) const override;
     virtual void setTexture(CCTexture2D *texture) override;
     virtual void setBlendFunc(ccBlendFunc blendFunc) override;
-    virtual ccBlendFunc getBlendFunc(void) override;
+    virtual ccBlendFunc getBlendFunc(void) const override;
 
     virtual void visit(void) override;
     virtual void addChild(CCNode * child) override;

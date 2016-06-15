@@ -84,7 +84,7 @@ CCTMXLayerInfo::~CCTMXLayerInfo()
         m_pTiles = NULL;
     }
 }
-CCDictionary * CCTMXLayerInfo::getProperties()
+CCDictionary * CCTMXLayerInfo::getProperties() const
 {
     return m_pProperties;
 }
@@ -210,7 +210,7 @@ CCTMXMapInfo::~CCTMXMapInfo()
     CC_SAFE_RELEASE(m_pTileProperties);
     CC_SAFE_RELEASE(m_pObjectGroups);
 }
-CCArray* CCTMXMapInfo::getLayers()
+CCArray* CCTMXMapInfo::getLayers() const
 {
     return m_pLayers;
 }
@@ -220,7 +220,7 @@ void CCTMXMapInfo::setLayers(CCArray* var)
     CC_SAFE_RELEASE(m_pLayers);
     m_pLayers = var;
 }
-CCArray* CCTMXMapInfo::getTilesets()
+CCArray* CCTMXMapInfo::getTilesets() const
 {
     return m_pTilesets;
 }
@@ -230,7 +230,7 @@ void CCTMXMapInfo::setTilesets(CCArray* var)
     CC_SAFE_RELEASE(m_pTilesets);
     m_pTilesets = var;
 }
-CCArray* CCTMXMapInfo::getObjectGroups()
+CCArray* CCTMXMapInfo::getObjectGroups() const
 {
     return m_pObjectGroups;
 }
@@ -240,7 +240,7 @@ void CCTMXMapInfo::setObjectGroups(CCArray* var)
     CC_SAFE_RELEASE(m_pObjectGroups);
     m_pObjectGroups = var;
 }
-CCDictionary * CCTMXMapInfo::getProperties()
+CCDictionary * CCTMXMapInfo::getProperties() const
 {
     return m_pProperties;
 }

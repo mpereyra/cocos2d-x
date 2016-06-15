@@ -69,12 +69,12 @@ protected:
 
     // protocol variables
     bool m_bIsOpacityModifyRGB;
-    bool isOpacityModifyRGB();
-    void setOpacityModifyRGB(bool isOpacityModifyRGB);
+    bool isOpacityModifyRGB() const override;
+    void setOpacityModifyRGB(bool isOpacityModifyRGB) override;
     
-    CC_PROPERTY(ccBlendFunc, m_tBlendFunc, BlendFunc);
-    CC_PROPERTY(GLubyte, m_cOpacity, Opacity);
-    CC_PROPERTY_PASS_BY_REF(ccColor3B, m_tColor, Color);
+    CC_PROPERTY_OVERRIDE(ccBlendFunc, m_tBlendFunc, BlendFunc);
+    CC_PROPERTY_OVERRIDE(GLubyte, m_cOpacity, Opacity);
+    CC_PROPERTY_PASS_BY_REF_OVERRIDE(ccColor3B, m_tColor, Color);
 
     // quads to draw
     CC_PROPERTY(unsigned int, m_uQuadsToDraw, QuadsToDraw);
@@ -102,15 +102,15 @@ public:
     */
     virtual void updateAtlasValues();
 
-    virtual void draw(void);
+    virtual void draw(void) override;
 
     // CC Texture protocol
 
     /** returns the used texture*/
-    virtual CCTexture2D* getTexture(void);
+    virtual CCTexture2D* getTexture(void) const override;
 
     /** sets a new texture. it will be retained*/
-    virtual void setTexture(CCTexture2D *texture);
+    virtual void setTexture(CCTexture2D *texture) override;
 
 private :
     void calculateMaxItems();

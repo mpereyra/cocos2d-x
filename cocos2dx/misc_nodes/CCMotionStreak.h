@@ -71,21 +71,21 @@ public:
     void reset();
 
     /** Override super methods */
-    virtual void setPosition(const CCPoint& position);
-    virtual void draw();
-    virtual void update(float delta);
+    virtual void setPosition(const CCPoint& position) override;
+    virtual void draw() override;
+    virtual void update(float delta) override;
 
     /* Implement interfaces */
-    virtual CCTexture2D* getTexture(void);
-    virtual void setTexture(CCTexture2D *texture);
-    virtual void setBlendFunc(ccBlendFunc blendFunc);
-    virtual ccBlendFunc getBlendFunc(void);
-    virtual void setColor(const ccColor3B& color);
-    virtual const ccColor3B& getColor(void);
-    virtual GLubyte getOpacity(void);
-    virtual void setOpacity(GLubyte opacity);
-    virtual void setOpacityModifyRGB(bool bValue);
-    virtual bool isOpacityModifyRGB(void);
+    virtual CCTexture2D* getTexture(void) const override;
+    virtual void setTexture(CCTexture2D *texture) override;
+    virtual void setBlendFunc(ccBlendFunc blendFunc) override;
+    virtual ccBlendFunc getBlendFunc(void) const override;
+    virtual void setColor(const ccColor3B& color) override;
+    virtual const ccColor3B& getColor(void) const override;
+    virtual GLubyte getOpacity(void) const override;
+    virtual void setOpacity(GLubyte opacity) override;
+    virtual void setOpacityModifyRGB(bool bValue) override;
+    virtual bool isOpacityModifyRGB(void) const override;
 
     /** When fast mode is enabled, new points are added faster but with lower precision */
     inline bool isFastMode() { return m_bFastMode; }

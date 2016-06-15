@@ -938,7 +938,7 @@ void CCSprite::updateColor(void)
     // do nothing
 }
 
-GLubyte CCSprite::getOpacity(void)
+GLubyte CCSprite::getOpacity(void) const
 {
     return m_nOpacity;
 }
@@ -956,7 +956,7 @@ void CCSprite::setOpacity(GLubyte opacity)
     updateColor();
 }
 
-const ccColor3B& CCSprite::getColor(void)
+const ccColor3B& CCSprite::getColor(void) const
 {
     if (m_bOpacityModifyRGB)
     {
@@ -987,7 +987,7 @@ void CCSprite::setOpacityModifyRGB(bool bValue)
     m_sColor = oldColor;
 }
 
-bool CCSprite::isOpacityModifyRGB(void)
+bool CCSprite::isOpacityModifyRGB(void) const
 {
     return m_bOpacityModifyRGB;
 }
@@ -1113,7 +1113,7 @@ void CCSprite::setTexture(CCTexture2D *texture)
     }
 }
 
-CCTexture2D* CCSprite::getTexture(void)
+CCTexture2D* CCSprite::getTexture(void) const
 {
     return m_pobTexture;
 }

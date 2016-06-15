@@ -44,10 +44,10 @@ public:
     /** returns the color
      @since v0.8
      */
-    virtual const ccColor3B& getColor(void) = 0;
+    virtual const ccColor3B& getColor(void) const = 0;
 
     // returns the opacity
-    virtual GLubyte getOpacity(void) = 0;
+    virtual GLubyte getOpacity(void) const = 0;
 
     /** sets the opacity.
      @warning If the the texture has premultiplied alpha then, the R, G and B channels will be modified.
@@ -68,7 +68,7 @@ public:
     /** returns whether or not the opacity will be applied using glColor(R,G,B,opacity) or glColor(opacity, opacity, opacity, opacity);
      @since v0.8
      */
-    virtual bool isOpacityModifyRGB(void) = 0;
+    virtual bool isOpacityModifyRGB(void) const = 0;
 };
 
 /**
@@ -82,7 +82,7 @@ public:
     virtual void setBlendFunc(ccBlendFunc blendFunc) = 0;
 
     // returns the blending function used for the texture
-    virtual ccBlendFunc getBlendFunc(void) = 0;
+    virtual ccBlendFunc getBlendFunc(void) const = 0;
 };
 
 /** @brief CCNode objects that uses a Texture2D to render the images.
@@ -98,7 +98,7 @@ class CC_DLL CCTextureProtocol : public CCBlendProtocol
 {
 public:
     // returns the used texture
-    virtual CCTexture2D* getTexture(void) = 0;
+    virtual CCTexture2D* getTexture(void) const = 0;
 
     // sets a new texture. it will be retained
     virtual void setTexture(CCTexture2D *texture) = 0;

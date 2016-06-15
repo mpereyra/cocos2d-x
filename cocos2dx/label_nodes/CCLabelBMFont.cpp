@@ -1028,7 +1028,7 @@ void CCLabelBMFont::setColor(const ccColor3B& var)
         }
     }
 }
-const ccColor3B& CCLabelBMFont::getColor()
+const ccColor3B& CCLabelBMFont::getColor() const
 {
     return m_tColor;
 }
@@ -1053,7 +1053,7 @@ void CCLabelBMFont::setOpacity(GLubyte var)
         }
     }
 }
-GLubyte CCLabelBMFont::getOpacity()
+GLubyte CCLabelBMFont::getOpacity() const
 {
     return m_cOpacity;
 }
@@ -1077,7 +1077,7 @@ void CCLabelBMFont::setOpacityModifyRGB(bool var)
         }
     }
 }
-bool CCLabelBMFont::isOpacityModifyRGB()
+bool CCLabelBMFont::isOpacityModifyRGB() const
 {
     return m_bIsOpacityModifyRGB;
 }

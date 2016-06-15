@@ -779,7 +779,7 @@ void CCParticleSystem::updateBlendFunc()
     }
 }
 
-CCTexture2D * CCParticleSystem::getTexture()
+CCTexture2D * CCParticleSystem::getTexture() const
 {
     return m_pTexture;
 }
@@ -807,7 +807,7 @@ void CCParticleSystem::setBlendAdditive(bool additive)
     }
 }
 
-bool CCParticleSystem::isBlendAdditive()
+bool CCParticleSystem::isBlendAdditive() const
 {
     return( m_tBlendFunc.src == GL_SRC_ALPHA && m_tBlendFunc.dst == GL_ONE);
 }
@@ -970,17 +970,17 @@ float CCParticleSystem::getRotatePerSecondVar()
     return modeB.rotatePerSecondVar;
 }
 
-bool CCParticleSystem::isActive()
+bool CCParticleSystem::isActive() const
 {
     return m_bIsActive;
 }
 
-unsigned int CCParticleSystem::getParticleCount()
+unsigned int CCParticleSystem::getParticleCount() const
 {
     return m_uParticleCount;
 }
 
-float CCParticleSystem::getDuration()
+float CCParticleSystem::getDuration() const
 {
     return m_fDuration;
 }
@@ -990,7 +990,7 @@ void CCParticleSystem::setDuration(float var)
     m_fDuration = var;
 }
 
-const CCPoint& CCParticleSystem::getSourcePosition()
+const CCPoint& CCParticleSystem::getSourcePosition() const
 {
     return m_tSourcePosition;
 }
@@ -1000,7 +1000,7 @@ void CCParticleSystem::setSourcePosition(const CCPoint& var)
     m_tSourcePosition = var;
 }
 
-const CCPoint& CCParticleSystem::getPosVar()
+const CCPoint& CCParticleSystem::getPosVar() const
 {
     return m_tPosVar;
 }
@@ -1010,7 +1010,7 @@ void CCParticleSystem::setPosVar(const CCPoint& var)
     m_tPosVar = var;
 }
 
-float CCParticleSystem::getLife()
+float CCParticleSystem::getLife() const
 {
     return m_fLife;
 }
@@ -1020,7 +1020,7 @@ void CCParticleSystem::setLife(float var)
     m_fLife = var;
 }
 
-float CCParticleSystem::getLifeVar()
+float CCParticleSystem::getLifeVar() const
 {
     return m_fLifeVar;
 }
@@ -1030,7 +1030,7 @@ void CCParticleSystem::setLifeVar(float var)
     m_fLifeVar = var;
 }
 
-float CCParticleSystem::getAngle()
+float CCParticleSystem::getAngle() const
 {
     return m_fAngle;
 }
@@ -1040,7 +1040,7 @@ void CCParticleSystem::setAngle(float var)
     m_fAngle = var;
 }
 
-float CCParticleSystem::getAngleVar()
+float CCParticleSystem::getAngleVar() const
 {
     return m_fAngleVar;
 }
@@ -1050,7 +1050,7 @@ void CCParticleSystem::setAngleVar(float var)
     m_fAngleVar = var;
 }
 
-float CCParticleSystem::getStartSize()
+float CCParticleSystem::getStartSize() const
 {
     return m_fStartSize;
 }
@@ -1060,7 +1060,7 @@ void CCParticleSystem::setStartSize(float var)
     m_fStartSize = var;
 }
 
-float CCParticleSystem::getStartSizeVar()
+float CCParticleSystem::getStartSizeVar() const
 {
     return m_fStartSizeVar;
 }
@@ -1070,7 +1070,7 @@ void CCParticleSystem::setStartSizeVar(float var)
     m_fStartSizeVar = var;
 }
 
-float CCParticleSystem::getEndSize()
+float CCParticleSystem::getEndSize() const
 {
     return m_fEndSize;
 }
@@ -1080,7 +1080,7 @@ void CCParticleSystem::setEndSize(float var)
     m_fEndSize = var;
 }
 
-float CCParticleSystem::getEndSizeVar()
+float CCParticleSystem::getEndSizeVar() const
 {
     return m_fEndSizeVar;
 }
@@ -1090,7 +1090,7 @@ void CCParticleSystem::setEndSizeVar(float var)
     m_fEndSizeVar = var;
 }
 
-const ccColor4F& CCParticleSystem::getStartColor()
+const ccColor4F& CCParticleSystem::getStartColor() const
 {
     return m_tStartColor;
 }
@@ -1100,7 +1100,7 @@ void CCParticleSystem::setStartColor(const ccColor4F& var)
     m_tStartColor = var;
 }
 
-const ccColor4F& CCParticleSystem::getStartColorVar()
+const ccColor4F& CCParticleSystem::getStartColorVar() const
 {
     return m_tStartColorVar;
 }
@@ -1110,7 +1110,7 @@ void CCParticleSystem::setStartColorVar(const ccColor4F& var)
     m_tStartColorVar = var;
 }
 
-const ccColor4F& CCParticleSystem::getEndColor()
+const ccColor4F& CCParticleSystem::getEndColor() const
 {
     return m_tEndColor;
 }
@@ -1120,7 +1120,7 @@ void CCParticleSystem::setEndColor(const ccColor4F& var)
     m_tEndColor = var;
 }
 
-const ccColor4F& CCParticleSystem::getEndColorVar()
+const ccColor4F& CCParticleSystem::getEndColorVar() const
 {
     return m_tEndColorVar;
 }
@@ -1130,7 +1130,7 @@ void CCParticleSystem::setEndColorVar(const ccColor4F& var)
     m_tEndColorVar = var;
 }
 
-float CCParticleSystem::getStartSpin()
+float CCParticleSystem::getStartSpin() const
 {
     return m_fStartSpin;
 }
@@ -1140,7 +1140,7 @@ void CCParticleSystem::setStartSpin(float var)
     m_fStartSpin = var;
 }
 
-float CCParticleSystem::getStartSpinVar()
+float CCParticleSystem::getStartSpinVar() const
 {
     return m_fStartSpinVar;
 }
@@ -1150,7 +1150,7 @@ void CCParticleSystem::setStartSpinVar(float var)
     m_fStartSpinVar = var;
 }
 
-float CCParticleSystem::getEndSpin()
+float CCParticleSystem::getEndSpin() const
 {
     return m_fEndSpin;
 }
@@ -1159,7 +1159,7 @@ void CCParticleSystem::setEndSpin(float var)
 {
     m_fEndSpin = var;
 }
-float CCParticleSystem::getEndSpinVar()
+float CCParticleSystem::getEndSpinVar() const
 {
     return m_fEndSpinVar;
 }
@@ -1169,7 +1169,7 @@ void CCParticleSystem::setEndSpinVar(float var)
     m_fEndSpinVar = var;
 }
 
-float CCParticleSystem::getEmissionRate()
+float CCParticleSystem::getEmissionRate() const
 {
     return m_fEmissionRate;
 }
@@ -1179,7 +1179,7 @@ void CCParticleSystem::setEmissionRate(float var)
     m_fEmissionRate = var;
 }
 
-unsigned int CCParticleSystem::getTotalParticles()
+unsigned int CCParticleSystem::getTotalParticles() const
 {
     return m_uTotalParticles;
 }
@@ -1190,7 +1190,7 @@ void CCParticleSystem::setTotalParticles(unsigned int var)
     m_uTotalParticles = var;
 }
 
-ccBlendFunc CCParticleSystem::getBlendFunc()
+ccBlendFunc CCParticleSystem::getBlendFunc() const
 {
     return m_tBlendFunc;
 }
@@ -1203,7 +1203,7 @@ void CCParticleSystem::setBlendFunc(ccBlendFunc blendFunc)
     }
 }
 
-bool CCParticleSystem::getOpacityModifyRGB()
+bool CCParticleSystem::getOpacityModifyRGB() const
 {
     return m_bOpacityModifyRGB;
 }
@@ -1213,7 +1213,7 @@ void CCParticleSystem::setOpacityModifyRGB(bool bOpacityModifyRGB)
     m_bOpacityModifyRGB = bOpacityModifyRGB;
 }
 
-tCCPositionType CCParticleSystem::getPositionType()
+tCCPositionType CCParticleSystem::getPositionType() const
 {
     return m_ePositionType;
 }
@@ -1233,7 +1233,7 @@ void CCParticleSystem::setAutoRemoveOnFinish(bool var)
     m_bIsAutoRemoveOnFinish = var;
 }
 
-int CCParticleSystem::getEmitterMode()
+int CCParticleSystem::getEmitterMode() const
 {
     return m_nEmitterMode;
 }
@@ -1246,7 +1246,7 @@ void CCParticleSystem::setEmitterMode(int var)
 
 // ParticleSystem - methods for batchNode rendering
 
-CCParticleBatchNode* CCParticleSystem::getBatchNode(void)
+CCParticleBatchNode* CCParticleSystem::getBatchNode(void) const
 {
     return m_pBatchNode;
 }

@@ -68,7 +68,7 @@ CCString* CCTMXObjectGroup::propertyNamed(const char* propertyName)
     return (CCString*)m_pProperties->objectForKey(propertyName);
 }
 
-CCDictionary* CCTMXObjectGroup::getProperties()
+CCDictionary* CCTMXObjectGroup::getProperties() const
 { 
     return m_pProperties;
 }
@@ -78,7 +78,7 @@ void CCTMXObjectGroup::setProperties(CCDictionary * properties)
     CC_SAFE_RELEASE(m_pProperties);
     m_pProperties = properties;
 }
-CCArray* CCTMXObjectGroup::getObjects()
+CCArray* CCTMXObjectGroup::getObjects() const
 {
     return m_pObjects;
 }

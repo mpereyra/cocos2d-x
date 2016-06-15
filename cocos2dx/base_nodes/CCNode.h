@@ -201,7 +201,7 @@ class CC_DLL CCNode : public CCObject
 
     /** A CCCamera object that lets you move the node using a gluLookAt
      */
-    CC_PROPERTY_READONLY(CCCamera *, m_pCamera, Camera)
+    CC_MUTABLE_PROPERTY_READONLY(CCCamera *, m_pCamera, Camera)
 
     /** A CCGrid object that is used when applying effects */
     CC_PROPERTY(CCGridBase *, m_pGrid, Grid)
@@ -306,10 +306,10 @@ public:
 protected:
 
     // transform
-    CCAffineTransform m_tTransform, m_tInverse;
+    mutable CCAffineTransform m_tTransform, m_tInverse;
 
     // To reduce memory, place bools that are not properties here:
-    bool m_bIsTransformDirty;
+    mutable bool m_bIsTransformDirty;
     bool m_bIsInverseDirty;
     bool m_bReorderChildDirty;
     int m_nScriptHandler;
@@ -486,7 +486,7 @@ public:
 
      @since v0.8.2
      */
-    virtual CCRect boundingBox(void);
+    virtual CCRect boundingBox(void) const;
 
     // actions
 
@@ -599,7 +599,7 @@ public:
      The matrix is in Pixels.
      @since v0.7.1
      */
-    virtual CCAffineTransform nodeToParentTransform(void);
+    virtual CCAffineTransform nodeToParentTransform(void) const;
 
     /** Returns the matrix that transform parent's space coordinates to the node's (local) space coordinates.
      The matrix is in Pixels.

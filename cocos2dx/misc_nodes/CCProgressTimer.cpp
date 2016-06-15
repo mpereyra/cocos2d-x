@@ -160,7 +160,7 @@ void CCProgressTimer::setColor(const ccColor3B& color)
     updateColor();
 }
 
-const ccColor3B& CCProgressTimer::getColor(void)
+const ccColor3B& CCProgressTimer::getColor(void) const
 {
     return m_pSprite->getColor();
 }
@@ -171,7 +171,7 @@ void CCProgressTimer::setOpacity(GLubyte opacity)
     updateColor();
 }
 
-GLubyte CCProgressTimer::getOpacity(void)
+GLubyte CCProgressTimer::getOpacity(void) const
 {
     return m_pSprite->getOpacity();
 }
@@ -181,7 +181,7 @@ void CCProgressTimer::setOpacityModifyRGB(bool bValue)
     CC_UNUSED_PARAM(bValue);
 }
 
-bool CCProgressTimer::isOpacityModifyRGB(void)
+bool CCProgressTimer::isOpacityModifyRGB(void) const
 {
     return false;
 }
@@ -257,7 +257,7 @@ void CCProgressTimer::setAnchorPoint(CCPoint anchorPoint)
     CCNode::setAnchorPoint(anchorPoint);
 }
 
-CCPoint CCProgressTimer::getMidpoint(void)
+CCPoint CCProgressTimer::getMidpoint(void) const
 {
     return m_tMidpoint;
 }

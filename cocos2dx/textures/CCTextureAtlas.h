@@ -61,7 +61,7 @@ protected:
     GLuint              m_uVAOname;
 #endif
     GLuint              m_pBuffersVBO[2]; //0: vertex  1: indices
-    bool                m_bDirty; //indicates whether or not the array buffer of the VBO needs to be updated
+    mutable bool        m_bDirty; //indicates whether or not the array buffer of the VBO needs to be updated
 
 
     /** quantity of quads that are going to be drawn */

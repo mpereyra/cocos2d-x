@@ -176,8 +176,8 @@ public:
     CCLayerColor();
     virtual ~CCLayerColor();
 
-    virtual void draw();
-    virtual void setContentSize(const CCSize & var);
+    virtual void draw() override;
+    virtual void setContentSize(const CCSize & var) override;
 
     /** creates a CCLayer with color, width and height in Points 
     @deprecated: This interface will be deprecated sooner or later.
@@ -214,14 +214,14 @@ public:
     void changeWidthAndHeight(GLfloat w ,GLfloat h);
 
     /** Opacity: conforms to CCRGBAProtocol protocol */
-    CC_PROPERTY(GLubyte, m_cOpacity, Opacity)
+    CC_PROPERTY_OVERRIDE(GLubyte, m_cOpacity, Opacity)
     /** Color: conforms to CCRGBAProtocol protocol */
-    CC_PROPERTY_PASS_BY_REF(ccColor3B, m_tColor, Color)
+    CC_PROPERTY_PASS_BY_REF_OVERRIDE(ccColor3B, m_tColor, Color)
     /** BlendFunction. Conforms to CCBlendProtocol protocol */
-    CC_PROPERTY(ccBlendFunc, m_tBlendFunc, BlendFunc)
+    CC_PROPERTY_OVERRIDE(ccBlendFunc, m_tBlendFunc, BlendFunc)
 
-    virtual void setOpacityModifyRGB(bool bValue) {CC_UNUSED_PARAM(bValue);}
-    virtual bool isOpacityModifyRGB(void) { return false;}
+    virtual void setOpacityModifyRGB(bool bValue) override {CC_UNUSED_PARAM(bValue);}
+    virtual bool isOpacityModifyRGB(void) const override { return false; }
 
 
 protected:

@@ -148,7 +148,7 @@ void CCAtlasNode::draw(void)
 
 // CCAtlasNode - RGBA protocol
 
-const ccColor3B& CCAtlasNode:: getColor()
+const ccColor3B& CCAtlasNode:: getColor() const
 {
     if(m_bIsOpacityModifyRGB)
     {
@@ -169,7 +169,7 @@ void CCAtlasNode::setColor(const ccColor3B& color3)
     }    
 }
 
-GLubyte CCAtlasNode::getOpacity()
+GLubyte CCAtlasNode::getOpacity() const
 {
     return m_cOpacity;
 }
@@ -190,7 +190,7 @@ void CCAtlasNode::setOpacityModifyRGB(bool bValue)
     this->m_tColor        = oldColor;
 }
 
-bool CCAtlasNode::isOpacityModifyRGB()
+bool CCAtlasNode::isOpacityModifyRGB() const
 {
     return m_bIsOpacityModifyRGB;
 }
@@ -202,7 +202,7 @@ void CCAtlasNode::updateOpacityModifyRGB()
 
 // CCAtlasNode - CocosNodeTexture protocol
 
-ccBlendFunc CCAtlasNode::getBlendFunc()
+ccBlendFunc CCAtlasNode::getBlendFunc() const
 {
     return m_tBlendFunc;
 }
@@ -227,7 +227,7 @@ void CCAtlasNode::setTexture(CCTexture2D *texture)
     this->updateOpacityModifyRGB();
 }
 
-CCTexture2D * CCAtlasNode::getTexture()
+CCTexture2D * CCAtlasNode::getTexture() const
 {
     return m_pTextureAtlas->getTexture();
 }
@@ -239,12 +239,12 @@ void CCAtlasNode::setTextureAtlas(CCTextureAtlas* var)
     m_pTextureAtlas = var;
 }
 
-CCTextureAtlas * CCAtlasNode::getTextureAtlas()
+CCTextureAtlas * CCAtlasNode::getTextureAtlas() const
 {
     return m_pTextureAtlas;
 }
 
-unsigned int CCAtlasNode::getQuadsToDraw()
+unsigned int CCAtlasNode::getQuadsToDraw() const
 {
     return m_uQuadsToDraw;
 }

@@ -681,12 +681,12 @@ void CCSpriteBatchNode::setBlendFunc(ccBlendFunc blendFunc)
     m_blendFunc = blendFunc;
 }
 
-ccBlendFunc CCSpriteBatchNode::getBlendFunc(void)
+ccBlendFunc CCSpriteBatchNode::getBlendFunc(void) const
 {
     return m_blendFunc;
 }
 
-CCTexture2D* CCSpriteBatchNode::getTexture(void)
+CCTexture2D* CCSpriteBatchNode::getTexture(void) const
 {
     return m_pobTextureAtlas->getTexture();
 }

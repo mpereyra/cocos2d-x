@@ -165,7 +165,7 @@ void CCMotionStreak::tintWithColor(ccColor3B colors)
     }
 }
 
-CCTexture2D* CCMotionStreak::getTexture(void)
+CCTexture2D* CCMotionStreak::getTexture(void) const
 {
     return m_pTexture;
 }
@@ -185,7 +185,7 @@ void CCMotionStreak::setBlendFunc(ccBlendFunc blendFunc)
     m_tBlendFunc = blendFunc;
 }
 
-ccBlendFunc CCMotionStreak::getBlendFunc(void)
+ccBlendFunc CCMotionStreak::getBlendFunc(void) const
 {
     return m_tBlendFunc;
 }
@@ -195,7 +195,7 @@ void CCMotionStreak::setColor(const ccColor3B& color)
     m_tColor = color;
 }
 
-const ccColor3B& CCMotionStreak::getColor(void)
+const ccColor3B& CCMotionStreak::getColor(void) const
 {
     return m_tColor;
 }
@@ -205,7 +205,7 @@ void CCMotionStreak::setOpacity(GLubyte opacity)
     CCAssert(false, "Set opacity no supported");
 }
 
-GLubyte CCMotionStreak::getOpacity(void)
+GLubyte CCMotionStreak::getOpacity(void) const
 {
     CCAssert(false, "Opacity no supported");
     return 0;
@@ -216,7 +216,7 @@ void CCMotionStreak::setOpacityModifyRGB(bool bValue)
     CC_UNUSED_PARAM(bValue);
 }
 
-bool CCMotionStreak::isOpacityModifyRGB(void)
+bool CCMotionStreak::isOpacityModifyRGB(void) const
 {
     return false;
 }

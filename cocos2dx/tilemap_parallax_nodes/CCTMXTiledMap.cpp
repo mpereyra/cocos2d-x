@@ -111,7 +111,7 @@ CCTMXTiledMap::~CCTMXTiledMap()
     CC_SAFE_RELEASE(m_pTileProperties);
 }
 
-CCArray* CCTMXTiledMap::getObjectGroups()
+CCArray* CCTMXTiledMap::getObjectGroups() const
 {
     return m_pObjectGroups;
 }
@@ -123,7 +123,7 @@ void CCTMXTiledMap::setObjectGroups(CCArray* var)
     m_pObjectGroups = var;
 }
 
-CCDictionary * CCTMXTiledMap::getProperties()
+CCDictionary * CCTMXTiledMap::getProperties() const
 {
     return m_pProperties;
 }

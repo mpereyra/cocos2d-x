@@ -296,8 +296,8 @@ public:
     virtual void setScaleX(float newScaleX);
     virtual void setScaleY(float newScaleY);
     
-    virtual bool isActive();
-    virtual bool isBlendAdditive();
+    virtual bool isActive() const;
+    virtual bool isBlendAdditive() const;
     virtual void setBlendAdditive(bool value);
 //////////////////////////////////////////////////////////////////////////
     

@@ -511,7 +511,7 @@ void CCParticleBatchNode::setTexture(CCTexture2D* texture)
     }
 }
 
-CCTexture2D* CCParticleBatchNode::getTexture(void)
+CCTexture2D* CCParticleBatchNode::getTexture(void) const
 {
     return m_pTextureAtlas->getTexture();
 }
@@ -521,7 +521,7 @@ void CCParticleBatchNode::setBlendFunc(ccBlendFunc blendFunc)
     m_tBlendFunc = blendFunc;
 }
 // returns the blending function used for the texture
-ccBlendFunc CCParticleBatchNode::getBlendFunc(void)
+ccBlendFunc CCParticleBatchNode::getBlendFunc(void) const
 {
     return m_tBlendFunc;
 }

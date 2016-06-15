@@ -167,13 +167,13 @@ http://www.angelcode.com/products/bmfont/ (Free, Windows only)
 class CC_DLL CCLabelBMFont : public CCSpriteBatchNode, public CCLabelProtocol, public CCRGBAProtocol
 {
     /** conforms to CCRGBAProtocol protocol */
-    CC_PROPERTY(GLubyte, m_cOpacity, Opacity)
+    CC_PROPERTY_OVERRIDE(GLubyte, m_cOpacity, Opacity)
     /** conforms to CCRGBAProtocol protocol */
-    CC_PROPERTY_PASS_BY_REF(ccColor3B, m_tColor, Color)
+    CC_PROPERTY_PASS_BY_REF_OVERRIDE(ccColor3B, m_tColor, Color)
     /** conforms to CCRGBAProtocol protocol */
     bool m_bIsOpacityModifyRGB;
-    bool isOpacityModifyRGB();
-    void setOpacityModifyRGB(bool isOpacityModifyRGB);
+    bool isOpacityModifyRGB() const override;
+    void setOpacityModifyRGB(bool isOpacityModifyRGB) override;
 protected:
     // string to render
     unsigned short* m_sString;
@@ -231,19 +231,19 @@ public:
     /** updates the font chars based on the string to render */
     void createFontChars();
     // super method
-    virtual void setString(const char *label);
+    virtual void setString(const char *label) override;
     virtual void setString(const char *label, bool fromUpdate);
     virtual void updateString(bool fromUpdate);
-    virtual const char* getString(void);
+    virtual const char* getString(void) override;
     virtual void setCString(const char *label);
-    virtual void setAnchorPoint(const CCPoint& var);
+    virtual void setAnchorPoint(const CCPoint& var) override;
     virtual void updateLabel();
     virtual void setAlignment(CCTextAlignment alignment);
     virtual void setWidth(float width);
     virtual void setLineBreakWithoutSpace(bool breakWithoutSpace);
-    virtual void setScale(float scale);
-    virtual void setScaleX(float scaleX);
-    virtual void setScaleY(float scaleY);
+    virtual void setScale(float scale) override;
+    virtual void setScaleX(float scaleX) override;
+    virtual void setScaleY(float scaleY) override;
 
     void setFntFile(const char* fntFile);
     const char* getFntFile();
