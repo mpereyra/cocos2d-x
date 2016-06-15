@@ -56,9 +56,9 @@ enum {
 class CC_DLL CCMenu : public CCLayer, public CCRGBAProtocol
 {
     /** Color: conforms with CCRGBAProtocol protocol */
-    CC_PROPERTY_PASS_BY_REF(ccColor3B, m_tColor, Color);
+    CC_PROPERTY_PASS_BY_REF_OVERRIDE(ccColor3B, m_tColor, Color);
     /** Opacity: conforms with CCRGBAProtocol protocol */
-    CC_PROPERTY(GLubyte, m_cOpacity, Opacity);
+    CC_PROPERTY_OVERRIDE(GLubyte, m_cOpacity, Opacity);
     /** whether or not the menu will receive events */
     bool m_bEnabled;
     
@@ -141,27 +141,27 @@ public:
     void setHandlerPriority(int newPriority);
 
     //super methods
-    virtual void addChild(CCNode * child);
-    virtual void addChild(CCNode * child, int zOrder);
-    virtual void addChild(CCNode * child, int zOrder, int tag);
-    virtual void registerWithTouchDispatcher();
+    virtual void addChild(CCNode * child) override;
+    virtual void addChild(CCNode * child, int zOrder) override;
+    virtual void addChild(CCNode * child, int zOrder, int tag) override;
+    virtual void registerWithTouchDispatcher() override;
 
     /**
     @brief For phone event handle functions
     */
-    virtual bool ccTouchBegan(CCTouch* touch, CCEvent* event);
-    virtual void ccTouchEnded(CCTouch* touch, CCEvent* event);
-    virtual void ccTouchCancelled(CCTouch *touch, CCEvent* event);
-    virtual void ccTouchMoved(CCTouch* touch, CCEvent* event);
+    virtual bool ccTouchBegan(CCTouch* touch, CCEvent* event) override;
+    virtual void ccTouchEnded(CCTouch* touch, CCEvent* event) override;
+    virtual void ccTouchCancelled(CCTouch *touch, CCEvent* event) override;
+    virtual void ccTouchMoved(CCTouch* touch, CCEvent* event) override;
 
     /**
     @since v0.99.5
     override onExit
     */
-    virtual void onExit();
+    virtual void onExit() override;
 
-    virtual void setOpacityModifyRGB(bool bValue) {CC_UNUSED_PARAM(bValue);}
-    virtual bool isOpacityModifyRGB(void) { return false;}
+    virtual void setOpacityModifyRGB(bool bValue) override {CC_UNUSED_PARAM(bValue);}
+    virtual bool isOpacityModifyRGB(void) const override { return false; }
     
     virtual bool isEnabled() { return m_bEnabled; }
     virtual void setEnabled(bool value) { m_bEnabled = value; };

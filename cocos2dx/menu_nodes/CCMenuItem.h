@@ -144,20 +144,20 @@ public:
     /** sets a new string to the inner label */
     void setString(const char * label);
     // super methods
-    virtual void activate();
-    virtual void selected();
-    virtual void unselected();
+    virtual void activate() override;
+    virtual void selected() override;
+    virtual void unselected() override;
     /** Enable or disabled the CCMenuItemFont
      @warning setEnabled changes the RGB color of the font
      */
-    virtual void setEnabled(bool enabled);
-    virtual void setOpacity(GLubyte opacity);
-    virtual GLubyte getOpacity();
-    virtual void setColor(const ccColor3B& color);
-    virtual const ccColor3B& getColor();
+    virtual void setEnabled(bool enabled) override;
+    virtual void setOpacity(GLubyte opacity) override;
+    virtual GLubyte getOpacity() const override;
+    virtual void setColor(const ccColor3B& color) override;
+    virtual const ccColor3B& getColor() const override;
     
-    virtual void setOpacityModifyRGB(bool bValue) {CC_UNUSED_PARAM(bValue);}
-    virtual bool isOpacityModifyRGB(void) { return false;}
+    virtual void setOpacityModifyRGB(bool bValue) override {CC_UNUSED_PARAM(bValue);}
+    virtual bool isOpacityModifyRGB(void) const override { return false; }
 protected:
     ccColor3B    m_tColorBackup;
     float        m_fOriginalScale;
@@ -293,20 +293,20 @@ public:
     /** initializes a menu item with a normal, selected  and disabled image with target/selector */
     bool initWithNormalSprite(CCNode* normalSprite, CCNode* selectedSprite, CCNode* disabledSprite, CCObject* target, SEL_MenuHandler selector);
     // super methods
-    virtual void setColor(const ccColor3B& color);
-    virtual const ccColor3B& getColor();
-    virtual void setOpacity(GLubyte opacity);
-    virtual GLubyte getOpacity();
+    virtual void setColor(const ccColor3B& color) override;
+    virtual const ccColor3B& getColor() const override;
+    virtual void setOpacity(GLubyte opacity) override;
+    virtual GLubyte getOpacity() const override;
     
     /**
      @since v0.99.5
      */
-    virtual void selected();
-    virtual void unselected();
-    virtual void setEnabled(bool bEnabled);
+    virtual void selected() override;
+    virtual void unselected() override;
+    virtual void setEnabled(bool bEnabled) override;
     
-    virtual void setOpacityModifyRGB(bool bValue) {CC_UNUSED_PARAM(bValue);}
-    virtual bool isOpacityModifyRGB(void) { return false;}
+    virtual void setOpacityModifyRGB(bool bValue) override {CC_UNUSED_PARAM(bValue);}
+    virtual bool isOpacityModifyRGB(void) const override { return false; }
 protected:
     virtual void updateImagesVisibility();
 };
@@ -378,9 +378,9 @@ public:
 class CC_DLL CCMenuItemToggle : public CCMenuItem, public CCRGBAProtocol
 {
     /** conforms with CCRGBAProtocol protocol */
-    CC_PROPERTY(GLubyte, m_cOpacity, Opacity);
+    CC_PROPERTY_OVERRIDE(GLubyte, m_cOpacity, Opacity);
     /** conforms with CCRGBAProtocol protocol */
-    CC_PROPERTY_PASS_BY_REF(ccColor3B, m_tColor, Color);
+    CC_PROPERTY_PASS_BY_REF_OVERRIDE(ccColor3B, m_tColor, Color);
     /** returns the selected item */
     CC_PROPERTY(unsigned int, m_uSelectedIndex, SelectedIndex);
     /** CCMutableArray that contains the subitems. You can add/remove items in runtime, and you can replace the array with a new one.
@@ -426,13 +426,13 @@ public:
     /** return the selected item */
     CCMenuItem* selectedItem();
     // super methods
-    virtual void activate();
-    virtual void selected();
-    virtual void unselected();
-    virtual void setEnabled(bool var);
+    virtual void activate() override;
+    virtual void selected() override;
+    virtual void unselected() override;
+    virtual void setEnabled(bool var) override;
     
-    virtual void setOpacityModifyRGB(bool bValue) {CC_UNUSED_PARAM(bValue);}
-    virtual bool isOpacityModifyRGB(void) { return false;}
+    virtual void setOpacityModifyRGB(bool bValue) override {CC_UNUSED_PARAM(bValue);}
+    virtual bool isOpacityModifyRGB(void) const override { return false; }
 };
 
 

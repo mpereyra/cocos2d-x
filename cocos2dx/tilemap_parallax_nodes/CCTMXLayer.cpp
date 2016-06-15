@@ -128,7 +128,7 @@ CCTMXLayer::~CCTMXLayer()
     CC_SAFE_DELETE_ARRAY(m_pTiles);
 }
 
-CCTMXTilesetInfo * CCTMXLayer::getTileSet()
+CCTMXTilesetInfo * CCTMXLayer::getTileSet() const
 {
     return m_pTileSet;
 }
@@ -716,7 +716,7 @@ int CCTMXLayer::vertexZForPos(const CCPoint& pos)
     return ret;
 }
 
-CCDictionary * CCTMXLayer::getProperties()
+CCDictionary * CCTMXLayer::getProperties() const
 {
     return m_pProperties;
 }

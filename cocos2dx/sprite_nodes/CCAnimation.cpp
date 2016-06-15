@@ -215,7 +215,7 @@ void CCAnimation::addSpriteFrameWithTexture(CCTexture2D *pobTexture, const CCRec
     addSpriteFrame(pFrame);
 }
 
-float CCAnimation::getDuration(void)
+float CCAnimation::getDuration(void) const
 {
     return m_fTotalDelayUnits * m_fDelayPerUnit;
 }

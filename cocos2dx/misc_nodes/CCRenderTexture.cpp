@@ -97,7 +97,7 @@ void CCRenderTexture::listenToBackground(cocos2d::CCObject *obj)
 #endif
 }
 
-CCSprite * CCRenderTexture::getSprite()
+CCSprite * CCRenderTexture::getSprite() const
 {
     return m_pSprite;
 }

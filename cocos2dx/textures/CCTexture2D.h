@@ -255,7 +255,7 @@ public:
     static void PVRImagesHavePremultipliedAlpha(bool haveAlphaPremultiplied);
 
     /** content size */
-    const CCSize& getContentSizeInPixels();
+    const CCSize& getContentSizeInPixels() const;
     
     bool hasPremultipliedAlpha();
     bool hasMipmaps();

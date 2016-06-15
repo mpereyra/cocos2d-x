@@ -611,7 +611,7 @@ void CCMenu::setOpacity(GLubyte var)
     }
 }
 
-GLubyte CCMenu::getOpacity(void)
+GLubyte CCMenu::getOpacity(void) const
 {
     return m_cOpacity;
 }
@@ -638,7 +638,7 @@ void CCMenu::setColor(const ccColor3B& var)
     }
 }
 
-const ccColor3B& CCMenu::getColor(void)
+const ccColor3B& CCMenu::getColor(void) const
 {
     return m_tColor;
 }

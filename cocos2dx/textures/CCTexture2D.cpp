@@ -96,27 +96,27 @@ CCTexture2D::~CCTexture2D()
 	}
 }
 
-CCTexture2DPixelFormat CCTexture2D::getPixelFormat()
+CCTexture2DPixelFormat CCTexture2D::getPixelFormat() const
 {
 	return m_ePixelFormat;
 }
 
-unsigned int CCTexture2D::getPixelsWide()
+unsigned int CCTexture2D::getPixelsWide() const
 {
 	return m_uPixelsWide;
 }
 
-unsigned int CCTexture2D::getPixelsHigh()
+unsigned int CCTexture2D::getPixelsHigh() const
 {
 	return m_uPixelsHigh;
 }
 
-GLuint CCTexture2D::getName()
+GLuint CCTexture2D::getName() const
 {
 	return m_uName;
 }
 
-CCSize CCTexture2D::getContentSize()
+CCSize CCTexture2D::getContentSize() const
 {
 
 	CCSize ret;
@@ -126,12 +126,12 @@ CCSize CCTexture2D::getContentSize()
 	return ret;
 }
 
-const CCSize& CCTexture2D::getContentSizeInPixels()
+const CCSize& CCTexture2D::getContentSizeInPixels() const
 {
     return m_tContentSize;
 }
 
-GLfloat CCTexture2D::getMaxS()
+GLfloat CCTexture2D::getMaxS() const
 {
 	return m_fMaxS;
 }
@@ -141,7 +141,7 @@ void CCTexture2D::setMaxS(GLfloat maxS)
 	m_fMaxS = maxS;
 }
 
-GLfloat CCTexture2D::getMaxT()
+GLfloat CCTexture2D::getMaxT() const
 {
 	return m_fMaxT;
 }
@@ -151,7 +151,7 @@ void CCTexture2D::setMaxT(GLfloat maxT)
     m_fMaxT = maxT;
 }
 
-CCGLProgram* CCTexture2D::getShaderProgram(void)
+CCGLProgram* CCTexture2D::getShaderProgram(void) const
 {
     return m_pShaderProgram;
 }

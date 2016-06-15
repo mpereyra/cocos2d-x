@@ -269,7 +269,7 @@ void CCTileMapAtlas::setTGAInfo(struct sImageTGA* var)
     m_pTGAInfo = var;
 }
 
-struct sImageTGA * CCTileMapAtlas::getTGAInfo()
+struct sImageTGA * CCTileMapAtlas::getTGAInfo() const
 {
     return m_pTGAInfo;
 }

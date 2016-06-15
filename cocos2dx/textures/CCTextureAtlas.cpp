@@ -70,17 +70,17 @@ CCTextureAtlas::~CCTextureAtlas()
     CCNotificationCenter::sharedNotificationCenter()->removeObserver(this, EVNET_COME_TO_FOREGROUND);
 }
 
-unsigned int CCTextureAtlas::getTotalQuads()
+unsigned int CCTextureAtlas::getTotalQuads() const
 {
     return m_uTotalQuads;
 }
 
-unsigned int CCTextureAtlas::getCapacity()
+unsigned int CCTextureAtlas::getCapacity() const
 {
     return m_uCapacity;
 }
 
-CCTexture2D* CCTextureAtlas::getTexture()
+CCTexture2D* CCTextureAtlas::getTexture() const
 {
     return m_pTexture;
 }
@@ -92,7 +92,7 @@ void CCTextureAtlas::setTexture(CCTexture2D * var)
     m_pTexture = var;
 }
 
-ccV3F_C4B_T2F_Quad* CCTextureAtlas::getQuads()
+ccV3F_C4B_T2F_Quad* CCTextureAtlas::getQuads() const
 {
     //if someone accesses the quads directly, presume that changes will be made
     m_bDirty = true;

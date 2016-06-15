@@ -131,7 +131,7 @@ CCNode::~CCNode(void)
     CC_SAFE_RELEASE(m_pChildren);
 }
 
-float CCNode::getSkewX()
+float CCNode::getSkewX() const
 {
     return m_fSkewX;
 }
@@ -142,7 +142,7 @@ void CCNode::setSkewX(float newSkewX)
     m_bIsTransformDirty = m_bIsInverseDirty = true;
 }
 
-float CCNode::getSkewY()
+float CCNode::getSkewY() const
 {
     return m_fSkewY;
 }
@@ -155,7 +155,7 @@ void CCNode::setSkewY(float newSkewY)
 }
 
 /// zOrder getter
-int CCNode::getZOrder()
+int CCNode::getZOrder() const
 {
     return m_nZOrder;
 }
@@ -177,7 +177,7 @@ void CCNode::setZOrder(int z)
 }
 
 /// vertexZ getter
-float CCNode::getVertexZ()
+float CCNode::getVertexZ() const
 {
     return m_fVertexZ;
 }
@@ -191,7 +191,7 @@ void CCNode::setVertexZ(float var)
 
 
 /// rotation getter
-float CCNode::getRotation()
+float CCNode::getRotation() const
 {
     return m_fRotation;
 }
@@ -218,7 +218,7 @@ void CCNode::setScale(float scale)
 }
 
 /// scaleX getter
-float CCNode::getScaleX()
+float CCNode::getScaleX() const
 {
     return m_fScaleX;
 }
@@ -231,7 +231,7 @@ void CCNode::setScaleX(float newScaleX)
 }
 
 /// scaleY getter
-float CCNode::getScaleY()
+float CCNode::getScaleY() const
 {
     return m_fScaleY;
 }
@@ -244,7 +244,7 @@ void CCNode::setScaleY(float newScaleY)
 }
 
 /// position getter
-const CCPoint& CCNode::getPosition()
+const CCPoint& CCNode::getPosition() const
 {
     return m_tPosition;
 }
@@ -293,7 +293,7 @@ void CCNode::setPosition(float x, float y)
 }
 
 /// children getter
-CCArray* CCNode::getChildren()
+CCArray* CCNode::getChildren() const
 {
     return m_pChildren;
 }
@@ -304,7 +304,7 @@ unsigned int CCNode::getChildrenCount(void)
 }
 
 /// camera getter: lazy alloc
-CCCamera* CCNode::getCamera()
+CCCamera* CCNode::getCamera() const
 {
     if (!m_pCamera)
     {
@@ -316,7 +316,7 @@ CCCamera* CCNode::getCamera()
 
 
 /// grid getter
-CCGridBase* CCNode::getGrid()
+CCGridBase* CCNode::getGrid() const
 {
     return m_pGrid;
 }
@@ -348,7 +348,7 @@ const CCPoint& CCNode::getAnchorPointInPoints()
 }
 
 /// anchorPoint getter
-const CCPoint& CCNode::getAnchorPoint()
+const CCPoint& CCNode::getAnchorPoint() const
 {
     return m_tAnchorPoint;
 }
@@ -364,7 +364,7 @@ void CCNode::setAnchorPoint(const CCPoint& point)
 }
 
 /// contentSize getter
-const CCSize & CCNode::getContentSize()
+const CCSize & CCNode::getContentSize() const
 {
     return m_tContentSize;
 }
@@ -387,7 +387,7 @@ bool CCNode::isRunning()
 }
 
 /// parent getter
-CCNode * CCNode::getParent()
+CCNode * CCNode::getParent() const
 {
     return m_pParent;
 }
@@ -413,7 +413,7 @@ void CCNode::ignoreAnchorPointForPosition(bool newValue)
 }
 
 /// tag getter
-int CCNode::getTag()
+int CCNode::getTag() const
 {
     return m_nTag;
 }
@@ -425,7 +425,7 @@ void CCNode::setTag(int var)
 }
 
 /// userData getter
-void * CCNode::getUserData()
+void * CCNode::getUserData() const
 {
     return m_pUserData;
 }
@@ -437,7 +437,7 @@ void CCNode::setUserData(void *var)
 }
 
 
-CCRect CCNode::boundingBox()
+CCRect CCNode::boundingBox() const
 {
     CCRect rect = CCRectMake(0, 0, m_tContentSize.width, m_tContentSize.height);
     return CCRectApplyAffineTransform(rect, nodeToParentTransform());
@@ -877,7 +877,7 @@ void CCNode::setActionManager(CCActionManager* actionManager)
     }
 }
 
-CCActionManager* CCNode::getActionManager()
+CCActionManager* CCNode::getActionManager() const
 {
     return m_pActionManager;
 }
@@ -928,7 +928,7 @@ void CCNode::setScheduler(CCScheduler* scheduler)
     }
 }
 
-CCScheduler* CCNode::getScheduler()
+CCScheduler* CCNode::getScheduler() const
 {
     return m_pScheduler;
 }
@@ -997,7 +997,7 @@ void CCNode::pauseSchedulerAndActions()
     m_pActionManager->pauseTarget(this);
 }
 
-CCAffineTransform CCNode::nodeToParentTransform(void)
+CCAffineTransform CCNode::nodeToParentTransform(void) const
 {
     if (m_bIsTransformDirty) 
     {

@@ -93,30 +93,30 @@ public:
     bool initWithFile(const char* fileImage, unsigned int capacity);
 
     /** Add a child into the CCParticleBatchNode */
-    virtual void addChild(CCNode * child);
-    virtual void addChild(CCNode * child, int zOrder);
-    virtual void addChild(CCNode * child, int zOrder, int tag);
+    virtual void addChild(CCNode * child) override;
+    virtual void addChild(CCNode * child, int zOrder) override;
+    virtual void addChild(CCNode * child, int zOrder, int tag) override;
 
     /** Inserts a child into the CCParticleBatchNode */
     void insertChild(CCParticleSystem* pSystem, unsigned int index);
 
     /** remove child from the CCParticleBatchNode */
-    virtual void removeChild(CCNode* child, bool cleanup);
-    virtual void reorderChild(CCNode * child, int zOrder);
+    virtual void removeChild(CCNode* child, bool cleanup) override;
+    virtual void reorderChild(CCNode * child, int zOrder) override;
     void removeChildAtIndex(unsigned int index, bool doCleanup);
-    void removeAllChildrenWithCleanup(bool doCleanup);
+    void removeAllChildrenWithCleanup(bool doCleanup) override;
     /** disables a particle by inserting a 0'd quad into the texture atlas */
     void disableParticle(unsigned int particleIndex);
-    virtual void draw(void);
+    virtual void draw(void) override;
     // returns the used texture
-    virtual CCTexture2D* getTexture(void);
+    virtual CCTexture2D* getTexture(void) const override;
     // sets a new texture. it will be retained
-    virtual void setTexture(CCTexture2D *texture);
-    virtual void setBlendFunc(ccBlendFunc blendFunc);
+    virtual void setTexture(CCTexture2D *texture) override;
+    virtual void setBlendFunc(ccBlendFunc blendFunc) override;
     // returns the blending function used for the texture
-    virtual ccBlendFunc getBlendFunc(void);
+    virtual ccBlendFunc getBlendFunc(void) const override;
 
-    void visit();
+    void visit() override;
 
 private:
     void updateAllAtlasIndexes();

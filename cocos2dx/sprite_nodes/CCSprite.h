@@ -126,7 +126,7 @@ public:
     inline const CCPoint& getOffsetPosition(void) { return m_obOffsetPosition; }
 
     /** conforms to CCTextureProtocol protocol */
-    inline ccBlendFunc getBlendFunc(void) override { return m_sBlendFunc; }
+    inline ccBlendFunc getBlendFunc(void) const override { return m_sBlendFunc; }
     /** conforms to CCTextureProtocol protocol */
     inline void setBlendFunc(ccBlendFunc blendFunc) override { m_sBlendFunc = blendFunc; }
 
@@ -260,11 +260,11 @@ public:
     // RGBAProtocol
     /** opacity: conforms to CCRGBAProtocol protocol */
     virtual void setOpacityModifyRGB(bool bValue) override;
-    virtual bool isOpacityModifyRGB(void) override;
+    virtual bool isOpacityModifyRGB(void) const override;
 
     // CCTextureProtocol
     virtual void setTexture(CCTexture2D *texture) override;
-    virtual CCTexture2D* getTexture(void) override;
+    virtual CCTexture2D* getTexture(void) const override;
 
     /** Initializes an sprite with a texture.
      The rect used will be the size of the texture.

@@ -158,7 +158,7 @@ void CCMenuItem::setTarget(CCObject *rec, SEL_MenuHandler selector)
 //CCMenuItemLabel
 //
 
-const ccColor3B& CCMenuItemLabel::getDisabledColor()
+const ccColor3B& CCMenuItemLabel::getDisabledColor() const
 {
     return m_tDisabledColor;
 }
@@ -166,7 +166,7 @@ void CCMenuItemLabel::setDisabledColor(const ccColor3B& var)
 {
     m_tDisabledColor = var;
 }
-CCNode *CCMenuItemLabel::getLabel()
+CCNode *CCMenuItemLabel::getLabel() const
 {
     return m_pLabel;
 }
@@ -301,7 +301,7 @@ void CCMenuItemLabel::setOpacity(GLubyte opacity)
     dynamic_cast<CCRGBAProtocol*>(m_pLabel)->setOpacity(opacity);
 }
 
-GLubyte CCMenuItemLabel::getOpacity()
+GLubyte CCMenuItemLabel::getOpacity() const
 {
     return dynamic_cast<CCRGBAProtocol*>(m_pLabel)->getOpacity();
 }
@@ -311,7 +311,7 @@ void CCMenuItemLabel::setColor(const ccColor3B& color)
     dynamic_cast<CCRGBAProtocol*>(m_pLabel)->setColor(color);
 }
 
-const ccColor3B& CCMenuItemLabel::getColor()
+const ccColor3B& CCMenuItemLabel::getColor() const
 {
     return dynamic_cast<CCRGBAProtocol*>(m_pLabel)->getColor();
 }
@@ -458,7 +458,7 @@ const char* CCMenuItemFont::fontNameObj()
 //CCMenuItemSprite
 //
 
-CCNode * CCMenuItemSprite::getNormalImage()
+CCNode * CCMenuItemSprite::getNormalImage() const
 {
     return m_pNormalImage;
 }
@@ -484,7 +484,7 @@ void CCMenuItemSprite::setNormalImage(CCNode* pImage)
     }
 }
 
-CCNode * CCMenuItemSprite::getSelectedImage()
+CCNode * CCMenuItemSprite::getSelectedImage() const
 {
     return m_pSelectedImage;
 }
@@ -509,7 +509,7 @@ void CCMenuItemSprite::setSelectedImage(CCNode* pImage)
     }
 }
 
-CCNode * CCMenuItemSprite::getDisabledImage()
+CCNode * CCMenuItemSprite::getDisabledImage() const
 {
     return m_pDisabledImage;
 }
@@ -568,12 +568,12 @@ void CCMenuItemSprite::setColor(const ccColor3B& color)
     }
 }
 
-GLubyte CCMenuItemSprite::getOpacity()
+GLubyte CCMenuItemSprite::getOpacity() const
 {
     return dynamic_cast<CCRGBAProtocol*>(m_pNormalImage)->getOpacity();
 }
 
-const ccColor3B& CCMenuItemSprite::getColor()
+const ccColor3B& CCMenuItemSprite::getColor() const
 {
     return dynamic_cast<CCRGBAProtocol*>(m_pNormalImage)->getColor();
 }
@@ -835,7 +835,7 @@ void CCMenuItemToggle::setSubItems(CCArray* var)
     m_pSubItems = var;
 }
 
-CCArray* CCMenuItemToggle::getSubItems()
+CCArray* CCMenuItemToggle::getSubItems() const
 {
     return m_pSubItems;
 }
@@ -941,7 +941,7 @@ void CCMenuItemToggle::setSelectedIndex(unsigned int index)
         item->setPosition( ccp( s.width/2, s.height/2 ) );
     }
 }
-unsigned int CCMenuItemToggle::getSelectedIndex()
+unsigned int CCMenuItemToggle::getSelectedIndex() const
 {
     return m_uSelectedIndex;
 }
@@ -990,7 +990,7 @@ CCMenuItem* CCMenuItemToggle::selectedItem()
 //
 //CCMenuItemToggle - CCRGBAProtocol protocol
 //
-GLubyte CCMenuItemToggle::getOpacity()
+GLubyte CCMenuItemToggle::getOpacity() const
 {
     return m_cOpacity;
 }
@@ -1007,7 +1007,7 @@ void CCMenuItemToggle::setOpacity(GLubyte opacity)
         }
     }
 }
-const ccColor3B& CCMenuItemToggle::getColor()
+const ccColor3B& CCMenuItemToggle::getColor() const
 {
     return m_tColor;
 }

@@ -849,7 +849,7 @@ void CCDirector::resetDetectedNegativeDeltaTime()
     m_bSumNegativeDeltaTime = 0;
 }
 
-CCScheduler* CCDirector::getScheduler()
+CCScheduler* CCDirector::getScheduler() const
 {
     return m_pScheduler;
 }
@@ -864,7 +864,7 @@ void CCDirector::setActionManager(CCActionManager* pActionManager)
     }    
 }
 
-CCActionManager* CCDirector::getActionManager()
+CCActionManager* CCDirector::getActionManager() const
 {
     return m_pActionManager;
 }
@@ -879,7 +879,7 @@ void CCDirector::setTouchDispatcher(CCTouchDispatcher* pTouchDispatcher)
     }    
 }
 
-CCTouchDispatcher* CCDirector::getTouchDispatcher()
+CCTouchDispatcher* CCDirector::getTouchDispatcher() const
 {
     return m_pTouchDispatcher;
 }
@@ -891,7 +891,7 @@ void CCDirector::setKeypadDispatcher(CCKeypadDispatcher* pKeypadDispatcher)
     m_pKeypadDispatcher = pKeypadDispatcher;
 }
 
-CCKeypadDispatcher* CCDirector::getKeypadDispatcher()
+CCKeypadDispatcher* CCDirector::getKeypadDispatcher() const
 {
     return m_pKeypadDispatcher;
 }
@@ -905,7 +905,7 @@ void CCDirector::setAccelerometer(CCAccelerometer* pAccelerometer)
     }
 }
 
-CCAccelerometer* CCDirector::getAccelerometer()
+CCAccelerometer* CCDirector::getAccelerometer() const
 {
     return m_pAccelerometer;
 }

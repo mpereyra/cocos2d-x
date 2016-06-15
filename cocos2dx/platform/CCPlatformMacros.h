@@ -119,7 +119,11 @@ It's new in cocos2d-x since v0.99.5
  */
 #define CC_PROPERTY_READONLY(varType, varName, funName)\
 protected: varType varName;\
-public: virtual varType get##funName(void);
+public: virtual varType get##funName(void) const;
+
+#define CC_MUTABLE_PROPERTY_READONLY(varType, varName, funName)\
+protected: mutable varType varName;\
+public: virtual varType get##funName(void) const;
 
 #define CC_PROPERTY_READONLY_PASS_BY_REF(varType, varName, funName)\
 protected: varType varName;\
@@ -137,22 +141,22 @@ public: virtual const varType& get##funName(void);
  */
 #define CC_PROPERTY(varType, varName, funName)\
 protected: varType varName;\
-public: virtual varType get##funName(void);\
+public: virtual varType get##funName(void) const;\
 public: virtual void set##funName(varType var);
 
 #define CC_PROPERTY_OVERRIDE(varType, varName, funName)\
 protected: varType varName;\
-public: virtual varType get##funName(void) override;\
+public: virtual varType get##funName(void) const override;\
 public: virtual void set##funName(varType var) override;
 
 #define CC_PROPERTY_PASS_BY_REF(varType, varName, funName)\
 protected: varType varName;\
-public: virtual const varType& get##funName(void);\
+public: virtual const varType& get##funName(void) const;\
 public: virtual void set##funName(const varType& var);
 
 #define CC_PROPERTY_PASS_BY_REF_OVERRIDE(varType, varName, funName)\
 protected: varType varName;\
-public: virtual const varType& get##funName(void) override;\
+public: virtual const varType& get##funName(void) const override;\
 public: virtual void set##funName(const varType& var) override;
 
 /** CC_SYNTHESIZE_READONLY is used to declare a protected variable.

@@ -76,15 +76,15 @@ public:
     void setType(CCProgressTimerType type);
     void setReverseProgress(bool reverse);
 
-    virtual void draw(void);
+    virtual void draw(void) override;
     void setAnchorPoint(CCPoint anchorPoint);
 
-    virtual void setColor(const ccColor3B& color);
-    virtual const ccColor3B& getColor(void);
-    virtual GLubyte getOpacity(void);
-    virtual void setOpacity(GLubyte opacity);
-    virtual void setOpacityModifyRGB(bool bValue);
-    virtual bool isOpacityModifyRGB(void);
+    virtual void setColor(const ccColor3B& color) override;
+    virtual const ccColor3B& getColor(void) const override;
+    virtual GLubyte getOpacity(void) const override;
+    virtual void setOpacity(GLubyte opacity) override;
+    virtual void setOpacityModifyRGB(bool bValue) override;
+    virtual bool isOpacityModifyRGB(void) const override;
     
     inline bool isReverseDirection() { return m_bReverseDirection; };
     inline void setReverseDirection(bool value) { m_bReverseDirection = value; };
