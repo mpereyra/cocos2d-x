@@ -307,6 +307,7 @@ protected:
     int _asyncRefCount;
 
     std::unordered_map<std::string, Texture2D*> _textures;
+    mutable std::mutex _texturesMutex; // BPC PATCH
 };
 
 #if CC_ENABLE_CACHE_TEXTURE_DATA
