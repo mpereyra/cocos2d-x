@@ -119,17 +119,22 @@ std::string TextureCache::getDescription() const
     return StringUtils::format("<TextureCache | Number of textures = %d>", static_cast<int>(_textures.size()));
 }
 
+Texture2D* TextureCache::findTexture(std::string const& fullpath) const {
+    Texture2D* tex = nullptr;
+    std::lock_guard<std::mutex> locky(_texturesMutex);
+    auto it = _textures.find(fullpath);
+    if( it != _textures.end() )
+        tex = it->second;
+    
+    return tex;}
+
 void TextureCache::addImageAsync(const std::string &path, const std::function<void(Texture2D*)>& callback, Ref * const target)
 {
     Texture2D *texture = nullptr;
 
     std::string fullpath = FileUtils::getInstance()->fullPathForFilename(path);
 
-    _texturesMutex.lock();
-    auto it = _textures.find(fullpath);
-    if( it != _textures.end() )
-        texture = it->second;
-    _texturesMutex.unlock();
+    texture = findTexture(fullpath);
 
     if (texture != nullptr)
     {
@@ -266,12 +271,9 @@ void TextureCache::loadImage()
         bool generateImage = false;
         bool passedToOtherTask = false;
         
-        _texturesMutex.lock();
-        auto it = _textures.find(asyncStruct->filename);
-        Texture2D* foundtex = nullptr;
-        if( it == _textures.end() )
+        Texture2D* foundtex = findTexture(asyncStruct->filename);
+        if( foundtex == nullptr )
         {
-            _texturesMutex.unlock();
            _imageInfoMutex.lock();
            ImageInfo *imageInfo;
            size_t pos = 0;
@@ -290,11 +292,8 @@ void TextureCache::loadImage()
            }
            _imageInfoMutex.unlock();
            generateImage = !passedToOtherTask;
-        } else {
-            // texture was in cache - keep it alive until callback completes
-            foundtex = it->second;
-            _texturesMutex.unlock();
         }
+        //else texture was in cache - keep it alive until callback completes
 
         if (generateImage)
         {
@@ -374,9 +373,10 @@ void TextureCache::addImageAsyncCallBack(float dt)
             VolatileTextureMgr::addImageTexture(texture, filename);
 #endif
             // cache the texture. retain it, since it is added in the map
-            _texturesMutex.lock();
-            _textures.insert( std::make_pair(filename, texture) );
-            _texturesMutex.unlock();
+            {
+                std::lock_guard<std::mutex> locky(_texturesMutex);
+                _textures.insert( std::make_pair(filename, texture) );
+            }
             texture->retain();
 
             texture->autorelease();
@@ -430,11 +430,7 @@ Texture2D * TextureCache::addImage(const std::string &path)
         return nullptr;
     }
     
-    _texturesMutex.lock();
-    auto it = _textures.find(fullpath);
-    if( it != _textures.end() )
-        texture = it->second;
-    _texturesMutex.unlock();
+    texture = findTexture(fullpath);
     
     if (! texture)
     {
@@ -460,10 +456,9 @@ Texture2D * TextureCache::addImage(const std::string &path)
                 // cache the texture file name
                 VolatileTextureMgr::addImageTexture(texture, fullpath);
 #endif
-                _texturesMutex.lock();
                 // texture already retained, no need to re-retain it
+                std::lock_guard<std::mutex> locky(_texturesMutex);
                 _textures.insert( std::make_pair(fullpath, texture) );
-                _texturesMutex.unlock();
             }
             else
             {
@@ -485,13 +480,10 @@ Texture2D* TextureCache::addImage(Image *image, const std::string &key)
 
     do
     {
-        _texturesMutex.lock();
-        auto it = _textures.find(key);
-        if( it != _textures.end() ) {
-            texture = it->second;
+        texture = findTexture(key);
+        if(texture) {
             break;
         }
-        _texturesMutex.unlock();
 
         // prevents overloading the autorelease pool
         texture = new (std::nothrow) Texture2D();
@@ -499,9 +491,10 @@ Texture2D* TextureCache::addImage(Image *image, const std::string &key)
 
         if(texture)
         {
-            _texturesMutex.lock();
-            _textures.insert( std::make_pair(key, texture) );
-            _texturesMutex.unlock();
+            {
+                std::lock_guard<std::mutex> locky(_texturesMutex);
+                _textures.insert( std::make_pair(key, texture) );
+            }
             texture->retain();
 
             texture->autorelease();
@@ -531,12 +524,7 @@ bool TextureCache::reloadTexture(const std::string& fileName)
         return false;
     }
 
-    _texturesMutex.lock();
-    auto it = _textures.find(fullpath);
-    if (it != _textures.end()) {
-        texture = it->second;
-    }
-    _texturesMutex.unlock();
+    texture = findTexture(fullpath);
 
     bool ret = false;
     if (! texture) {
