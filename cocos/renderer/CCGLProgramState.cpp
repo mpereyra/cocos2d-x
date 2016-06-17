@@ -317,7 +317,7 @@ bool GLProgramState::init(GLProgram* glprogram)
     _uniforms.reserve(_glprogram->_userUniforms.size());
     for(auto &uniform : _glprogram->_userUniforms) {
         UniformValue value(&uniform.second, _glprogram);
-        _uniforms.insert(std::make_pair(uniform.second.location, value));
+        _uniforms.emplace(uniform.second.location, value);
     }
     for(auto &uniform : _uniforms) {
         _uniformsByName[uniform.second._uniform->name] = &uniform.second;
@@ -330,6 +330,7 @@ void GLProgramState::resetGLProgram()
 {
     CC_SAFE_RELEASE(_glprogram);
     _uniforms.clear();
+    _uniformsByName.clear();
     _attributes.clear();
     // first texture is GL_TEXTURE1
     _textureUnitIndex = 1;
@@ -357,10 +358,12 @@ void GLProgramState::updateUniformsAndAttributes()
         _uniforms.reserve(_glprogram->_userUniforms.size());
         for(auto &uniform : _glprogram->_userUniforms) {
             UniformValue value(&uniform.second, _glprogram);
-            _uniforms.insert(std::make_pair(uniform.second.location, value));
+            auto const res(_uniforms.emplace(uniform.second.location, value));
+            CCASSERT(res.second, "Uniform already exists");
         }
         for(auto &uniform : _uniforms) {
-            _uniformsByName[uniform.second._uniform->name] = &uniform.second;
+            auto const res(_uniformsByName.emplace(uniform.second._uniform->name, &uniform.second));
+            CCASSERT(res.second, "Uniform name already taken");
         }
         /* BPC PATCH */
 

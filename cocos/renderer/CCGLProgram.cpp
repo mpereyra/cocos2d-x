@@ -995,7 +995,7 @@ void GLProgram::reset()
     //GL::deleteProgram(_program);
     _program = 0;
 
-    for (auto e: _hashForUniforms)
+    for (auto const &e : _hashForUniforms)
     {
         free(e.second.first);
     }
