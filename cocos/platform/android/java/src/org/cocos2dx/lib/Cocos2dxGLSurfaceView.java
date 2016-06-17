@@ -81,7 +81,8 @@ public class Cocos2dxGLSurfaceView extends GLSurfaceView {
         Cocos2dxGLSurfaceView.mCocos2dxGLSurfaceView = this;
 
         //BPC PATCH
-        Cocos2dxGLSurfaceView.mCocos2dxGLSurfaceView.setPreserveEGLContextOnPause(true);
+        Cocos2dxGLSurfaceView.mCocos2dxGLSurfaceView
+                             .setPreserveEGLContextOnPause(shouldPreserveGLContext());
         //END BPC PATCH
 
         Cocos2dxGLSurfaceView.sCocos2dxTextInputWraper = new Cocos2dxTextInputWraper(this);
@@ -419,4 +420,6 @@ public class Cocos2dxGLSurfaceView extends GLSurfaceView {
         sb.append("]");
         Log.d(Cocos2dxGLSurfaceView.TAG, sb.toString());
     }
+
+    public native boolean shouldPreserveGLContext();
 }
