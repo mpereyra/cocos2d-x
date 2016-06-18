@@ -162,7 +162,7 @@ public:
 
     /** BPC PATCH BEGIN **/
     AABB skinAABB(Mesh const * mesh) const;
-    const AABB& getNodeToParentAABB(std::vector<std::string> excludeMeshes = {}, bool force = false) const override;
+    const AABB& getNodeToParentAABB(const std::vector<std::string>& excludeMeshes = {}, bool force = false) const override;
     /** BPC PATCH END **/
 
     // set which face is going to cull, GL_BACK, GL_FRONT, GL_FRONT_AND_BACK, default GL_BACK

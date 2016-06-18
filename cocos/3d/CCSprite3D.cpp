@@ -896,7 +896,7 @@ AABB Sprite3D::skinAABB(Mesh const * mesh) const{
     return aabb;
 }
 
-const AABB& Sprite3D::getNodeToParentAABB(std::vector<std::string> excludeMeshes, bool force) const {
+const AABB& Sprite3D::getNodeToParentAABB(const std::vector<std::string>& excludeMeshes, bool force) const {
     
     // If nodeToWorldTransform matrix isn't changed and we are querying the same set of meshes as before, we don't need to transform aabb.
     _nodeToParentAABBDirty = m_skinAABB ? true : _nodeToParentAABBDirty;
@@ -913,7 +913,7 @@ const AABB& Sprite3D::getNodeToParentAABB(std::vector<std::string> excludeMeshes
         // Merge mesh and child aabb's in parent space
         for (const auto& mesh : _meshes) {
             if (mesh->isVisible()
-                && std::none_of(excludeMeshes.begin(), excludeMeshes.end(), [&mesh](std::string& meshName){return meshName == mesh->getName();})){
+                && std::none_of(excludeMeshes.begin(), excludeMeshes.end(), [&mesh](const std::string& meshName){return meshName == mesh->getName();})){
                 auto mb = m_skinAABB ? skinAABB(mesh) : mesh->getAABB();
                 _nodeToParentAABB.merge(mb);
             }
