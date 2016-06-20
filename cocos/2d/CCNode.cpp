@@ -884,7 +884,7 @@ Vec3 Node::getRealPosition() const{
     return (getPosition3D() + additional);
 }
 
-const AABB& Node::getNodeToParentAABB(std::vector<std::string> excludeMeshes, bool force) const {
+const AABB& Node::getNodeToParentAABB(const std::vector<std::string>& excludeMeshes, bool force) const {
     // If nodeToWorldTransform matrix isn't changed and we are querying the same set of meshes as before, we don't need to transform aabb.
     if (!force && !_nodeToParentAABBDirty
         && _nodeToParentExcludeMeshes.size() == excludeMeshes.size()
