@@ -389,15 +389,14 @@ bool  Bundle3D::loadMeshDatasBinary(MeshDatas& meshdatas)
         meshData->attribs.resize(meshData->attribCount);
         for (ssize_t j = 0; j < meshData->attribCount; j++)
         {
-            std::string attribute="";
             unsigned int vSize;
             if (_binaryReader.read(&vSize, 4, 1) != 1)
             {
                 CCLOG("warning: Failed to read meshdata: usage or size '%s'.", _path.c_str());
                 return false;
             }
-            std::string type = _binaryReader.readString();
-            attribute=_binaryReader.readString();
+            std::string const& type = _binaryReader.readString();
+            std::string const& attribute=_binaryReader.readString();
             meshData->attribs[j].size = vSize;
             meshData->attribs[j].attribSizeBytes = meshData->attribs[j].size * 4;
             meshData->attribs[j].type =  parseGLType(type);
@@ -425,7 +424,7 @@ bool  Bundle3D::loadMeshDatasBinary(MeshDatas& meshdatas)
         for (unsigned int k = 0; k < meshPartCount; ++k)
         {
             std::vector<unsigned short>      indexArray;
-            std:: string meshPartid = _binaryReader.readString();
+            std:: string const& meshPartid = _binaryReader.readString();
             meshData->subMeshIds.push_back(meshPartid);
             unsigned int nIndexCount;
             if (_binaryReader.read(&nIndexCount, 4, 1) != 1)
@@ -439,7 +438,7 @@ bool  Bundle3D::loadMeshDatasBinary(MeshDatas& meshdatas)
                 CCLOG("warning: Failed to read meshdata: indices '%s'.", _path.c_str());
                 return false;
             }
-            meshData->subMeshIndices.push_back(indexArray);
+            meshData->subMeshIndices.push_back(std::move(indexArray));
             meshData->numIndex = (int)meshData->subMeshIndices.size();
             //meshData->subMeshAABB.push_back(calculateAABB(meshData->vertex, meshData->getPerVertexSize(), indexArray));
             if (_version != "0.3" && _version != "0.4" && _version != "0.5")
@@ -1481,7 +1480,7 @@ bool Bundle3D::loadAnimationDataBinary(const std::string& id, Animation3DData* a
     for(unsigned int k = 0; k < animNum ; k++ )
     {
         animationdata->resetData();
-        std::string animId = _binaryReader.readString();
+        std::string const& animId = _binaryReader.readString();
 
         if (!_binaryReader.read(&animationdata->_totalTime))
         {
@@ -1497,7 +1496,7 @@ bool Bundle3D::loadAnimationDataBinary(const std::string& id, Animation3DData* a
         }
         for (unsigned int i = 0; i < nodeAnimationNum; ++i)
         {
-            std::string boneName = _binaryReader.readString();
+            std::string const& boneName = _binaryReader.readString();
             unsigned int keyframeNum;
             if (!_binaryReader.read(&keyframeNum))
             {
@@ -1505,9 +1504,12 @@ bool Bundle3D::loadAnimationDataBinary(const std::string& id, Animation3DData* a
                 return false;
             }
 
-            animationdata->_rotationKeys[boneName].reserve(keyframeNum);
-            animationdata->_scaleKeys[boneName].reserve(keyframeNum);
-            animationdata->_translationKeys[boneName].reserve(keyframeNum);
+            auto & rotationKeys = animationdata->_rotationKeys[boneName];
+            auto & scaleKeys = animationdata->_scaleKeys[boneName];
+            auto & translationKeys = animationdata->_translationKeys[boneName];
+            rotationKeys.reserve(keyframeNum);
+            scaleKeys.reserve(keyframeNum);
+            translationKeys.reserve(keyframeNum);
 
             for (unsigned int j = 0; j < keyframeNum; ++j)
             {
@@ -1542,7 +1544,7 @@ bool Bundle3D::loadAnimationDataBinary(const std::string& id, Animation3DData* a
                         CCLOG("warning: Failed to read AnimationData: rotate '%s'.", _path.c_str());
                         return false;
                     }
-                    animationdata->_rotationKeys[boneName].push_back(Animation3DData::QuatKey(keytime, rotate));
+                    rotationKeys.push_back(Animation3DData::QuatKey(keytime, rotate));
                 }
 
                 // scale
@@ -1558,7 +1560,7 @@ bool Bundle3D::loadAnimationDataBinary(const std::string& id, Animation3DData* a
                         CCLOG("warning: Failed to read AnimationData: scale '%s'.", _path.c_str());
                         return false;
                     }
-                    animationdata->_scaleKeys[boneName].push_back(Animation3DData::Vec3Key(keytime, scale));
+                    scaleKeys.push_back(Animation3DData::Vec3Key(keytime, scale));
                 }
 
                 // translation
@@ -1574,7 +1576,7 @@ bool Bundle3D::loadAnimationDataBinary(const std::string& id, Animation3DData* a
                         CCLOG("warning: Failed to read AnimationData: position '%s'.", _path.c_str());
                         return false;
                     }
-                    animationdata->_translationKeys[boneName].push_back(Animation3DData::Vec3Key(keytime, position));
+                    translationKeys.push_back(Animation3DData::Vec3Key(keytime, position));
                 }
             }
 
