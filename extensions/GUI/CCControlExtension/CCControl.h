@@ -92,7 +92,7 @@ class CCControl : public CCLayer, public CCRGBAProtocol
     CC_PROPERTY(GLubyte, m_cOpacity, Opacity); 
     CC_PROPERTY_PASS_BY_REF(ccColor3B, m_tColor, Color);
     bool m_bIsOpacityModifyRGB;
-    bool isOpacityModifyRGB();
+    bool isOpacityModifyRGB() const;
     void setOpacityModifyRGB(bool bOpacityModifyRGB);
 
     /** Changes the priority of the button. The lower the number, the higher the priority. */
@@ -107,14 +107,14 @@ protected:
 public:
     /** Tells whether the control is enabled. */
     virtual void setEnabled(bool bEnabled);
-    virtual bool isEnabled();
+    virtual bool isEnabled() const;
     /** A Boolean value that determines the control selected state. */
     virtual void setSelected(bool bSelected);
-    virtual bool isSelected();
+    virtual bool isSelected() const;
     /** A Boolean value that determines whether the control is highlighted. */
     virtual void setHighlighted(bool bHighlighted);
-    virtual bool isHighlighted();
-    bool hasVisibleParents();
+    virtual bool isHighlighted() const;
+    bool hasVisibleParents() const;
     /**
      * Updates the control layout using its current internal state.
      */

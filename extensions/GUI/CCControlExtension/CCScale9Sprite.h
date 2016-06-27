@@ -383,7 +383,7 @@ public:
     /** returns whether or not the opacity will be applied using glColor(R,G,B,opacity) or glColor(opacity, opacity, opacity, opacity);
      @since v0.8
      */
-    virtual bool isOpacityModifyRGB(void);
+    virtual bool isOpacityModifyRGB(void) const;
 
     virtual bool updateWithBatchNode(CCSpriteBatchNode* batchnode, CCRect rect, bool rotated, CCRect capInsets);
 

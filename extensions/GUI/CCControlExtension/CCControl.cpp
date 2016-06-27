@@ -224,7 +224,7 @@ void CCControl::setColor(const ccColor3B& color)
     }
 }
 
-const ccColor3B& CCControl::getColor(void)
+const ccColor3B& CCControl::getColor(void) const
 {
     return m_tColor;
 }
@@ -247,7 +247,7 @@ void CCControl::setOpacity(GLubyte opacity)
 
 }
 
-GLubyte CCControl::getOpacity()
+GLubyte CCControl::getOpacity() const
 {
     return m_cOpacity;
 }
@@ -268,7 +268,7 @@ void CCControl::setOpacityModifyRGB(bool bOpacityModifyRGB)
     }
 }
 
-bool CCControl::isOpacityModifyRGB()
+bool CCControl::isOpacityModifyRGB() const
 {
     return m_bIsOpacityModifyRGB;
 }
@@ -319,7 +319,7 @@ void CCControl::setEnabled(bool bEnabled)
     this->needsLayout();
 }
 
-bool CCControl::isEnabled()
+bool CCControl::isEnabled() const
 {
     return m_bEnabled;
 }
@@ -330,7 +330,7 @@ void CCControl::setSelected(bool bSelected)
     this->needsLayout();
 }
 
-bool CCControl::isSelected()
+bool CCControl::isSelected() const
 {
     return m_bSelected;
 }
@@ -341,12 +341,12 @@ void CCControl::setHighlighted(bool bHighlighted)
     this->needsLayout();
 }
 
-bool CCControl::isHighlighted()
+bool CCControl::isHighlighted() const
 {
     return m_bHighlighted;
 }
 
-bool CCControl::hasVisibleParents()
+bool CCControl::hasVisibleParents() const
 {
     CCNode* pParent = this->getParent();
     for( CCNode *c = pParent; c != NULL; c = c->getParent() )

@@ -238,7 +238,7 @@ void CCControlButton::setZoomOnTouchDown(bool zoomOnTouchDown)
     m_zoomOnTouchDown = zoomOnTouchDown;
 }
 
-bool CCControlButton::getZoomOnTouchDown()
+bool CCControlButton::getZoomOnTouchDown() const
 {
     return m_zoomOnTouchDown;
 }
@@ -264,7 +264,7 @@ void CCControlButton::setPreferredSize(CCSize size)
     needsLayout();
 }
 
-CCSize CCControlButton::getPreferredSize()
+CCSize CCControlButton::getPreferredSize() const
 {
     return m_preferredSize;
 }
@@ -280,7 +280,7 @@ bool CCControlButton::doesAdjustBackgroundImage()
     return m_doesAdjustBackgroundImage;
 }
 
-CCPoint CCControlButton::getLabelAnchorPoint()
+CCPoint CCControlButton::getLabelAnchorPoint() const
 {
     return this->m_labelAnchorPoint;
 }

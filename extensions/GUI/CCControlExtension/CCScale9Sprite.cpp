@@ -663,7 +663,7 @@ void CCScale9Sprite::setColor(const ccColor3B& color3)
         }
     }
 }
-const ccColor3B& CCScale9Sprite::getColor(void)
+const ccColor3B& CCScale9Sprite::getColor(void) const
 {
     return m_tColor;
 }
@@ -690,7 +690,7 @@ void CCScale9Sprite::setOpacity(GLubyte var)
  @warning If the the texture has premultiplied alpha then, the R, G and B channels will be modifed.
  Values goes from 0 to 255, where 255 means fully opaque.
  */
-GLubyte CCScale9Sprite::getOpacity()
+GLubyte CCScale9Sprite::getOpacity() const
 {
     return m_cOpacity;
 }
@@ -701,7 +701,7 @@ void CCScale9Sprite::setPreferredSize(CCSize preferedSize)
     this->m_preferredSize = preferedSize;
 }
 
-CCSize CCScale9Sprite::getPreferredSize()
+CCSize CCScale9Sprite::getPreferredSize() const
 {
     return this->m_preferredSize;
 }
@@ -713,7 +713,7 @@ void CCScale9Sprite::setCapInsets(CCRect capInsets)
     this->setContentSize(contentSize);
 }
 
-CCRect CCScale9Sprite::getCapInsets()
+CCRect CCScale9Sprite::getCapInsets() const
 {
     return m_capInsets;
 }
@@ -761,7 +761,7 @@ void CCScale9Sprite::setOpacityModifyRGB(bool var)
         }
     }
 }
-bool CCScale9Sprite::isOpacityModifyRGB()
+bool CCScale9Sprite::isOpacityModifyRGB() const
 {
     return m_bIsOpacityModifyRGB;
 }
@@ -778,22 +778,22 @@ void CCScale9Sprite::setSpriteFrame(CCSpriteFrame * spriteFrame)
     this->m_insetBottom = 0;
 }
 
-float CCScale9Sprite::getInsetLeft()
+float CCScale9Sprite::getInsetLeft() const
 {
     return this->m_insetLeft;
 }
 
-float CCScale9Sprite::getInsetTop()
+float CCScale9Sprite::getInsetTop() const
 {
     return this->m_insetTop;
 }
 
-float CCScale9Sprite::getInsetRight()
+float CCScale9Sprite::getInsetRight() const
 {
     return this->m_insetRight;
 }
 
-float CCScale9Sprite::getInsetBottom()
+float CCScale9Sprite::getInsetBottom() const
 {
     return this->m_insetBottom;
 }
