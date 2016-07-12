@@ -40,6 +40,9 @@
 #include "renderer/ccGLStateCache.h"
 #include "xxhash.h"
 
+#include "../../../shared/common/DLog.h"
+#include "../../../shared/common/GLUtils.h"
+
 NS_CC_BEGIN
 
 static const char          *s_dirLightUniformColorName = "u_DirLightSourceColor";
@@ -407,12 +410,12 @@ void MeshCommand::execute()
     // set render state
     applyRenderState();
     // Set material
-    GL::bindTexture2D(_textureID);
-    GL::blendFunc(_blendType.src, _blendType.dst);
+    glCheck(GL::bindTexture2D(_textureID));
+    glCheck(GL::blendFunc(_blendType.src, _blendType.dst));
     
-    glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
+    glCheck(glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer));
     const GLint colorLoc = _glProgramState->getGLProgram()->getBuiltInUniformLocation(GLProgram::UNIFORM_BPC_COLOR);
-    _glProgramState->setUniformVec4(colorLoc, _displayColor);
+    glCheck(_glProgramState->setUniformVec4(colorLoc, _displayColor));
     
     if (_matrixPaletteSize && _matrixPalette)
     {
@@ -426,21 +429,21 @@ void MeshCommand::execute()
     if (Director::getInstance()->getRunningScene()->getLights().size() > 0)
         setLightUniforms();
     
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer);
+    glCheck(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer));
     
     // Draw
-    glDrawElements(_primitive, (GLsizei)_indexCount, _indexFormat, 0);
+    glCheck(glDrawElements(_primitive, (GLsizei)_indexCount, _indexFormat, 0));
     
     CC_INCREMENT_GL_DRAWN_BATCHES_AND_VERTICES(1, _indexCount);
     
     //restore render state
     restoreRenderState();
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glCheck(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+    glCheck(glBindBuffer(GL_ARRAY_BUFFER, 0));
     
     // MOAR BPC PATCH BEGIN
     if (m_shouldClip && !clippingWasEnabled) {
-        glDisable(GL_SCISSOR_TEST);
+        glCheck(glDisable(GL_SCISSOR_TEST));
     }
     // BPC PATCH END
 }
