@@ -33,6 +33,9 @@ THE SOFTWARE.
 #endif
 
 #include "base/CCDirector.h"
+#include "base/CCEventListenerCustom.h"
+#include "base/CCEventDispatcher.h"
+#include "base/CCEventType.h"
 #include "base/uthash.h"
 #include "renderer/ccGLStateCache.h"
 #include "platform/CCFileUtils.h"
@@ -143,10 +146,15 @@ GLProgram::GLProgram()
     _director = Director::getInstance();
     CCASSERT(nullptr != _director, "Director is null when init a GLProgram");
     memset(_builtInUniforms, 0, sizeof(_builtInUniforms));
+    _resetListener = EventListenerCustom::create(EVENT_RESET_ALL_GL_PROGRAMS,
+                                                 [this](EventCustom*)
+                                                 { reset(); });
+    Director::getInstance()->getEventDispatcher()->addEventListenerWithFixedPriority(_resetListener, -1);
 }
 
 GLProgram::~GLProgram()
 {
+    Director::getInstance()->getEventDispatcher()->removeEventListener(_resetListener);
     CCLOGINFO("%s %d deallocing GLProgram: %p", __FUNCTION__, __LINE__, this);
 
     if (_vertShader)
