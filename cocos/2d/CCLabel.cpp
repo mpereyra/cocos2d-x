@@ -286,7 +286,7 @@ Label::Label(FontAtlas *atlas /* = nullptr */, TextHAlignment hAlignment /* = Te
     });
     _eventDispatcher->addEventListenerWithSceneGraphPriority(_resetTextureAtlasListener, this);
 
-    _reloadShadersListener = EventListenerCustom::create("event_label_reload_shaders",
+    _reloadShadersListener = EventListenerCustom::create(EVENT_LABEL_RELOAD_SHADERS,
         [this](EventCustom *) {
         updateShaderProgram();
     });
