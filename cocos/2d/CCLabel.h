@@ -407,6 +407,10 @@ protected:
     bool _blendFuncDirty;
     bool _insideBounds;                     /// whether or not the sprite was inside bounds the previous frame
 
+    class EventListenerCustom *_purgeTextureAtlasListener{};
+    class EventListenerCustom *_resetTextureAtlasListener{};
+    class EventListenerCustom *_reloadShadersListener{};
+
 private:
     CC_DISALLOW_COPY_AND_ASSIGN(Label);
 
