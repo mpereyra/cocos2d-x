@@ -53,6 +53,8 @@ class CC_DLL UniformValue
     friend class GLProgramState;
 public:
     UniformValue();
+    UniformValue(UniformValue const&) = default;
+    UniformValue(UniformValue &&) = default;
     UniformValue(Uniform *uniform, GLProgram* glprogram);
     ~UniformValue();
 

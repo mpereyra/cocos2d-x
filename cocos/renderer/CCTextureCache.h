@@ -307,6 +307,10 @@ protected:
     int _asyncRefCount;
 
     std::unordered_map<std::string, Texture2D*> _textures;
+    // BPC PATCH
+    Texture2D* findTexture(std::string const& name) const;
+    mutable std::mutex _texturesMutex;
+    // BPC PATCH END
 };
 
 #if CC_ENABLE_CACHE_TEXTURE_DATA
