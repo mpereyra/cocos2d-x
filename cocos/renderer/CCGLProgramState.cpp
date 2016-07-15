@@ -40,6 +40,9 @@ THE SOFTWARE.
 #include "base/CCEventDispatcher.h"
 #include "base/ccMacros.h"
 
+#include "../../../shared/common/DLog.h"
+#include "../../../shared/common/GLUtils.h"
+
 NS_CC_BEGIN
 
 //
@@ -284,10 +287,10 @@ GLProgramState::GLProgramState()
     /** listen the event that renderer was recreated on Android/WP8 */
     //CCLOG("create rendererRecreatedListener for GLProgramState");
     _backToForegroundlistener = EventListenerCustom::create(EVENT_RENDERER_RECREATED, 
-        [this](EventCustom*) 
+        [this](EventCustom*)
         {
-            CCLOG("Dirty Uniform and Attributes of GLProgramState"); 
             _uniformAttributeValueDirty = true;
+            updateUniformsAndAttributes();
         });
     Director::getInstance()->getEventDispatcher()->addEventListenerWithFixedPriority(_backToForegroundlistener, -1);
 #endif
@@ -305,6 +308,7 @@ GLProgramState::~GLProgramState()
 bool GLProgramState::init(GLProgram* glprogram)
 {
     CCASSERT(glprogram, "invalid shader");
+    resetGLProgram();
 
     _glprogram = glprogram;
     _glprogram->retain();
@@ -365,15 +369,26 @@ void GLProgramState::updateUniformsAndAttributes()
             auto const res(_uniformsByName.emplace(uniform.second._uniform->name, &uniform.second));
             CCASSERT(res.second, "Uniform name already taken");
         }
-        /* BPC PATCH */
+        /* END BPC PATCH */
 
+        /* BPC PATCH */
+        /* Attributes hold raw pointers to the GL program's innards, which will
+           be invalidated when it resets. We need to clear. */
         _vertexAttribsFlags = 0;
+        _attributes.clear();
+
+        for(auto &attrib : _glprogram->_vertexAttribs) {
+          VertexAttribValue value(&attrib.second);
+          _attributes[attrib.first] = value;
+        }
+
         for(auto& attributeValue : _attributes)
         {
             attributeValue.second._vertexAttrib = _glprogram->getVertexAttrib(attributeValue.first);;
             if(attributeValue.second._enabled)
                 _vertexAttribsFlags |= 1 << attributeValue.second._vertexAttrib->index;
         }
+        /* END BPC PATCH */
         
         _uniformAttributeValueDirty = false;
         

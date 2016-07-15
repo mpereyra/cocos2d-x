@@ -359,6 +359,7 @@ protected:
     GLuint            _fragShader;
     GLint             _builtInUniforms[UNIFORM_MAX];
     bool              _hasShaderCompiler;
+    class EventListenerCustom *_resetListener;
         
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_WP8) || defined(WP8_SHADER_COMPILER)
     std::string       _shaderId;

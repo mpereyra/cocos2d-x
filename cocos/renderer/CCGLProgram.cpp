@@ -33,6 +33,9 @@ THE SOFTWARE.
 #endif
 
 #include "base/CCDirector.h"
+#include "base/CCEventListenerCustom.h"
+#include "base/CCEventDispatcher.h"
+#include "base/CCEventType.h"
 #include "base/uthash.h"
 #include "renderer/ccGLStateCache.h"
 #include "platform/CCFileUtils.h"
@@ -143,44 +146,39 @@ GLProgram::GLProgram()
     _director = Director::getInstance();
     CCASSERT(nullptr != _director, "Director is null when init a GLProgram");
     memset(_builtInUniforms, 0, sizeof(_builtInUniforms));
+    _resetListener = EventListenerCustom::create(EVENT_RESET_ALL_GL_PROGRAMS,
+                                                 [this](EventCustom*)
+                                                 { reset(); });
+    Director::getInstance()->getEventDispatcher()->addEventListenerWithFixedPriority(_resetListener, -1);
 }
 
 GLProgram::~GLProgram()
 {
+    Director::getInstance()->getEventDispatcher()->removeEventListener(_resetListener);
     CCLOGINFO("%s %d deallocing GLProgram: %p", __FUNCTION__, __LINE__, this);
 
     if (_vertShader)
     {
-        glDeleteShader(_vertShader);
+        glCheck(glDeleteShader(_vertShader));
     }
     
     if (_fragShader)
     {
-        glDeleteShader(_fragShader);
+        glCheck(glDeleteShader(_fragShader));
     }
     
     _vertShader = _fragShader = 0;
 
     if (_program) 
     {
-        /* This tends to fail on EngineController restart. */
-        GL::deleteProgram(_program);
+        glCheck(GL::deleteProgram(_program));
     }
 
-    for (auto e : _hashForUniforms)
+    for (auto const &e : _hashForUniforms)
     {
         free(e.second.first);
     }
     _hashForUniforms.clear();
-
-    /* Since this seems to fail only when restarting EngineController, we will
-     * ignore these errrors and let the world keep turning. */
-    while(true)
-    {
-      auto const err(::glGetError());
-      if(err == GL_NO_ERROR)
-      { break; }
-    }
 }
 
 bool GLProgram::initWithByteArrays(const GLchar* vShaderByteArray, const GLchar* fShaderByteArray)
@@ -517,6 +515,9 @@ void GLProgram::bindAttribLocation(const std::string &attributeName, GLuint inde
 
 void GLProgram::updateUniforms()
 {
+    for(auto &u : _builtInUniforms)
+    { u = -1; }
+
     _builtInUniforms[UNIFORM_AMBIENT_COLOR] = glGetUniformLocation(_program, UNIFORM_NAME_AMBIENT_COLOR);
     _builtInUniforms[UNIFORM_P_MATRIX] = glGetUniformLocation(_program, UNIFORM_NAME_P_MATRIX);
     _builtInUniforms[UNIFORM_MV_MATRIX] = glGetUniformLocation(_program, UNIFORM_NAME_MV_MATRIX);
@@ -538,9 +539,6 @@ void GLProgram::updateUniforms()
     _builtInUniforms[UNIFORM_BPC_ALPHA] = glGetUniformLocation(_program, "alpha");
     _builtInUniforms[UNIFORM_BPC_WORLD_VIEW] = glGetUniformLocation(_program, "worldViewMat");
     _builtInUniforms[UNIFORM_BPC_MATRIX_PALETTE] = glGetUniformLocation(_program, "u_matrixPalette");
-    
-    for(int i = UNIFORM_BPC_CUSTOM_1; i < UNIFORM_MAX; ++i)
-        _builtInUniforms[i] = -1;
 
     _flags.usesP = _builtInUniforms[UNIFORM_P_MATRIX] != -1;
     _flags.usesMV = _builtInUniforms[UNIFORM_MV_MATRIX] != -1;
@@ -609,7 +607,7 @@ bool GLProgram::link()
     if (status == GL_FALSE)
     {
         CCLOG("cocos2d: ERROR: Failed to link program: %i", _program);
-        GL::deleteProgram(_program);
+        glCheck(GL::deleteProgram(_program));
         _program = 0;
     }
 #endif
@@ -626,7 +624,8 @@ bool GLProgram::link()
 
 void GLProgram::use()
 {
-    GL::useProgram(_program);
+    CCASSERT(_program, "Invalid (0) GL Program; was the context lost?");
+    glCheck(GL::useProgram(_program));
 }
 
 static std::string logForOpenGLShader(GLuint shader)

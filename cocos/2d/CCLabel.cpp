@@ -36,6 +36,7 @@
 #include "base/CCEventListenerCustom.h"
 #include "base/CCEventDispatcher.h"
 #include "base/CCEventCustom.h"
+#include "base/CCEventType.h"
 #include "deprecated/CCString.h"
 
 NS_CC_BEGIN
@@ -262,7 +263,7 @@ Label::Label(FontAtlas *atlas /* = nullptr */, TextHAlignment hAlignment /* = Te
     setAnchorPoint(Vec2::ANCHOR_MIDDLE);
     reset();
 
-    auto purgeTextureListener = EventListenerCustom::create(FontAtlas::CMD_PURGE_FONTATLAS, [this](EventCustom* event){
+    _purgeTextureAtlasListener = EventListenerCustom::create(FontAtlas::CMD_PURGE_FONTATLAS, [this](EventCustom* event){
         if (_fontAtlas && _currentLabelType == LabelType::TTF && event->getUserData() == _fontAtlas)
         {
             Node::removeAllChildrenWithCleanup(true);
@@ -275,16 +276,22 @@ Label::Label(FontAtlas *atlas /* = nullptr */, TextHAlignment hAlignment /* = Te
             }
         }
     });
-    _eventDispatcher->addEventListenerWithSceneGraphPriority(purgeTextureListener, this);
+    _eventDispatcher->addEventListenerWithSceneGraphPriority(_purgeTextureAtlasListener, this);
     
-    auto resetTextureListener = EventListenerCustom::create(FontAtlas::CMD_RESET_FONTATLAS, [this](EventCustom* event){
+    _resetTextureAtlasListener = EventListenerCustom::create(FontAtlas::CMD_RESET_FONTATLAS, [this](EventCustom* event){
         if (_fontAtlas && _currentLabelType == LabelType::TTF && event->getUserData() == _fontAtlas)
         {
             _fontAtlas = nullptr;
             this->setTTFConfig(_fontConfig);
         }
     });
-    _eventDispatcher->addEventListenerWithSceneGraphPriority(resetTextureListener, this);
+    _eventDispatcher->addEventListenerWithSceneGraphPriority(_resetTextureAtlasListener, this);
+
+    _reloadShadersListener = EventListenerCustom::create(EVENT_LABEL_RELOAD_SHADERS,
+        [this](EventCustom *) {
+        updateShaderProgram();
+    });
+    _eventDispatcher->addEventListenerWithSceneGraphPriority(_reloadShadersListener, this);
 }
 
 Label::~Label()
@@ -295,6 +302,9 @@ Label::~Label()
     {
         FontAtlasCache::releaseFontAtlas(_fontAtlas);
     }
+    _eventDispatcher->removeEventListener(_purgeTextureAtlasListener);
+    _eventDispatcher->removeEventListener(_resetTextureAtlasListener);
+    _eventDispatcher->removeEventListener(_reloadShadersListener);
 
     CC_SAFE_RELEASE_NULL(_reusedLetter);
 }

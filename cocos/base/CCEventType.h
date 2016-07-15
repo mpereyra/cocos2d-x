@@ -38,6 +38,14 @@
 // This message is posted in cocos/platform/android/javaactivity.cpp and cocos\platform\wp8-xaml\cpp\Cocos2dRenderer.cpp.
 #define EVENT_RENDERER_RECREATED    "event_renderer_recreated"
 
+// BPC PATCH: Avoid race conditions by resetting all GL programs on loss of
+// context in one fell swoop.
+#define EVENT_RESET_ALL_GL_PROGRAMS "event_reset_all_gl_programs"
+
+// BPC PATCH: Reload cocos labels; only useful in debug mode, but essential
+// nevertheless.
+#define EVENT_LABEL_RELOAD_SHADERS "event_label_reload_shaders"
+
 // The application will come to background.
 // This message is used for doing something before coming to background, such as save RenderTexture.
 // This message is posted in cocos/platform/android/jni/Java_org_cocos2dx_lib_Cocos2dxRenderer.cpp and cocos\platform\wp8-xaml\cpp\Cocos2dRenderer.cpp.

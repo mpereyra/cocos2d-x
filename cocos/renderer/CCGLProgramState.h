@@ -54,7 +54,7 @@ class CC_DLL UniformValue
 public:
     UniformValue();
     UniformValue(UniformValue const&) = default;
-    UniformValue(UniformValue &&) = delete;
+    UniformValue(UniformValue &&) = default;
     UniformValue(Uniform *uniform, GLProgram* glprogram);
     ~UniformValue();
 

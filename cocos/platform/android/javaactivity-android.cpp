@@ -73,6 +73,12 @@ void Java_org_cocos2dx_lib_Cocos2dxRenderer_nativeInit(JNIEnv*  env, jobject thi
     else
     {
         cocos2d::GL::invalidateStateCache();
+
+        // BPC PATCH: Reload all GL programs synchronously, since nothing is
+        // in a valid state right now.
+        cocos2d::EventCustom event(EVENT_RESET_ALL_GL_PROGRAMS);
+        director->getEventDispatcher()->dispatchEvent(&event);
+
         cocos2d::GLProgramCache::getInstance()->reloadDefaultGLPrograms();
         cocos2d::DrawPrimitives::init();
         cocos2d::VolatileTextureMgr::reloadAllTextures();
@@ -104,6 +110,15 @@ jintArray Java_org_cocos2dx_lib_Cocos2dxActivity_getGLContextAttrs(JNIEnv*  env,
 void Java_org_cocos2dx_lib_Cocos2dxRenderer_nativeOnSurfaceChanged(JNIEnv*  env, jobject thiz, jint w, jint h)
 {
     cocos2d::Application::getInstance()->applicationScreenSizeChanged(w, h);
+}
+
+jboolean Java_org_cocos2dx_lib_Cocos2dxGLSurfaceView_shouldPreserveGLContext(JNIEnv * const env, jobject const thiz)
+{
+#if DEBUG || ADHOC
+  return false;
+#else
+  return true;
+#endif
 }
 
 }
