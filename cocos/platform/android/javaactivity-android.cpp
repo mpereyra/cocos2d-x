@@ -115,7 +115,7 @@ void Java_org_cocos2dx_lib_Cocos2dxRenderer_nativeOnSurfaceChanged(JNIEnv*  env,
 jboolean Java_org_cocos2dx_lib_Cocos2dxGLSurfaceView_shouldPreserveGLContext(JNIEnv * const env, jobject const thiz)
 {
 #if DEBUG || ADHOC
-  return false;
+  return true; // We're not ready for this yet
 #else
   return true;
 #endif
