@@ -30,12 +30,16 @@ THE SOFTWARE.
 
 #include <assert.h>
 
-#include <string>
-#include "../../../shared/common/DLog.h"
-
 #define CC_DLL 
 
-#define CC_ASSERT(cond) DAssert((cond), "CC_ASSERT failed")
+#ifdef __cplusplus
+  #include <string>
+  #include "../../../shared/common/DLog.h"
+
+  #define CC_ASSERT(cond) DAssert((cond), "CC_ASSERT failed")
+#else
+  #define CC_ASSERT(cond) assert(cond)
+#endif
 
 
 #define CC_UNUSED_PARAM(unusedparam) (void)unusedparam
