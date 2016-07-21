@@ -30,6 +30,7 @@ THE SOFTWARE.
 #if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
 
 #include "android/log.h"
+#include "../../../shared/common/DLog.h"
 
 #define CC_DLL
 
@@ -49,7 +50,7 @@ THE SOFTWARE.
                             __FILE__, __FUNCTION__, __LINE__, msg); \
     }
 
-#define CC_ASSERT(cond) CC_NO_MESSAGE_PSEUDOASSERT(cond)
+#define CC_ASSERT(cond) DAssert((cond), "CC_ASSERT failed")
 
 #define CC_UNUSED_PARAM(unusedparam) (void)unusedparam
 

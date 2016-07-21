@@ -34,6 +34,7 @@ THE SOFTWARE.
 
 #include "base/CCConsole.h"
 #include "platform/CCStdC.h"
+#include "../../../shared/common/DLog.h"
 
 #ifndef CCASSERT
 #if COCOS2D_DEBUG > 0
@@ -47,7 +48,7 @@ THE SOFTWARE.
           } \
         } while (0)
     #else
-    #define CCASSERT(cond, msg) CC_ASSERT(cond)
+    #define CCASSERT(cond, msg) DAssert((cond), (msg))
     #endif
 #else
     #define CCASSERT(cond, msg)
