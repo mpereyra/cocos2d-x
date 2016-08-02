@@ -45,7 +45,7 @@ public:
 
     /** Returns the width of the box
     */
-    const float getWidth() const;
+    float getWidth() const;
 
     /** Sets the width of the box
     */
@@ -53,7 +53,7 @@ public:
 
     /** Returns the height of the box
     */
-    const float getHeight() const;
+    float getHeight() const;
 
     /** Sets the height of the box
     */
@@ -61,7 +61,7 @@ public:
 
     /** Returns the depth of the box
     */
-    const float getDepth() const;
+    float getDepth() const;
 
     /** Sets the depth of the box
     */
@@ -83,7 +83,7 @@ public:
     */
     void calculateDirectionAfterCollision(PUParticle3D* particle);
 
-    virtual void copyAttributesTo (PUAffector* affector);
+    virtual void copyAttributesTo (PUAffector* affector) override;
 
 CC_CONSTRUCTOR_ACCESS:
     PUBoxCollider();

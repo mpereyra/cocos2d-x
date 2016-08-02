@@ -22,7 +22,7 @@
  $Id$
  */
 
-#import "CocosDenshion.h"
+#import "audio/ios/CocosDenshion.h"
 
 ALvoid  alBufferDataStaticProc(const ALint bid, ALenum format, ALvoid* data, ALsizei size, ALsizei freq);
 ALvoid  alcMacOSXMixerOutputRateProc(const ALdouble value);
@@ -615,7 +615,7 @@ static BOOL _mixerRateSet = NO;
         CDLOGINFO(@"Denshion::CDSoundEngine - validateBufferId buffer outside range %i",soundId);
         return NO;
     } else if (_buffers[soundId].bufferState != CD_BS_LOADED) {
-        CDLOGINFO(@"Denshion::CDSoundEngine - validateBufferId invalide buffer state %i",soundId);
+        CDLOGINFO(@"Denshion::CDSoundEngine - validateBufferId invalid buffer state %i", soundId);
         return NO;
     } else {
         return YES;

@@ -45,22 +45,22 @@ public:
 
     /** 
     */
-    const float getRadius(void) const;
+    float getRadius() const;
     void setRadius(const float radius);
 
     /** 
     */
-    const float getCircleAngle(void) const;
+    float getCircleAngle() const;
     void setCircleAngle(const float circleAngle);
 
     /** 
     */
-    const float getStep(void) const;
+    float getStep() const;
     void setStep(const float step);
 
     /** 
     */
-    const bool isRandom(void) const;
+    bool isRandom() const;
     void setRandom(const bool random);
 
     /* 
@@ -73,8 +73,8 @@ public:
     */
     virtual void notifyStart(void) override;
 
-    virtual PUCircleEmitter* clone();
-    virtual void copyAttributesTo (PUEmitter* emitter);
+    virtual PUCircleEmitter* clone() override;
+    virtual void copyAttributesTo (PUEmitter* emitter) override;
 
 CC_CONSTRUCTOR_ACCESS:
     PUCircleEmitter(void);
@@ -84,11 +84,11 @@ protected:
 
     /** Determine a particle position on the circle.
     */
-    virtual void initParticlePosition(PUParticle3D* particle);
+    virtual void initParticlePosition(PUParticle3D* particle) override;
 
     /** Determine the particle direction.
     */
-    virtual void initParticleDirection(PUParticle3D* particle);
+    virtual void initParticleDirection(PUParticle3D* particle) override;
 
     Quaternion getRotationTo(const Vec3 &src, const Vec3& dest,
         const Vec3& fallbackAxis = Vec3::ZERO) const;

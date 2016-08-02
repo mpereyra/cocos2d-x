@@ -48,7 +48,7 @@ public:
 
     /** Get the indication whether pre- and postprocessing must be done.
     */
-    const bool getPrePost(void) const {return _prePost;};
+    bool getPrePost() const {return _prePost;};
 
     /** Set the indication whether pre- and postprocessing must be done.
     */
@@ -70,7 +70,7 @@ public:
     */
     virtual void handle (PUParticleSystem3D* particleSystem, PUParticle3D* particle, float timeElapsed) override;
 
-    virtual void copyAttributesTo (PUEventHandler* eventHandler);
+    virtual void copyAttributesTo (PUEventHandler* eventHandler) override;
 
 CC_CONSTRUCTOR_ACCESS:
     PUDoAffectorEventHandler(void);

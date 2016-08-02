@@ -43,21 +43,21 @@ public:
 
     /** 
     */
-    const float getHeight(void) const;
+    float getHeight() const;
     void setHeight(const float height);
 
     /** 
     */
-    const float getWidth(void) const;
+    float getWidth() const;
     void setWidth(const float width);
 
     /** 
     */
-    const float getDepth(void) const;
+    float getDepth() const;
     void setDepth(const float depth);
 
-    virtual CCPUBoxEmitter* clone();
-    virtual void copyAttributesTo (PUEmitter* emitter);
+    virtual CCPUBoxEmitter* clone() override;
+    virtual void copyAttributesTo (PUEmitter* emitter) override;
 
 CC_CONSTRUCTOR_ACCESS:
     CCPUBoxEmitter(void);

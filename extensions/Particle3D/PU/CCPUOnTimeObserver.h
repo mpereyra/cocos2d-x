@@ -61,7 +61,7 @@ public:
 
     /** 
     */
-    const PUComparisionOperator getCompare(void) const {return _compare;};
+    PUComparisionOperator getCompare() const {return _compare;};
     void setCompare(PUComparisionOperator op){_compare = op;};
 
     /** 
@@ -69,7 +69,7 @@ public:
     bool isSinceStartSystem(void) const {return _sinceStartSystem;};
     void setSinceStartSystem(bool sinceStartSystem){_sinceStartSystem = sinceStartSystem;};
 
-    virtual void copyAttributesTo (PUObserver* observer);
+    virtual void copyAttributesTo (PUObserver* observer) override;
 
 CC_CONSTRUCTOR_ACCESS:
     PUOnTimeObserver(void);

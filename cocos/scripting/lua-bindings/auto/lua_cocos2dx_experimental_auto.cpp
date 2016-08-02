@@ -1,10 +1,8 @@
-#include "lua_cocos2dx_experimental_auto.hpp"
-#include "CCFastTMXLayer.h"
-#include "CCFastTMXTiledMap.h"
-#include "tolua_fix.h"
-#include "LuaBasicConversions.h"
-
-
+#include "scripting/lua-bindings/auto/lua_cocos2dx_experimental_auto.hpp"
+#include "2d/CCFastTMXLayer.h"
+#include "2d/CCFastTMXTiledMap.h"
+#include "scripting/lua-bindings/manual/tolua_fix.h"
+#include "scripting/lua-bindings/manual/LuaBasicConversions.h"
 
 int lua_cocos2dx_experimental_TMXLayer_getPositionAt(lua_State* tolua_S)
 {
@@ -526,7 +524,7 @@ int lua_cocos2dx_experimental_TMXLayer_setupTileSprite(lua_State* tolua_S)
         cocos2d::Vec2 arg1;
         int arg2;
 
-        ok &= luaval_to_object<cocos2d::Sprite>(tolua_S, 2, "cc.Sprite",&arg0);
+        ok &= luaval_to_object<cocos2d::Sprite>(tolua_S, 2, "cc.Sprite",&arg0, "ccexp.TMXLayer:setupTileSprite");
 
         ok &= luaval_to_vec2(tolua_S, 3, &arg1, "ccexp.TMXLayer:setupTileSprite");
 
@@ -841,7 +839,7 @@ int lua_cocos2dx_experimental_TMXLayer_setTileSet(lua_State* tolua_S)
     {
         cocos2d::TMXTilesetInfo* arg0;
 
-        ok &= luaval_to_object<cocos2d::TMXTilesetInfo>(tolua_S, 2, "cc.TMXTilesetInfo",&arg0);
+        ok &= luaval_to_object<cocos2d::TMXTilesetInfo>(tolua_S, 2, "cc.TMXTilesetInfo",&arg0, "ccexp.TMXLayer:setTileSet");
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_experimental_TMXLayer_setTileSet'", nullptr);
@@ -978,9 +976,9 @@ int lua_cocos2dx_experimental_TMXLayer_create(lua_State* tolua_S)
         cocos2d::TMXTilesetInfo* arg0;
         cocos2d::TMXLayerInfo* arg1;
         cocos2d::TMXMapInfo* arg2;
-        ok &= luaval_to_object<cocos2d::TMXTilesetInfo>(tolua_S, 2, "cc.TMXTilesetInfo",&arg0);
-        ok &= luaval_to_object<cocos2d::TMXLayerInfo>(tolua_S, 3, "cc.TMXLayerInfo",&arg1);
-        ok &= luaval_to_object<cocos2d::TMXMapInfo>(tolua_S, 4, "cc.TMXMapInfo",&arg2);
+        ok &= luaval_to_object<cocos2d::TMXTilesetInfo>(tolua_S, 2, "cc.TMXTilesetInfo",&arg0, "ccexp.TMXLayer:create");
+        ok &= luaval_to_object<cocos2d::TMXLayerInfo>(tolua_S, 3, "cc.TMXLayerInfo",&arg1, "ccexp.TMXLayer:create");
+        ok &= luaval_to_object<cocos2d::TMXMapInfo>(tolua_S, 4, "cc.TMXMapInfo",&arg2, "ccexp.TMXLayer:create");
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_experimental_TMXLayer_create'", nullptr);

@@ -57,7 +57,7 @@ public:
 
     /** Get/Set Forcefield type
     */
-    const PUForceField::ForceFieldType getForceFieldType(void) const;
+    PUForceField::ForceFieldType getForceFieldType() const;
     void setForceFieldType(const PUForceField::ForceFieldType forceFieldType);
 
     /** Get/Set Delta
@@ -126,7 +126,7 @@ public:
     */
     void suppressGeneration(bool suppress);
 
-    virtual void copyAttributesTo (PUAffector* affector);
+    virtual void copyAttributesTo (PUAffector* affector) override;
 
 CC_CONSTRUCTOR_ACCESS:
     PUForceFieldAffector();

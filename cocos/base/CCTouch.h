@@ -43,7 +43,7 @@ NS_CC_BEGIN
 class CC_DLL Touch : public Ref
 {
 public:
-    /**
+    /** 
      * Dispatch mode, how the touches are dispatched.
      * @js NA
      */
@@ -51,17 +51,17 @@ public:
         ALL_AT_ONCE, /** All at once. */
         ONE_BY_ONE,  /** One by one. */
     };
-    
+
     /** Constructor.
      * @js ctor
      */
-    Touch()
-    : _id(0),
-    _startPointCaptured(false),
-    _curForce(0.f),
-    _maxForce(0.f)
+    Touch() 
+        : _id(0),
+        _startPointCaptured(false),
+        _curForce(0.f),
+        _maxForce(0.f)
     {}
-    
+
     /** Returns the current touch location in OpenGL coordinates.
      *
      * @return The current touch location in OpenGL coordinates.
@@ -87,7 +87,7 @@ public:
      * @return The current touch location in screen coordinates.
      */
     Vec2 getLocationInView() const;
-    /** Returns the previous touch location in screen coordinates.
+    /** Returns the previous touch location in screen coordinates. 
      *
      * @return The previous touch location in screen coordinates.
      */
@@ -119,7 +119,7 @@ public:
             _prevPoint = _point;
         }
     }
-    
+
     /** Set the touch information. It always used to monitor touch event.
      *
      * @param id A given id
@@ -163,7 +163,7 @@ public:
      * @return The maximum touch force for 3d touch.
      */
     float getMaxForce() const;
-    
+
 private:
     int _id;
     bool _startPointCaptured;

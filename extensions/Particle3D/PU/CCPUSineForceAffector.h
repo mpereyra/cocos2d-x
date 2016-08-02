@@ -46,15 +46,15 @@ public:
 
     /** 
     */
-    const float getFrequencyMin(void) const;
+    float getFrequencyMin() const;
     void setFrequencyMin(const float frequencyMin);
 
     /** 
     */
-    const float getFrequencyMax(void) const;
+    float getFrequencyMax() const;
     void setFrequencyMax(const float frequencyMax);
 
-    virtual void copyAttributesTo (PUAffector* affector);
+    virtual void copyAttributesTo (PUAffector* affector) override;
 
 CC_CONSTRUCTOR_ACCESS:	
     PUSineForceAffector(void);

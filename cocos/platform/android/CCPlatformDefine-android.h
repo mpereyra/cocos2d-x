@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "platform/CCPlatformConfig.h"
 #if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
 
-#include "android/log.h"
+#include <android/log.h>
 #include "../../../shared/common/DLog.h"
 
 #define CC_DLL

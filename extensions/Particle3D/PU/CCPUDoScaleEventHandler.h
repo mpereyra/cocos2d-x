@@ -62,7 +62,7 @@ public:
 
     /** Returns the scale fraction
     */
-    const float getScaleFraction(void) const;
+    float getScaleFraction() const;
 
     /** Set the scale fraction. This scale fraction value is used to scale different attributes if the 
         event handler is called.
@@ -73,7 +73,7 @@ public:
     */
     virtual void handle (PUParticleSystem3D* particleSystem, PUParticle3D* particle, float timeElapsed) override;
 
-    virtual void copyAttributesTo (PUEventHandler* eventHandler);
+    virtual void copyAttributesTo (PUEventHandler* eventHandler) override;
 
 CC_CONSTRUCTOR_ACCESS:
     PUDoScaleEventHandler(void);
