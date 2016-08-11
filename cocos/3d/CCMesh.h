@@ -237,7 +237,7 @@ public:
     std::string getTextureFileName(){ return _texFile; }
 
     
-    /*BPC-PATCH*/
+    /*BPC-PATCH, some of these might want to migrate down into CCTechnique*/
     float getGlobalZ() const {return m_globalZ;}
     void setGlobalZ(float zVal) {m_globalZ = zVal;}
     void setIsTransparent(bool transparent) { _isTransparent = transparent;}
