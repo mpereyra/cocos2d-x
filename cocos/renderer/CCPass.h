@@ -55,6 +55,8 @@ public:
 
     /** Returns the GLProgramState */
     GLProgramState* getGLProgramState() const;
+    
+    void setGLProgramState(GLProgramState* glProgramState);
 
     /** Binds the GLProgramState and the RenderState.
      This method must be called before call the actual draw call.
@@ -96,7 +98,6 @@ protected:
     bool init(Technique* parent);
     bool initWithGLProgramState(Technique* parent, GLProgramState *glProgramState);
 
-    void setGLProgramState(GLProgramState* glProgramState);
     Node* getTarget() const;
 
     GLProgramState* _glProgramState;
