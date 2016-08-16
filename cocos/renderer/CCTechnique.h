@@ -66,7 +66,11 @@ public:
 
     /** Returns the name of the Technique */
     std::string getName() const;
-
+    
+    /*BPC PATCH*/
+    void setName(const std::string& name);
+    /*END BPC PATCH*/
+    
     /** Returns the Pass at given index */
     Pass* getPassByIndex(ssize_t index) const;
 
@@ -83,8 +87,6 @@ protected:
     Technique();
     ~Technique();
     bool init(Material* parent);
-
-    void setName(const std::string& name);
 
     std::string _name;
     Vector<Pass*> _passes;

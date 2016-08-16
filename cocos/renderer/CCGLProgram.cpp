@@ -555,6 +555,10 @@ void GLProgram::updateUniforms()
     _builtInUniforms[UNIFORM_BPC_ALPHA] = glGetUniformLocation(_program, "alpha");
     _builtInUniforms[UNIFORM_BPC_WORLD_VIEW] = glGetUniformLocation(_program, "worldViewMat");
     _builtInUniforms[UNIFORM_BPC_MATRIX_PALETTE] = glGetUniformLocation(_program, "u_matrixPalette");
+    
+    _builtInUniforms[UNIFORM_BPC_SHADOW_SAMPLER] = glGetUniformLocation(_program, "u_shadowMap");
+    _builtInUniforms[UNIFORM_BPC_LIGHTP_MATRIX] = glGetUniformLocation(_program, "u_lightMatrix");
+    _builtInUniforms[UNIFORM_BPC_USE_SHADOWMAP] = glGetUniformLocation(_program, "u_useShadowmap");
 
     _flags.usesP = _builtInUniforms[UNIFORM_P_MATRIX] != -1;
     _flags.usesMV = _builtInUniforms[UNIFORM_MV_MATRIX] != -1;
@@ -599,7 +603,12 @@ bool GLProgram::link()
 
     if (status == GL_FALSE)
     {
+        GLchar erLog[1024];
+        GLsizei len;
+        glGetProgramInfoLog(_program, 1024, &len, erLog);
+        
         CCLOG("cocos2d: ERROR: Failed to link program: %i", _program);
+        CCLOG("%s", erLog);
         glCheck(GL::deleteProgram(_program));
         _program = 0;
     }

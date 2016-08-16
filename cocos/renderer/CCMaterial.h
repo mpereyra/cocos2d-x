@@ -117,7 +117,11 @@ public:
 
     /** Sets the current technique */
     void setTechnique(const std::string& techniqueName);
-
+    
+    /*BPC PATCH*/
+    void removeTechnique(const std::string& techniqueName);
+    /*END BPC PATCH*/
+    
     /** returns a clone (deep-copy) of the material */
     virtual Material* clone() const;
 

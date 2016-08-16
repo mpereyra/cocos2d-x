@@ -154,6 +154,10 @@ public:
         UNIFORM_BPC_MATRIX_PALETTE, // "u_matrixPalette"
         UNIFORM_BPC_WORLD_VIEW, // "worldViewMat"
         
+        UNIFORM_BPC_SHADOW_SAMPLER, //"u_shadowMap
+        UNIFORM_BPC_LIGHTP_MATRIX, //"u_lightMatrix
+        UNIFORM_BPC_USE_SHADOWMAP, // "u_useShadowmap
+        
         UNIFORM_BPC_CUSTOM_1,
         UNIFORM_BPC_CUSTOM_2,
         UNIFORM_BPC_CUSTOM_3,
