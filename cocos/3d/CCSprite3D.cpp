@@ -594,7 +594,7 @@ void Sprite3D::createNode(NodeData* nodedata, Node* root, const MaterialDatas& m
                     Quaternion qua;
                     Vec3 scale;
                     nodedata->transform.decompose(&scale, &qua, &pos);
-                    setPosition3D(getPosition3D() + pos);
+                    Sprite3D::setPosition3D(getPosition3D() + pos);
                     setRotationQuat(qua);
                     setScaleX(scale.x);
                     setScaleY(scale.y);
