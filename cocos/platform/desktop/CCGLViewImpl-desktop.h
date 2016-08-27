@@ -85,6 +85,11 @@ public:
     virtual void setFrameSize(float width, float height) override;
     virtual void setIMEKeyboardState(bool bOpen) override;
 
+    // BPC_PATCH start
+    virtual void setIMEKeyboardType(TextFieldTTF::KeyboardType) override { /* Skip */ }
+    virtual void setSecureTextEntry(bool) override { /* Skip */ }
+    // BPC_PATCH end
+
     /*
      * Set zoom factor for frame. This method is for debugging big resolution (e.g.new ipad) app on desktop.
      */

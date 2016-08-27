@@ -453,9 +453,15 @@ bool GLProgram::compileShader(GLuint * shader, GLenum type, const GLchar* source
         "uniform mat4 CC_MVMatrix;\n"
         "uniform mat4 CC_MVPMatrix;\n"
         "uniform mat3 CC_NormalMatrix;\n"
+#if (CC_TARGET_PLATFORM != CC_PLATFORM_WIN32 && CC_TARGET_PLATFORM != CC_PLATFORM_LINUX && CC_TARGET_PLATFORM != CC_PLATFORM_MAC)
         "uniform highp vec4 CC_Time;\n"
         "uniform highp vec4 CC_SinTime;\n"
         "uniform highp vec4 CC_CosTime;\n"
+#else
+        "uniform vec4 CC_Time;\n"
+        "uniform vec4 CC_SinTime;\n"
+        "uniform vec4 CC_CosTime;\n"
+#endif
         "uniform vec4 CC_Random01;\n"
         "uniform sampler2D CC_Texture0;\n"
         "uniform sampler2D CC_Texture1;\n"
