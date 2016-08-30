@@ -81,10 +81,9 @@ static const char          *s_ambientLightUniformColorName = "u_AmbientLightSour
 // helpers
 void Mesh::resetLightUniformValues()
 {
-    const auto& conf = Configuration::getInstance();
-    int maxDirLight = conf->getMaxSupportDirLightInShader();
-    int maxPointLight = conf->getMaxSupportPointLightInShader();
-    int maxSpotLight = conf->getMaxSupportSpotLightInShader();
+    int maxDirLight = getDirLightCount();
+    int maxPointLight = getPointLightCount();
+    int maxSpotLight = getSpotLightCount();
 
     _dirLightUniformColorValues.assign(maxDirLight, Vec3::ZERO);
     _dirLightUniformDirValues.assign(maxDirLight, Vec3::ZERO);
@@ -553,12 +552,11 @@ void Mesh::setLightUniforms(Pass* pass, Scene* scene, const Vec4& color, unsigne
     CCASSERT(pass, "Invalid Pass");
     CCASSERT(scene, "Invalid scene");
 
-    const auto& conf = Configuration::getInstance();
-    int maxDirLight = conf->getMaxSupportDirLightInShader();
-    int maxPointLight = conf->getMaxSupportPointLightInShader();
-    int maxSpotLight = conf->getMaxSupportSpotLightInShader();
+    int maxDirLight = getDirLightCount();
+    int maxPointLight = getPointLightCount();
+    int maxSpotLight = getSpotLightCount();
+    
     auto &lights = scene->getLights();
-
     auto glProgramState = pass->getGLProgramState();
     auto attributes = pass->getVertexAttributeBinding()->getVertexAttribsFlags();
 
@@ -734,4 +732,70 @@ GLuint Mesh::getIndexBuffer() const
 {
     return _meshIndexData->getIndexBuffer()->getVBO();
 }
+
+/*BPC PATCH*/
+void Mesh::setPointLightCount(int count)
+{
+    if (count < 0)
+        return;
+    
+    m_pointLightCount = count;
+    _pointLightUniformColorValues.resize(count);
+    _pointLightUniformPositionValues.resize(count);
+    _pointLightUniformRangeInverseValues.resize(count);
+}
+
+void Mesh::setDirLightCount(int count)
+{
+    if (count < 0)
+        return;
+    
+    m_dirLightCount = count;
+    _dirLightUniformColorValues.resize(count);
+    _dirLightUniformDirValues.resize(count);
+}
+
+void Mesh::setSpotLightCount(int count)
+{
+    if (count < 0)
+        return;
+    
+    m_spotLightCount = count;
+    _spotLightUniformColorValues.resize(count);
+    _spotLightUniformDirValues.resize(count);
+    _spotLightUniformInnerAngleCosValues.resize(count);
+    _spotLightUniformOuterAngleCosValues.resize(count);
+    _spotLightUniformPositionValues.resize(count);
+    _spotLightUniformRangeInverseValues.resize(count);
+}
+
+int Mesh::getPointLightCount()
+{
+    if (m_pointLightCount >= 0)
+        return m_pointLightCount;
+    
+    const auto& conf = Configuration::getInstance();
+    return conf->getMaxSupportPointLightInShader();
+}
+
+int Mesh::getDirLightCount()
+{
+    if (m_dirLightCount >= 0)
+        return m_dirLightCount;
+    
+    const auto& conf = Configuration::getInstance();
+    return conf->getMaxSupportDirLightInShader();
+}
+
+int Mesh::getSpotLightCount()
+{
+    if (m_spotLightCount >= 0)
+        return m_spotLightCount;
+    
+    const auto& conf = Configuration::getInstance();
+    return conf->getMaxSupportSpotLightInShader();
+}
+
+/*END BPC PATCH*/
+
 NS_CC_END

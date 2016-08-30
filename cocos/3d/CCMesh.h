@@ -257,6 +257,13 @@ public:
                 return false;
         }
     }
+    
+    void setPointLightCount(int count);
+    void setDirLightCount(int count);
+    void setSpotLightCount(int count);
+    int getPointLightCount();
+    int getDirLightCount();
+    int getSpotLightCount();
     /*END BPC-PATCH*/
     
     
@@ -295,6 +302,12 @@ protected:
     
     
     ///light parameters
+    /*BPC PATCH*/
+    int m_pointLightCount = -1;
+    int m_dirLightCount = -1;
+    int m_spotLightCount = -1;
+    /*END BPC PATCH*/
+    
     std::vector<Vec3> _dirLightUniformColorValues;
     std::vector<Vec3> _dirLightUniformDirValues;
     
