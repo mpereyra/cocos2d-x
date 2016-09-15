@@ -283,7 +283,6 @@
 		1551A872158F2ADF00E66CFE /* CCTouchHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 1551A627158F2ADE00E66CFE /* CCTouchHandler.h */; };
 		1551A874158F2B4700E66CFE /* cocos2dx-Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 1551A873158F2B4700E66CFE /* cocos2dx-Prefix.pch */; };
 		2628297A15EC7064002C4240 /* ccTypeInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 2628297915EC7064002C4240 /* ccTypeInfo.h */; };
-		7CC0C6B41771196F007AABA2 /* ccShader_normal_frag.h in Headers */ = {isa = PBXBuildFile; fileRef = 7CC0C6B31771196F007AABA2 /* ccShader_normal_frag.h */; };
 		D29C32A616A7542B00C873BD /* CCTextureATC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D29C32A416A7542B00C873BD /* CCTextureATC.cpp */; };
 		D29C32A716A7542B00C873BD /* CCTextureATC.h in Headers */ = {isa = PBXBuildFile; fileRef = D29C32A516A7542B00C873BD /* CCTextureATC.h */; };
 		D29C32AB16A7561100C873BD /* CCDDS.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D29C32A916A7561100C873BD /* CCDDS.cpp */; };
@@ -576,8 +575,6 @@
 		1551A627158F2ADE00E66CFE /* CCTouchHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCTouchHandler.h; sourceTree = "<group>"; };
 		1551A873158F2B4700E66CFE /* cocos2dx-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "cocos2dx-Prefix.pch"; sourceTree = "<group>"; };
 		2628297915EC7064002C4240 /* ccTypeInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ccTypeInfo.h; sourceTree = "<group>"; };
-		7CC0C6B2177117C8007AABA2 /* ccShader_normal_vert.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ccShader_normal_vert.h; sourceTree = "<group>"; };
-		7CC0C6B31771196F007AABA2 /* ccShader_normal_frag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ccShader_normal_frag.h; sourceTree = "<group>"; };
 		D29C32A416A7542B00C873BD /* CCTextureATC.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCTextureATC.cpp; sourceTree = "<group>"; };
 		D29C32A516A7542B00C873BD /* CCTextureATC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCTextureATC.h; sourceTree = "<group>"; };
 		D29C32A916A7561100C873BD /* CCDDS.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCDDS.cpp; sourceTree = "<group>"; };
@@ -1014,8 +1011,6 @@
 				1551A5D2158F2ADE00E66CFE /* ccShader_PositionTextureColor_frag.h */,
 				1551A5D3158F2ADE00E66CFE /* ccShader_PositionTextureColor_vert.h */,
 				1551A5D4158F2ADE00E66CFE /* ccShader_PositionTextureColorAlphaTest_frag.h */,
-				7CC0C6B2177117C8007AABA2 /* ccShader_normal_vert.h */,
-				7CC0C6B31771196F007AABA2 /* ccShader_normal_frag.h */,
 				1551A5D5158F2ADE00E66CFE /* CCShaderCache.cpp */,
 				1551A5D6158F2ADE00E66CFE /* CCShaderCache.h */,
 				1551A5D7158F2ADE00E66CFE /* ccShaderEx_SwitchMask_frag.h */,
@@ -1338,7 +1333,6 @@
 				D29C32AC16A7561100C873BD /* CCDDS.h in Headers */,
 				D29C32B016A7571600C873BD /* CCTextureDXT.h in Headers */,
 				D3996C00196B619600B2F1BD /* CCTextureASTC.h in Headers */,
-				7CC0C6B41771196F007AABA2 /* ccShader_normal_frag.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
