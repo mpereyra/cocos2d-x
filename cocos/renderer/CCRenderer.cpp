@@ -43,6 +43,10 @@
 #include "2d/CCCamera.h"
 #include "2d/CCScene.h"
 
+#if  CC_TARGET_PLATFORM == CC_PLATFORM_IOS
+#include "platform/ios/BPCHelper-ios.h"
+#endif
+
 NS_CC_BEGIN
 
 // helper
@@ -504,6 +508,16 @@ void Renderer::processRenderCommand(RenderCommand* command)
     }
 }
 
+/*** BPC PATCHES INCOMING ***/
+// All this glflush() shenaniganery is to fix an apparent defect with submitting
+// many small draw calls on ios 9. iOS 10 appears to have cleared up the issue.
+// see https://forums.developer.apple.com/thread/9589
+// see https://tinyco.atlassian.net/browse/MAR-8930
+#if  CC_TARGET_PLATFORM == CC_PLATFORM_IOS
+static const bool badiOSVersion = cocos2d::isiOS9();
+static const int maxDraws = 1000;
+#endif
+
 void Renderer::visitRenderQueue(RenderQueue& queue)
 {
     queue.saveRenderState();
@@ -524,11 +538,35 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
             glDisable(GL_DEPTH_TEST);
             glDepthMask(false);
         }
-        for (auto it = zNegQueue.cbegin(); it != zNegQueue.cend(); ++it)
-        {
-            processRenderCommand(*it);
+        
+        /** BPC:: See comment at top of method **/
+#if  CC_TARGET_PLATFORM == CC_PLATFORM_IOS
+        bool partition = badiOSVersion && zNegQueue.size() > maxDraws;
+        if (partition) {
+            auto it(zNegQueue.cbegin());
+            auto const end(zNegQueue.cend());
+            while(it != end)
+            {
+                auto const remaining(std::distance(it, end));
+                auto const chunkSize(std::min<size_t>(remaining, maxDraws));
+                for(auto chunkEnd(std::next(it, chunkSize)); it != chunkEnd; ++it) {
+                    processRenderCommand(*it);
+                }
+                glFlush();
+            }
+            flush();
+        } else {
+#endif
+            for (auto it = zNegQueue.cbegin(); it != zNegQueue.cend(); ++it)
+            {
+                processRenderCommand(*it);
+            }
+            flush();
+        
+#if  CC_TARGET_PLATFORM == CC_PLATFORM_IOS
+            if (badiOSVersion) glFlush();
         }
-        flush();
+#endif
     }
     
     //
@@ -541,20 +579,35 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
         glDepthMask(true);
         glEnable(GL_DEPTH_TEST);
         
-        for (auto it = opaqueQueue.cbegin(); it != opaqueQueue.cend(); ++it)
-        {
-            processRenderCommand(*it);
-        }
-        flush();
-    }
-    
-    // This is to fix an apparent defect with submitting many small draw calls on ios 9.3.
-    // may be fixed in future we hope??
-    // see https://forums.developer.apple.com/thread/9589
-    // see https://tinyco.atlassian.net/browse/MAR-8930
+        /** BPC:: See comment at top of method **/
 #if  CC_TARGET_PLATFORM == CC_PLATFORM_IOS
-    glFlush();
+        bool partition = badiOSVersion && opaqueQueue.size() > maxDraws;
+        if (partition) {
+            auto it(opaqueQueue.cbegin());
+            auto const end(opaqueQueue.cend());
+            while(it != end)
+            {
+                auto const remaining(std::distance(it, end));
+                auto const chunkSize(std::min<size_t>(remaining, maxDraws));
+                for(auto chunkEnd(std::next(it, chunkSize)); it != chunkEnd; ++it) {
+                    processRenderCommand(*it);
+                }
+                glFlush();
+            }
+            flush();
+        } else {
 #endif
+            for (auto it = opaqueQueue.cbegin(); it != opaqueQueue.cend(); ++it)
+            {
+                processRenderCommand(*it);
+            }
+            flush();
+            
+#if  CC_TARGET_PLATFORM == CC_PLATFORM_IOS
+            if (badiOSVersion) glFlush();
+        }
+#endif
+    }
     
     //
     //Process 3D Transparent object
@@ -565,11 +618,34 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
         glEnable(GL_DEPTH_TEST);
         glDepthMask(false);
         
-        for (auto it = transQueue.cbegin(); it != transQueue.cend(); ++it)
-        {
-            processRenderCommand(*it);
+        /** BPC:: See comment at top of method **/
+#if  CC_TARGET_PLATFORM == CC_PLATFORM_IOS
+        bool partition = badiOSVersion && transQueue.size() > maxDraws;
+        if (partition) {
+            auto it(transQueue.cbegin());
+            auto const end(transQueue.cend());
+            while(it != end)
+            {
+                auto const remaining(std::distance(it, end));
+                auto const chunkSize(std::min<size_t>(remaining, maxDraws));
+                for(auto chunkEnd(std::next(it, chunkSize)); it != chunkEnd; ++it) {
+                    processRenderCommand(*it);
+                }
+                glFlush();
+            }
+            flush();
+        } else {
+#endif
+            for (auto it = transQueue.cbegin(); it != transQueue.cend(); ++it)
+            {
+                processRenderCommand(*it);
+            }
+            flush();
+            
+#if  CC_TARGET_PLATFORM == CC_PLATFORM_IOS
+            if (badiOSVersion) glFlush();
         }
-        flush();
+#endif
     }
     
     //
@@ -591,11 +667,35 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
             glDisable(GL_DEPTH_TEST);
             glDepthMask(false);
         }
-        for (auto it = zZeroQueue.cbegin(); it != zZeroQueue.cend(); ++it)
-        {
-            processRenderCommand(*it);
+        
+        /** BPC:: See comment at top of method **/
+#if  CC_TARGET_PLATFORM == CC_PLATFORM_IOS
+        bool partition = badiOSVersion && zZeroQueue.size() > maxDraws;
+        if (partition) {
+            auto it(zZeroQueue.cbegin());
+            auto const end(zZeroQueue.cend());
+            while(it != end)
+            {
+                auto const remaining(std::distance(it, end));
+                auto const chunkSize(std::min<size_t>(remaining, maxDraws));
+                for(auto chunkEnd(std::next(it, chunkSize)); it != chunkEnd; ++it) {
+                    processRenderCommand(*it);
+                }
+                glFlush();
+            }
+            flush();
+        } else {
+#endif
+            for (auto it = zZeroQueue.cbegin(); it != zZeroQueue.cend(); ++it)
+            {
+                processRenderCommand(*it);
+            }
+            flush();
+            
+#if  CC_TARGET_PLATFORM == CC_PLATFORM_IOS
+            if (badiOSVersion) glFlush();
         }
-        flush();
+#endif
     }
     
     //
@@ -604,11 +704,34 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
     const auto& zPosQueue = queue.getSubQueue(RenderQueue::QUEUE_GROUP::GLOBALZ_POS);
     if (zPosQueue.size() > 0)
     {
-        for (auto it = zPosQueue.cbegin(); it != zPosQueue.cend(); ++it)
-        {
-            processRenderCommand(*it);
+        /** BPC:: See comment at top of method **/
+#if  CC_TARGET_PLATFORM == CC_PLATFORM_IOS
+        bool partition = badiOSVersion && zPosQueue.size() > maxDraws;
+        if (partition) {
+            auto it(zPosQueue.cbegin());
+            auto const end(zPosQueue.cend());
+            while(it != end)
+            {
+                auto const remaining(std::distance(it, end));
+                auto const chunkSize(std::min<size_t>(remaining, maxDraws));
+                for(auto chunkEnd(std::next(it, chunkSize)); it != chunkEnd; ++it) {
+                    processRenderCommand(*it);
+                }
+                glFlush();
+            }
+            flush();
+        } else {
+#endif
+            for (auto it = zPosQueue.cbegin(); it != zPosQueue.cend(); ++it)
+            {
+                processRenderCommand(*it);
+            }
+            flush();
+            
+#if  CC_TARGET_PLATFORM == CC_PLATFORM_IOS
+            if (badiOSVersion) glFlush();
         }
-        flush();
+#endif
     }
     
     queue.restoreRenderState();

@@ -1952,6 +1952,9 @@
 		B29A7E3F19EE1B7700872B35 /* AnimationState.h in Headers */ = {isa = PBXBuildFile; fileRef = B29A7DC619EE1B7700872B35 /* AnimationState.h */; };
 		B29A7E4019EE1B7700872B35 /* AnimationState.h in Headers */ = {isa = PBXBuildFile; fileRef = B29A7DC619EE1B7700872B35 /* AnimationState.h */; };
 		B2CC507C19776DD10041958E /* CCPhysicsJoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46A170721807CE7A005B8026 /* CCPhysicsJoint.cpp */; };
+		B4D542111D8B164700FBC8B7 /* BPCHelper-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = B4D542101D8B164700FBC8B7 /* BPCHelper-ios.mm */; };
+		B4D5421D1D8B1DE100FBC8B7 /* BPCHelper-ios.h in Headers */ = {isa = PBXBuildFile; fileRef = B4D5421C1D8B1DE100FBC8B7 /* BPCHelper-ios.h */; };
+		B4D5421E1D8B1E8D00FBC8B7 /* BPCHelper-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = B4D542101D8B164700FBC8B7 /* BPCHelper-ios.mm */; };
 		B60C5BD419AC68B10056FBDE /* CCBillBoard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B60C5BD219AC68B10056FBDE /* CCBillBoard.cpp */; };
 		B60C5BD519AC68B10056FBDE /* CCBillBoard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B60C5BD219AC68B10056FBDE /* CCBillBoard.cpp */; };
 		B60C5BD619AC68B10056FBDE /* CCBillBoard.h in Headers */ = {isa = PBXBuildFile; fileRef = B60C5BD319AC68B10056FBDE /* CCBillBoard.h */; };
@@ -3666,6 +3669,8 @@
 		B29A7DC619EE1B7700872B35 /* AnimationState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimationState.h; sourceTree = "<group>"; };
 		B3AF019E1842FBA400A98B85 /* b2MotorJoint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2MotorJoint.cpp; sourceTree = "<group>"; };
 		B3AF019F1842FBA400A98B85 /* b2MotorJoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = b2MotorJoint.h; sourceTree = "<group>"; };
+		B4D542101D8B164700FBC8B7 /* BPCHelper-ios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "BPCHelper-ios.mm"; sourceTree = "<group>"; };
+		B4D5421C1D8B1DE100FBC8B7 /* BPCHelper-ios.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "BPCHelper-ios.h"; sourceTree = "<group>"; };
 		B60C5BD219AC68B10056FBDE /* CCBillBoard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCBillBoard.cpp; sourceTree = "<group>"; };
 		B60C5BD319AC68B10056FBDE /* CCBillBoard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCBillBoard.h; sourceTree = "<group>"; };
 		B63990CA1A490AFE00B07923 /* CCAsyncTaskPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CCAsyncTaskPool.cpp; path = ../base/CCAsyncTaskPool.cpp; sourceTree = "<group>"; };
@@ -5915,6 +5920,8 @@
 				503DD8DD1926736A00CD74DD /* CCPlatformDefine-ios.h */,
 				503DD8DE1926736A00CD74DD /* CCStdC-ios.h */,
 				503DD8DF1926736A00CD74DD /* OpenGL_Internal-ios.h */,
+				B4D542101D8B164700FBC8B7 /* BPCHelper-ios.mm */,
+				B4D5421C1D8B1DE100FBC8B7 /* BPCHelper-ios.h */,
 			);
 			path = ios;
 			sourceTree = "<group>";
@@ -7362,6 +7369,7 @@
 				3823840A1A25900F002C4610 /* FlatBuffersSerialize.h in Headers */,
 				1A570080180BC5A10088DEC7 /* CCActionInterval.h in Headers */,
 				B665E2A11AA80A6500DDB1C5 /* CCPUEventHandler.h in Headers */,
+				B4D5421D1D8B1DE100FBC8B7 /* BPCHelper-ios.h in Headers */,
 				15AE192D19AAD35100C27E9E /* CCActionFrame.h in Headers */,
 				15AE192F19AAD35100C27E9E /* CCActionFrameEasing.h in Headers */,
 				1A570084180BC5A10088DEC7 /* CCActionManager.h in Headers */,
@@ -8300,6 +8308,7 @@
 				B665E34E1AA80A6500DDB1C5 /* CCPUOnPositionObserverTranslator.cpp in Sources */,
 				B29A7DC919EE1B7700872B35 /* SlotData.c in Sources */,
 				15AE190F19AAD35000C27E9E /* CCInputDelegate.cpp in Sources */,
+				B4D542111D8B164700FBC8B7 /* BPCHelper-ios.mm in Sources */,
 				15AE181A19AAD2F700C27E9E /* CCBundle3D.cpp in Sources */,
 				B665E3BE1AA80A6500DDB1C5 /* CCPUScaleAffector.cpp in Sources */,
 				15B3708019EE414C00ABE682 /* CCEventListenerAssetsManagerEx.cpp in Sources */,
@@ -8587,6 +8596,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B4D5421E1D8B1E8D00FBC8B7 /* BPCHelper-ios.mm in Sources */,
 				D0FD03541A3B51AA00825BB5 /* CCAllocatorGlobalNewDelete.cpp in Sources */,
 				15AE1B9819AADAA100C27E9E /* UIVideoPlayer-ios.mm in Sources */,
 				B665E38F1AA80A6500DDB1C5 /* CCPUPlaneCollider.cpp in Sources */,
