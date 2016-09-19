@@ -28,7 +28,7 @@ bool cocos2d::isiOS9()
     return value;
 }
 
-bool cocos2d::isiOS10()
+bool cocos2d::isiOS10OrLater()
 {
     static bool const value
     { version() > NSFoundationVersionNumber_iOS_9_x_Max };
