@@ -140,7 +140,6 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH) \
 
 
 LOCAL_EXPORT_LDLIBS := -llog\
-                       -lz \
                        -lGLESv2
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH) \
@@ -150,13 +149,14 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH) \
 
 LOCAL_LDLIBS := -lGLESv2 \
                 -lEGL \
-                -llog \
-                -lz 
+                -llog
+
 
 LOCAL_WHOLE_STATIC_LIBRARIES := cocos_libpng_static
 LOCAL_WHOLE_STATIC_LIBRARIES += cocos_jpeg_static
 LOCAL_WHOLE_STATIC_LIBRARIES += cocos_libxml2_static
 LOCAL_WHOLE_STATIC_LIBRARIES += cocos_libtiff_static
+LOCAL_WHOLE_STATIC_LIBRARIES += cocos_zlib_static
 
 # define the macro to compile through support/zip_support/ioapi.c                L
 LOCAL_CFLAGS := -DUSE_FILE32API
@@ -177,3 +177,4 @@ $(call import-module,libjpeg)
 $(call import-module,libpng)
 $(call import-module,libxml2)
 $(call import-module,libtiff)
+$(call import-module,zlib)
