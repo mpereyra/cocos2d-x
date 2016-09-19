@@ -11,5 +11,6 @@
 
 namespace cocos2d {
     bool isiOS9();
+    bool isiOS10();
 }
 #endif /* BPCHelper_ios_h */

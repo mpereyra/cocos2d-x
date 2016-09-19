@@ -13,18 +13,26 @@
 #import <UIKit/UIKit.h>
 #import <CoreFoundation/CoreFoundation.h>
 
-static bool a_isiOS9 = false;
+static double version() {
+  static auto const value(floor(NSFoundationVersionNumber));
+  return value;
+}
 
 bool cocos2d::isiOS9()
 {
-    static bool isInited = false;
-    if (!isInited)
-    {
-        a_isiOS9 = [[[UIDevice currentDevice] systemVersion] compare:@"9.0" options:NSNumericSearch] != NSOrderedAscending &&
-                   [[[UIDevice currentDevice] systemVersion] compare:@"10.0" options:NSNumericSearch] == NSOrderedAscending;
-        isInited = true;
-    }
-    return a_isiOS9;
+    static bool const value{ []{
+        auto const v(version());
+        return v >= NSFoundationVersionNumber_iOS_9_0 &&
+               v <= NSFoundationVersionNumber_iOS_9_x_Max;
+    }() };
+    return value;
+}
+
+bool cocos2d::isiOS10()
+{
+    static bool const value
+    { version() > NSFoundationVersionNumber_iOS_9_x_Max };
+    return value;
 }
 
 #endif // CC_PLATFORM_IOS
