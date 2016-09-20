@@ -12,5 +12,6 @@
 namespace cocos2d {
     bool isiOS9();
     bool isiOS10OrLater();
+    bool supportsBroadcasting();
 }
 #endif /* BPCHelper_ios_h */

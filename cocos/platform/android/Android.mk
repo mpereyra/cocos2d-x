@@ -10,6 +10,7 @@ LOCAL_MODULE_FILENAME := libcocos2dandroid
 LOCAL_ARM_MODE := arm
 
 LOCAL_SRC_FILES := \
+BPCHelper-android.cpp \
 CCApplication-android.cpp \
 CCCommon-android.cpp \
 CCDevice-android.cpp \

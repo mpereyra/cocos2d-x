@@ -43,9 +43,9 @@
 #include "2d/CCCamera.h"
 #include "2d/CCScene.h"
 
-#if  CC_TARGET_PLATFORM == CC_PLATFORM_IOS
-#include "platform/ios/BPCHelper-ios.h"
-#endif
+// BPC PATCH BEGIN
+#include "platform/BPCHelper.h"
+// BPC PATCH END
 
 NS_CC_BEGIN
 

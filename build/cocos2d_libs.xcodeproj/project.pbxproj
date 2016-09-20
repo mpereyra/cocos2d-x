@@ -1953,7 +1953,7 @@
 		B29A7E4019EE1B7700872B35 /* AnimationState.h in Headers */ = {isa = PBXBuildFile; fileRef = B29A7DC619EE1B7700872B35 /* AnimationState.h */; };
 		B2CC507C19776DD10041958E /* CCPhysicsJoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46A170721807CE7A005B8026 /* CCPhysicsJoint.cpp */; };
 		B4D542111D8B164700FBC8B7 /* BPCHelper-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = B4D542101D8B164700FBC8B7 /* BPCHelper-ios.mm */; };
-		B4D5421D1D8B1DE100FBC8B7 /* BPCHelper-ios.h in Headers */ = {isa = PBXBuildFile; fileRef = B4D5421C1D8B1DE100FBC8B7 /* BPCHelper-ios.h */; };
+		B4D5421D1D8B1DE100FBC8B7 /* BPCHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = B4D5421C1D8B1DE100FBC8B7 /* BPCHelper.h */; };
 		B4D5421E1D8B1E8D00FBC8B7 /* BPCHelper-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = B4D542101D8B164700FBC8B7 /* BPCHelper-ios.mm */; };
 		B60C5BD419AC68B10056FBDE /* CCBillBoard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B60C5BD219AC68B10056FBDE /* CCBillBoard.cpp */; };
 		B60C5BD519AC68B10056FBDE /* CCBillBoard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B60C5BD219AC68B10056FBDE /* CCBillBoard.cpp */; };
@@ -3670,7 +3670,7 @@
 		B3AF019E1842FBA400A98B85 /* b2MotorJoint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2MotorJoint.cpp; sourceTree = "<group>"; };
 		B3AF019F1842FBA400A98B85 /* b2MotorJoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = b2MotorJoint.h; sourceTree = "<group>"; };
 		B4D542101D8B164700FBC8B7 /* BPCHelper-ios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "BPCHelper-ios.mm"; sourceTree = "<group>"; };
-		B4D5421C1D8B1DE100FBC8B7 /* BPCHelper-ios.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "BPCHelper-ios.h"; sourceTree = "<group>"; };
+		B4D5421C1D8B1DE100FBC8B7 /* BPCHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BPCHelper.h; sourceTree = "<group>"; };
 		B60C5BD219AC68B10056FBDE /* CCBillBoard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCBillBoard.cpp; sourceTree = "<group>"; };
 		B60C5BD319AC68B10056FBDE /* CCBillBoard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCBillBoard.h; sourceTree = "<group>"; };
 		B63990CA1A490AFE00B07923 /* CCAsyncTaskPool.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CCAsyncTaskPool.cpp; path = ../base/CCAsyncTaskPool.cpp; sourceTree = "<group>"; };
@@ -5921,7 +5921,6 @@
 				503DD8DE1926736A00CD74DD /* CCStdC-ios.h */,
 				503DD8DF1926736A00CD74DD /* OpenGL_Internal-ios.h */,
 				B4D542101D8B164700FBC8B7 /* BPCHelper-ios.mm */,
-				B4D5421C1D8B1DE100FBC8B7 /* BPCHelper-ios.h */,
 			);
 			path = ios;
 			sourceTree = "<group>";
@@ -5933,6 +5932,7 @@
 				50ABBF2D1926664700A911A9 /* desktop */,
 				50ABBF4E1926664700A911A9 /* mac */,
 				50ABBF1A1926664700A911A9 /* apple */,
+				B4D5421C1D8B1DE100FBC8B7 /* BPCHelper.h */,
 				50643BE019BFCF1800EF68ED /* CCPlatformConfig.h */,
 				50643BE119BFCF1800EF68ED /* CCPlatformMacros.h */,
 				5091A7A219BFABA800AC8789 /* CCPlatformDefine.h */,
@@ -7369,7 +7369,7 @@
 				3823840A1A25900F002C4610 /* FlatBuffersSerialize.h in Headers */,
 				1A570080180BC5A10088DEC7 /* CCActionInterval.h in Headers */,
 				B665E2A11AA80A6500DDB1C5 /* CCPUEventHandler.h in Headers */,
-				B4D5421D1D8B1DE100FBC8B7 /* BPCHelper-ios.h in Headers */,
+				B4D5421D1D8B1DE100FBC8B7 /* BPCHelper.h in Headers */,
 				15AE192D19AAD35100C27E9E /* CCActionFrame.h in Headers */,
 				15AE192F19AAD35100C27E9E /* CCActionFrameEasing.h in Headers */,
 				1A570084180BC5A10088DEC7 /* CCActionManager.h in Headers */,
