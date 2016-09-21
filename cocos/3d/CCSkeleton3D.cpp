@@ -34,6 +34,7 @@ NS_CC_BEGIN
  */
 void Bone3D::setInverseBindPose(const Mat4& m)
 {
+    setWorldMatDirty(true); // BPC PATCH
     _invBindPose = m;
 }
 
@@ -44,11 +45,13 @@ const Mat4& Bone3D::getInverseBindPose()
 
 void Bone3D::setOriPose(const Mat4& m)
 {
+    setWorldMatDirty(true); // BPC PATCH
     _oriPose = m;
 }
 
 void Bone3D::resetPose()
 {
+    setWorldMatDirty(true); // BPC PATCH
     _local =_oriPose;
     
     for (auto it : _children) {
@@ -93,6 +96,8 @@ const Mat4& Bone3D::getWorldMat()
 
 void Bone3D::setAnimationValue(float* trans, float* rot, float* scale, void* tag, float weight)
 {
+    setWorldMatDirty(true); // BPC PATCH
+    
     for (auto& it : _blendStates) {
         if (it.tag == tag)
         {
@@ -122,6 +127,7 @@ void Bone3D::setAnimationValue(float* trans, float* rot, float* scale, void* tag
 
 void Bone3D::clearBoneBlendState()
 {
+    setWorldMatDirty(true); // BPC PATCH
     _blendStates.clear();
     for (auto it : _children) {
         it->clearBoneBlendState();
@@ -201,44 +207,46 @@ void Bone3D::updateLocalMat()
         Quaternion quat(Quaternion::ZERO);
         
         float total = 0.f;
-        for (auto it: _blendStates) {
+        for (auto const& it : _blendStates) {
             total += it.weight;
         }
         if (total)
         {
             if (_blendStates.size() == 1)
             {
-                auto& state = _blendStates[0];
+                auto const& state = _blendStates.front();
                 translate = state.localTranslate;
                 scale = state.localScale;
                 quat = state.localRot;
             }
             else
             {
-                float invTotal = 1.f / total;
-                bool moreThenTwo = _blendStates.size() > 2;
+                const float invTotal = 1.f / total;
+                const bool moreThenTwo = _blendStates.size() > 2;
                 for (const auto& it : _blendStates)
                 {
                     float weight = (it.weight * invTotal);
                     translate += it.localTranslate * weight;
+                    
                     scale.x += it.localScale.x * weight;
                     scale.y += it.localScale.y * weight;
                     scale.z += it.localScale.z * weight;
                     //I'm assuming right now that we aren't blending more then 2 weights on a bone
                     //just in case falling back to the old method of calculating the rotation
-                    if(!moreThenTwo) continue;
-                    if (!quat.isZero())
-                    {
-                        Quaternion& q = _blendStates[0].localRot;
-                        if (q.x * quat.x + q.y * quat.y + q.z * quat.z + q.w * quat.w < 0)
-                            weight = -weight;
+                    if(moreThenTwo)  {
+                        if (!quat.isZero())
+                        {
+                            Quaternion const& q = _blendStates[0].localRot;
+                            if (q.x * quat.x + q.y * quat.y + q.z * quat.z + q.w * quat.w < 0)
+                                weight = -weight;
+                        }
+                        quat = Quaternion(it.localRot.x * weight + quat.x, it.localRot.y * weight + quat.y, it.localRot.z * weight + quat.z, it.localRot.w * weight + quat.w);
                     }
-                    quat = Quaternion(it.localRot.x * weight + quat.x, it.localRot.y * weight + quat.y, it.localRot.z * weight + quat.z, it.localRot.w * weight + quat.w);
                 }
                 
                 if(!moreThenTwo){
-                    Quaternion & q1 = _blendStates[0].localRot;
-                    Quaternion & q2 = _blendStates[1].localRot;
+                    Quaternion const& q1 = _blendStates[0].localRot;
+                    Quaternion const& q2 = _blendStates[1].localRot;
                     float weight1 = _blendStates[0].weight;
                     float weight2 = _blendStates[1].weight;
                     if(weight1 > weight2){
@@ -343,7 +351,7 @@ int Skeleton3D::getBoneIndex(Bone3D* bone) const
 void Skeleton3D::updateBoneMatrix()
 {
     for (const auto& it : _rootBones) {
-        it->setWorldMatDirty(true);
+//        it->setWorldMatDirty(true);  BPC PATCH
         it->updateWorldMat();
     }
 }
