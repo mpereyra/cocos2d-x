@@ -1853,6 +1853,8 @@ public:
      */
     virtual void setCameraMask(unsigned short mask, bool applyChildren = true);
     
+    // BPC PATCH - isSprite... should probably be turned into a generic getNodeType() id
+    virtual bool isSprite() const { return false; }
     /*BPC PATCH*/
     virtual void setTraversalCameraMask(unsigned short mask, bool applyChildren = true);
     /*END BPC PATCH*/

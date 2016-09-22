@@ -140,6 +140,9 @@ public:
      */
     virtual const AABB& getAABB() const;
     // BPC PATCH END
+
+    // BPC PATCH isSprite()
+    virtual bool isSprite() const { return true; }
     
     /* 
      * Get AABB Recursively
