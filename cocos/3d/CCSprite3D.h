@@ -131,6 +131,9 @@ public:
      */
     virtual const AABB& getAABB() const;
     // BPC PATCH END
+
+    // BPC PATCH isSprite()
+    virtual bool isSprite() const { return true; }
     
     /**
      * Executes an action, and returns the action that is executed. For Sprite3D special logic are needed to take care of Fading.
