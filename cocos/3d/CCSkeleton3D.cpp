@@ -61,9 +61,11 @@ void Bone3D::resetPose()
 
 void Bone3D::setWorldMatDirty(bool dirty)
 {
-    _worldDirty = dirty;
-    for (auto it : _children) {
-        it->setWorldMatDirty(dirty);
+    if(_worldDirty != dirty) {
+        _worldDirty = dirty;
+        for (auto it : _children) {
+            it->setWorldMatDirty(dirty);
+        }
     }
 }
 
