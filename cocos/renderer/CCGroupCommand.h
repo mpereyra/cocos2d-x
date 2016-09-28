@@ -52,7 +52,7 @@ protected:
 class CC_DLL GroupCommand : public RenderCommand
 {
 public:
-    GroupCommand();
+    GroupCommand(Ref& lifePartner);
     ~GroupCommand();
     
     void init(float depth);

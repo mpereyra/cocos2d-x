@@ -64,6 +64,8 @@ ScrollView::ScrollView()
 , _maxScale(0.0f)
 , _scissorRestored(false)
 , _touchListener(nullptr)
+, _beforeDrawCommand(*this)
+, _afterDrawCommand(*this)
 {
 
 }
@@ -531,6 +533,7 @@ void ScrollView::onBeforeDraw()
 		_scissorRestored = false;
         Rect frame = getViewRect();
         auto glview = Director::getInstance()->getOpenGLView();
+        Assert(glview, "invalid glview in ScrollView before");
 
         if (glview->isScissorEnabled()) {
             _scissorRestored = true;
@@ -568,6 +571,7 @@ void ScrollView::onAfterDraw()
     {
         if (_scissorRestored) {//restore the parent's scissor rect
             auto glview = Director::getInstance()->getOpenGLView();
+            Assert(glview, "invalid glview in ScrollView after");
 
             glview->setScissorInPoints(_parentScissorRect.origin.x, _parentScissorRect.origin.y, _parentScissorRect.size.width, _parentScissorRect.size.height);
         }

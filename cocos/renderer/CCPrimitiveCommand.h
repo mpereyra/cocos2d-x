@@ -33,7 +33,7 @@ class GLProgramState;
 class CC_DLL PrimitiveCommand : public RenderCommand
 {
 public:
-    PrimitiveCommand();
+    PrimitiveCommand(Ref& lifePartner);
     ~PrimitiveCommand();
     
     void init(float globalOrder, GLuint textureID, GLProgramState* glProgramState, BlendFunc blendType, Primitive* primitive, const Mat4& mv, uint32_t flags);

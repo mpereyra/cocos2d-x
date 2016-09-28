@@ -41,6 +41,7 @@ NS_CC_BEGIN
 
 ParticleBatchNode::ParticleBatchNode()
 : _textureAtlas(nullptr)
+, _batchCommand(*this)
 {
 
 }

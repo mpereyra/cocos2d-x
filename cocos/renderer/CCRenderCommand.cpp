@@ -29,13 +29,14 @@
 
 NS_CC_BEGIN
 
-RenderCommand::RenderCommand()
+RenderCommand::RenderCommand(Ref& lifePartner)
 : _type(RenderCommand::Type::UNKNOWN_COMMAND)
 , _globalOrder(0)
 , _isTransparent(true)
 , _skipBatching(false)
 , _is3D(false)
 , _depth(0)
+, _lifePartner(lifePartner)
 {
 }
 

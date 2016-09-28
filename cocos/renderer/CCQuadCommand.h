@@ -35,7 +35,7 @@ class CC_DLL QuadCommand : public RenderCommand
 {
 public:
     
-    QuadCommand();
+    QuadCommand(Ref& lifePartner);
     ~QuadCommand();
     
     /** Initializes the command with a globalZOrder, a texture ID, a `GLProgram`, a blending function, a pointer to quads,

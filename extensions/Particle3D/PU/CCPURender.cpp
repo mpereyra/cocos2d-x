@@ -554,7 +554,7 @@ bool PUParticle3DEntityRender::initRender( const std::string &texFile )
 
     _glProgramState = glProgramState;
 
-    _meshCommand = new (std::nothrow) MeshCommand();
+    _meshCommand = new (std::nothrow) MeshCommand(*this);
     _meshCommand->setTransparent(true);
     _meshCommand->setDepthTestEnabled(_depthTest);
     _meshCommand->setDepthWriteEnabled(_depthWrite);

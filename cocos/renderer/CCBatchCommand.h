@@ -36,7 +36,7 @@ class CC_DLL BatchCommand : public RenderCommand
 {
 public:
 
-    BatchCommand();
+    BatchCommand(Ref& lifePartner);
     ~BatchCommand();
 
     void init(float globalZOrder, GLProgram* shader, BlendFunc blendType, TextureAtlas *textureAtlas, const Mat4& modelViewTransform, uint32_t flags);

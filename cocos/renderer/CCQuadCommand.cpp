@@ -33,8 +33,9 @@
 NS_CC_BEGIN
 
 
-QuadCommand::QuadCommand()
-:_materialID(0)
+QuadCommand::QuadCommand(Ref& lifePartner)
+:RenderCommand(lifePartner)
+,_materialID(0)
 ,_textureID(0)
 ,_glProgramState(nullptr)
 ,_blendType(BlendFunc::DISABLE)

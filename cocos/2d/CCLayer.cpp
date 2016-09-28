@@ -438,6 +438,7 @@ __LayerRGBA::__LayerRGBA()
 /// LayerColor
 
 LayerColor::LayerColor()
+: _customCommand(*this)
 {
     // default blend function
     _blendFunc = BlendFunc::ALPHA_PREMULTIPLIED;
@@ -592,6 +593,7 @@ void LayerColor::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
 
 void LayerColor::onDraw(const Mat4& transform, uint32_t flags)
 {
+    Assert(getGLProgram(), "invalid glProgram in LayerColor");
     getGLProgram()->use();
     getGLProgram()->setUniformsForBuiltins(transform);
     

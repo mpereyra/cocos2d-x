@@ -50,14 +50,14 @@
 NS_CC_BEGIN
 
 // helper
-static bool compareRenderCommand(RenderCommand* a, RenderCommand* b)
+static bool compareRenderCommand(const std::pair<RenderCommand*, cocos_ptr<Ref>>& a, const std::pair<RenderCommand*, cocos_ptr<Ref>>& b)
 {
-    return a->getGlobalOrder() < b->getGlobalOrder();
+    return a.first->getGlobalOrder() < b.first->getGlobalOrder();
 }
 
-static bool compare3DCommand(RenderCommand* a, RenderCommand* b)
+static bool compare3DCommand(const std::pair<RenderCommand*, cocos_ptr<Ref>>& a, const std::pair<RenderCommand*, cocos_ptr<Ref>>& b)
 {
-    return  a->getDepth() > b->getDepth();
+    return  a.first->getDepth() > b.first->getDepth();
 }
 
 // queue
@@ -67,11 +67,11 @@ void RenderQueue::push_back(RenderCommand* command)
     float z = command->getGlobalOrder();
     if(z < 0)
     {
-        _commands[QUEUE_GROUP::GLOBALZ_NEG].push_back(command);
+        _commands[QUEUE_GROUP::GLOBALZ_NEG].push_back({command, cocos_ptr<Ref>(&command->getLifePartner())});
     }
     else if(z > 0)
     {
-        _commands[QUEUE_GROUP::GLOBALZ_POS].push_back(command);
+        _commands[QUEUE_GROUP::GLOBALZ_POS].push_back({command, cocos_ptr<Ref>(&command->getLifePartner())});
     }
     else
     {
@@ -79,16 +79,16 @@ void RenderQueue::push_back(RenderCommand* command)
         {
             if(command->isTransparent())
             {
-                _commands[QUEUE_GROUP::TRANSPARENT_3D].push_back(command);
+                _commands[QUEUE_GROUP::TRANSPARENT_3D].push_back({command, cocos_ptr<Ref>(&command->getLifePartner())});
             }
             else
             {
-                _commands[QUEUE_GROUP::OPAQUE_3D].push_back(command);
+                _commands[QUEUE_GROUP::OPAQUE_3D].push_back({command, cocos_ptr<Ref>(&command->getLifePartner())});
             }
         }
         else
         {
-            _commands[QUEUE_GROUP::GLOBALZ_ZERO].push_back(command);
+            _commands[QUEUE_GROUP::GLOBALZ_ZERO].push_back({command, cocos_ptr<Ref>(&command->getLifePartner())});
         }
     }
 }
@@ -117,7 +117,7 @@ RenderCommand* RenderQueue::operator[](ssize_t index) const
     for(int queIndex = 0; queIndex < QUEUE_GROUP::QUEUE_COUNT; ++queIndex)
     {
         if(index < static_cast<ssize_t>(_commands[queIndex].size()))
-            return _commands[queIndex][index];
+            return _commands[queIndex][index].first;
         else
         {
             index -= _commands[queIndex].size();
@@ -135,7 +135,7 @@ void RenderQueue::clear()
     _commands.clear();
     for(int index = 0; index < QUEUE_COUNT; ++index)
     {
-        _commands.push_back(std::vector<RenderCommand*>());
+        _commands.push_back(CommandVector());
     }
 }
 
@@ -368,7 +368,7 @@ void Renderer::addCommand(RenderCommand* command)
 
 void Renderer::addCommand(RenderCommand* command, int renderQueue)
 {
-    CCASSERT(!_isRendering, "Cannot add command while rendering");
+    Assert(!_isRendering, "Cannot add command while rendering");
     CCASSERT(renderQueue >=0, "Invalid render queue");
     CCASSERT(command->getType() != RenderCommand::Type::UNKNOWN_COMMAND, "Invalid Command Type");
 
@@ -508,11 +508,6 @@ void Renderer::processRenderCommand(RenderCommand* command)
     }
 }
 
-/*** BPC PATCHES INCOMING ***/
-// All this glflush() shenaniganery is to fix an apparent defect with submitting
-// many small draw calls on ios 9. iOS 10 appears to have cleared up the issue.
-// see https://forums.developer.apple.com/thread/9589
-// see https://tinyco.atlassian.net/browse/MAR-8930
 #if  CC_TARGET_PLATFORM == CC_PLATFORM_IOS
 static const bool badiOSVersion = cocos2d::isiOS9();
 static const int maxDraws = 1000;
@@ -521,6 +516,44 @@ static const int maxDraws = 1000;
 void Renderer::visitRenderQueue(RenderQueue& queue)
 {
     queue.saveRenderState();
+    
+    /*** BPC PATCHES INCOMING ***/
+    // All this glflush() shenaniganery is to fix an apparent defect with submitting
+    // many small draw calls on ios 9. iOS 10 appears to have cleared up the issue.
+    // see https://forums.developer.apple.com/thread/9589
+    // see https://tinyco.atlassian.net/browse/MAR-8930
+    std::function<void(const CommandVector&)> processCommandQueue = [this] (const CommandVector& commandQueue) {
+#if  CC_TARGET_PLATFORM == CC_PLATFORM_IOS
+        bool partition = badiOSVersion && commandQueue.size() > maxDraws;
+        if (partition) {
+            auto it(commandQueue.cbegin());
+            auto const end(commandQueue.cend());
+            while(it != end)
+            {
+                auto const remaining(std::distance(it, end));
+                auto const chunkSize(std::min<size_t>(remaining, maxDraws));
+                for(auto chunkEnd(std::next(it, chunkSize)); it != chunkEnd; ++it) {
+                    processRenderCommand(it->first);
+                }
+                glFlush();
+            }
+            flush();
+        } else {
+#endif
+            for (auto it = commandQueue.cbegin(); it != commandQueue.cend(); ++it)
+            {
+                if (it->second->getReferenceCount() == 1) {
+                    CCLOG("Now see this is the bad thing");
+                }
+                processRenderCommand(it->first);
+            }
+            flush();
+            
+#if  CC_TARGET_PLATFORM == CC_PLATFORM_IOS
+            if (badiOSVersion) glFlush();
+        }
+#endif
+    };
     
     //
     //Process Global-Z < 0 Objects
@@ -540,33 +573,9 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
         }
         
         /** BPC:: See comment at top of method **/
-#if  CC_TARGET_PLATFORM == CC_PLATFORM_IOS
-        bool partition = badiOSVersion && zNegQueue.size() > maxDraws;
-        if (partition) {
-            auto it(zNegQueue.cbegin());
-            auto const end(zNegQueue.cend());
-            while(it != end)
-            {
-                auto const remaining(std::distance(it, end));
-                auto const chunkSize(std::min<size_t>(remaining, maxDraws));
-                for(auto chunkEnd(std::next(it, chunkSize)); it != chunkEnd; ++it) {
-                    processRenderCommand(*it);
-                }
-                glFlush();
-            }
-            flush();
-        } else {
-#endif
-            for (auto it = zNegQueue.cbegin(); it != zNegQueue.cend(); ++it)
-            {
-                processRenderCommand(*it);
-            }
-            flush();
-        
-#if  CC_TARGET_PLATFORM == CC_PLATFORM_IOS
-            if (badiOSVersion) glFlush();
-        }
-#endif
+        size_t queueSize = zNegQueue.size();
+        processCommandQueue(zNegQueue);
+        Assert(queueSize == zNegQueue.size(), "zNegQueue modified during processing!");
     }
     
     //
@@ -580,33 +589,9 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
         glEnable(GL_DEPTH_TEST);
         
         /** BPC:: See comment at top of method **/
-#if  CC_TARGET_PLATFORM == CC_PLATFORM_IOS
-        bool partition = badiOSVersion && opaqueQueue.size() > maxDraws;
-        if (partition) {
-            auto it(opaqueQueue.cbegin());
-            auto const end(opaqueQueue.cend());
-            while(it != end)
-            {
-                auto const remaining(std::distance(it, end));
-                auto const chunkSize(std::min<size_t>(remaining, maxDraws));
-                for(auto chunkEnd(std::next(it, chunkSize)); it != chunkEnd; ++it) {
-                    processRenderCommand(*it);
-                }
-                glFlush();
-            }
-            flush();
-        } else {
-#endif
-            for (auto it = opaqueQueue.cbegin(); it != opaqueQueue.cend(); ++it)
-            {
-                processRenderCommand(*it);
-            }
-            flush();
-            
-#if  CC_TARGET_PLATFORM == CC_PLATFORM_IOS
-            if (badiOSVersion) glFlush();
-        }
-#endif
+        size_t queueSize = opaqueQueue.size();
+        processCommandQueue(opaqueQueue);
+        Assert(queueSize == opaqueQueue.size(), "opaqueQueue modified during processing!");
     }
     
     //
@@ -619,33 +604,9 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
         glDepthMask(false);
         
         /** BPC:: See comment at top of method **/
-#if  CC_TARGET_PLATFORM == CC_PLATFORM_IOS
-        bool partition = badiOSVersion && transQueue.size() > maxDraws;
-        if (partition) {
-            auto it(transQueue.cbegin());
-            auto const end(transQueue.cend());
-            while(it != end)
-            {
-                auto const remaining(std::distance(it, end));
-                auto const chunkSize(std::min<size_t>(remaining, maxDraws));
-                for(auto chunkEnd(std::next(it, chunkSize)); it != chunkEnd; ++it) {
-                    processRenderCommand(*it);
-                }
-                glFlush();
-            }
-            flush();
-        } else {
-#endif
-            for (auto it = transQueue.cbegin(); it != transQueue.cend(); ++it)
-            {
-                processRenderCommand(*it);
-            }
-            flush();
-            
-#if  CC_TARGET_PLATFORM == CC_PLATFORM_IOS
-            if (badiOSVersion) glFlush();
-        }
-#endif
+        size_t queueSize = transQueue.size();
+        processCommandQueue(transQueue);
+        Assert(queueSize == transQueue.size(), "transQueue modified during processing!");
     }
     
     //
@@ -669,33 +630,9 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
         }
         
         /** BPC:: See comment at top of method **/
-#if  CC_TARGET_PLATFORM == CC_PLATFORM_IOS
-        bool partition = badiOSVersion && zZeroQueue.size() > maxDraws;
-        if (partition) {
-            auto it(zZeroQueue.cbegin());
-            auto const end(zZeroQueue.cend());
-            while(it != end)
-            {
-                auto const remaining(std::distance(it, end));
-                auto const chunkSize(std::min<size_t>(remaining, maxDraws));
-                for(auto chunkEnd(std::next(it, chunkSize)); it != chunkEnd; ++it) {
-                    processRenderCommand(*it);
-                }
-                glFlush();
-            }
-            flush();
-        } else {
-#endif
-            for (auto it = zZeroQueue.cbegin(); it != zZeroQueue.cend(); ++it)
-            {
-                processRenderCommand(*it);
-            }
-            flush();
-            
-#if  CC_TARGET_PLATFORM == CC_PLATFORM_IOS
-            if (badiOSVersion) glFlush();
-        }
-#endif
+        size_t queueSize = zZeroQueue.size();
+        processCommandQueue(zZeroQueue);
+        Assert(queueSize == zZeroQueue.size(), "zZeroQueue modified during processing!");
     }
     
     //
@@ -705,33 +642,9 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
     if (zPosQueue.size() > 0)
     {
         /** BPC:: See comment at top of method **/
-#if  CC_TARGET_PLATFORM == CC_PLATFORM_IOS
-        bool partition = badiOSVersion && zPosQueue.size() > maxDraws;
-        if (partition) {
-            auto it(zPosQueue.cbegin());
-            auto const end(zPosQueue.cend());
-            while(it != end)
-            {
-                auto const remaining(std::distance(it, end));
-                auto const chunkSize(std::min<size_t>(remaining, maxDraws));
-                for(auto chunkEnd(std::next(it, chunkSize)); it != chunkEnd; ++it) {
-                    processRenderCommand(*it);
-                }
-                glFlush();
-            }
-            flush();
-        } else {
-#endif
-            for (auto it = zPosQueue.cbegin(); it != zPosQueue.cend(); ++it)
-            {
-                processRenderCommand(*it);
-            }
-            flush();
-            
-#if  CC_TARGET_PLATFORM == CC_PLATFORM_IOS
-            if (badiOSVersion) glFlush();
-        }
-#endif
+        size_t queueSize = zPosQueue.size();
+        processCommandQueue(zPosQueue);
+        Assert(queueSize == zPosQueue.size(), "zPosQueue modified during processing!");
     }
     
     queue.restoreRenderState();
@@ -744,6 +657,7 @@ void Renderer::render()
 
     //TODO: setup camera or MVP
     _isRendering = true;
+    RenderBubble bubble(*this); // **** BPC PATCH ***
     
     if (_glViewAssigned)
     {
@@ -755,8 +669,9 @@ void Renderer::render()
         }
         visitRenderQueue(_renderGroups[0]);
     }
-    clean();
-    _isRendering = false;
+    // ** BPC PATCH: these are done when RenderBubble pops going out of scope
+    //clean();
+    //_isRendering = false;
 }
 
 void Renderer::clean()

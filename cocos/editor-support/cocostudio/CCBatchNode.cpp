@@ -74,7 +74,7 @@ void BatchNode::addChild(Node *child, int zOrder, int tag)
         armature->setBatchNode(this);
         if (_groupCommand == nullptr)
         {
-            _groupCommand = new (std::nothrow) GroupCommand();
+            _groupCommand = new (std::nothrow) GroupCommand(*this);
         }
     }
 }
@@ -88,7 +88,7 @@ void BatchNode::addChild(cocos2d::Node *child, int zOrder, const std::string &na
         armature->setBatchNode(this);
         if (_groupCommand == nullptr)
         {
-            _groupCommand = new (std::nothrow) GroupCommand();
+            _groupCommand = new (std::nothrow) GroupCommand(*this);
         }
     }
 }

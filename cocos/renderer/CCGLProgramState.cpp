@@ -351,7 +351,7 @@ void GLProgramState::apply(const Mat4& modelView)
 
 void GLProgramState::updateUniformsAndAttributes()
 {
-    CCASSERT(_glprogram, "invalid glprogram");
+    Assert(_glprogram, "invalid glprogram updating uniforms");
     if(_uniformAttributeValueDirty)
     {
         /* BPC PATCH */

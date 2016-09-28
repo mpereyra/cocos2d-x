@@ -52,6 +52,7 @@ MotionStreak::MotionStreak()
 , _vertices(nullptr)
 , _colorPointer(nullptr)
 , _texCoords(nullptr)
+, _customCommand(*this)
 {
 }
 
@@ -378,13 +379,15 @@ void MotionStreak::reset()
 }
 
 void MotionStreak::onDraw(const Mat4 &transform, uint32_t flags)
-{  
+{
+    Assert(getGLProgram(), "invalid glProgram in MotionStreak");
     getGLProgram()->use();
     getGLProgram()->setUniformsForBuiltins(transform);
 
     GL::enableVertexAttribs(GL::VERTEX_ATTRIB_FLAG_POS_COLOR_TEX );
     GL::blendFunc( _blendFunc.src, _blendFunc.dst );
-
+    
+    Assert(_texture, "invalid texture in MotionStreak");
     GL::bindTexture2D( _texture->getName() );
 
 #ifdef EMSCRIPTEN
@@ -411,6 +414,7 @@ void MotionStreak::draw(Renderer *renderer, const Mat4 &transform, uint32_t flag
 {
     if(_nuPoints <= 1)
         return;
+    
     _customCommand.init(_globalZOrder, transform, flags);
     _customCommand.func = CC_CALLBACK_0(MotionStreak::onDraw, this, transform, flags);
     renderer->addCommand(&_customCommand);

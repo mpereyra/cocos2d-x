@@ -67,6 +67,10 @@ ClippingNode::ClippingNode()
 ,  _currentAlphaTestEnabled(GL_FALSE)
 , _currentAlphaTestFunc(GL_ALWAYS)
 , _currentAlphaTestRef(1)
+, _groupCommand(*this)
+, _beforeVisitCmd(*this)
+, _afterDrawStencilCmd(*this)
+, _afterVisitCmd(*this)
 {
 
 }
@@ -241,7 +245,7 @@ void ClippingNode::visit(Renderer *renderer, const Mat4 &parentTransform, uint32
     // To ease the migration to v3.0, we still support the Mat4 stack,
     // but it is deprecated and your code should not rely on it
     Director* director = Director::getInstance();
-    CCASSERT(nullptr != director, "Director is null when seting matrix stack");
+    Assert(nullptr != director, "Director is null when setting matrix stack");
     director->pushMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
     director->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW, _modelViewTransform);
 
@@ -251,7 +255,7 @@ void ClippingNode::visit(Renderer *renderer, const Mat4 &parentTransform, uint32
     renderer->addCommand(&_groupCommand);
 
     renderer->pushGroup(_groupCommand.getRenderQueueID());
-
+    
     _beforeVisitCmd.init(_globalZOrder);
     _beforeVisitCmd.func = CC_CALLBACK_0(ClippingNode::onBeforeVisit, this);
     renderer->addCommand(&_beforeVisitCmd);

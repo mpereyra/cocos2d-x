@@ -49,6 +49,7 @@ ProgressTimer::ProgressTimer()
 ,_vertexDataCount(0)
 ,_vertexData(nullptr)
 ,_reverseDirection(false)
+,_customCommand(*this)
 {}
 
 ProgressTimer* ProgressTimer::create(Sprite* sp)
@@ -501,9 +502,11 @@ void ProgressTimer::onDraw(const Mat4 &transform, uint32_t flags)
     glDisable(GL_DEPTH_TEST);
     /*END BPC PATCH*/
 
+    Assert(getGLProgram(), "invalid glProgram in ProgressTimer onDraw");
     getGLProgram()->use();
     getGLProgram()->setUniformsForBuiltins(transform);
 
+    Assert(_sprite, "invalid sprite in ProgressTimer onDraw");
     GL::blendFunc( _sprite->getBlendFunc().src, _sprite->getBlendFunc().dst );
 
     GL::enableVertexAttribs(GL::VERTEX_ATTRIB_FLAG_POS_COLOR_TEX );

@@ -71,7 +71,8 @@ void GroupCommandManager::releaseGroupID(int groupID)
     _unusedIDs.push_back(groupID);
 }
 
-GroupCommand::GroupCommand()
+GroupCommand::GroupCommand(Ref& lifePartner)
+: cocos2d::RenderCommand(lifePartner)
 {
     _type = RenderCommand::Type::GROUP_COMMAND;
     _renderQueueID = Director::getInstance()->getRenderer()->getGroupCommandManager()->getGroupID();

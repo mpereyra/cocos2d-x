@@ -83,10 +83,11 @@ public:
     
     /* BPC Patch */
     inline void setName(const std::string& name) { _name = name; }
+    inline Ref& getLifePartner() { return _lifePartner; }
     /* BPC Patch */
 
 protected:
-    RenderCommand();
+    RenderCommand(Ref& lifePartner);
     virtual ~RenderCommand();
 
     void printID();
@@ -112,6 +113,8 @@ protected:
     /* BPC Patch */
     // name of the Node that set this RenderCommand to work
     std::string _name;
+    // ref to the cocos-ref that owns this command
+    Ref& _lifePartner;
     /* BPC Patch */
 };
 
