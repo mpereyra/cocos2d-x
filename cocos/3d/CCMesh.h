@@ -261,6 +261,8 @@ public:
     void setPointLightCount(int count);
     void setDirLightCount(int count);
     void setSpotLightCount(int count);
+    void setHasAmbientLight(bool hasAmbient) { m_hasAmbientComponent = hasAmbient; }
+    bool hasAmbientLight() const { return m_hasAmbientComponent; }
     int getPointLightCount();
     int getDirLightCount();
     int getSpotLightCount();
@@ -306,6 +308,7 @@ protected:
     int m_pointLightCount = -1;
     int m_dirLightCount = -1;
     int m_spotLightCount = -1;
+    bool m_hasAmbientComponent = false;
     /*END BPC PATCH*/
     
     std::vector<Vec3> _dirLightUniformColorValues;
