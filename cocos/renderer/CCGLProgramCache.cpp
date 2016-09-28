@@ -636,6 +636,18 @@ void GLProgramCache::addGLProgram(GLProgram* program, const std::string &key)
     _programs[key] = program;
 }
 
+/*BPC PATCH*/
+void GLProgramCache::purgeGLProgram(const std::string &key)
+{
+    auto it = _programs.find(key);
+    if (it == _programs.end())
+        return;
+    
+    CC_SAFE_RELEASE(it->second);
+    _programs.erase(it);
+}
+/*END BPC PATCH*/
+
 std::string GLProgramCache::getShaderMacrosForLight() const
 {
     GLchar def[256];
