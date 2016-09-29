@@ -88,6 +88,9 @@ public:
     virtual void onEnter() override;
     virtual void onExit() override;
     
+    /*BPC PATCH*/
+    virtual void setViewSpaceDataForCamera(const cocos2d::Camera* cam) {}
+    /*END BPC PATCH*/
 CC_CONSTRUCTOR_ACCESS:
     BaseLight();
     virtual ~BaseLight();
@@ -136,9 +139,18 @@ public:
      */
     Vec3 getDirectionInWorld() const;
     
+    /*BPC PATCH*/
+    void setViewSpaceDataForCamera(const cocos2d::Camera* cam) override;
+    const cocos2d::Vec3& getViewSpaceDirection() const;
+    /*END BPC PATCH*/
+    
 CC_CONSTRUCTOR_ACCESS:
     DirectionLight();
     virtual ~DirectionLight();
+    
+    /*BPC PATCH*/
+    cocos2d::Vec3 m_viewSpaceDirection;
+    /*END BPC PATCH*/
     
 };
 
@@ -165,12 +177,21 @@ public:
     float getRange() const { return _range; }
     void setRange(float range) { _range = range; }
     
+    /*BPC PATCH*/
+    void setViewSpaceDataForCamera(const cocos2d::Camera* cam) override;
+    const cocos2d::Vec3& getViewSpacePosition() const;
+    /*END BPC PATCH*/
+    
 CC_CONSTRUCTOR_ACCESS:
     PointLight();
     virtual ~PointLight();
     
 protected:
     float _range;
+    
+    /*BPC PATCH*/
+    cocos2d::Vec3 m_viewSpacePosition;
+    /*END BPC PATCH*/
 };
 
 /**
@@ -255,6 +276,12 @@ public:
     /** get cos outAngle */
     float getCosOuterAngle() const { return _cosOuterAngle; }
     
+    /*BPC PATCH*/
+    void setViewSpaceDataForCamera(const cocos2d::Camera* cam) override;
+    const cocos2d::Vec3& getViewSpacePosition() const;
+    const cocos2d::Vec3& getViewSpaceDirection() const;
+    /*END BPC PATCH*/
+    
 CC_CONSTRUCTOR_ACCESS:
     SpotLight();
     virtual ~SpotLight();
@@ -265,6 +292,11 @@ protected:
     float _cosInnerAngle;
     float _outerAngle;
     float _cosOuterAngle;
+    
+    /*BPC PATCH*/
+    cocos2d::Vec3 m_viewSpacePosition;
+    cocos2d::Vec3 m_viewSpaceDirection;
+    /*END BPC PATCH*/
 };
 
 /**
