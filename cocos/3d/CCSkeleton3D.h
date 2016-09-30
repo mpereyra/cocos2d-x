@@ -55,6 +55,11 @@ public:
     /**get wrod matrix*/
     const Mat4& getWorldMat();
     
+    /**BPC Patch**/
+    Mat4 const & getLocalMat() { return _local; }
+    Mat4 const & getOriPose() { return _oriPose; }
+    /**end BPC patch**/
+    
     /**get bone name*/
     const std::string& getName() const { return _name; }
     
