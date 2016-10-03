@@ -1,5 +1,6 @@
 #include "2d/CCLight.h"
 #include "2d/CCScene.h"
+#include "2d/CCCamera.h"
 
 NS_CC_BEGIN
 
@@ -79,6 +80,18 @@ Vec3 DirectionLight::getDirectionInWorld() const
     Mat4 mat = getNodeToWorldTransform();
     return Vec3(-mat.m[8], -mat.m[9], -mat.m[10]);
 }
+
+
+void DirectionLight::setViewSpaceDataForCamera(const cocos2d::Camera* cam)
+{
+    m_viewSpaceDirection = cam->getViewMatrix() * getDirectionInWorld();
+}
+
+const cocos2d::Vec3& DirectionLight::getViewSpaceDirection() const
+{
+    return m_viewSpaceDirection;
+}
+
 DirectionLight::DirectionLight()
 {
     
@@ -97,6 +110,17 @@ PointLight* PointLight::create(const Vec3 &position, const Color3B &color, float
     light->_range = range;
     light->autorelease();
     return light;
+}
+
+void PointLight::setViewSpaceDataForCamera(const cocos2d::Camera* cam)
+{
+    auto transform = cam->getViewMatrix() * getNodeToWorldTransform();
+    m_viewSpacePosition.set(transform.m[12], transform.m[13], transform.m[14]);
+}
+
+const cocos2d::Vec3& PointLight::getViewSpacePosition() const
+{
+    return m_viewSpacePosition;
 }
 
 PointLight::PointLight()
@@ -149,6 +173,25 @@ void SpotLight::setOuterAngle(float angle)
 {
     _outerAngle = angle;
     _cosOuterAngle = cosf(angle);
+}
+
+
+void SpotLight::setViewSpaceDataForCamera(const cocos2d::Camera* cam)
+{
+    auto viewTransform = cam->getViewMatrix();
+    auto transform = viewTransform * getNodeToWorldTransform();
+    m_viewSpacePosition.set(transform.m[12], transform.m[13], transform.m[14]);
+    m_viewSpaceDirection = viewTransform * getDirectionInWorld();
+}
+
+const cocos2d::Vec3& SpotLight::getViewSpacePosition() const
+{
+    return m_viewSpacePosition;
+}
+
+const cocos2d::Vec3& SpotLight::getViewSpaceDirection() const
+{
+    return m_viewSpaceDirection;
 }
 
 SpotLight::SpotLight()
