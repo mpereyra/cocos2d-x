@@ -50,14 +50,26 @@
 NS_CC_BEGIN
 
 // helper
-static bool compareRenderCommand(RenderCommand* a, RenderCommand* b)
-{
-    return a->getGlobalOrder() < b->getGlobalOrder();
-}
-
 static bool compare3DCommand(RenderCommand* a, RenderCommand* b)
 {
     return  a->getDepth() > b->getDepth();
+}
+
+static bool compareRenderCommand(RenderCommand* a, RenderCommand* b)
+{
+    bool const a3D = a->is3D();
+    bool const b3D = b->is3D();
+    bool const both3D = a3D && b3D;
+    if(both3D){
+        //transparent last otherwise based on depth
+        bool const aTrans = a->isTransparent();
+        bool const bTrans = b->isTransparent();
+        if(aTrans && !bTrans){ return false; }
+        if(!aTrans && bTrans){ return true; }
+        return compare3DCommand(a, b);
+    }else{
+        return a->getGlobalOrder() < b->getGlobalOrder();
+    }
 }
 
 // queue
