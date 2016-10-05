@@ -54,6 +54,12 @@ public:
         TRIANGLES_COMMAND
     };
 
+    enum class DrawMode {
+        Default,
+        Force2D,
+        Force3D
+    };
+
     /**
      * init function, will be called by all the render commands
      */
@@ -85,6 +91,9 @@ public:
     inline void setName(const std::string& name) { _name = name; }
     /* BPC Patch */
 
+    inline DrawMode getDrawMode() { return _drawMode; }
+    inline void setDrawMode(DrawMode drawMode) { _drawMode = drawMode; }
+
 protected:
     RenderCommand();
     virtual ~RenderCommand();
@@ -113,6 +122,8 @@ protected:
     // name of the Node that set this RenderCommand to work
     std::string _name;
     /* BPC Patch */
+
+    DrawMode _drawMode {DrawMode::Default};
 };
 
 NS_CC_END
