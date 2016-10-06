@@ -318,7 +318,8 @@ struct NTextureData
         Normal = 7,
         Bump = 8,
         Transparency = 9,
-        Reflection = 10
+        Reflection = 10,
+        Lightmap = 11
     };
      std::string id;
      std::string filename;

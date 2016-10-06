@@ -51,15 +51,16 @@ std::string s_uniformSamplerName[] =
 {
     "",//NTextureData::Usage::Unknown,
     "",//NTextureData::Usage::None
-    "",//NTextureData::Usage::Diffuse
-    "",//NTextureData::Usage::Emissive
+    "u_diffuseTexture",//NTextureData::Usage::Diffuse
+    "u_emissiveTexture",//NTextureData::Usage::Emissive
     "",//NTextureData::Usage::Ambient
-    "",//NTextureData::Usage::Specular
+    "u_specularTexture",//NTextureData::Usage::Specular
     "",//NTextureData::Usage::Shininess
-    "u_normalTex",//NTextureData::Usage::Normal
+    "u_normalTexture",//NTextureData::Usage::Normal
     "",//NTextureData::Usage::Bump
     "",//NTextureData::Usage::Transparency
-    "",//NTextureData::Usage::Reflection
+    "u_reflectionCubemap",//NTextureData::Usage::Reflection
+    "u_lightmapTexture"//NTextureData::Usage::Lightmap
 };
 
 static const char          *s_dirLightUniformColorName = "u_DirLightSourceColor";
@@ -300,6 +301,7 @@ void Mesh::setTexture(Texture2D* tex, NTextureData::Usage usage, bool cacheFileN
                 // FIXME: Ideally it should use glProgramState->setUniformTexture()
                 // and set CC_Texture0 that way. But trying to it, will trigger
                 // another bug
+                pass->getGLProgramState()->setUniformTexture(s_uniformSamplerName[(int)usage], tex);
                 pass->setTexture(tex);
             }
         }
@@ -308,7 +310,7 @@ void Mesh::setTexture(Texture2D* tex, NTextureData::Usage usage, bool cacheFileN
         if (cacheFileName)
             _texFile = tex->getPath();
     }
-    else if (usage == NTextureData::Usage::Normal) // currently only diffuse and normal are supported
+    else
     {
         if (_material){
             auto technique = _material->_currentTechnique;
