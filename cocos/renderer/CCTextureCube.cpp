@@ -194,14 +194,25 @@ bool TextureCube::init(const std::string& positive_x, const std::string& negativ
 
     GL::bindTextureN(0, handle, GL_TEXTURE_CUBE_MAP);
 
+    GLint enforcedFormat = -1;
+    Size enforcedSize;
     for (int i = 0; i < 6; i++)
     {
         Image* img = images[i];
-
+        Size imgSize(img->getWidth(), img->getHeight());
+        if (enforcedSize.width == 0.f)
+            enforcedSize = imgSize;
+        
+        Assert(imgSize.equals(enforcedSize), "Cubemap textures must use the same texture size for each face (%s)", _imgPath[i].c_str());
+        
         Texture2D::PixelFormat  ePixelFmt;
         unsigned char*          pData = getImageData(img, ePixelFmt);
         if (ePixelFmt == Texture2D::PixelFormat::RGBA8888 || ePixelFmt == Texture2D::PixelFormat::DEFAULT)
         {
+            if (enforcedFormat == -1)
+                enforcedFormat = GL_RGBA;
+            Assert(enforcedFormat == GL_RGBA, "Cubemap textures must have the same internal pixel format for each face (%s)", _imgPath[i].c_str());
+            
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
                          0,                  // level
                          GL_RGBA,            // internal format
@@ -214,6 +225,10 @@ bool TextureCube::init(const std::string& positive_x, const std::string& negativ
         }
         else if (ePixelFmt == Texture2D::PixelFormat::RGB888)
         {
+            if (enforcedFormat == -1)
+                enforcedFormat = GL_RGB;
+            Assert(enforcedFormat == GL_RGB, "Cubemap textures must have the same internal pixel format for each face (%s)", _imgPath[i].c_str());
+            
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
                          0,                  // level
                          GL_RGB,             // internal format
