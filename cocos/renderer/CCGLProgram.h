@@ -153,17 +153,12 @@ public:
         UNIFORM_BPC_ALPHA, // "alpha"
         UNIFORM_BPC_MATRIX_PALETTE, // "u_matrixPalette"
         UNIFORM_BPC_WORLD_VIEW, // "worldViewMat"
+        UNIFORM_BPC_CAMERA_POSITION, //"u_cameraPosition"
         
         UNIFORM_BPC_SHADOW_SAMPLER, //"u_shadowMap
         UNIFORM_BPC_LIGHTP_MATRIX, //"u_lightMatrix
         UNIFORM_BPC_USE_SHADOWMAP, // "u_useShadowmap
         
-        UNIFORM_BPC_CUSTOM_1,
-        UNIFORM_BPC_CUSTOM_2,
-        UNIFORM_BPC_CUSTOM_3,
-        UNIFORM_BPC_CUSTOM_4,
-        UNIFORM_BPC_CUSTOM_5,
-
         UNIFORM_MAX,
     };
 
@@ -316,6 +311,17 @@ public:
     /**
     @}
     */
+    
+    static const char* UNIFORM_NAME_BPC_COLOR; // "u_color"
+    static const char* UNIFORM_NAME_BPC_ALPHA; // "alpha"
+    static const char* UNIFORM_NAME_BPC_MATRIX_PALETTE; // "u_matrixPalette"
+    static const char* UNIFORM_NAME_BPC_WORLD_VIEW; // "worldViewMat"
+    static const char* UNIFORM_NAME_BPC_CAMERA_POSITION; //"u_cameraPosition"
+    
+    static const char* UNIFORM_NAME_BPC_SHADOW_SAMPLER; //"u_shadowMap
+    static const char* UNIFORM_NAME_BPC_LIGHTP_MATRIX; //"u_lightMatrix
+    static const char* UNIFORM_NAME_BPC_USE_SHADOWMAP; // "u_useShadowmap
+    
     /**Alpha test value uniform.*/
     static const char* UNIFORM_NAME_ALPHA_TEST_VALUE;
     /**
