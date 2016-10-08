@@ -902,7 +902,7 @@ const AABB& Node::getNodeToParentAABB(const std::vector<std::string>& excludeMes
         }
         
         if (!_nodeToParentAABB.isEmpty()) {
-            _nodeToParentAABB.transform(_transform);
+            _nodeToParentAABB.transform(getNodeToParentTransform());
             _nodeToParentAABBDirty = false;
             _nodeToParentExcludeMeshes = excludeMeshes;
         }

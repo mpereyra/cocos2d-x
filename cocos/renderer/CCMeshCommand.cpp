@@ -113,7 +113,7 @@ void MeshCommand::init(float globalZOrder,
                        uint32_t flags)
 {
     CCASSERT(glProgramState, "GLProgramState cannot be nill");
-    
+
     RenderCommand::init(globalZOrder, mv, flags);
     
     _globalOrder = globalZOrder;
@@ -128,7 +128,7 @@ void MeshCommand::init(float globalZOrder,
     _indexCount = indexCount;
     _mv.set(mv);
     
-    _is3D = true;
+    _is3D = _drawMode != DrawMode::Force2D;
 }
 
 void MeshCommand::init(float globalOrder,
