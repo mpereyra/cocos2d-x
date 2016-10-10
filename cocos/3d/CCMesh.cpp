@@ -60,7 +60,8 @@ std::string s_uniformSamplerName[] =
     "",//NTextureData::Usage::Bump
     "",//NTextureData::Usage::Transparency
     "u_reflectionCubemap",//NTextureData::Usage::Reflection
-    "u_lightmapTexture"//NTextureData::Usage::Lightmap
+    "u_lightmapTexture",//NTextureData::Usage::Lightmap,
+    "u_diffuse2Texture"//NTextureData::Usage::SecondDiffuse
 };
 
 static const char          *s_dirLightUniformColorName = "u_DirLightSourceColor";
