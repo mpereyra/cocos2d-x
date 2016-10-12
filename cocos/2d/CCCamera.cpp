@@ -147,25 +147,7 @@ void Camera::lookAt(const Vec3& lookAtPos, const Vec3& up)
     upv.normalize();
     Vec3 zaxis;
     Vec3::subtract(this->getPosition3D(), lookAtPos, &zaxis);
-    
-    /* BPC PATCH BEGIN */
-    /* I haven't gotten to debug the math that causes the problem I'm solving for
-       But ultimately when zaxis.x to equals -1000 and floating point percision
-       Causes it to be represented by -999.99999 all of the rotation values calculated
-       Below end up being equal to 1/2 PI radians, or 90 degrees. This edge case manifiests
-       When the value of camera rotation is at 90 degrees. Should be easy to handle the edge
-       with a better patch later. */
-    zaxis.x = floor(zaxis.x + 0.5);
-    zaxis.y = floor(zaxis.y + 0.5);
-    zaxis.z = floor(zaxis.z + 0.5);
-    #pragma mark TODO handle 90 degree edge case in math
-    /* BPC PATCH END */
-    
     zaxis.normalize();
-    if(zaxis.x != -1000) {
-        int i = 0;
-        i++;
-    }
     
     Vec3 xaxis;
     Vec3::cross(upv, zaxis, &xaxis);
