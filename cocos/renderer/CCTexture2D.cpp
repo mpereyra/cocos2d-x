@@ -113,6 +113,11 @@ namespace {
 #endif
         PixelFormatInfoMapValue(Texture2D::PixelFormat::ASTC_RGBA, Texture2D::PixelFormatInfo(GL_COMPRESSED_RGBA_ASTC_6x5_KHR,
             0xFFFFFFFF, 0xFFFFFFFF, 4, true, false)),
+        
+        /*BPC PATCH*/
+        PixelFormatInfoMapValue(Texture2D::PixelFormat::DEPTH_TEXTURE, Texture2D::PixelFormatInfo(GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, 16, false, false)),
+        PixelFormatInfoMapValue(Texture2D::PixelFormat::RG16F, Texture2D::PixelFormatInfo(GL_RG_EXT, GL_RG_EXT, GL_HALF_FLOAT_OES, 32, false, false))
+        /*END BPC PATCH*/
     };
 }
 

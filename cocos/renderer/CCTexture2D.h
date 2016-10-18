@@ -116,6 +116,12 @@ public:
         ATC_INTERPOLATED_ALPHA,
         //! ASTC-compressed texture: ASTC_RGBA
         ASTC_RGBA,
+        
+        /*BPC PATCH*/
+        DEPTH_TEXTURE, //Depth format for offscreen rendering
+        RG16F,    //RG channels, each with 16-bit HalfFloat format.
+        /*END BPC PATCH*/
+        
         //! Default texture format: AUTO
         DEFAULT = AUTO,
         
