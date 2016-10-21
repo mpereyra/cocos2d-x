@@ -956,6 +956,22 @@ Node* GLProgramState::getNodeBinding() const
     return _nodeBinding;
 }
 
+
+/*BPC PATCH*/
+bool GLProgramState::hasUniform(const std::string& uniformName) const
+{
+    const auto it = _uniformsByName.find(uniformName);
+    return (it != _uniformsByName.end());
+}
+
+bool GLProgramState::hasAttribute(const std::string& attributeName) const
+{
+    const auto it = _attributes.find(attributeName);
+    return (it != _attributes.end());
+}
+/*END BPC PATCH*/
+
+
 //
 // MARK: AutoBindingResolver
 //

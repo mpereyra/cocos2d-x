@@ -141,9 +141,6 @@ const char* GLProgram::UNIFORM_NAME_BPC_MATRIX_PALETTE = "u_matrixPalette";
 const char* GLProgram::UNIFORM_NAME_BPC_WORLD_VIEW = "worldViewMat";
 const char* GLProgram::UNIFORM_NAME_BPC_CAMERA_POSITION = "u_cameraPosition";
 
-const char* GLProgram::UNIFORM_NAME_BPC_SHADOW_SAMPLER = "u_shadowMap";
-const char* GLProgram::UNIFORM_NAME_BPC_LIGHTP_MATRIX = "u_lightMatrix";
-const char* GLProgram::UNIFORM_NAME_BPC_USE_SHADOWMAP = "u_useShadowmap";
 
 // Attribute names
 const char* GLProgram::ATTRIBUTE_NAME_COLOR = "a_color";
@@ -567,10 +564,6 @@ void GLProgram::updateUniforms()
     _builtInUniforms[UNIFORM_BPC_MATRIX_PALETTE] = glGetUniformLocation(_program, UNIFORM_NAME_BPC_MATRIX_PALETTE);
     _builtInUniforms[UNIFORM_BPC_CAMERA_POSITION] = glGetUniformLocation(_program, UNIFORM_NAME_BPC_CAMERA_POSITION);
     
-    _builtInUniforms[UNIFORM_BPC_SHADOW_SAMPLER] = glGetUniformLocation(_program, UNIFORM_NAME_BPC_SHADOW_SAMPLER);
-    _builtInUniforms[UNIFORM_BPC_LIGHTP_MATRIX] = glGetUniformLocation(_program, UNIFORM_NAME_BPC_LIGHTP_MATRIX);
-    _builtInUniforms[UNIFORM_BPC_USE_SHADOWMAP] = glGetUniformLocation(_program, UNIFORM_NAME_BPC_USE_SHADOWMAP);
-
     _flags.usesP = _builtInUniforms[UNIFORM_P_MATRIX] != -1;
     _flags.usesMV = _builtInUniforms[UNIFORM_MV_MATRIX] != -1;
     _flags.usesMVP = _builtInUniforms[UNIFORM_MVP_MATRIX] != -1;

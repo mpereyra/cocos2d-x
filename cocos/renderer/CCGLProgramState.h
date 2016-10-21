@@ -441,6 +441,10 @@ public:
         AutoBindingResolver();
     };
 
+    /*BPC PATCH*/
+    bool hasUniform(const std::string& uniformName) const;
+    bool hasAttribute(const std::string& attributeName) const;
+    /*END BPC PATCH*/
 protected:
     GLProgramState();
     virtual ~GLProgramState();
