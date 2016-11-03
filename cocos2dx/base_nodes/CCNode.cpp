@@ -204,7 +204,7 @@ void CCNode::setRotation(float newRotation)
 }
 
 /// scale getter
-float CCNode::getScale(void)
+float CCNode::getScale(void) const
 {
     CCAssert( m_fScaleX == m_fScaleY, "CCNode#scale. ScaleX != ScaleY. Don't know which one to return");
     return m_fScaleX;
