@@ -156,7 +156,9 @@ void bindTexture2DN(GLuint textureUnit, GLuint textureId)
 {
     
     if(textureId==0){
-        CCLOG("Trying to bind texture 0");
+        // Commenting this out is totes going to bite us in the ass later
+        // but during dev this is the most useless and obnoxious log of all time
+//        CCLOG("Trying to bind texture 0");
         return;
     }
     
