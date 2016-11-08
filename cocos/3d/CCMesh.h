@@ -246,6 +246,10 @@ public:
     void setDepthWriteMode(GLWriteMode mode) {m_depthWriteMode = mode;}
     GLWriteMode getCullFaceMode() const {return m_cullFaceMode;}
     void setCullFaceMode(GLWriteMode mode){m_cullFaceMode = mode;}
+    bool getIsShadowCaster() const {return m_isShadowCaster;}
+    bool getIsShadowReceiver() const {return m_isShadowReceiver;}
+    void setIsShadowCaster(bool cast) {m_isShadowCaster = cast;}
+    void setIsShadowReceiver(bool receive) {m_isShadowReceiver = receive;}
     
     bool boolFromWriteMode(GLWriteMode mode) const{
         switch(mode){
@@ -309,6 +313,8 @@ protected:
     int m_dirLightCount = -1;
     int m_spotLightCount = -1;
     bool m_hasAmbientComponent = false;
+    bool m_isShadowCaster = false;
+    bool m_isShadowReceiver = false;
     /*END BPC PATCH*/
     
     std::vector<Vec3> _dirLightUniformColorValues;
