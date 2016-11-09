@@ -355,8 +355,8 @@ protected:
     std::function<void (RenderTexture*, const std::string&)> _saveFileCallback;
 protected:
     //renderer caches and callbacks
-    void onBegin();
-    void onEnd();
+    virtual void onBegin();
+    virtual void onEnd();
 
     void onClear();
     void onClearDepth();
