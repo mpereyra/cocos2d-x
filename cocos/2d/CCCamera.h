@@ -306,6 +306,11 @@ CC_CONSTRUCTOR_ACCESS:
     void applyViewport();
     void restoreFrameBufferObject();
     void restoreViewport();
+    
+    /*BPC PATCH*/
+    float getFieldOfView() const {return _fieldOfView;}
+    float getAspectRatio() const {return _aspectRatio;}
+    /*END BPC PATCH*/
 
 protected:
     static Camera* _visitingCamera;
