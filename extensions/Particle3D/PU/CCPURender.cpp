@@ -24,6 +24,7 @@
  ****************************************************************************/
 
 #include "extensions/Particle3D/CCParticleSystem3D.h"
+#include "extensions/Particle3D/ParticleAssetCreator.h"
 #include "extensions/Particle3D/PU/CCPURender.h"
 #include "extensions/Particle3D/PU/CCPUParticleSystem3D.h"
 #include "extensions/Particle3D/PU/CCPUUtil.h"
@@ -449,7 +450,7 @@ void PUParticle3DModelRender::render( Renderer* renderer, const Mat4 &transform,
 
     if (_spriteList.empty()){
         for (unsigned int i = 0; i < particleSystem->getParticleQuota(); ++i){
-            Sprite3D *sprite = Sprite3D::create(_modelFile);
+            Sprite3D *sprite = ParticleAssetCreator::getInstance()->createSprite3D(_modelFile);
             if (sprite == nullptr)
             {
                 CCLOG("failed to load file %s", _modelFile.c_str());
@@ -566,7 +567,7 @@ bool PUParticle3DEntityRender::initRender( const std::string &texFile )
     GLProgram* glProgram = GLProgramCache::getInstance()->getGLProgram(GLProgram::SHADER_3D_PARTICLE_COLOR);
     if (!texFile.empty())
     {
-        auto tex = Director::getInstance()->getTextureCache()->addImage(texFile);
+        auto tex = ParticleAssetCreator::getInstance()->createTexture(texFile);
         if (tex)
         {
             _texture = tex;

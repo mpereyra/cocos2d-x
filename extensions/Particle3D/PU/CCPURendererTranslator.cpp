@@ -261,8 +261,9 @@ void PURendererTranslator::translate(PUScriptCompiler* compiler, PUAbstractNode 
                             if(getString(*prop->values.front(), &val))
                             {
                                 std::string::size_type pos = val.find_last_of(".");
-                                val = val.substr(0, pos + 1) + std::string("c3b");
-                                if (material) 
+                                if (pos != std::string::npos)
+                                    val = val.substr(0, pos + 1) + std::string("c3b");
+                                if (material)
                                     _renderer = PUParticle3DModelRender::create(val, material->textureFile);
                                 else
                                     _renderer = PUParticle3DModelRender::create(val);

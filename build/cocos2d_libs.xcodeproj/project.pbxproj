@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0B61C0BE1DDFC4510078EC27 /* ParticleAssetCreator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0B61C0BC1DDFC4510078EC27 /* ParticleAssetCreator.cpp */; };
+		0B61C0BF1DDFC4510078EC27 /* ParticleAssetCreator.h in Headers */ = {isa = PBXBuildFile; fileRef = 0B61C0BD1DDFC4510078EC27 /* ParticleAssetCreator.h */; };
 		0C261F281BE7528900707478 /* Light3DReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C261F261BE7528900707478 /* Light3DReader.cpp */; };
 		0C261F291BE7528900707478 /* Light3DReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0C261F261BE7528900707478 /* Light3DReader.cpp */; };
 		0C261F2A1BE7528900707478 /* Light3DReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 0C261F271BE7528900707478 /* Light3DReader.h */; };
@@ -5751,6 +5753,8 @@
 		06CAAABF186AD63B0012A414 /* TriggerMng.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TriggerMng.h; sourceTree = "<group>"; };
 		06CAAAC0186AD63B0012A414 /* TriggerObj.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TriggerObj.cpp; sourceTree = "<group>"; };
 		06CAAAC1186AD63B0012A414 /* TriggerObj.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TriggerObj.h; sourceTree = "<group>"; };
+		0B61C0BC1DDFC4510078EC27 /* ParticleAssetCreator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ParticleAssetCreator.cpp; path = Particle3D/ParticleAssetCreator.cpp; sourceTree = "<group>"; };
+		0B61C0BD1DDFC4510078EC27 /* ParticleAssetCreator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ParticleAssetCreator.h; path = Particle3D/ParticleAssetCreator.h; sourceTree = "<group>"; };
 		0C261F261BE7528900707478 /* Light3DReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Light3DReader.cpp; sourceTree = "<group>"; };
 		0C261F271BE7528900707478 /* Light3DReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Light3DReader.h; sourceTree = "<group>"; };
 		1551A33F158F2AB200E66CFE /* libcocos2d Mac.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcocos2d Mac.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -6885,11 +6889,11 @@
 		5E9F61231A3FFE3D0038DE01 /* CCFrustum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCFrustum.h; sourceTree = "<group>"; };
 		5E9F61241A3FFE3D0038DE01 /* CCPlane.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCPlane.cpp; sourceTree = "<group>"; };
 		5E9F61251A3FFE3D0038DE01 /* CCPlane.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCPlane.h; sourceTree = "<group>"; };
-		9F8357C61A705FF400781D2A /* BPCRetry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BPCRetry.h; sourceTree = "<group>"; };
 		8525E3A11B291E42008EE815 /* clipper.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = clipper.hpp; sourceTree = "<group>"; };
 		85B374381B204B9400C488D6 /* clipper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = clipper.cpp; sourceTree = "<group>"; };
 		94A6DF031C7303FD0094AEF7 /* LocalizationManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LocalizationManager.cpp; sourceTree = "<group>"; };
 		94A6DF041C7303FD0094AEF7 /* LocalizationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LocalizationManager.h; sourceTree = "<group>"; };
+		9F8357C61A705FF400781D2A /* BPCRetry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BPCRetry.h; sourceTree = "<group>"; };
 		A045F6D41BA81577005076C7 /* CCTextureCube.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCTextureCube.cpp; sourceTree = "<group>"; };
 		A045F6D51BA81577005076C7 /* CCTextureCube.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCTextureCube.h; sourceTree = "<group>"; };
 		A045F6DA1BA816A1005076C7 /* CCCameraBackgroundBrush.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCCameraBackgroundBrush.cpp; sourceTree = "<group>"; };
@@ -10285,6 +10289,8 @@
 				B68778F51A8CA82E00643ABF /* CCParticle3DRender.h */,
 				B68778F61A8CA82E00643ABF /* CCParticleSystem3D.cpp */,
 				B68778F71A8CA82E00643ABF /* CCParticleSystem3D.h */,
+				0B61C0BC1DDFC4510078EC27 /* ParticleAssetCreator.cpp */,
+				0B61C0BD1DDFC4510078EC27 /* ParticleAssetCreator.h */,
 				B6C0BF661A6F746800BCF15A /* ParticleUniverse */,
 			);
 			name = Particle3D;
@@ -13700,6 +13706,7 @@
 				B6CAB23C1AF9AA1A00B9B856 /* btCompoundCompoundCollisionAlgorithm.h in Headers */,
 				292DB14C19B4574100A80320 /* UIEditBoxImpl-mac.h in Headers */,
 				5020A2291D49912500E80C72 /* TransformConstraintData.h in Headers */,
+				0B61C0BF1DDFC4510078EC27 /* ParticleAssetCreator.h in Headers */,
 				15AE1BF019AAE01E00C27E9E /* CCControlHuePicker.h in Headers */,
 				B665E3611AA80A6500DDB1C5 /* CCPUOnRandomObserverTranslator.h in Headers */,
 				B665E3111AA80A6500DDB1C5 /* CCPUObserver.h in Headers */,
@@ -16381,6 +16388,7 @@
 				B665E4071AA80A6600DDB1C5 /* CCPUSphereSurfaceEmitter.cpp in Sources */,
 				503DD8EE1926736A00CD74DD /* CCImage-ios.mm in Sources */,
 				B6CAB2941AF9AA1A00B9B856 /* btCompoundShape.cpp in Sources */,
+				0B61C0BE1DDFC4510078EC27 /* ParticleAssetCreator.cpp in Sources */,
 				B6CAB39A1AF9AA1A00B9B856 /* btVoronoiSimplexSolver.cpp in Sources */,
 				46A170FC1807CECB005B8026 /* CCPhysicsBody.cpp in Sources */,
 				15AE1BEA19AAE01E00C27E9E /* CCControlButton.cpp in Sources */,
