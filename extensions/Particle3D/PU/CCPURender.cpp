@@ -124,31 +124,42 @@ void PUParticle3DQuadRender::render(Renderer* renderer, const Mat4 &transform, P
     getOriginOffset(offsetX, offsetY);
 
     if (_type == PERPENDICULAR_COMMON){
-        up = _commonUp;
+        up.set(_commonUp);
         up.normalize();
         Vec3::cross(up, _commonDir, &right);
         right.normalize();
-        backward = _commonDir;
+        backward.set(_commonDir);
     }else if (_type == ORIENTED_COMMON){
-        up = _commonDir;
+        up.set(_commonDir);
         up.normalize();
         Vec3::cross(up, backward, &right);
         right.normalize();
     }
 
+    Vec3 direction;
+    Vec3 halfwidth;
+    Vec3 halfheight;
+    Vec3 offset;
+    Vec3 brVert;
+    Vec3 blVert;
+    Vec3 trVert;
+    Vec3 tlVert;
+    Vec2 texOffset;
+    Vec2 val;
+    float costheta;
+    float sintheta;
     for (auto iter : activeParticleList)
     {
         auto particle = static_cast<PUParticle3D *>(iter);
         determineUVCoords(particle);
         if (_type == ORIENTED_SELF){
-            Vec3 direction = particle->direction;
             //transform.transformVector(particle->direction, &direction);
-            up = direction;
+            up.set(particle->direction);
             up.normalize();
-            Vec3::cross(direction, backward, &right);
+            Vec3::cross(particle->direction, backward, &right);
             right.normalize();
         }else if (_type == PERPENDICULAR_SELF){
-            Vec3 direction = particle->direction;
+            direction.set(particle->direction);
             //transform.transformVector(particle->direction, &direction);
             direction.normalize();
             //up = PUUtil::perpendicular(direction);
@@ -157,39 +168,61 @@ void PUParticle3DQuadRender::render(Renderer* renderer, const Mat4 &transform, P
             right.normalize();
             Vec3::cross(direction, right, &up);
             up.normalize();
-            backward = direction;
+            backward.set(direction);
         }else if (_type == ORIENTED_SHAPE){
             up.set(particle->orientation.x, particle->orientation.y, particle->orientation.z);
             up.normalize();
             Vec3::cross(up, backward, &right);
             right.normalize();
         }
-        Vec3 halfwidth = particle->width * 0.5f * right;
-        Vec3 halfheight = particle->height * 0.5f * up;
-        Vec3 offset = halfwidth * offsetX + halfheight * offsetY;
+        halfwidth.set(particle->width * 0.5f * right.x,
+                      particle->width * 0.5f * right.y,
+                      particle->width * 0.5f * right.z);
+        halfheight.set(particle->height * 0.5f * up.x,
+                       particle->height * 0.5f * up.y,
+                       particle->height * 0.5f * up.z);
+        offset.set(halfwidth.x * offsetX + halfheight.x * offsetY,
+                   halfwidth.y * offsetX + halfheight.y * offsetY,
+                   halfwidth.z * offsetX + halfheight.z * offsetY);
         //transform.transformPoint(particle->position, &position);
-        position = particle->position;
+        position.set(particle->position);
 
         if (_rotateType == TEXTURE_COORDS){
-            float costheta = cosf(-particle->zRotation);
-            float sintheta = sinf(-particle->zRotation);
-            Vec2 texOffset = 0.5f * (particle->lb_uv + particle->rt_uv);
-            Vec2 val;
+            costheta = cosf(-particle->zRotation);
+            sintheta = sinf(-particle->zRotation);
+            texOffset.set(0.5f * (particle->lb_uv.x + particle->rt_uv.x),
+                          0.5f * (particle->lb_uv.y + particle->rt_uv.y));
             val.set((particle->lb_uv.x - texOffset.x), (particle->lb_uv.y - texOffset.y));
-            val.set(val.x * costheta - val.y * sintheta, val.x * sintheta + val.y * costheta);
-            fillVertex(vertexindex, (position + (-halfwidth - halfheight + offset)), particle->color, val + texOffset);
+            val.set(val.x * costheta - val.y * sintheta + texOffset.x,
+                    val.x * sintheta + val.y * costheta + texOffset.y);
+            blVert.set(position.x - halfwidth.x - halfheight.x + offset.x,
+                       position.y - halfwidth.y - halfheight.y + offset.y,
+                       position.z - halfwidth.z - halfheight.z + offset.z);
+            fillVertex(vertexindex, blVert, particle->color, val);
 
             val.set(particle->rt_uv.x - texOffset.x, particle->lb_uv.y - texOffset.y);
-            val.set(val.x * costheta - val.y * sintheta, val.x * sintheta + val.y * costheta);
-            fillVertex(vertexindex + 1, (position + (halfwidth - halfheight + offset)), particle->color, val + texOffset);
+            val.set(val.x * costheta - val.y * sintheta + texOffset.x,
+                    val.x * sintheta + val.y * costheta + texOffset.y);
+            brVert.set(position.x + halfwidth.x - halfheight.x + offset.x,
+                       position.y + halfwidth.y - halfheight.y + offset.y,
+                       position.z + halfwidth.z - halfheight.z + offset.z);
+            fillVertex(vertexindex + 1, brVert, particle->color, val);
 
             val.set(particle->lb_uv.x - texOffset.x, particle->rt_uv.y - texOffset.y);
-            val.set(val.x * costheta - val.y * sintheta, val.x * sintheta + val.y * costheta);
-            fillVertex(vertexindex + 2, (position + (-halfwidth + halfheight + offset)), particle->color, val + texOffset);
+            val.set(val.x * costheta - val.y * sintheta + texOffset.x,
+                    val.x * sintheta + val.y * costheta + texOffset.y);
+            tlVert.set(position.x - halfwidth.x + halfheight.x + offset.x,
+                       position.y - halfwidth.y + halfheight.y + offset.y,
+                       position.z - halfwidth.z + halfheight.z + offset.z);
+            fillVertex(vertexindex + 2, tlVert, particle->color, val);
 
             val.set(particle->rt_uv.x - texOffset.x, particle->rt_uv.y - texOffset.y);
-            val.set(val.x * costheta - val.y * sintheta, val.x * sintheta + val.y * costheta);
-            fillVertex(vertexindex + 3, (position + (halfwidth + halfheight + offset)), particle->color, val + texOffset);
+            val.set(val.x * costheta - val.y * sintheta + texOffset.x,
+                    val.x * sintheta + val.y * costheta + texOffset.y);
+            trVert.set(position.x + halfwidth.x + halfheight.x + offset.x,
+                       position.y + halfwidth.y + halfheight.y + offset.y,
+                       position.z + halfwidth.z + halfheight.z + offset.z);
+            fillVertex(vertexindex + 3, trVert, particle->color, val);
         }else{
             Mat4::createRotation(backward, -particle->zRotation, &pRotMat);
             fillVertex(vertexindex    , (position + pRotMat * (- halfwidth - halfheight + offset)), particle->color, particle->lb_uv);
@@ -387,14 +420,15 @@ void PUParticle3DQuadRender::determineUVCoords( PUParticle3D *particle )
     currentRow = _textureCoordsRows - currentRow - 1;
 
     particle->lb_uv.set(_textureCoordsColStep * currentCol, _textureCoordsRowStep * currentRow);
-    particle->rt_uv = particle->lb_uv + Vec2(_textureCoordsColStep, _textureCoordsRowStep);
+    particle->rt_uv.set(particle->lb_uv.x + _textureCoordsColStep,
+                        particle->lb_uv.y + _textureCoordsRowStep);
 }
 
 void PUParticle3DQuadRender::fillVertex( unsigned short index, const Vec3 &pos, const Vec4 &color, const Vec2 &uv )
 {
-    _vertices[index].position = pos;
-    _vertices[index].color = color;
-    _vertices[index].uv = uv;
+    _vertices[index].position.set(pos);
+    _vertices[index].color.set(color);
+    _vertices[index].uv.set(uv);
 }
 
 void PUParticle3DQuadRender::fillTriangle( unsigned short index, unsigned short v0, unsigned short v1, unsigned short v2 )
