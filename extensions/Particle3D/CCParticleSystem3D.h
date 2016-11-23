@@ -30,6 +30,7 @@
 #include <vector>
 #include <map>
 #include <list>
+#include <vector>
 
 NS_CC_BEGIN
 
@@ -62,24 +63,26 @@ template<typename T>
 class CC_DLL DataPool
 {
 public:
-    typedef typename std::list<T*> PoolList;
-    typedef typename std::list<T*>::iterator PoolIterator;
+    typedef typename std::vector<T*> PoolList;
+    typedef typename std::vector<T*>::iterator PoolIterator;
 
     DataPool(){};
     ~DataPool(){};
 
     T* createData(){
         if (_locked.empty()) return nullptr;
-        T* p = _locked.front();
+        T* p = _locked.back();
         //_released.push_back(p);
         //_locked.erase(_locked.begin());
-        _released.splice(_released.end(), _locked, _locked.begin());
+        _released.push_back(p);
+        _locked.pop_back();
         return p;
     };
 
     void lockLatestData(){
         _locked.push_back(*_releasedIter);
-        _releasedIter = _released.erase(_releasedIter);
+        *_releasedIter = _released.back();
+        _released.pop_back();
         if (_releasedIter != _released.begin() && _releasedIter != _released.end())
         {
             --_releasedIter;
@@ -100,7 +103,7 @@ public:
     }
 
     void lockAllDatas(){
-        _locked.splice(_locked.end(), _released);
+        _locked.insert(_locked.end(), _released.begin(), _released.end());
         //_locked.insert(_locked.end(), _released.begin(), _released.end());
         //_released.clear();
         _releasedIter = _released.begin();

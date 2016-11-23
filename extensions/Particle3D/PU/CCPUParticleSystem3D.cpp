@@ -1207,11 +1207,11 @@ void PUParticleSystem3D::processParticle( ParticlePool &pool, bool &firstActiveP
             //if (_emitter && _emitter->isEnabled())
             //    _emitter->updateEmitter(particle, elapsedTime);
 
-            for (auto it : _emitters) {
-                if (it->isEnabled() && !it->isMarkedForEmission()){
-                    (static_cast<PUEmitter*>(it))->updateEmitter(particle, elapsedTime);
-                }
-            }
+//            for (auto it : _emitters) {
+//                if (it->isEnabled() && !it->isMarkedForEmission()){
+//                    (static_cast<PUEmitter*>(it))->updateEmitter(particle, elapsedTime);
+//                }
+//            }
 
             for (auto& it : _affectors) {
                 if (it->isEnabled()){
@@ -1238,7 +1238,7 @@ void PUParticleSystem3D::processParticle( ParticlePool &pool, bool &firstActiveP
 
             firstActiveParticle = false;
             // Keep latest position
-            particle->latestPosition = particle->position;
+            particle->latestPosition.set(particle->position);
 
             //if (_maxVelocitySet && particle->calculateVelocity() > _maxVelocity)
             //{

@@ -95,7 +95,7 @@ void PUColorAffector::updatePUAffector( PUParticle3D *particle, float deltaTime 
     {
         //PUParticle3D *particle = iter;
         // Linear interpolation of the colour
-        Vec4 color = Vec4::ONE;
+        static Vec4 color;
         float timeFraction = (particle->totalTimeToLive - particle->timeToLive) / particle->totalTimeToLive;
         ColorMapIterator it1 = findNearestColorMapIterator(timeFraction);
         ColorMapIterator it2 = it1;
@@ -103,24 +103,29 @@ void PUColorAffector::updatePUAffector( PUParticle3D *particle, float deltaTime 
         if (it2 != _colorMap.end())
         {
             // Interpolate colour
-
-            color = it1->second + ((it2->second - it1->second) * ((timeFraction - it1->first)/(it2->first - it1->first)));
+            float t = (timeFraction - it1->first) / (it2->first - it1->first);
+            const Vec4& c1 = it1->second;
+            const Vec4& c2 = it2->second;
+            color.set(c1.x + (c2.x-c1.x) * t,
+                      c1.y + (c2.y-c1.y) * t,
+                      c1.z + (c2.z-c1.z) * t,
+                      c1.w + (c2.w-c1.w) * t);
         }
         else
         {
-            color = it1->second;
+            color.set(it1->second);
         }
 
         // Determine operation
         if (_colorOperation == CAO_SET)
         {
             // No operation, so just set the colour
-            particle->color = color;
+            particle->color.set(color);
         }
         else
         {
             // Multiply
-            particle->color = Vec4(color.x * particle->originalColor.x, color.y * particle->originalColor.y, color.z * particle->originalColor.z, color.w * particle->originalColor.w);
+            particle->color.set(color.x * particle->originalColor.x, color.y * particle->originalColor.y, color.z * particle->originalColor.z, color.w * particle->originalColor.w);
         }
     }
 }
