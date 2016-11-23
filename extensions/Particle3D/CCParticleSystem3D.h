@@ -105,7 +105,7 @@ public:
     void lockAllDatas(){
         _locked.insert(_locked.end(), _released.begin(), _released.end());
         //_locked.insert(_locked.end(), _released.begin(), _released.end());
-        //_released.clear();
+        _released.clear();
         _releasedIter = _released.begin();
     };
 
