@@ -130,6 +130,7 @@ public:
      * to calculate the AABB.
      */
     virtual const AABB& getAABB() const;
+    virtual AABB const & getCullingAABB() const { return getAABB(); }
     // BPC PATCH END
 
     // BPC PATCH isSprite()

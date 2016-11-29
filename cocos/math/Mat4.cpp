@@ -821,20 +821,28 @@ void Mat4::scale(float xScale, float yScale, float zScale)
 
 void Mat4::scale(float xScale, float yScale, float zScale, Mat4* dst) const
 {
+    // BPC-PATCH BEGIN
+
     if(dst != this)
         *dst = *this;
-    
+
     dst->m[0] *= xScale;
-    dst->m[1] *= yScale;
-    dst->m[2] *= zScale;
-    
-    dst->m[4] *= xScale;
+    dst->m[1] *= xScale;
+    dst->m[2] *= xScale;
+
+    dst->m[4] *= yScale;
     dst->m[5] *= yScale;
-    dst->m[6] *= zScale;
-    
-    dst->m[8] *= xScale;
-    dst->m[9] *= yScale;
+    dst->m[6] *= yScale;
+
+    dst->m[8] *= zScale;
+    dst->m[9] *= zScale;
     dst->m[10] *= zScale;
+
+    // BPC-PATCH END
+
+    // Mat4 s;
+    // createScale(xScale, yScale, zScale, &s);
+    // multiply(*this, s, dst);
 }
 
 void Mat4::scale(const Vec3& s)
