@@ -377,10 +377,10 @@ Material* Mesh::getMaterial() const
 
 void Mesh::draw(Renderer* renderer, float globalZOrder, const Mat4& transform, uint32_t flags, unsigned int lightMask, const Vec4& color, bool forceDepthWrite)
 {
-    if (! isVisible())
+    /*BPC PATCH*/
+    if (! isVisible() || m_skipRender)
         return;
     
-    /*BPC PATCH*/
     if (m_globalZ != std::numeric_limits<float>::max())
         globalZOrder = m_globalZ;
     /*END BPC PATCH*/
