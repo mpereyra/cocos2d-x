@@ -248,8 +248,10 @@ public:
     void setCullFaceMode(GLWriteMode mode){m_cullFaceMode = mode;}
     bool getIsShadowCaster() const {return m_isShadowCaster;}
     bool getIsShadowReceiver() const {return m_isShadowReceiver;}
+    bool getSkipRender() const {return m_skipRender;}
     void setIsShadowCaster(bool cast) {m_isShadowCaster = cast;}
     void setIsShadowReceiver(bool receive) {m_isShadowReceiver = receive;}
+    void setSkipRender(bool skip) {m_skipRender = skip;}
     
     bool boolFromWriteMode(GLWriteMode mode) const{
         switch(mode){
@@ -315,6 +317,7 @@ protected:
     bool m_hasAmbientComponent = false;
     bool m_isShadowCaster = false;
     bool m_isShadowReceiver = false;
+    bool m_skipRender = false;
     /*END BPC PATCH*/
     
     std::vector<Vec3> _dirLightUniformColorValues;

@@ -62,7 +62,8 @@ std::string s_uniformSamplerName[] =
     "u_reflectionCubemap",//NTextureData::Usage::Reflection
     "u_lightmapTexture",//NTextureData::Usage::Lightmap,
     "u_diffuse2Texture",//NTextureData::Usage::SecondDiffuse
-    "u_dirtMap"//NTextureData::Usage::Dirtmap
+    "u_dirtMap",//NTextureData::Usage::Dirtmap
+    "u_rimMap",//NTextureData::Usage::RimMap
 };
 
 static const char          *s_dirLightUniformColorName = "u_DirLightSourceColor";
@@ -377,10 +378,10 @@ Material* Mesh::getMaterial() const
 
 void Mesh::draw(Renderer* renderer, float globalZOrder, const Mat4& transform, uint32_t flags, unsigned int lightMask, const Vec4& color, bool forceDepthWrite)
 {
-    if (! isVisible())
+    /*BPC PATCH*/
+    if (! isVisible() || m_skipRender)
         return;
     
-    /*BPC PATCH*/
     if (m_globalZ != std::numeric_limits<float>::max())
         globalZOrder = m_globalZ;
     /*END BPC PATCH*/

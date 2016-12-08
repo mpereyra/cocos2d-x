@@ -60,7 +60,10 @@ void PUGravityAffector::updatePUAffector( PUParticle3D *particle, float deltaTim
         //PUParticle3D *particle = iter;
         // Applied scaling in V1.3.1
         /** Applying Newton's law of universal gravitation.	*/
-        Vec3 distance = _derivedPosition - particle->position;
+        static Vec3 distance;
+        distance.set(_derivedPosition.x - particle->position.x,
+                     _derivedPosition.y - particle->position.y,
+                     _derivedPosition.z - particle->position.z);
         float length = distance.lengthSquared();
         float scaleVelocity = 1.0f;
         //if (mParentTechnique)
@@ -71,7 +74,7 @@ void PUGravityAffector::updatePUAffector( PUParticle3D *particle, float deltaTim
         {
             //Real force = (mGravity * particle->mass * mass) / length;
             float force = (scaleVelocity * _gravity * particle->mass * _mass) / length;
-            particle->direction += force * distance * deltaTime * calculateAffectSpecialisationFactor(particle);
+            particle->direction += (force * deltaTime * calculateAffectSpecialisationFactor(particle)) * distance;
         }
     }
 }
