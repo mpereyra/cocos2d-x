@@ -47,7 +47,6 @@ THE SOFTWARE.
 #include <queue>
 #include <list>
 #include <pthread.h>
-#include <semaphore.h>
 #include <vector>
 
 using namespace std;
@@ -76,6 +75,9 @@ typedef struct _ImageInfo
 static void (*s_asyncCallback)(CCTextureCache::AsyncCallback const &) = NULL;
 
 static pthread_t s_loadingThread;
+
+static pthread_mutex_t      s_SleepMutex;
+static pthread_cond_t       s_SleepCondition;
 
 static pthread_mutex_t      s_callbacksMutex;
 static pthread_mutex_t		s_asyncStructQueueMutex;
@@ -107,29 +109,15 @@ void CCTextureCache::resumeAsync() {
     pthread_mutex_unlock(&s_pauseMutex);
 }
 
-static sem_t* s_pSem = NULL;
 static unsigned long s_nAsyncRefCount = 0;
-
-#if CC_TARGET_PLATFORM == CC_PLATFORM_IOS
-    #define CC_ASYNC_TEXTURE_CACHE_USE_NAMED_SEMAPHORE 1
-#else
-    #define CC_ASYNC_TEXTURE_CACHE_USE_NAMED_SEMAPHORE 0
-#endif
-    
-
-#if CC_ASYNC_TEXTURE_CACHE_USE_NAMED_SEMAPHORE
-    #define CC_ASYNC_TEXTURE_CACHE_SEMAPHORE "ccAsync"
-#else
-static sem_t s_sem;
-#endif
-
 
 static bool need_quit = false;
 
+static std::queue<AsyncStruct*>* s_pAsyncStructQueue = NULL;
+static std::queue<ImageInfo*>*   s_pImageQueue = NULL;
+
 typedef std::map<std::string, std::vector<Functor> > Callbacks_t;
 static Callbacks_t s_callbacks;
-static std::queue<AsyncStruct*> s_asyncStructQueue;
-static std::list<ImageInfo*> s_imageQueue;
 
 static CCImage::EImageFormat computeImageFormatType(string& filename)
 {
@@ -168,27 +156,18 @@ static void* loadImage(void* data)
         }
         pthread_mutex_unlock(&s_pauseMutex);
 
-        // wait for rendering thread to ask for loading if s_pAsyncStructQueue is empty
-        #ifdef EMSCRIPTEN
-        int semWaitRet = 0;
-        #else
-        int semWaitRet = sem_wait(s_pSem);
-        #endif
-        if( semWaitRet < 0 )
-        {
-            CCLOG( "CCTextureCache async thread semaphore error: %s\n", strerror( errno ) );
-            break;
-        }
-
         pthread_mutex_lock(&s_asyncStructQueueMutex);// get async struct from queue
-        std::queue<AsyncStruct*> *pQueue = &s_asyncStructQueue;
+        std::queue<AsyncStruct*> *pQueue = s_pAsyncStructQueue;
         if (pQueue->empty())
         {
             pthread_mutex_unlock(&s_asyncStructQueueMutex);
-            if (need_quit)
+            if (need_quit) {
                 break;
-            else
+            }
+            else {
+                pthread_cond_wait(&s_SleepCondition, &s_SleepMutex);
                 continue;
+            }
         }
         else
         {
@@ -298,23 +277,21 @@ static void* loadImage(void* data)
 
         // put the image info into the queue
         pthread_mutex_lock(&s_imageInfoMutex);
-        s_imageQueue.push_back(pImageInfo);
-        pthread_mutex_unlock(&s_imageInfoMutex);	
+        s_pImageQueue->push(pImageInfo);
+        pthread_mutex_unlock(&s_imageInfoMutex);
     }
 
-    if( s_pSem != NULL )
+    if( s_pAsyncStructQueue != NULL )
     {
-#if CC_ASYNC_TEXTURE_CACHE_USE_NAMED_SEMAPHORE
-        sem_unlink(CC_ASYNC_TEXTURE_CACHE_SEMAPHORE);
-        #ifndef EMSCRIPTEN
-        sem_close(s_pSem);
-        #endif // EMSCRIPTEN
-#else
-        #ifndef EMSCRIPTEN
-        sem_destroy(s_pSem);
-        #endif
-#endif
-        s_pSem = NULL;
+        delete s_pAsyncStructQueue;
+        s_pAsyncStructQueue = NULL;
+        delete s_pImageQueue;
+        s_pImageQueue = NULL;
+        
+        pthread_mutex_destroy(&s_asyncStructQueueMutex);
+        pthread_mutex_destroy(&s_imageInfoMutex);
+        pthread_mutex_destroy(&s_SleepMutex);
+        pthread_cond_destroy(&s_SleepCondition);
     }
 
     return 0;
@@ -367,12 +344,6 @@ CCTextureCache * CCTextureCache::sharedTextureCache()
 CCTextureCache::CCTextureCache()
 {
 	CCAssert(g_sharedTextureCache == NULL, "Attempted to allocate a second instance of a singleton.");
-	
-    pthread_mutex_init(&s_asyncStructQueueMutex, NULL);
-    pthread_mutex_init(&s_callbacksMutex, NULL);
-    pthread_mutex_init(&s_imageInfoMutex, NULL);
-    pthread_mutex_init(&s_pauseMutex, NULL);
-    pthread_cond_init(&s_pauseCondition, NULL);
 
     m_pTextures = new CCDictionary();
 }
@@ -381,13 +352,8 @@ CCTextureCache::~CCTextureCache()
 {
 	CCLOGINFO("cocos2d: deallocing CCTextureCache.");
 	need_quit = true;
-    if (s_pSem != NULL)
-    {
-        #ifndef EMSCRIPTEN
-        sem_post(s_pSem);
-        #endif
-    }
     
+    pthread_cond_signal(&s_SleepCondition);
 	CC_SAFE_RELEASE(m_pTextures);
 }
 
@@ -450,30 +416,16 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target,
 	}
 
     // lazy init
-    if (s_pSem == NULL)
-    {             
-#if CC_ASYNC_TEXTURE_CACHE_USE_NAMED_SEMAPHORE
-        s_pSem = sem_open(CC_ASYNC_TEXTURE_CACHE_SEMAPHORE, O_CREAT, 0644, 0);
-        if( s_pSem == SEM_FAILED )
-	{
-            CCLOG( "CCTextureCache async thread semaphore init error: %s\n", strerror( errno ) );
-            s_pSem = NULL;
-            return;
-	}
-#else
-        #ifdef EMSCRIPTEN
-        int semInitRet = 0;
-        #else
-        int semInitRet = sem_init(&s_sem, 0, 0);
-        #endif        
-
-        if( semInitRet < 0 )
-	{		     
-            CCLOG( "CCTextureCache async thread semaphore init error: %s\n", strerror( errno ) );
-            return;
-        }
-        s_pSem = &s_sem;
-#endif
+    if (s_pAsyncStructQueue == NULL)
+    {
+        s_pAsyncStructQueue = new queue<AsyncStruct*>();
+        s_pImageQueue = new queue<ImageInfo*>();
+        pthread_mutex_init(&s_asyncStructQueueMutex, NULL);
+        pthread_mutex_init(&s_callbacksMutex, NULL);
+        pthread_mutex_init(&s_imageInfoMutex, NULL);
+        pthread_mutex_init(&s_SleepMutex, NULL);
+        pthread_cond_init(&s_SleepCondition, NULL);
+        pthread_cond_init(&s_pauseCondition, NULL);
         #ifndef EMSCRIPTEN
 		pthread_create(&s_loadingThread, NULL, loadImage, NULL);
         #endif
@@ -516,7 +468,7 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target,
 
 	// add async struct into queue
 	pthread_mutex_lock(&s_asyncStructQueueMutex);
-	s_asyncStructQueue.push(data);
+	s_pAsyncStructQueue->push(data);
 
     /* Add callback. */
     Functor const functor(target, selector);
@@ -526,9 +478,7 @@ void CCTextureCache::addImageAsync(const char *path, CCObject *target,
     pthread_mutex_unlock(&s_callbacksMutex);
 	pthread_mutex_unlock(&s_asyncStructQueueMutex);
 
-    #ifndef EMSCRIPTEN
-    sem_post(s_pSem);
-    #endif
+    pthread_cond_signal(&s_SleepCondition);
 }
 
 void CCTextureCache::setAsyncImageCallback(void (*callback)(AsyncCallback const &))
@@ -561,16 +511,16 @@ void CCTextureCache::removeAllAsyncImages()
     pthread_mutex_lock(&s_asyncStructQueueMutex);
     pthread_mutex_lock(&s_imageInfoMutex);
     pthread_mutex_lock(&s_callbacksMutex);
-    while(!s_asyncStructQueue.empty())
+    while(!s_pAsyncStructQueue->empty())
     {
-        AsyncStruct * const pAsyncStruct{ s_asyncStructQueue.front() };
-        s_asyncStructQueue.pop();
+        AsyncStruct * const pAsyncStruct{ s_pAsyncStructQueue->front() };
+        s_pAsyncStructQueue->pop();
         delete pAsyncStruct;
     }
-    while(!s_imageQueue.empty())
+    while(!s_pImageQueue->empty())
     {
-        ImageInfo * const pImageInfo{ s_imageQueue.front() };
-        s_imageQueue.pop_front();
+        ImageInfo * const pImageInfo{ s_pImageQueue->front() };
+        s_pImageQueue->pop();
         delete pImageInfo;
     }
     while(!s_callbacks.empty())
@@ -589,7 +539,7 @@ void CCTextureCache::addImageAsyncCallBack(float dt)
 {
     pthread_mutex_lock(&s_imageInfoMutex);
     // the image is generated in loading thread
-    list<ImageInfo*> *imagesQueue = &s_imageQueue;
+    queue<ImageInfo*> *imagesQueue = s_pImageQueue;
 
     if (imagesQueue->empty())
     {
@@ -609,7 +559,7 @@ void CCTextureCache::addImageAsyncCallBack(float dt)
             else
             {
                 ImageInfo *pImageInfo = imagesQueue->front();
-                imagesQueue->pop_front();
+                imagesQueue->pop();
                 pthread_mutex_unlock(&s_imageInfoMutex);
                 
                 AsyncStruct *pAsyncStruct = pImageInfo->asyncStruct;
