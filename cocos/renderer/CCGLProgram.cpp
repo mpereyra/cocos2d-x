@@ -478,7 +478,9 @@ bool GLProgram::compileShader(GLuint* shader, GLenum type, const GLchar* source,
         return false;
     }
 
-    const GLchar *sources[] = {
+    bool needsDerivatives = strstr(source,"dFdx(")!=nullptr || strstr(source,"dFdy(")!=nullptr;
+    
+    const GLchar *sources[] = { needsDerivatives ? "#extension GL_OES_standard_derivatives : enable\n" : "",
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WINRT
         (type == GL_VERTEX_SHADER ? "precision mediump float;\n precision mediump int;\n" : "precision mediump float;\n precision mediump int;\n"),
 #elif (CC_TARGET_PLATFORM != CC_PLATFORM_WIN32 && CC_TARGET_PLATFORM != CC_PLATFORM_LINUX && CC_TARGET_PLATFORM != CC_PLATFORM_MAC)
