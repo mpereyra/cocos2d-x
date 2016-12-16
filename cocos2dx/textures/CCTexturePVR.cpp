@@ -133,6 +133,7 @@ typedef struct _PVRTexHeader
 CCTexturePVR::CCTexturePVR() 
 : m_uTableFormatIndex(0)
 , m_uNumberOfMipmaps(0)
+, m_pvrdata(0)
 , m_uWidth(0)
 , m_uHeight(0)
 , m_bRetainName(false)

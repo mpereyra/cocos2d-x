@@ -37,7 +37,8 @@ typedef struct
 
 
 CCTextureASTC::CCTextureASTC()
-: m_uWidth(0)
+: m_data(0)
+, m_uWidth(0)
 , m_uHeight(0)
 , m_bRetainName(false)
 , m_uName(0)
