@@ -54,6 +54,12 @@ public:
         TRIANGLES_COMMAND
     };
 
+    enum class DrawMode {
+        Default,
+        Force2D,
+        Force3D
+    };
+
     /**
      * init function, will be called by all the render commands
      */
@@ -86,6 +92,9 @@ public:
     inline Ref& getLifePartner() { return _lifePartner; }
     /* BPC Patch */
 
+    inline DrawMode getDrawMode() { return _drawMode; }
+    inline void setDrawMode(DrawMode drawMode) { _drawMode = drawMode; }
+
 protected:
     RenderCommand(Ref& lifePartner);
     virtual ~RenderCommand();
@@ -116,6 +125,8 @@ protected:
     // ref to the cocos-ref that owns this command
     Ref& _lifePartner;
     /* BPC Patch */
+
+    DrawMode _drawMode {DrawMode::Default};
 };
 
 NS_CC_END

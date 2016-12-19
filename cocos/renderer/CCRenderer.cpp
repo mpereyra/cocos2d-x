@@ -57,7 +57,19 @@ static bool compareRenderCommand(const std::pair<RenderCommand*, cocos_ptr<Ref>>
 
 static bool compare3DCommand(const std::pair<RenderCommand*, cocos_ptr<Ref>>& a, const std::pair<RenderCommand*, cocos_ptr<Ref>>& b)
 {
-    return  a.first->getDepth() > b.first->getDepth();
+    bool const a3D = a.first->is3D();
+    bool const b3D = b.first->is3D();
+    bool const both3D = a3D && b3D;
+    if(both3D){
+        //transparent last otherwise based on depth
+        bool const aTrans = a.first->isTransparent();
+        bool const bTrans = b.first->isTransparent();
+        if(aTrans && !bTrans){ return false; }
+        if(!aTrans && bTrans){ return true; }
+        return compare3DCommand(a, b);
+    }else{
+        return a.first->getGlobalOrder() < b.first->getGlobalOrder();
+    }
 }
 
 // queue
