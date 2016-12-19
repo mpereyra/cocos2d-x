@@ -635,15 +635,7 @@ void RenderTexture::onBegin()
     
     //calculate viewport
     {
-        Rect viewport;
-        viewport.size.width = _fullviewPort.size.width;
-        viewport.size.height = _fullviewPort.size.height;
-        float viewPortRectWidthRatio = float(viewport.size.width)/_fullRect.size.width;
-        float viewPortRectHeightRatio = float(viewport.size.height)/_fullRect.size.height;
-        viewport.origin.x = (_fullRect.origin.x - _rtTextureRect.origin.x) * viewPortRectWidthRatio;
-        viewport.origin.y = (_fullRect.origin.y - _rtTextureRect.origin.y) * viewPortRectHeightRatio;
-        //glViewport(_fullviewPort.origin.x, _fullviewPort.origin.y, (GLsizei)_fullviewPort.size.width, (GLsizei)_fullviewPort.size.height);
-        glViewport(viewport.origin.x, viewport.origin.y, (GLsizei)viewport.size.width, (GLsizei)viewport.size.height);
+        setGLViewport();
     }
 
     // Adjust the orthographic projection and viewport
@@ -817,7 +809,20 @@ void RenderTexture::end()
     
     director->popMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION);
     director->popMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
-
 }
+
+void RenderTexture::setGLViewport()
+{
+    Rect viewport;
+    viewport.size.width = _fullviewPort.size.width;
+    viewport.size.height = _fullviewPort.size.height;
+    float viewPortRectWidthRatio = float(viewport.size.width)/_fullRect.size.width;
+    float viewPortRectHeightRatio = float(viewport.size.height)/_fullRect.size.height;
+    viewport.origin.x = (_fullRect.origin.x - _rtTextureRect.origin.x) * viewPortRectWidthRatio;
+    viewport.origin.y = (_fullRect.origin.y - _rtTextureRect.origin.y) * viewPortRectHeightRatio;
+    //glViewport(_fullviewPort.origin.x, _fullviewPort.origin.y, (GLsizei)_fullviewPort.size.width, (GLsizei)_fullviewPort.size.height);
+    glViewport(viewport.origin.x, viewport.origin.y, (GLsizei)viewport.size.width, (GLsizei)viewport.size.height);
+}
+
 
 NS_CC_END

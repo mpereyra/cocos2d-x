@@ -800,6 +800,11 @@ void Sprite3D::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
         }
     }
 
+    /*BPC PATCH*/
+    cocos2d::Camera const * cam = cocos2d::Camera::getVisitingCamera();
+    Mat4 worldViewTransform = cam->getViewMatrix() * transform;
+    /*END BPC PATCH*/
+    
     for (auto mesh: _meshes)
     {
 #ifndef NDEBUG
@@ -807,6 +812,14 @@ void Sprite3D::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
         mesh->getMeshCommand().setName(name);
 #endif
 
+        /*BPC PATCH*/
+        auto state = mesh->getGLProgramState();
+        if(state){
+            const GLint wvLocation = state->getGLProgram()->getBuiltInUniformLocation(GLProgram::UNIFORM_BPC_WORLD_VIEW);
+            state->setUniformMat4(wvLocation, worldViewTransform);
+        }
+        /*END BPC PATCH*/
+        
         mesh->draw(renderer,
                    _globalZOrder,
                    transform,

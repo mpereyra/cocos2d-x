@@ -99,6 +99,10 @@ void UniformValue::apply()
             case GL_FLOAT_VEC4:
                 _glprogram->setUniformLocationWith4fv(_uniform->location, _value.v4f.pointer, _value.v4f.size);
                 break;
+                
+            case GL_FLOAT_MAT4:
+                _glprogram->setUniformLocationWithMatrix4fv(_uniform->location, _value.v4f.pointer, _value.v4f.size);
+                break;
 
             default:
                 CCASSERT(false, "Unsupported type");
@@ -245,6 +249,14 @@ void UniformValue::setMat4(const Mat4& value)
     CCASSERT(_uniform->type == GL_FLOAT_MAT4, "_uniform's type should be equal GL_FLOAT_MAT4.");
 	memcpy(_value.matrixValue, &value, sizeof(_value.matrixValue));
     _type = Type::VALUE;
+}
+
+void UniformValue::setMat4v(ssize_t size, const Mat4* pointer)
+{
+    CCASSERT(_uniform->type == GL_FLOAT_MAT4, "_uniform's type should be equal GL_FLOAT_MAT4.");
+    _value.mat4f.pointer = (const float*)pointer;
+    _value.mat4f.size = (GLsizei)size;
+    _type = Type::POINTER;
 }
 
 //
@@ -844,6 +856,21 @@ void GLProgramState::setUniformMat4(GLint uniformLocation, const Mat4& value)
 //    else
 //        CCLOG("cocos2d: warning: Uniform at location not found: %i", uniformLocation);
 }
+
+void GLProgramState::setUniformMat4v(const std::string& uniformName, ssize_t size, const Mat4* pointer)
+{
+    auto v = getUniformValue(uniformName);
+    if (v)
+        v->setMat4v(size, pointer);
+}
+
+void GLProgramState::setUniformMat4v(GLint uniformLocation, ssize_t size, const Mat4* pointer)
+{
+    auto v = getUniformValue(uniformLocation);
+    if (v)
+        v->setMat4v(size, pointer);
+}
+
 
 // Textures
 

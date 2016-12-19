@@ -310,6 +310,8 @@ public:
     bool initWithWidthAndHeight(int w, int h, Texture2D::PixelFormat format, GLuint depthStencilFormat);
 
 protected:
+    virtual void setGLViewport();
+    
     virtual void beginWithClear(float r, float g, float b, float a, float depthValue, int stencilValue, GLbitfield flags);
     
     //flags: whether generate new modelView and projection matrix or not
