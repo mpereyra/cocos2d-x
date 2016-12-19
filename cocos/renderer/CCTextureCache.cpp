@@ -827,6 +827,12 @@ std::string TextureCache::getCachedTextureInfo() const
     return buffer;
 }
 
+std::unordered_map<std::string, Texture2D*> TextureCache::getCachedTextures() const{
+    std::lock_guard<std::mutex> locky(_texturesMutex);
+    std::unordered_map<std::string, Texture2D*> textureMap = _textures;
+    return textureMap;
+}
+
 void TextureCache::renameTextureWithKey(const std::string& srcName, const std::string& dstName)
 {
     std::string key = srcName;

@@ -195,6 +195,9 @@ public:
     * @since v1.0
     */
     std::string getCachedTextureInfo() const;
+    
+    /* BPC_PATCH */
+    std::unordered_map<std::string, Texture2D*> getCachedTextures() const;
 
     //Wait for texture cache to quit before destroy instance.
     /**Called by director, please do not called outside.*/
