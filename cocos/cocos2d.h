@@ -61,8 +61,6 @@ THE SOFTWARE.
 #include "base/CCIMEDelegate.h"
 #include "base/CCIMEDispatcher.h"
 #include "base/ccUtils.h"
-//  *** BCP PATCH ***
-#include "base/cocos_ptr.h"
 
 // EventDispatcher
 #include "base/CCEventType.h"

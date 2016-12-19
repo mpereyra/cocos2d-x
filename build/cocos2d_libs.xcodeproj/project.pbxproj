@@ -1952,7 +1952,6 @@
 		B29A7E3F19EE1B7700872B35 /* AnimationState.h in Headers */ = {isa = PBXBuildFile; fileRef = B29A7DC619EE1B7700872B35 /* AnimationState.h */; };
 		B29A7E4019EE1B7700872B35 /* AnimationState.h in Headers */ = {isa = PBXBuildFile; fileRef = B29A7DC619EE1B7700872B35 /* AnimationState.h */; };
 		B2CC507C19776DD10041958E /* CCPhysicsJoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 46A170721807CE7A005B8026 /* CCPhysicsJoint.cpp */; };
-		B41A351C1D99BFEC007BC3E4 /* cocos_ptr.h in Headers */ = {isa = PBXBuildFile; fileRef = B41A351B1D99BFEC007BC3E4 /* cocos_ptr.h */; };
 		B4D542111D8B164700FBC8B7 /* BPCHelper-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = B4D542101D8B164700FBC8B7 /* BPCHelper-ios.mm */; };
 		B4D5421D1D8B1DE100FBC8B7 /* BPCHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = B4D5421C1D8B1DE100FBC8B7 /* BPCHelper.h */; };
 		B4D5421E1D8B1E8D00FBC8B7 /* BPCHelper-ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = B4D542101D8B164700FBC8B7 /* BPCHelper-ios.mm */; };
@@ -3670,7 +3669,6 @@
 		B29A7DC619EE1B7700872B35 /* AnimationState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnimationState.h; sourceTree = "<group>"; };
 		B3AF019E1842FBA400A98B85 /* b2MotorJoint.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = b2MotorJoint.cpp; sourceTree = "<group>"; };
 		B3AF019F1842FBA400A98B85 /* b2MotorJoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = b2MotorJoint.h; sourceTree = "<group>"; };
-		B41A351B1D99BFEC007BC3E4 /* cocos_ptr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = cocos_ptr.h; path = ../base/cocos_ptr.h; sourceTree = "<group>"; };
 		B4D542101D8B164700FBC8B7 /* BPCHelper-ios.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "BPCHelper-ios.mm"; sourceTree = "<group>"; };
 		B4D5421C1D8B1DE100FBC8B7 /* BPCHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BPCHelper.h; sourceTree = "<group>"; };
 		B60C5BD219AC68B10056FBDE /* CCBillBoard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCBillBoard.cpp; sourceTree = "<group>"; };
@@ -4249,7 +4247,6 @@
 		1A5700A2180BC5E60088DEC7 /* base */ = {
 			isa = PBXGroup;
 			children = (
-				B41A351B1D99BFEC007BC3E4 /* cocos_ptr.h */,
 				B63990CA1A490AFE00B07923 /* CCAsyncTaskPool.cpp */,
 				B63990CB1A490AFE00B07923 /* CCAsyncTaskPool.h */,
 				D0FD03391A3B51AA00825BB5 /* allocator */,
@@ -6601,7 +6598,6 @@
 				B29A7E3119EE1B7700872B35 /* SkinnedMeshAttachment.h in Headers */,
 				15AE1B6F19AADA9900C27E9E /* GUIDefine.h in Headers */,
 				15AE1A8119AAD40300C27E9E /* b2FrictionJoint.h in Headers */,
-				B41A351C1D99BFEC007BC3E4 /* cocos_ptr.h in Headers */,
 				15AE18DD19AAD35000C27E9E /* CocoLoader.h in Headers */,
 				46A170EB1807CECA005B8026 /* CCPhysicsJoint.h in Headers */,
 				D0FD03511A3B51AA00825BB5 /* CCAllocatorGlobal.h in Headers */,

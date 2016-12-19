@@ -33,7 +33,9 @@
 #include "renderer/CCRenderCommand.h"
 #include "renderer/CCGLProgram.h"
 #include "platform/CCGL.h"
-#include "base/cocos_ptr.h"
+
+// BPC_PATCH
+#include "../../../shared/common/cocos_ptr.h"
 
 NS_CC_BEGIN
 
@@ -42,7 +44,7 @@ class QuadCommand;
 class TrianglesCommand;
 class MeshCommand;
 
-typedef std::vector<std::pair<RenderCommand*, cocos_ptr<Ref>>> CommandVector;
+typedef std::vector<std::pair<RenderCommand*, Bpc::cocos_ptr<Ref>>> CommandVector;
 
 /** Class that knows how to sort `RenderCommand` objects.
  Since the commands that have `z == 0` are "pushed back" in

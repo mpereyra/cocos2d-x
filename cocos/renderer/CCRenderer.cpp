@@ -45,17 +45,18 @@
 
 // BPC PATCH BEGIN
 #include "platform/BPCHelper.h"
+#include "../../../shared/common/DLog.h"
 // BPC PATCH END
 
 NS_CC_BEGIN
 
 // helper
-static bool compareRenderCommand(const std::pair<RenderCommand*, cocos_ptr<Ref>>& a, const std::pair<RenderCommand*, cocos_ptr<Ref>>& b)
+static bool compare3DCommand(const std::pair<RenderCommand*, Bpc::cocos_ptr<Ref>>& a, const std::pair<RenderCommand*, Bpc::cocos_ptr<Ref>>& b)
 {
     return a.first->getGlobalOrder() < b.first->getGlobalOrder();
 }
 
-static bool compare3DCommand(const std::pair<RenderCommand*, cocos_ptr<Ref>>& a, const std::pair<RenderCommand*, cocos_ptr<Ref>>& b)
+static bool compareRenderCommand(const std::pair<RenderCommand*, Bpc::cocos_ptr<Ref>>& a, const std::pair<RenderCommand*, Bpc::cocos_ptr<Ref>>& b)
 {
     bool const a3D = a.first->is3D();
     bool const b3D = b.first->is3D();
@@ -79,11 +80,11 @@ void RenderQueue::push_back(RenderCommand* command)
     float z = command->getGlobalOrder();
     if(z < 0)
     {
-        _commands[QUEUE_GROUP::GLOBALZ_NEG].push_back({command, cocos_ptr<Ref>(&command->getLifePartner())});
+        _commands[QUEUE_GROUP::GLOBALZ_NEG].push_back({command, Bpc::cocos_ptr<Ref>(&command->getLifePartner())});
     }
     else if(z > 0)
     {
-        _commands[QUEUE_GROUP::GLOBALZ_POS].push_back({command, cocos_ptr<Ref>(&command->getLifePartner())});
+        _commands[QUEUE_GROUP::GLOBALZ_POS].push_back({command, Bpc::cocos_ptr<Ref>(&command->getLifePartner())});
     }
     else
     {
@@ -91,16 +92,16 @@ void RenderQueue::push_back(RenderCommand* command)
         {
             if(command->isTransparent())
             {
-                _commands[QUEUE_GROUP::TRANSPARENT_3D].push_back({command, cocos_ptr<Ref>(&command->getLifePartner())});
+                _commands[QUEUE_GROUP::TRANSPARENT_3D].push_back({command, Bpc::cocos_ptr<Ref>(&command->getLifePartner())});
             }
             else
             {
-                _commands[QUEUE_GROUP::OPAQUE_3D].push_back({command, cocos_ptr<Ref>(&command->getLifePartner())});
+                _commands[QUEUE_GROUP::OPAQUE_3D].push_back({command, Bpc::cocos_ptr<Ref>(&command->getLifePartner())});
             }
         }
         else
         {
-            _commands[QUEUE_GROUP::GLOBALZ_ZERO].push_back({command, cocos_ptr<Ref>(&command->getLifePartner())});
+            _commands[QUEUE_GROUP::GLOBALZ_ZERO].push_back({command, Bpc::cocos_ptr<Ref>(&command->getLifePartner())});
         }
     }
 }
