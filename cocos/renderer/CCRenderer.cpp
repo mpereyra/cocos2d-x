@@ -53,7 +53,7 @@ NS_CC_BEGIN
 // helper
 static bool compare3DCommand(const std::pair<RenderCommand*, Bpc::cocos_ptr<Ref>>& a, const std::pair<RenderCommand*, Bpc::cocos_ptr<Ref>>& b)
 {
-    return a.first->getGlobalOrder() < b.first->getGlobalOrder();
+    return  a.first->getDepth() > b.first->getDepth();
 }
 
 static bool compareRenderCommand(const std::pair<RenderCommand*, Bpc::cocos_ptr<Ref>>& a, const std::pair<RenderCommand*, Bpc::cocos_ptr<Ref>>& b)
