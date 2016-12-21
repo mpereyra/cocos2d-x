@@ -523,6 +523,9 @@ public:
     { return initWithFilenames(vertexFilename, fragFilename); }
     CC_DEPRECATED_ATTRIBUTE void addAttribute(const std::string &attributeName, GLuint index) const { return bindAttribLocation(attributeName, index); }
 
+    /*BPC PATCH*/
+    void setExtensionsString(const std::string& extensions);
+    /*END BPC PATCH*/
 
 protected:
     /**
@@ -569,6 +572,10 @@ protected:
 
     /*needed uniforms*/
     UniformFlags _flags;
+    
+    /*BPC PATCH*/
+    std::string _extensionsString;
+    /*END BPC PATCH*/
 };
 
 NS_CC_END

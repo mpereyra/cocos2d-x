@@ -478,9 +478,7 @@ bool GLProgram::compileShader(GLuint* shader, GLenum type, const GLchar* source,
         return false;
     }
 
-    bool needsDerivatives = strstr(source,"dFdx(")!=nullptr || strstr(source,"dFdy(")!=nullptr;
-    
-    const GLchar *sources[] = { needsDerivatives ? "#extension GL_OES_standard_derivatives : enable\n" : "",
+    const GLchar *sources[] = { _extensionsString.c_str(),
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WINRT
         (type == GL_VERTEX_SHADER ? "precision mediump float;\n precision mediump int;\n" : "precision mediump float;\n precision mediump int;\n"),
 #elif (CC_TARGET_PLATFORM != CC_PLATFORM_WIN32 && CC_TARGET_PLATFORM != CC_PLATFORM_LINUX && CC_TARGET_PLATFORM != CC_PLATFORM_MAC)
@@ -1025,6 +1023,13 @@ inline void GLProgram::clearShader()
 
     _vertShader = _fragShader = 0;
 }
+
+/*BPC PATCH*/
+void GLProgram::setExtensionsString(const std::string& extensions)
+{
+    _extensionsString = extensions;
+}
+/*END BPC PATCH*/
 
 NS_CC_END
 
