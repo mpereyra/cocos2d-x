@@ -73,8 +73,9 @@ static std::vector<float> s_spotLightUniformRangeInverseValues;
 static const char          *s_ambientLightUniformColorName = "u_AmbientLightSourceColor";
 
 
-MeshCommand::MeshCommand()
-: _textureID(0)
+MeshCommand::MeshCommand(Ref& lifePartner)
+: cocos2d::RenderCommand(lifePartner)
+, _textureID(0)
 , _glProgramState(nullptr)
 , _blendType(BlendFunc::DISABLE)
 , _displayColor(1.0f, 1.0f, 1.0f, 1.0f)

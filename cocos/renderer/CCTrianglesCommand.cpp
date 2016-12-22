@@ -31,8 +31,9 @@
 
 NS_CC_BEGIN
 
-TrianglesCommand::TrianglesCommand()
-:_materialID(0)
+TrianglesCommand::TrianglesCommand(Ref& lifePartner)
+:cocos2d::RenderCommand(lifePartner)
+,_materialID(0)
 ,_textureID(0)
 ,_glProgramState(nullptr)
 ,_blendType(BlendFunc::DISABLE)

@@ -113,6 +113,7 @@ bool SpriteBatchNode::initWithFile(const std::string& fileImage, ssize_t capacit
 
 SpriteBatchNode::SpriteBatchNode()
 : _textureAtlas(nullptr)
+, _batchCommand(*this)
 {
 }
 

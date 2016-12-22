@@ -45,6 +45,9 @@ NodeGrid* NodeGrid::create()
 NodeGrid::NodeGrid()
 : _gridTarget(nullptr)
 , _nodeGrid(nullptr)
+, _groupCommand(*this)
+, _gridBeginCommand(*this)
+, _gridEndCommand(*this)
 {
 
 }
@@ -110,7 +113,7 @@ void NodeGrid::visit(Renderer *renderer, const Mat4 &parentTransform, uint32_t p
         beforeProjectionType = Director::getInstance()->getProjection();
         _nodeGrid->set2DProjection();
     }
-
+    
     _gridBeginCommand.init(_globalZOrder);
     _gridBeginCommand.func = CC_CALLBACK_0(NodeGrid::onGridBeginDraw, this);
     renderer->addCommand(&_gridBeginCommand);
@@ -159,7 +162,7 @@ void NodeGrid::visit(Renderer *renderer, const Mat4 &parentTransform, uint32_t p
         // restore projection
         director->setProjection(beforeProjectionType);
     }
-
+    
     _gridEndCommand.init(_globalZOrder);
     _gridEndCommand.func = CC_CALLBACK_0(NodeGrid::onGridEndDraw, this);
     renderer->addCommand(&_gridEndCommand);

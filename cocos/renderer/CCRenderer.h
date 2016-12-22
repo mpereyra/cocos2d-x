@@ -34,12 +34,17 @@
 #include "renderer/CCGLProgram.h"
 #include "platform/CCGL.h"
 
+// BPC_PATCH
+#include "../../../shared/common/cocos_ptr.h"
+
 NS_CC_BEGIN
 
 class EventListenerCustom;
 class QuadCommand;
 class TrianglesCommand;
 class MeshCommand;
+
+typedef std::vector<std::pair<RenderCommand*, Bpc::cocos_ptr<Ref>>> CommandVector;
 
 /** Class that knows how to sort `RenderCommand` objects.
  Since the commands that have `z == 0` are "pushed back" in
@@ -68,7 +73,7 @@ public:
     void sort();
     RenderCommand* operator[](ssize_t index) const;
     void clear();
-    inline std::vector<RenderCommand*>& getSubQueue(QUEUE_GROUP group) { return _commands[group]; }
+    inline CommandVector& getSubQueue(QUEUE_GROUP group) { return _commands[group]; }
     inline ssize_t getSubQueueSize(QUEUE_GROUP group) const { return _commands[group].size();}
 
     void saveRenderState();
@@ -76,7 +81,7 @@ public:
     
 protected:
     
-    std::vector<std::vector<RenderCommand*>> _commands;
+    std::vector<CommandVector> _commands;
     
     //Render State related
     bool _isCullEnabled;
@@ -92,12 +97,17 @@ struct RenderStackElement
 
 class GroupCommandManager;
 
+// **** BPC PATCH ***
+class RenderBubble;
+
 /* Class responsible for the rendering in.
 
 Whenever possible prefer to use `QuadCommand` objects since the renderer will automatically batch them.
  */
 class CC_DLL Renderer
 {
+    // **** BPC PATCH ***
+    friend class RenderBubble;
 public:
     static const int VBO_SIZE = 65536;
     static const int INDEX_VBO_SIZE = VBO_SIZE * 6 / 4;
@@ -230,6 +240,19 @@ protected:
 #if CC_ENABLE_CACHE_TEXTURE_DATA
     EventListenerCustom* _cacheTextureListener;
 #endif
+};
+
+// **** BPC PATCH ***
+class RenderBubble {
+public:
+    RenderBubble(Renderer& renderer) : _renderer(renderer) {}
+    ~RenderBubble() {
+        _renderer.clean();
+        _renderer._isRendering = false;
+    }
+    
+private:
+    Renderer& _renderer;
 };
 
 NS_CC_END

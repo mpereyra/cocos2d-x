@@ -259,6 +259,7 @@ Label::Label(FontAtlas *atlas /* = nullptr */, TextHAlignment hAlignment /* = Te
 , _uniformEffectColor(0)
 , _shadowDirty(false)
 , _insideBounds(true)
+, _customCommand(*this)
 {
     setAnchorPoint(Vec2::ANCHOR_MIDDLE);
     reset();
@@ -846,6 +847,7 @@ void Label::onDraw(const Mat4& transform, bool transformUpdated)
     }
 
     auto glprogram = getGLProgram();
+    Assert(getGLProgram(), "invalid glProgram in Label");
     glprogram->use();
     GL::blendFunc( _blendFunc.src, _blendFunc.dst );
 

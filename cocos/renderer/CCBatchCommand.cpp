@@ -31,8 +31,9 @@
 
 NS_CC_BEGIN
 
-BatchCommand::BatchCommand()
-: _textureID(0)
+BatchCommand::BatchCommand(Ref& lifePartner)
+: RenderCommand(lifePartner)
+, _textureID(0)
 , _blendType(BlendFunc::DISABLE)
 , _textureAtlas(nullptr)
 {

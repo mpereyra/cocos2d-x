@@ -83,17 +83,20 @@ void SkeletonRenderer::setSkeletonData (spSkeletonData *skeletonData, bool ownsS
 	_ownsSkeletonData = ownsSkeletonData;
 }
 
-SkeletonRenderer::SkeletonRenderer () {
+SkeletonRenderer::SkeletonRenderer ()
+: _drawCommand(*this) {
 	initialize();
 }
 
-SkeletonRenderer::SkeletonRenderer (spSkeletonData *skeletonData, bool ownsSkeletonData) {
+SkeletonRenderer::SkeletonRenderer (spSkeletonData *skeletonData, bool ownsSkeletonData)
+: _drawCommand(*this) {
 	initialize();
 
 	setSkeletonData(skeletonData, ownsSkeletonData);
 }
 
-SkeletonRenderer::SkeletonRenderer (const std::string& skeletonDataFile, spAtlas* atlas, float scale) {
+SkeletonRenderer::SkeletonRenderer (const std::string& skeletonDataFile, spAtlas* atlas, float scale)
+: _drawCommand(*this) {
 	initialize();
 
 	spSkeletonJson* json = spSkeletonJson_create(atlas);
@@ -105,7 +108,8 @@ SkeletonRenderer::SkeletonRenderer (const std::string& skeletonDataFile, spAtlas
 	setSkeletonData(skeletonData, true);
 }
 
-SkeletonRenderer::SkeletonRenderer (const std::string& skeletonDataFile, const std::string& atlasFile, float scale) {
+SkeletonRenderer::SkeletonRenderer (const std::string& skeletonDataFile, const std::string& atlasFile, float scale)
+: _drawCommand(*this) {
 	initialize();
 
 	_atlas = spAtlas_createFromFile(atlasFile.c_str(), 0);
@@ -139,8 +143,10 @@ void SkeletonRenderer::draw (Renderer* renderer, const Mat4& transform, uint32_t
 }
 
 void SkeletonRenderer::drawSkeleton (const Mat4 &transform, uint32_t transformFlags) {
+    Assert(getGLProgramState(), "bad glprogramstate");
 	getGLProgramState()->apply(transform);
 
+    Assert(_skeleton, "no skeleton");
 	Color3B nodeColor = getColor();
 	_skeleton->r = nodeColor.r / (float)255;
 	_skeleton->g = nodeColor.g / (float)255;
@@ -156,6 +162,7 @@ void SkeletonRenderer::drawSkeleton (const Mat4 &transform, uint32_t transformFl
 	float r = 0, g = 0, b = 0, a = 0;
 	for (int i = 0, n = _skeleton->slotsCount; i < n; i++) {
 		spSlot* slot = _skeleton->drawOrder[i];
+        Assert(slot, "no slot");
 		if (!slot->attachment) continue;
 		Texture2D *texture = nullptr;
 		switch (slot->attachment->type) {
@@ -175,6 +182,7 @@ void SkeletonRenderer::drawSkeleton (const Mat4 &transform, uint32_t transformFl
 		}
 		case SP_ATTACHMENT_MESH: {
 			spMeshAttachment* attachment = (spMeshAttachment*)slot->attachment;
+            Assert(attachment, "no attachment");
 			spMeshAttachment_computeWorldVertices(attachment, slot, _worldVertices);
 			texture = getTexture(attachment);
 			uvs = attachment->uvs;
@@ -188,7 +196,8 @@ void SkeletonRenderer::drawSkeleton (const Mat4 &transform, uint32_t transformFl
 			break;
 		}
 		case SP_ATTACHMENT_SKINNED_MESH: {
-			spSkinnedMeshAttachment* attachment = (spSkinnedMeshAttachment*)slot->attachment;
+            spSkinnedMeshAttachment* attachment = (spSkinnedMeshAttachment*)slot->attachment;
+            Assert(attachment, "no attachment 2");
 			spSkinnedMeshAttachment_computeWorldVertices(attachment, slot, _worldVertices);
 			texture = getTexture(attachment);
 			uvs = attachment->uvs;
@@ -217,10 +226,12 @@ void SkeletonRenderer::drawSkeleton (const Mat4 &transform, uint32_t transformFl
 			_batch->add(texture, _worldVertices, uvs, verticesCount, triangles, trianglesCount, &color);
 		}
 	}
+    Assert(_batch, "no batch");
 	_batch->flush();
 
 	if (_debugSlots || _debugBones) {
 		Director* director = Director::getInstance();
+        Assert(director, "no director");
 		director->pushMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
 		director->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW, transform);
 

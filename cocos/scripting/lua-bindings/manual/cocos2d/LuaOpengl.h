@@ -38,6 +38,7 @@ extern "C" {
 class GLNode:public cocos2d::Node
 {
 public:
+    GLNode() : _renderCmd(*this) {}
     virtual ~GLNode(){}
     virtual void draw(cocos2d::Renderer *renderer, const cocos2d::Mat4& transform, uint32_t flags) override;
 protected:

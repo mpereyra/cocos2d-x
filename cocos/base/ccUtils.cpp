@@ -145,7 +145,7 @@ void onCaptureScreen(const std::function<void(bool, const std::string&)>& afterC
  */
 void captureScreen(const std::function<void(bool, const std::string&)>& afterCaptured, const std::string& filename)
 {
-    static CustomCommand captureScreenCommand;
+    static CustomCommand captureScreenCommand(*Director::getInstance());
     captureScreenCommand.init(std::numeric_limits<float>::max());
     captureScreenCommand.func = std::bind(onCaptureScreen, afterCaptured, filename);
     Director::getInstance()->getRenderer()->addCommand(&captureScreenCommand);

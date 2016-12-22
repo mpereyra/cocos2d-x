@@ -49,6 +49,7 @@ AtlasNode::AtlasNode()
 , _quadsToDraw(0)
 , _uniformColor(0)
 , _ignoreContentScaleFactor(false)
+, _quadCommand(*this)
 {
 }
 
