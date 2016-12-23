@@ -35,8 +35,9 @@
 
 NS_CC_BEGIN
 
-PrimitiveCommand::PrimitiveCommand()
-: _materialID(0)
+PrimitiveCommand::PrimitiveCommand(Ref& lifePartner)
+: cocos2d::RenderCommand(lifePartner)
+, _materialID(0)
 , _textureID(0)
 , _glProgramState(nullptr)
 , _blendType(BlendFunc::DISABLE)

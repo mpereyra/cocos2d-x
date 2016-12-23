@@ -84,6 +84,7 @@ Skin::Skin()
     : _bone(nullptr)
     , _armature(nullptr)
     , _displayName("")
+    , _quadCommand(*this)
 {
     _skinTransform = Mat4::IDENTITY;
 }

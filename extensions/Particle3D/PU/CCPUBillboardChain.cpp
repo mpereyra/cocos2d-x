@@ -664,7 +664,7 @@ void PUBillboardChain::init( const std::string &texFile )
 
     _glProgramState = glProgramState;
 
-    _meshCommand = new (std::nothrow) MeshCommand();
+    _meshCommand = new (std::nothrow) MeshCommand(*_glProgramState); // don't try this at home
     _meshCommand->setTransparent(true);
     _meshCommand->setDepthTestEnabled(true);
     _meshCommand->setDepthWriteEnabled(false);

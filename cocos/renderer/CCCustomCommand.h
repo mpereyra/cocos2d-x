@@ -33,7 +33,7 @@ NS_CC_BEGIN
 class CC_DLL CustomCommand : public RenderCommand
 {
 public:
-    CustomCommand();
+    CustomCommand(Ref& lifePartner);
     ~CustomCommand();
     
 public:

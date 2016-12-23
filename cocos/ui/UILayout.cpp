@@ -91,7 +91,13 @@ _doLayoutDirty(true),
 _isInterceptTouch(false),
 _loopFocus(false),
 _passFocusToChild(true),
-_isFocusPassing(false)
+_isFocusPassing(false),
+_groupCommand(*this),
+_beforeVisitCmdStencil(*this),
+_afterDrawStencilCmd(*this),
+_afterVisitCmdStencil(*this),
+_beforeVisitCmdScissor(*this),
+_afterVisitCmdScissor(*this)
 {
     //no-op
 }
@@ -351,7 +357,7 @@ void Layout::onBeforeVisitStencil()
 void Layout::drawFullScreenQuadClearStencil()
 {
     Director* director = Director::getInstance();
-    CCASSERT(nullptr != director, "Director is null when seting matrix stack");
+    Assert(nullptr != director, "Director is null when setting matrix stack");
 
     director->pushMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
     director->loadIdentityMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
@@ -368,6 +374,7 @@ void Layout::drawFullScreenQuadClearStencil()
     };
     
     auto glProgram = GLProgramCache::getInstance()->getGLProgram(GLProgram::SHADER_NAME_POSITION_U_COLOR);
+    Assert(glProgram, "invalid glProgram in Layout::drawFullScreenQuadClearStencil");
     
     int colorLocation = glProgram->getBuiltInUniformLocation(GLProgram::UNIFORM_BPC_COLOR);
     CHECK_GL_ERROR_DEBUG();
@@ -414,6 +421,7 @@ void Layout::onBeforeVisitScissor()
     Rect clippingRect = getClippingRect();
     glEnable(GL_SCISSOR_TEST);
     auto glview = Director::getInstance()->getOpenGLView();
+    Assert(glview, "invalid glview in Layout::onBeforeVisitScissor");
     glview->setScissorInPoints(clippingRect.origin.x, clippingRect.origin.y, clippingRect.size.width, clippingRect.size.height);
 }
 

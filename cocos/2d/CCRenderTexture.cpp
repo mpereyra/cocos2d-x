@@ -58,6 +58,13 @@ RenderTexture::RenderTexture()
 , _autoDraw(false)
 , _sprite(nullptr)
 , _saveFileCallback(nullptr)
+, _groupCommand(*this)
+, _beginWithClearCommand(*this)
+, _clearDepthCommand(*this)
+, _clearCommand(*this)
+, _beginCommand(*this)
+, _endCommand(*this)
+, _saveToFileCommand(*this)
 {
 #if CC_ENABLE_CACHE_TEXTURE_DATA
     // Listen this event to save render texture before come to background.
@@ -352,7 +359,7 @@ void RenderTexture::clearDepth(float depthValue)
     setClearDepth(depthValue);
 
     this->begin();
-
+    
     _clearDepthCommand.init(_globalZOrder);
     _clearDepthCommand.func = CC_CALLBACK_0(RenderTexture::onClearDepth, this);
 
@@ -535,6 +542,7 @@ void RenderTexture::onBegin()
 {
     //
     Director *director = Director::getInstance();
+    Assert(director, "invalid director in RT::onBegin");
     
     _oldProjMatrix = director->getMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION);
     director->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION, _projectionMatrix);
@@ -606,6 +614,7 @@ void RenderTexture::onBegin()
 void RenderTexture::onEnd()
 {
     Director *director = Director::getInstance();
+    Assert(director, "invalid director in RT::onEnd");
 
     glBindFramebuffer(GL_FRAMEBUFFER, _oldFBO);
 
@@ -703,7 +712,7 @@ void RenderTexture::draw(Renderer *renderer, const Mat4 &transform, uint32_t fla
 void RenderTexture::begin()
 {
     Director* director = Director::getInstance();
-    CCASSERT(nullptr != director, "Director is null when seting matrix stack");
+    Assert(nullptr != director, "Director is null when setting matrix stack");
     
     director->pushMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION);
     _projectionMatrix = director->getMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION);
@@ -733,7 +742,7 @@ void RenderTexture::begin()
     Renderer *renderer =  Director::getInstance()->getRenderer();
     renderer->addCommand(&_groupCommand);
     renderer->pushGroup(_groupCommand.getRenderQueueID());
-
+    
     _beginCommand.init(_globalZOrder);
     _beginCommand.func = CC_CALLBACK_0(RenderTexture::onBegin, this);
 
@@ -746,7 +755,7 @@ void RenderTexture::end()
     _endCommand.func = CC_CALLBACK_0(RenderTexture::onEnd, this);
 
     Director* director = Director::getInstance();
-    CCASSERT(nullptr != director, "Director is null when seting matrix stack");
+    Assert(nullptr != director, "Director is null when setting matrix stack");
     
     Renderer *renderer = director->getRenderer();
     renderer->addCommand(&_endCommand);

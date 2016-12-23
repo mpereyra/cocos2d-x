@@ -50,6 +50,7 @@ ParticleSystemQuad::ParticleSystemQuad()
 :_quads(nullptr)
 ,_indices(nullptr)
 ,_VAOname(0)
+,_quadCommand(*this)
 {
     memset(_buffersVBO, 0, sizeof(_buffersVBO));
 }

@@ -58,6 +58,8 @@ public:
 protected:
     ClippingRectangleNode()
     : _clippingEnabled(true)
+    , _beforeVisitCmdScissor(*this)
+    , _afterVisitCmdScissor(*this)
     {
     }
     

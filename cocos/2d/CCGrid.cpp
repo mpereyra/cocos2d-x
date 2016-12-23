@@ -204,11 +204,14 @@ void GridBase::beforeDraw(void)
     // 2d projection
     //    [director setProjection:Director::Projection::_2D];
     set2DProjection();
+    Assert(_grabber, "invalid grabber in GridBase before");
     _grabber->beforeRender(_texture);
 }
 
 void GridBase::afterDraw(cocos2d::Node *target)
 {
+    Assert(_grabber, "invalid grabber in GridBase");
+    Assert(_texture, "invalid texture in GridBase");
     _grabber->afterRender(_texture);
 
     // restore projection

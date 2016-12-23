@@ -189,7 +189,7 @@ bool Particle3DQuadRender::initQuadRender( const std::string& texFile )
     //ret->_indexBuffer = IndexBuffer::create(IndexBuffer::IndexType::INDEX_TYPE_SHORT_16, 6 * 10000);
     //ret->_indexBuffer->retain();
 
-    _meshCommand = new (std::nothrow) MeshCommand();
+    _meshCommand = new (std::nothrow) MeshCommand(*this);
     _meshCommand->setTransparent(true);
     _meshCommand->setDepthTestEnabled(_depthTest);
     _meshCommand->setDepthWriteEnabled(_depthWrite);

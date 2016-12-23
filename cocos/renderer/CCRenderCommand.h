@@ -89,13 +89,14 @@ public:
     
     /* BPC Patch */
     inline void setName(const std::string& name) { _name = name; }
+    inline Ref& getLifePartner() { return _lifePartner; }
     /* BPC Patch */
 
     inline DrawMode getDrawMode() { return _drawMode; }
     inline void setDrawMode(DrawMode drawMode) { _drawMode = drawMode; }
 
 protected:
-    RenderCommand();
+    RenderCommand(Ref& lifePartner);
     virtual ~RenderCommand();
 
     void printID();
@@ -121,6 +122,8 @@ protected:
     /* BPC Patch */
     // name of the Node that set this RenderCommand to work
     std::string _name;
+    // ref to the cocos-ref that owns this command
+    Ref& _lifePartner;
     /* BPC Patch */
 
     DrawMode _drawMode {DrawMode::Default};

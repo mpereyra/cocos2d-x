@@ -40,7 +40,7 @@ public:
         ssize_t indexCount;
     };
     
-    TrianglesCommand();
+    TrianglesCommand(Ref& lifePartner);
     ~TrianglesCommand();
     
     /** Initializes the command with a globalZOrder, a texture ID, a `GLProgram`, a blending function, a pointer to triangles,

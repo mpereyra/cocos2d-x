@@ -122,6 +122,9 @@ DrawNode::DrawNode()
 , _dirty(false)
 , _dirtyGLPoint(false)
 , _dirtyGLLine(false)
+, _customCommand(*this)
+, _customCommandGLPoint(*this)
+, _customCommandGLLine(*this)
 {
     _blendFunc = BlendFunc::ALPHA_PREMULTIPLIED;
 }
@@ -324,6 +327,7 @@ void DrawNode::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
 void DrawNode::onDraw(const Mat4 &transform, uint32_t flags)
 {
     auto glProgram = getGLProgram();
+    Assert(glProgram, "invalid glProgram in DrawNode onDraw");
     glProgram->use();
     glProgram->setUniformsForBuiltins(transform);
     
@@ -368,6 +372,7 @@ void DrawNode::onDraw(const Mat4 &transform, uint32_t flags)
 void DrawNode::onDrawGLLine(const Mat4 &transform, uint32_t flags)
 {
     auto glProgram = GLProgramCache::getInstance()->getGLProgram(GLProgram::SHADER_NAME_POSITION_LENGTH_TEXTURE_COLOR);
+    Assert(glProgram, "invalid glProgram in DrawNode onDrawGLLine");
     glProgram->use();
     glProgram->setUniformsForBuiltins(transform);
     
@@ -409,6 +414,7 @@ void DrawNode::onDrawGLLine(const Mat4 &transform, uint32_t flags)
 void DrawNode::onDrawGLPoint(const Mat4 &transform, uint32_t flags)
 {
     auto glProgram = GLProgramCache::getInstance()->getGLProgram(GLProgram::SHADER_NAME_POSITION_COLOR_TEXASPOINTSIZE);
+    Assert(glProgram, "invalid glProgram in DrawNode onDrawGLPoint");
     glProgram->use();
     glProgram->setUniformsForBuiltins(transform);
     

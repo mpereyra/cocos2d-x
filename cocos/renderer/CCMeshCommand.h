@@ -75,7 +75,7 @@ class CC_DLL MeshCommand : public RenderCommand
 {
 public:
 
-    MeshCommand();
+    MeshCommand(Ref& lifePartner);
     ~MeshCommand();
     
     void init(float globalZOrder, GLuint textureID, GLProgramState* glProgramState, BlendFunc blendType, GLuint vertexBuffer, GLuint indexBuffer, GLenum primitive, GLenum indexFormat, ssize_t indexCount, const Mat4 &mv, uint32_t flags);

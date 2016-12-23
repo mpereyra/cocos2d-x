@@ -26,8 +26,9 @@
 
 NS_CC_BEGIN
 
-CustomCommand::CustomCommand()
-: func(nullptr)
+CustomCommand::CustomCommand(Ref& lifePartner)
+: cocos2d::RenderCommand(lifePartner)
+, func(nullptr)
 {
     _type = RenderCommand::Type::CUSTOM_COMMAND;
 }
