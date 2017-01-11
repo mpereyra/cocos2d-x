@@ -59,7 +59,7 @@ std::string s_uniformSamplerName[] =
     "u_normalTexture",//NTextureData::Usage::Normal
     "",//NTextureData::Usage::Bump
     "",//NTextureData::Usage::Transparency
-    "u_reflectionCubemap",//NTextureData::Usage::Reflection
+    "u_reflectionCubeMap",//NTextureData::Usage::Reflection
     "u_lightmapTexture",//NTextureData::Usage::Lightmap,
     "u_diffuse2Texture",//NTextureData::Usage::SecondDiffuse
     "u_dirtMap",//NTextureData::Usage::Dirtmap
