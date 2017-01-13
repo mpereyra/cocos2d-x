@@ -27,6 +27,7 @@
 #include "platform/CCFileUtils.h"
 
 #include "renderer/ccGLStateCache.h"
+#include "base/CCConfiguration.h"
 
 NS_CC_BEGIN
 
@@ -194,7 +195,10 @@ bool TextureCube::init(const std::string& positive_x, const std::string& negativ
 
     GL::bindTextureN(0, handle, GL_TEXTURE_CUBE_MAP);
 
-    GLint enforcedFormat = -1;
+    /*BPC PATCH
+     Not sure why, but TextureCube didn't use the same logic as Texture2D, and as a result didn't support compressed textures. So, I changed things so that it does the same things as Texture2D, in order to support them.
+     */
+    GLenum enforcedFormat = 0;
     Size enforcedSize;
     for (int i = 0; i < 6; i++)
     {
@@ -205,43 +209,66 @@ bool TextureCube::init(const std::string& positive_x, const std::string& negativ
         
         Assert(imgSize.equals(enforcedSize), "Cubemap textures must use the same texture size for each face (%s)", _imgPath[i].c_str());
         
-        Texture2D::PixelFormat  ePixelFmt;
-        unsigned char*          pData = getImageData(img, ePixelFmt);
-        if (ePixelFmt == Texture2D::PixelFormat::RGBA8888 || ePixelFmt == Texture2D::PixelFormat::DEFAULT)
+        Texture2D::PixelFormat ePixelFmt = img->getRenderFormat();
+        unsigned char* data = img->getData();
+        GLsizei datalen = img->getDataLen();
+        
+        if(_pixelFormatInfoTables.find(ePixelFmt) == _pixelFormatInfoTables.end())
         {
-            if (enforcedFormat == -1)
-                enforcedFormat = GL_RGBA;
-            Assert(enforcedFormat == GL_RGBA, "Cubemap textures must have the same internal pixel format for each face (%s)", _imgPath[i].c_str());
-            
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                         0,                  // level
-                         GL_RGBA,            // internal format
-                         img->getWidth(),    // width
-                         img->getHeight(),   // height
-                         0,                  // border
-                         GL_RGBA,            // format
-                         GL_UNSIGNED_BYTE,   // type
-                         pData);             // pixel data
+            CCLOG("cocos2d: WARNING: unsupported pixelformat: %lx", (unsigned long)ePixelFmt );
+            return false;
         }
-        else if (ePixelFmt == Texture2D::PixelFormat::RGB888)
+        
+        const PixelFormatInfo& info = _pixelFormatInfoTables.at(ePixelFmt);
+        if (info.compressed && !Configuration::getInstance()->supportsPVRTC()
+            && !Configuration::getInstance()->supportsETC()
+            && !Configuration::getInstance()->supportsS3TC()
+            && !Configuration::getInstance()->supportsATITC())
         {
-            if (enforcedFormat == -1)
-                enforcedFormat = GL_RGB;
-            Assert(enforcedFormat == GL_RGB, "Cubemap textures must have the same internal pixel format for each face (%s)", _imgPath[i].c_str());
-            
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                         0,                  // level
-                         GL_RGB,             // internal format
-                         img->getWidth(),    // width
-                         img->getHeight(),   // height
-                         0,                  // border
-                         GL_RGB,             // format
-                         GL_UNSIGNED_BYTE,   // type
-                         pData);             // pixel data
+            CCLOG("cocos2d: WARNING: PVRTC/ETC images are not supported");
+            return false;
         }
-
-        if (pData != img->getData())
-            delete[] pData;
+        
+        if (enforcedFormat == 0)
+            enforcedFormat = info.internalFormat;
+        Assert(enforcedFormat == info.internalFormat, "Cubemap textures must have the same internal pixel format for each face (%s)", _imgPath[i].c_str());
+        
+        if (!info.compressed)
+        {
+            unsigned int bytesPerRow = imgSize.width * info.bpp / 8;
+            
+            if(bytesPerRow % 8 == 0)
+            {
+                glPixelStorei(GL_UNPACK_ALIGNMENT, 8);
+            }
+            else if(bytesPerRow % 4 == 0)
+            {
+                glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+            }
+            else if(bytesPerRow % 2 == 0)
+            {
+                glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
+            }
+            else
+            {
+                glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+            }
+        }
+        else
+        {
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+        }
+        
+        
+        if (info.compressed)
+        {
+            glCompressedTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, info.internalFormat, img->getWidth(), img->getHeight(), 0, datalen, data);
+        }
+        else
+        {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, info.internalFormat, img->getWidth(), img->getHeight(), 0, info.format, info.type, data);
+        }
+        /*END BPC PATCH*/
     }
 
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
