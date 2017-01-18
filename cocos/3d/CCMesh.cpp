@@ -387,11 +387,14 @@ void Mesh::draw(Renderer* renderer, float globalZOrder, const Mat4& transform, u
     /*END BPC PATCH*/
 
     bool isTransparent = (_isTransparent || color.w < 1.f);
-    float globalZ = isTransparent ? 0 : globalZOrder;
+    /* BPC_PATCH */
+    // we allow transparent objects to have zorder, which puts them in a different queue;
+    //float globalZ = isTransparent ? 0 : globalZOrder;
+    /* end BPC_PATCH */
     if (isTransparent)
         flags |= Node::FLAGS_RENDER_AS_3D;
 
-    _meshCommand.init(globalZ,
+    _meshCommand.init(globalZOrder,
                       _material,
                       getVertexBuffer(),
                       getIndexBuffer(),
