@@ -248,9 +248,11 @@ public:
     void setCullFaceMode(GLWriteMode mode){m_cullFaceMode = mode;}
     bool getIsShadowCaster() const {return m_isShadowCaster;}
     bool getIsShadowReceiver() const {return m_isShadowReceiver;}
+    bool getIsVertexLit() const {return m_isVertexLit;}
     bool getSkipRender() const {return m_skipRender;}
     void setIsShadowCaster(bool cast) {m_isShadowCaster = cast;}
     void setIsShadowReceiver(bool receive) {m_isShadowReceiver = receive;}
+    void setIsVertexLit(bool vertexLit) {m_isVertexLit = vertexLit;}
     void setSkipRender(bool skip) {m_skipRender = skip;}
     
     bool boolFromWriteMode(GLWriteMode mode) const{
@@ -317,6 +319,7 @@ protected:
     bool m_hasAmbientComponent = false;
     bool m_isShadowCaster = false;
     bool m_isShadowReceiver = false;
+    bool m_isVertexLit = false;
     bool m_skipRender = false;
     /*END BPC PATCH*/
     
