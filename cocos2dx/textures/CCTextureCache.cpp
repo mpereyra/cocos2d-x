@@ -580,8 +580,9 @@ void CCTextureCache::addImageAsyncCallBack(float dt)
 #ifdef ANDROID
                 CCTextureDXT *dxtTexture(pImageInfo->dxtTexture);
                 CCTextureATC *atcTexture(pImageInfo->atcTexture);
-                CCTextureASTC *astcTexture(pImageInfo->astcTexture);
 #endif
+                CCTextureASTC *astcTexture(pImageInfo->astcTexture);
+
                 CCTexture2D *texture(new CCTexture2D);
                 bool success = false;
                 
@@ -609,13 +610,13 @@ void CCTextureCache::addImageAsyncCallBack(float dt)
                     delete atcTexture;
                     atcTexture = NULL;
                 }
+#endif
                 else if(astcTexture){
                     if(astcTexture->createGLTexture())
                     { success = texture->initWithASTCFileAsync(astcTexture); }
                     delete astcTexture;
                     astcTexture = NULL;
                 }
-#endif
                 else
                 {
 #if 0 //TODO: (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
@@ -752,11 +753,12 @@ CCTexture2D * CCTextureCache::addImage(const char * path)
             {
                 texture = this->addDDSImage(fullpath.c_str());
             }
+#endif
             else if(std::string::npos != lowerCase.find(".astc"))
             {
                 texture = this->addASTCImage(fullpath.c_str());
             }
-#endif
+
             else
             {
                 CCImage::EImageFormat eImageFormat = CCImage::kFmtUnKnown;
@@ -922,7 +924,7 @@ CCTexture2D * CCTextureCache::addDDSImage(const char* path)
         return NULL;
 	}
 }
-
+#endif
 CCTexture2D * CCTextureCache::addASTCImage(const char* path)
 {
 	CCAssert(path != NULL, "TextureCache: fileimage MUST not be nill");
@@ -954,7 +956,6 @@ CCTexture2D * CCTextureCache::addASTCImage(const char* path)
     return tex;
 }
 // BPC PATCH END
-#endif
 
 CCTexture2D* CCTextureCache::addUIImage(CCImage *image, const char *key)
 {

@@ -48,8 +48,8 @@ THE SOFTWARE.
 #include "CCTextureATC.h"
 #include "CCTextureDXT.h"
 #include "CCDDS.h"
-#include "CCTextureASTC.h"
 #endif
+#include "CCTextureASTC.h"
 #if CC_ENABLE_CACHE_TEXTURE_DATA
     #include "CCTextureCache.h"
 #endif
@@ -721,7 +721,7 @@ bool CCTexture2D::initWithATCFileAsync(CCTextureATC * const atc)
     
     return true;
 }
-
+#endif
 bool CCTexture2D::initWithASTCFileAsync(CCTextureASTC * const astc)
 {
     if(!astc)
@@ -752,7 +752,7 @@ bool CCTexture2D::initWithASTCFileAsync(CCTextureASTC * const astc)
     
     return true;
 }
-
+#ifdef ANDROID
 // BPC PATCH START
 bool CCTexture2D::initWithDDSFile(const char* file)
 {
@@ -826,7 +826,7 @@ bool CCTexture2D::initWithDDSFile(const char* file)
     
     return bRet;
 }
-
+#endif
 bool CCTexture2D::initWithASTCFile(const char* file)
 {
     bool bRet = false;
@@ -858,7 +858,7 @@ bool CCTexture2D::initWithASTCFile(const char* file)
     
     return bRet;
 }
-
+#ifdef ANDROID
 // BPC PATCH END
 #endif
 
