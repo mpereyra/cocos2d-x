@@ -525,6 +525,7 @@ public:
 
     /*BPC PATCH*/
     void setExtensionsString(const std::string& extensions);
+    const std::unordered_map<std::string, Uniform>& getUniforms() const {return _userUniforms;}
     /*END BPC PATCH*/
 
 protected:
