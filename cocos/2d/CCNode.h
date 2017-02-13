@@ -1834,6 +1834,10 @@ public:
      * @param applyChildren A boolean value to determine whether the mask bit should apply to its children or not.
      */
     virtual void setCameraMask(unsigned short mask, bool applyChildren = true);
+    
+    /*BPC PATCH*/
+    virtual void setTraversalCameraMask(unsigned short mask, bool applyChildren = true);
+    /*END BPC PATCH*/
 
 CC_CONSTRUCTOR_ACCESS:
     // Nodes should be created using create();
@@ -1869,6 +1873,9 @@ protected:
     
     //check whether this camera mask is visible by the current visiting camera
     bool isVisitableByVisitingCamera() const;
+    /*BPC PATCH BEGIN*/
+    bool isTraversableByVisitingCamera() const;
+    /*BPC PATCH END*/
     
     // update quaternion from Rotation3D
     void updateRotationQuat();
@@ -1988,6 +1995,9 @@ protected:
     //we need to clear the cached AABB if the caller specifies different exclude meshes
     mutable std::vector<std::string> _nodeToParentExcludeMeshes;
     mutable bool _nodeToParentAABBDirty {true};
+    
+    //_traversalCameraMask is used to determine if we should continue traversing the scene graph, when visited with the current camera camera.
+    unsigned short _traversalCameraMask;
     /** BPC PATCH END **/
 
 //Physics:remaining backwardly compatible  

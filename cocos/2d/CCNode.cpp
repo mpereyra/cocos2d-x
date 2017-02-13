@@ -118,6 +118,7 @@ Node::Node()
 , _cascadeColorEnabled(false)
 , _cascadeOpacityEnabled(false)
 , _cameraMask(1)
+, _traversalCameraMask(1)
 #if CC_USE_PHYSICS
 , _physicsBody(nullptr)
 #endif
@@ -1014,6 +1015,7 @@ void Node::addChildHelper(Node* child, int localZOrder, int tag, const std::stri
     
     child->setParent(this);
     child->setCameraMask(getCameraMask());
+    child->setTraversalCameraMask(_traversalCameraMask);
 	child->setGlobalZOrder(getGlobalZOrder());
 
     child->updateOrderOfArrival();
@@ -1275,6 +1277,13 @@ bool Node::isVisitableByVisitingCamera() const
     return visibleByCamera;
 }
 
+bool Node::isTraversableByVisitingCamera() const
+{
+    auto camera = Camera::getVisitingCamera();
+    bool isTraversable = camera ? ((unsigned short)camera->getCameraFlag() & _traversalCameraMask) != 0 : true;
+    return isTraversable;
+}
+
 void Node::visit(Renderer* renderer, const Mat4 &parentTransform, uint32_t parentFlags)
 {
     // quick return if not visible. children won't be drawn.
@@ -1283,6 +1292,11 @@ void Node::visit(Renderer* renderer, const Mat4 &parentTransform, uint32_t paren
         return;
     }
 
+    /*BPC PATCH - Skip visit if the camera traversal flag doesn't match*/
+    if (!isTraversableByVisitingCamera())
+        return;
+    /*BPC PATCH END*/
+    
     uint32_t flags = processParentFlags(parentTransform, parentFlags);
 
     // IMPORTANT:
@@ -2243,6 +2257,9 @@ bool isScreenPointInRect(const Vec2 &pt, const Camera* camera, const Mat4& w2l, 
 void Node::setCameraMask(unsigned short mask, bool applyChildren)
 {
     _cameraMask = mask;
+    /*BPC PATCH*/
+    _traversalCameraMask = _traversalCameraMask | mask;
+    /*END BPC PATCH*/
     if (applyChildren)
     {
         for (const auto& child : _children)
@@ -2251,6 +2268,20 @@ void Node::setCameraMask(unsigned short mask, bool applyChildren)
         }
     }
 }
+
+/*BPC PATCH*/
+void Node::setTraversalCameraMask(unsigned short mask, bool applyChildren)
+{
+    _traversalCameraMask = _cameraMask | mask;
+    if (applyChildren)
+    {
+        for (const auto& child : _children)
+        {
+            child->setTraversalCameraMask(mask, applyChildren);
+        }
+    }
+}
+/*END BPC PATCH*/
 
 // MARK: Deprecated
 
