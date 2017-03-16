@@ -332,15 +332,9 @@ void MeshCommand::preBatchDraw()
 void MeshCommand::batchDraw()
 {
     // BPC PATCH BEGIN
-    bool clippingWasEnabled = glIsEnabled(GL_SCISSOR_TEST);
-    if (m_shouldClip) {
-        if (!clippingWasEnabled) {
-            glEnable(GL_SCISSOR_TEST);
-        }
-        cocos2d::Director::getInstance()->getOpenGLView()->setScissorInPoints(m_glBounds.origin.x, m_glBounds.origin.y,
-                                                                              m_glBounds.size.width, m_glBounds.size.height);
-    }
+    ScissorState const scissorState(m_shouldClip, m_glBounds);
     // BPC PATCH END
+    
     // set render state
     applyRenderState();
     
@@ -364,11 +358,6 @@ void MeshCommand::batchDraw()
     glDrawElements(_primitive, (GLsizei)_indexCount, _indexFormat, 0);
     
     CC_INCREMENT_GL_DRAWN_BATCHES_AND_VERTICES(1, _indexCount);
-    // MOAOAR BPC PATCH BEGIN
-    if (m_shouldClip && !clippingWasEnabled) {
-        glDisable(GL_SCISSOR_TEST);
-    }
-    // BPC PATCH END
 }
 void MeshCommand::postBatchDraw()
 {
@@ -398,14 +387,7 @@ void MeshCommand::setGlBounds(Rect glBounds) {
 void MeshCommand::execute()
 {
     // BPC PATCH ALL THE THINGS
-    bool clippingWasEnabled = glIsEnabled(GL_SCISSOR_TEST);
-    if (m_shouldClip) {
-        if (!clippingWasEnabled) {
-            glEnable(GL_SCISSOR_TEST);
-        }
-        cocos2d::Director::getInstance()->getOpenGLView()->setScissorInPoints(m_glBounds.origin.x, m_glBounds.origin.y,
-                                                                              m_glBounds.size.width, m_glBounds.size.height);
-    }
+    ScissorState const state(m_shouldClip, m_glBounds);
     // BPC PATCH END
     
     // set render state
@@ -441,12 +423,6 @@ void MeshCommand::execute()
     restoreRenderState();
     glCheck(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
     glCheck(glBindBuffer(GL_ARRAY_BUFFER, 0));
-    
-    // MOAR BPC PATCH BEGIN
-    if (m_shouldClip && !clippingWasEnabled) {
-        glCheck(glDisable(GL_SCISSOR_TEST));
-    }
-    // BPC PATCH END
 }
 
 void MeshCommand::buildVAO()

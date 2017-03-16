@@ -29,6 +29,7 @@
 #include "renderer/CCRenderCommand.h"
 #include "renderer/CCGLProgram.h"
 #include "math/CCMath.h"
+#include "base/CCDirector.h"
 
 NS_CC_BEGIN
 
@@ -68,6 +69,33 @@ struct PolygonOffset {
     double m_units {0};
     bool empty() const { return m_factor == 0 && m_units == 0; }
 };
+
+
+struct ScissorState {
+    
+    ScissorState(bool const shouldEnable, Rect const & glBounds) : m_shouldEnable(shouldEnable) , m_glBounds(glBounds){
+        m_wasEnabled = glIsEnabled(GL_SCISSOR_TEST);
+        
+        if(m_shouldEnable) {
+            if(!m_wasEnabled) { glEnable(GL_SCISSOR_TEST); }
+            cocos2d::Director::getInstance()->getOpenGLView()->setScissorInPoints(m_glBounds.origin.x, m_glBounds.origin.y,
+                                                                              m_glBounds.size.width, m_glBounds.size.height);
+        }
+        else if(m_wasEnabled) { glDisable(GL_SCISSOR_TEST); }
+    }
+    
+    ~ScissorState(){
+        if(m_shouldEnable && !m_wasEnabled) { glDisable(GL_SCISSOR_TEST); }
+        else if(!m_shouldEnable && m_wasEnabled) { glEnable(GL_SCISSOR_TEST); }
+    }
+    
+    
+private:
+    bool m_wasEnabled{};
+    bool const m_shouldEnable;
+    Rect const & m_glBounds;
+};
+
 //END BPC PATCH
     
 //it is a common mesh
