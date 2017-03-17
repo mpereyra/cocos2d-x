@@ -266,6 +266,9 @@ public:
         }
     }
     
+    void setMeshLightMask(unsigned int mask) { m_meshLightMask = mask; }
+    unsigned int getMeshLightMask() const { return m_meshLightMask; }
+    
     void setPointLightCount(int count);
     void setDirLightCount(int count);
     void setSpotLightCount(int count);
@@ -316,6 +319,7 @@ protected:
     int m_pointLightCount = -1;
     int m_dirLightCount = -1;
     int m_spotLightCount = -1;
+    unsigned int m_meshLightMask = 0;
     bool m_hasAmbientComponent = false;
     bool m_isShadowCaster = false;
     bool m_isShadowReceiver = false;

@@ -1087,6 +1087,14 @@ void Sprite3D::setForceCullFace(bool enabled, bool recursive) {
         }
     }
 }
+
+void Sprite3D::setLightMask(unsigned int mask) {
+    _lightMask = mask;
+    for(auto mesh : _meshes){
+        mesh->setMeshLightMask(mask);
+    }
+}
+
 /* BPC PATCH END */
 
 void Sprite3D::setForce2DQueue(bool force2D)

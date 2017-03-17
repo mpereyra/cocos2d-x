@@ -189,7 +189,7 @@ public:
     void setCullFaceEnabled(GLWriteMode mode);
     
     /** light mask getter & setter, light works only when _lightmask & light's flag is true, default value of _lightmask is 0xffff */
-    virtual void setLightMask(unsigned int mask) { _lightMask = mask; }
+    virtual void setLightMask(unsigned int mask);
     unsigned int getLightMask() const { return _lightMask; }
     
     /* BPC PATCH BEGIN */

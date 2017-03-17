@@ -436,7 +436,7 @@ void Mesh::draw(Renderer* renderer, float globalZOrder, const Mat4& transform, u
             programState->setUniformVec4v("u_matrixPalette", (GLsizei)_skin->getMatrixPaletteSize(), _skin->getMatrixPalette());
 
         if (scene && scene->getLights().size() > 0)
-            setLightUniforms(pass, scene, color, lightMask);
+            setLightUniforms(pass, scene, color, m_meshLightMask);
     }
 
     renderer->addCommand(&_meshCommand);
