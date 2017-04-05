@@ -28,6 +28,7 @@
 #include "3d/CCMeshVertexIndexData.h"
 #include "2d/CCLight.h"
 #include "2d/CCScene.h"
+#include "2d/CCCamera.h"
 #include "base/CCEventDispatcher.h"
 #include "base/CCDirector.h"
 #include "base/CCConfiguration.h"
@@ -438,6 +439,20 @@ void Mesh::draw(Renderer* renderer, float globalZOrder, const Mat4& transform, u
         if (scene && scene->getLights().size() > 0)
             setLightUniforms(pass, scene, color, m_meshLightMask);
     }
+    
+    //BPC PATCH BEGIN Update depth for transparent objects
+    if (_meshCommand.isTransparent() && _meshCommand.is3D())
+    {
+        if (Camera::getVisitingCamera())
+        {
+            auto centerPt = _aabb.getCenter();
+            cocos2d::Mat4 bbTransform;
+            transform.translate(centerPt, &bbTransform);
+            float bbDepth = Camera::getVisitingCamera()->getDepthInView(bbTransform);
+            _meshCommand.setDepth(bbDepth);
+        }
+    }
+    //BPC PATCH END
 
     renderer->addCommand(&_meshCommand);
 }
