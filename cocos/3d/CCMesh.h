@@ -270,13 +270,17 @@ public:
     unsigned int getMeshLightMask() const { return m_meshLightMask; }
     
     void setPointLightCount(int count);
+    void setFxPointLightCount(int count);
     void setDirLightCount(int count);
     void setSpotLightCount(int count);
+    void setFxSpotLightCount(int count);
     void setHasAmbientLight(bool hasAmbient) { m_hasAmbientComponent = hasAmbient; }
     bool hasAmbientLight() const { return m_hasAmbientComponent; }
     int getPointLightCount();
+    int getFxPointLightCount();
     int getDirLightCount();
     int getSpotLightCount();
+    int getFxSpotLightCount();
     /*END BPC-PATCH*/
     
     
@@ -319,6 +323,8 @@ protected:
     int m_pointLightCount = -1;
     int m_dirLightCount = -1;
     int m_spotLightCount = -1;
+    int m_fxPointLightCount = 0;
+    int m_fxSpotLightCount = 0;
     unsigned int m_meshLightMask = 0;
     bool m_hasAmbientComponent = false;
     bool m_isShadowCaster = false;

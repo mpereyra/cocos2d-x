@@ -753,6 +753,11 @@ void Mesh::setPointLightCount(int count)
     _pointLightUniformRangeInverseValues.resize(count);
 }
 
+void Mesh::setFxPointLightCount(int count)
+{
+    m_fxPointLightCount = count;
+}
+
 void Mesh::setDirLightCount(int count)
 {
     if (count < 0)
@@ -777,6 +782,12 @@ void Mesh::setSpotLightCount(int count)
     _spotLightUniformRangeInverseValues.resize(count);
 }
 
+void Mesh::setFxSpotLightCount(int count)
+{
+    m_fxSpotLightCount = count;
+}
+
+
 int Mesh::getPointLightCount()
 {
     if (m_pointLightCount >= 0)
@@ -784,6 +795,11 @@ int Mesh::getPointLightCount()
     
     const auto& conf = Configuration::getInstance();
     return conf->getMaxSupportPointLightInShader();
+}
+
+int Mesh::getFxPointLightCount()
+{
+    return m_fxPointLightCount;
 }
 
 int Mesh::getDirLightCount()
@@ -802,6 +818,11 @@ int Mesh::getSpotLightCount()
     
     const auto& conf = Configuration::getInstance();
     return conf->getMaxSupportSpotLightInShader();
+}
+
+int Mesh::getFxSpotLightCount()
+{
+    return m_fxSpotLightCount;
 }
 
 /*END BPC PATCH*/
