@@ -282,6 +282,7 @@ void CCScheduler::scheduleSelector(SEL_SCHEDULE pfnSelector, CCObject *pTarget, 
     }
     else
     {
+        CCAssert(pElement->target == pTarget, "");
         CCAssert(pElement->paused == bPaused, "");
     }
 
