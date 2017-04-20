@@ -418,6 +418,10 @@ public:
      */
     CC_DEPRECATED_ATTRIBUTE void unscheduleUpdateForTarget(Ref *target) { return unscheduleUpdate(target); };
     
+    /* BPC_PATCH begin */
+    float getScaledAccumulatedDeltaTime() const;
+    /* BPC_PATCH end */
+    
 protected:
     
     /** Schedules the 'callback' function for a given target with a given priority.
@@ -461,6 +465,10 @@ protected:
     // Used for "perform Function"
     std::vector<std::function<void()>> _functionsToPerform;
     std::mutex _performMutex;
+    
+    /* BPC_PATCH begin */
+    float m_scaledAccumulatedDt{};
+    /* BPC_PATCH end */
 };
 
 // end of global group

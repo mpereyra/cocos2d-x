@@ -388,6 +388,7 @@ public:
     
     /** BPC PATCH **/
     float getAccumulatedDeltaTime() const { return _accumDt; }
+    float getScaledAccumulatedDeltaTime() const;
     /** BPC PATCH - END **/
     
     /**

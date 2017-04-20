@@ -972,7 +972,7 @@ void GLProgram::setUniformsForBuiltins(const Mat4 &matrixMV)
 
     if(_flags.usesTime) {
         /** BPC PATCH **/
-        float time = _director->getAccumulatedDeltaTime();
+        auto const time = _director->getScaledAccumulatedDeltaTime();
         /** BPC PATCH - END **/
         
         setUniformLocationWith4f(_builtInUniforms[GLProgram::UNIFORM_TIME], time/10.0, time, time*2, time*4);
