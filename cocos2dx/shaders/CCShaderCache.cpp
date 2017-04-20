@@ -39,6 +39,7 @@ enum {
     kCCShaderType_PositionTexture_uColor,
     kCCShaderType_PositionTextureA8Color,
     kCCShaderType_Position_uColor,
+    kCCShaderType_PositionTextureColorMask,
     
     kCCShaderType_MAX,
 };
@@ -140,7 +141,14 @@ void CCShaderCache::loadDefaultShaders()
     loadDefaultShader(p, kCCShaderType_Position_uColor);
     
     m_pPrograms->setObject(p, kCCShader_Position_uColor);
-    p->release();    
+    p->release();
+
+    // Position Texture Color Mask shader
+    p = new CCGLProgram();
+    loadDefaultShader(p, kCCShaderType_PositionTextureColorMask);
+
+    m_pPrograms->setObject(p, kCCShader_PositionTextureColorMask);
+    p->release();
 }
 
 void CCShaderCache::reloadDefaultShaders()
@@ -246,6 +254,14 @@ void CCShaderCache::loadDefaultShader(CCGLProgram *p, int type)
             
             p->addAttribute("aVertex", kCCVertexAttrib_Position);    
             
+            break;
+        case kCCShaderType_PositionTextureColorMask:
+            p->initWithVertexShaderByteArray(ccPositionTextureColor_vert, ccPositionTextureColorMask_frag);
+
+            p->addAttribute(kCCAttributeNamePosition, kCCVertexAttrib_Position);
+            p->addAttribute(kCCAttributeNameColor, kCCVertexAttrib_Color);
+            p->addAttribute(kCCAttributeNameTexCoord, kCCVertexAttrib_TexCoords);
+
             break;
         default:
             CCLOG("cocos2d: %s:%d, error shader type", __FUNCTION__, __LINE__);
