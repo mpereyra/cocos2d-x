@@ -836,6 +836,10 @@ void Scheduler::update(float dt)
     {
         dt *= _timeScale;
     }
+    
+    /* BPC_PATCH begin */
+    m_scaledAccumulatedDt += dt;
+    /* BPC_PATCH end */
 
     //
     // Selector callbacks
@@ -1122,5 +1126,11 @@ void Scheduler::unschedule(SEL_SCHEDULE selector, Ref *target)
         }
     }
 }
+
+/* BPC_PATCH begin */
+float Scheduler::getScaledAccumulatedDeltaTime() const {
+    return m_scaledAccumulatedDt;
+}
+/* BPC_PATCH end */
 
 NS_CC_END

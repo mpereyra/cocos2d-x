@@ -1298,6 +1298,12 @@ void Director::setEventDispatcher(EventDispatcher* dispatcher)
     }
 }
 
+/* BPC_PATCH begin */
+float Director::getScaledAccumulatedDeltaTime() const {
+    return _scheduler->getScaledAccumulatedDeltaTime();
+}
+/* BPC_PATCH end */
+
 /***************************************************
 * implementation of DisplayLinkDirector
 **************************************************/
