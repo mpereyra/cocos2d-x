@@ -94,7 +94,7 @@ LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)/..
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/.. \
                     $(LOCAL_PATH)/WidgetReader
 
-LOCAL_CFLAGS += -fexceptions
+LOCAL_CFLAGS += -fexceptions -Wno-inconsistent-missing-override
 
 LOCAL_STATIC_LIBRARIES := cocos_ui_static
 LOCAL_STATIC_LIBRARIES += cocosdenshion_static

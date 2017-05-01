@@ -113,7 +113,10 @@ void UniformValue::apply()
     {
         switch (_uniform->type) {
             case GL_SAMPLER_2D:
+// TODO - HP-1248, uses gl2ext, consider bumping android SDK to support
+#if defined(GL_SAMPLER_2D_SHADOW_EXT)
             case GL_SAMPLER_2D_SHADOW_EXT:
+#endif
                 _glprogram->setUniformLocationWith1i(_uniform->location, _value.tex.textureUnit);
                 GL::bindTexture2DN(_value.tex.textureUnit, _value.tex.textureId);
                 break;

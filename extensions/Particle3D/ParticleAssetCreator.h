@@ -13,11 +13,10 @@
 
 NS_CC_BEGIN
 
-
 class Sprite3D;
 class Texture2D;
 
-class AssetCreatorDelegate
+class CC_DLL AssetCreatorDelegate
 {
 public:
     virtual ~AssetCreatorDelegate() {}

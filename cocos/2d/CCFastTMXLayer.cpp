@@ -166,9 +166,9 @@ void TMXLayer::draw(Renderer *renderer, const Mat4& transform, uint32_t flags)
         _dirty = false;
     }
     
-    if(_renderCommands.size() < static_cast<size_t>(_primitives.size()))
+    if(_renderCommands.capacity() < static_cast<size_t>(_primitives.size()))
     {
-        _renderCommands.resize(_primitives.size());
+        _renderCommands.reserve(_primitives.size());
     }
     
     int index = 0;
@@ -176,10 +176,13 @@ void TMXLayer::draw(Renderer *renderer, const Mat4& transform, uint32_t flags)
     {
         if(iter.second->getCount() > 0)
         {
-            auto& cmd = _renderCommands[index++];
+            if(index >= _renderCommands.size())
+            { _renderCommands.emplace_back(PrimitiveCommand()); }
+            auto& cmd = _renderCommands[index];
             auto blendfunc = _texture->hasPremultipliedAlpha() ? BlendFunc::ALPHA_PREMULTIPLIED : BlendFunc::ALPHA_NON_PREMULTIPLIED;
             cmd.init(iter.first, _texture->getName(), getGLProgramState(), blendfunc, iter.second, _modelViewTransform, flags);
             renderer->addCommand(&cmd);
+            ++index;
         }
     }
 }

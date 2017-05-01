@@ -128,12 +128,12 @@ void GLViewImpl::setIMEKeyboardState(bool bOpen)
 
 void GLViewImpl::setIMEKeyboardType(TextFieldTTF::KeyboardType type)
 {
-    setKeyboardTypeJNI(static_cast<int>(type));
+    JniHelper::callStaticVoidMethod("org/cocos2dx/lib/Cocos2dxGLSurfaceView", "setKeyboardType", static_cast<int>(type));
 }
 
 void GLViewImpl::setSecureTextEntry(bool secure)
 {
-    setSecureTextEntryJNI(secure);
+    JniHelper::callStaticVoidMethod("org/cocos2dx/lib/Cocos2dxGLSurfaceView", "setSecureTextEntry", static_cast<int>(secure));
 }
 
 NS_CC_END
