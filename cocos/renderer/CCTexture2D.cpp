@@ -115,6 +115,10 @@ namespace {
             0xFFFFFFFF, 0xFFFFFFFF, 4, true, false)),
         
         /*BPC PATCH*/
+// TODO - HP-1248, talk to Harry about this...
+#ifndef GL_RG_EXT
+#define GL_RG_EXT 0x8227
+#endif
         PixelFormatInfoMapValue(Texture2D::PixelFormat::DEPTH_TEXTURE, Texture2D::PixelFormatInfo(GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_UNSIGNED_SHORT, 16, false, false)),
         PixelFormatInfoMapValue(Texture2D::PixelFormat::RG16F, Texture2D::PixelFormatInfo(GL_RG_EXT, GL_RG_EXT, GL_HALF_FLOAT_OES, 32, false, false))
         /*END BPC PATCH*/

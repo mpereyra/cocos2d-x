@@ -284,7 +284,7 @@ public class Cocos2dxMusic {
                 } else {
                     final AssetFileDescriptor assetFileDescriptor = this.mContext.getAssets().openFd(path);
                     mediaPlayer.setDataSource(assetFileDescriptor.getFileDescriptor(), assetFileDescriptor.getStartOffset(), assetFileDescriptor.getLength());
-					assetFileDescritor.close();
+					assetFileDescriptor.close();
                 }
             }
 

@@ -197,4 +197,3 @@ LOCAL_STATIC_LIBRARIES := cocos2dx_static
 include $(BUILD_STATIC_LIBRARY)
 
 $(call import-module,$(LUA_IMPORT_PATH))
-$(call import-module,.)

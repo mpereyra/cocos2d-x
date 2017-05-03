@@ -111,6 +111,12 @@ void UniformValue::apply()
     }
     else /* _type == VALUE */
     {
+        
+// TODO - HP-1248, talk to Harry about this...
+#ifndef GL_SAMPLER_2D_SHADOW_EXT
+#define GL_SAMPLER_2D_SHADOW_EXT 0x8B62
+#endif
+
         switch (_uniform->type) {
             case GL_SAMPLER_2D:
             case GL_SAMPLER_2D_SHADOW_EXT:

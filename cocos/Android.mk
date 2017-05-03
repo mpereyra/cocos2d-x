@@ -265,7 +265,9 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH) \
 
 LOCAL_EXPORT_LDLIBS := -lGLESv2 \
                        -llog \
-                       -landroid
+                       -lz \
+                       -landroid \
+					    -latomic
 
 LOCAL_STATIC_LIBRARIES := cocos_freetype2_static
 LOCAL_STATIC_LIBRARIES += cocos_png_static
