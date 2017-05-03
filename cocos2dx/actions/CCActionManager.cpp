@@ -123,7 +123,7 @@ void CCActionManager::removeActionAtIndex(unsigned int uIndex, tHashElement *pEl
 void CCActionManager::pauseTarget(CCObject *pTarget)
 {
     tHashElement *pElement = NULL;
-    HASH_FIND_INT(m_pTargets, &pTarget, pElement);
+    HASH_FIND_PTR(m_pTargets, &pTarget, pElement);
     if (pElement)
     {
         pElement->paused = true;
@@ -133,7 +133,7 @@ void CCActionManager::pauseTarget(CCObject *pTarget)
 void CCActionManager::resumeTarget(CCObject *pTarget)
 {
     tHashElement *pElement = NULL;
-    HASH_FIND_INT(m_pTargets, &pTarget, pElement);
+    HASH_FIND_PTR(m_pTargets, &pTarget, pElement);
     if (pElement)
     {
         pElement->paused = false;
@@ -176,14 +176,14 @@ void CCActionManager::addAction(CCAction *pAction, CCNode *pTarget, bool paused)
     tHashElement *pElement = NULL;
     // we should convert it to CCObject*, because we save it as CCObject*
     CCObject *tmp = pTarget;
-    HASH_FIND_INT(m_pTargets, &tmp, pElement);
+    HASH_FIND_PTR(m_pTargets, &tmp, pElement);
     if (! pElement)
     {
         pElement = (tHashElement*)calloc(sizeof(*pElement), 1);
         pElement->paused = paused;
         pTarget->retain();
         pElement->target = pTarget;
-        HASH_ADD_INT(m_pTargets, target, pElement);
+        HASH_ADD_PTR(m_pTargets, target, pElement);
     }
 
      actionAllocWithHashElement(pElement);
@@ -215,7 +215,7 @@ void CCActionManager::removeAllActionsFromTarget(CCObject *pTarget)
     }
 
     tHashElement *pElement = NULL;
-    HASH_FIND_INT(m_pTargets, &pTarget, pElement);
+    HASH_FIND_PTR(m_pTargets, &pTarget, pElement);
     if (pElement)
     {
         if (ccArrayContainsObject(pElement->actions, pElement->currentAction) && (! pElement->currentActionSalvaged))
@@ -250,7 +250,7 @@ void CCActionManager::removeAction(CCAction *pAction)
 
     tHashElement *pElement = NULL;
     CCObject *pTarget = pAction->getOriginalTarget();
-    HASH_FIND_INT(m_pTargets, &pTarget, pElement);
+    HASH_FIND_PTR(m_pTargets, &pTarget, pElement);
     if (pElement)
     {
         unsigned int i = ccArrayGetIndexOfObject(pElement->actions, pAction);
@@ -271,7 +271,7 @@ void CCActionManager::removeActionByTag(unsigned int tag, CCObject *pTarget)
     CCAssert(pTarget != NULL, "");
 
     tHashElement *pElement = NULL;
-    HASH_FIND_INT(m_pTargets, &pTarget, pElement);
+    HASH_FIND_PTR(m_pTargets, &pTarget, pElement);
 
     if (pElement)
     {
@@ -296,7 +296,7 @@ CCAction* CCActionManager::getActionByTag(unsigned int tag, CCObject *pTarget)
     CCAssert((int)tag != kCCActionTagInvalid, "");
 
     tHashElement *pElement = NULL;
-    HASH_FIND_INT(m_pTargets, &pTarget, pElement);
+    HASH_FIND_PTR(m_pTargets, &pTarget, pElement);
 
     if (pElement)
     {
@@ -326,7 +326,7 @@ CCAction* CCActionManager::getActionByTag(unsigned int tag, CCObject *pTarget)
 unsigned int CCActionManager::numberOfRunningActionsInTarget(CCObject *pTarget)
 {
     tHashElement *pElement = NULL;
-    HASH_FIND_INT(m_pTargets, &pTarget, pElement);
+    HASH_FIND_PTR(m_pTargets, &pTarget, pElement);
     if (pElement)
     {
         return pElement->actions ? pElement->actions->num : 0;
