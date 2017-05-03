@@ -162,11 +162,11 @@ public:
     bool initWithDXTFileAsync(class CCTextureDXT * const dxt);
     bool initWithASTCFileAsync(class CCTextureASTC * const astc);
     
-#ifdef ANDROID
     //BPC PATCH
+#ifdef ANDROID
     bool initWithDDSFile(const char* file);
-    bool initWithASTCFile(const char* file);
 #endif
+    bool initWithASTCFile(const char* file);
 
 
     /** sets the min filter, mag filter, wrap s and wrap t texture parameters.

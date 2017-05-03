@@ -206,9 +206,9 @@ public:
     // BPC PATCH
 #ifdef ANDROID
 	CCTexture2D* addDDSImage(const char* filename);
-    CCTexture2D* addASTCImage(const char* filename);
 #endif
-    
+    CCTexture2D* addASTCImage(const char* filename);
+
     /** Returns a Texture2D object given an PVR filename
     * If the file image was not previously loaded, it will create a new CCTexture2D
     *  object and it will return it. Otherwise it will return a reference of a previously loaded image
