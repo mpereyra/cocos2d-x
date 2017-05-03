@@ -295,6 +295,10 @@ bool CCParticleSystem::initWithDictionary(CCDictionary *dictionary)
                 const char* textureName = dictionary->valueForKey("textureFileName")->getCString();
                 std::string fullpath = CCFileUtils::sharedFileUtils()->fullPathFromRelativeFile(textureName, m_sPlistFile.c_str());
                 
+                if (fullpath.empty()) {
+                    fullpath = m_sPlistFile;
+                }
+                
                 CCTexture2D *tex = NULL;
                 
                 if (strlen(textureName) > 0)
