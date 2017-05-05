@@ -70,7 +70,6 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
     private Cocos2dxVideoHelper mVideoHelper = null;
     private Cocos2dxWebViewHelper mWebViewHelper = null;
     private Cocos2dxEditBoxHelper mEditBoxHelper = null;
-    private boolean hasFocus = false;
 
     public Cocos2dxGLSurfaceView getGLSurfaceView(){
         return  mGLSurfaceView;
@@ -304,39 +303,24 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
 
     @Override
     protected void onResume() {
-    	Log.d(TAG, "onResume()");
+        Log.d(TAG, "onResume()");
         super.onResume();
         this.hideVirtualButton();
-       	resumeIfHasFocus();
-    }
-    
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-    	Log.d(TAG, "onWindowFocusChanged() hasFocus=" + hasFocus);
-        super.onWindowFocusChanged(hasFocus);
-        
-        this.hasFocus = hasFocus;
-        resumeIfHasFocus();
-    }
-    
-    private void resumeIfHasFocus() {
-        if(hasFocus) {
-            this.hideVirtualButton();
-        	Cocos2dxHelper.onResume();
-        	mGLSurfaceView.onResume();
-        }
+        Cocos2dxHelper.onResume();
+        this.mGLSurfaceView.onResume();
     }
 
     @Override
     protected void onPause() {
-    	Log.d(TAG, "onPause()");
+        Log.d(TAG, "onPause()");
         super.onPause();
         Cocos2dxHelper.onPause();
-        mGLSurfaceView.onPause();
+        this.mGLSurfaceView.onPause();
     }
     
     @Override
     protected void onDestroy() {
+        Log.d(TAG, "onDestroy()");
         super.onDestroy();
     }
 
