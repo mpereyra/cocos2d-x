@@ -274,7 +274,7 @@ void SimpleAudioEngine::setEffectsVolume(float volume)
 	}
 }
 
-unsigned int SimpleAudioEngine::playEffect(const char* pszFilePath, bool bLoop)
+unsigned int SimpleAudioEngine::playEffect(const char* pszFilePath, bool bLoop, float /*unused*/)
 {
 	if (s_bI9100)
 	{
