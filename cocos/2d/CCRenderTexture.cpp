@@ -574,7 +574,7 @@ Image* RenderTexture::newImage(bool fliimage)
             // -- bind a temporary texture so we can clear the render buffer without losing our texture
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _textureCopy->getName(), 0);
             CHECK_GL_ERROR_DEBUG();
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            glClear(GL_COLOR_BUFFER_BIT);
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _texture->getName(), 0);
         }
         glPixelStorei(GL_PACK_ALIGNMENT, 1);
@@ -651,7 +651,7 @@ void RenderTexture::onBegin()
         // -- bind a temporary texture so we can clear the render buffer without losing our texture
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _textureCopy->getName(), 0);
         CHECK_GL_ERROR_DEBUG();
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT);
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _texture->getName(), 0);
     }
 }
