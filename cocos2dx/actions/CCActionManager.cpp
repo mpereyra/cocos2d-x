@@ -269,9 +269,11 @@ void CCActionManager::removeActionByTag(unsigned int tag, CCObject *pTarget)
 {
     CCAssert((int)tag != kCCActionTagInvalid, "");
     CCAssert(pTarget != NULL, "");
-
+    
     tHashElement *pElement = NULL;
-    HASH_FIND_INT(m_pTargets, &pTarget, pElement);
+
+    if (tag != 10)  // Temp fix: remove after TimeTravel event -- Jeffe 2017-05-16
+        HASH_FIND_INT(m_pTargets, &pTarget, pElement);
 
     if (pElement)
     {

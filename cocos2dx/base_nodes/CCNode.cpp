@@ -902,7 +902,8 @@ void CCNode::stopAction(CCAction* action)
 void CCNode::stopActionByTag(int tag)
 {
     CCAssert( tag != kCCActionTagInvalid, "Invalid tag");
-    m_pActionManager->removeActionByTag(tag, this);
+    if (m_pActionManager)
+        m_pActionManager->removeActionByTag(tag, this);
 }
 
 CCAction * CCNode::getActionByTag(int tag)
