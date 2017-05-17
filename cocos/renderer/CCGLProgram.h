@@ -525,6 +525,9 @@ public:
 
     /*BPC PATCH*/
     void setExtensionsString(const std::string& extensions);
+    void setupForProgramBinary();
+    void onProgramBinaryLoaded();
+    void onProgramBinaryFailed();
     const std::unordered_map<std::string, Uniform>& getUniforms() const {return _userUniforms;}
     /*END BPC PATCH*/
 

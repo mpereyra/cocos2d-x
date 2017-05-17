@@ -1029,6 +1029,31 @@ void GLProgram::setExtensionsString(const std::string& extensions)
 {
     _extensionsString = extensions;
 }
+
+void GLProgram::setupForProgramBinary()
+{
+    _program = glCreateProgram();
+    CHECK_GL_ERROR_DEBUG();
+}
+
+void GLProgram::onProgramBinaryLoaded()
+{
+    parseVertexAttribs();
+    parseUniforms();
+    updateUniforms();
+}
+
+void GLProgram::onProgramBinaryFailed()
+{
+    if (_program)
+    {
+        glCheck(GL::deleteProgram(_program));
+    }
+    
+    reset();
+}
+
+
 /*END BPC PATCH*/
 
 NS_CC_END
