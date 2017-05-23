@@ -106,7 +106,6 @@ public class Cocos2dxHttpURLConnection
 
             // request the managed trust managers from the factory
             m_managed = new ArrayList<X509TrustManager>();
-            Log.i("###", "BpcTrustManager -> " + m_managed.size() + " managed");
             for (TrustManager raw_manager : factory.getTrustManagers()) {
                 m_managed.add((X509TrustManager)raw_manager); // note: throws ClassCastException
             }
