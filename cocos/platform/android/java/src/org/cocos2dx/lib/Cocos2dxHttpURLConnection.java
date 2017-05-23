@@ -35,11 +35,15 @@ import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.Certificate;
+import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -50,7 +54,9 @@ import java.util.zip.InflaterInputStream;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 
 public class Cocos2dxHttpURLConnection
 {
@@ -91,6 +97,57 @@ public class Cocos2dxHttpURLConnection
 
     }
 
+    static class BpcTrustManager implements X509TrustManager {
+        public BpcTrustManager(KeyStore keystore) throws NoSuchAlgorithmException, KeyStoreException {
+            // Create a TrustManager that trusts the CAs in our KeyStore
+            String algorithm = TrustManagerFactory.getDefaultAlgorithm();
+            TrustManagerFactory factory = TrustManagerFactory.getInstance(algorithm);
+            factory.init(keystore);
+
+            // request the managed trust managers from the factory
+            m_managed = new ArrayList<X509TrustManager>();
+            Log.i("###", "BpcTrustManager -> " + m_managed.size() + " managed");
+            for (TrustManager raw_manager : factory.getTrustManagers()) {
+                m_managed.add((X509TrustManager)raw_manager); // note: throws ClassCastException
+            }
+        }
+
+        @Override
+        public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+            try {
+                for (X509TrustManager manager : this.m_managed) {
+                    manager.checkClientTrusted(chain, authType);
+                }
+            } catch (Exception exception) {
+                throw new CertificateException(exception.toString());
+            }
+        }
+
+        @Override
+        public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+            try {
+                for (X509TrustManager manager : this.m_managed) {
+                    manager.checkServerTrusted(chain, authType);
+                }
+            } catch (Exception exception) {
+                throw new CertificateException(exception.toString());
+            }
+        }
+
+        @Override
+        public X509Certificate[] getAcceptedIssuers() {
+            List<X509Certificate> certificates = new ArrayList<X509Certificate>();
+            for (X509TrustManager manager : this.m_managed) {
+                for (X509Certificate issuer : manager.getAcceptedIssuers()) {
+                    certificates.add(issuer);
+                }
+            }
+            return certificates.toArray(new X509Certificate[0]);
+        }
+
+        List<X509TrustManager> m_managed;
+    };
+
     static void setVerifySSL(HttpURLConnection urlConnection, String sslFilename) {
         if(!(urlConnection instanceof HttpsURLConnection))
             return;
@@ -120,14 +177,10 @@ public class Cocos2dxHttpURLConnection
             keyStore.load(null, null);
             keyStore.setCertificateEntry("ca", ca);
 
-            // Create a TrustManager that trusts the CAs in our KeyStore
-            String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
-            TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
-            tmf.init(keyStore);
-
             // Create an SSLContext that uses our TrustManager
+            TrustManager trustManager = new BpcTrustManager(keyStore);
             SSLContext context = SSLContext.getInstance("TLS");
-            context.init(null, tmf.getTrustManagers(), null);
+            context.init(null, new TrustManager[]{ trustManager }, null);
 
             httpsURLConnection.setSSLSocketFactory(context.getSocketFactory());
         } catch (Exception e) {
