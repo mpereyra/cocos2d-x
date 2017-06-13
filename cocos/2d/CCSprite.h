@@ -420,11 +420,6 @@ public:
     virtual void setOpacityModifyRGB(bool modify) override;
     virtual bool isOpacityModifyRGB() const override;
     /// @}
-    
-    
-    //BPC patch
-    void setIs3D(bool is3d) { _is3d = is3d; }
-    //BPC patch
 
 CC_CONSTRUCTOR_ACCESS:
 
@@ -571,10 +566,6 @@ protected:
     bool _flippedY;                         /// Whether the sprite is flipped vertically or not
 
     bool _insideBounds;                     /// whether or not the sprite was inside bounds the previous frame
-    
-    //BPC patch
-    bool _is3d{};
-    //end BPC patch
 private:
     CC_DISALLOW_COPY_AND_ASSIGN(Sprite);
 };
