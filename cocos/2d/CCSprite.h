@@ -359,12 +359,14 @@ public:
      */
     void setFlippedY(bool flippedY);
     
+    //BPC patch
     /**
      * Sets whether we should force a depth test, even if the sprite is 2D
      *
      * @param value true will force a depth test, false defaults to the sprite's behavior (depth test only if sprite is 3d)
      */
     void setForce3d(bool value) { _force3d = value; }
+    //end BPC patch
 
     /// @} End of Sprite properties getter/setters
 

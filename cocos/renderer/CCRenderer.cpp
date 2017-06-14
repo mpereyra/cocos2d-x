@@ -947,8 +947,10 @@ void Renderer::drawBatchedQuads()
     //Start drawing verties in batch
     for(const auto& cmd : _batchQuadCommands)
     {
+        /** BPC PATCH BGIN **/
         bool const wantDepthTest = cmd->isForcedDepthTest();
         setDepthTest(wantDepthTest);
+        /** BPC PATCH END **/
         
         auto newMaterialID = cmd->getMaterialID();
         if(_lastMaterialID != newMaterialID || newMaterialID == MATERIAL_ID_DO_NOT_BATCH)

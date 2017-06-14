@@ -61,11 +61,13 @@ void RenderCommand::init(float globalZOrder, const cocos2d::Mat4 &transform, uin
     }
 }
 
+//BPC patch
 void RenderCommand::force3d()
 {
     _forceDepthTest = true;
     set3D(true);
 }
+//end BPC patch
 
 void printBits(ssize_t const size, void const * const ptr)
 {

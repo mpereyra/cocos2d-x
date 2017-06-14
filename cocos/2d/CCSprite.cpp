@@ -595,8 +595,7 @@ void Sprite::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
     {
         _quadCommand.init(_globalZOrder, _texture->getName(), getGLProgramState(), _blendFunc, &_quad, 1, transform, flags);
         
-        if (_force3d)
-        {
+        if (_force3d) {
             _quadCommand.force3d();
         }
         
