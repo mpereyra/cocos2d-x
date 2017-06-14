@@ -594,6 +594,7 @@ void Sprite::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
 #endif
     {
         _quadCommand.init(_globalZOrder, _texture->getName(), getGLProgramState(), _blendFunc, &_quad, 1, transform, flags);
+        _quadCommand.setNeedsDepthTest(_needsDepthTest);
         renderer->addCommand(&_quadCommand);
         
 #if CC_SPRITE_DEBUG_DRAW

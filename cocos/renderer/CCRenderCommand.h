@@ -81,11 +81,15 @@ public:
 
     inline void setSkipBatching(bool value) { _skipBatching = value; }
     
-    inline bool is3D() const { return _is3D; }
+    inline bool is3D() const { return _is3D || _needsDepthTest; }
     
     inline void set3D(bool value) { _is3D = value; }
     
     inline float getDepth() const { return _depth; }
+    
+    inline bool needsDepthTest() const { return _needsDepthTest; }
+    
+    inline void setNeedsDepthTest(bool value) { _needsDepthTest = value; }
     
     /* BPC Patch */
     inline void setName(const std::string& name) { _name = name; }
@@ -115,6 +119,8 @@ protected:
     
     // is the command been rendered on 3D pass
     bool _is3D;
+    
+    bool _needsDepthTest = false;
     
     // depth
     float _depth;

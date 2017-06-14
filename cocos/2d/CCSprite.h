@@ -420,6 +420,8 @@ public:
     virtual void setOpacityModifyRGB(bool modify) override;
     virtual bool isOpacityModifyRGB() const override;
     /// @}
+    
+    void setNeedsDepthTest(bool value) { _needsDepthTest = value; }
 
 CC_CONSTRUCTOR_ACCESS:
 
@@ -566,6 +568,9 @@ protected:
     bool _flippedY;                         /// Whether the sprite is flipped vertically or not
 
     bool _insideBounds;                     /// whether or not the sprite was inside bounds the previous frame
+    
+    bool _needsDepthTest = false;
+    // test
 private:
     CC_DISALLOW_COPY_AND_ASSIGN(Sprite);
 };
