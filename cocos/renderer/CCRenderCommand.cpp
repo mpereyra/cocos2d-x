@@ -61,6 +61,12 @@ void RenderCommand::init(float globalZOrder, const cocos2d::Mat4 &transform, uin
     }
 }
 
+void RenderCommand::force3d()
+{
+    _forceDepthTest = true;
+    set3D(true);
+}
+
 void printBits(ssize_t const size, void const * const ptr)
 {
     unsigned char *b = (unsigned char*) ptr;
