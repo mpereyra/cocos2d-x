@@ -56,6 +56,8 @@ THE SOFTWARE.
 #include "renderer/CCTextureCache.h"
 #include "platform/CCFileUtils.h"
 
+#include "extensions/Particle3D/ParticleAssetCreator.h"
+
 using namespace std;
 
 NS_CC_BEGIN
@@ -479,7 +481,8 @@ bool ParticleSystem::initWithDictionary(ValueMap& dictionary, const std::string&
                     // set not pop-up message box when load image failed
                     bool notify = FileUtils::getInstance()->isPopupNotify();
                     FileUtils::getInstance()->setPopupNotify(false);
-                    tex = Director::getInstance()->getTextureCache()->addImage(textureName);
+                    
+                    tex = ParticleAssetCreator::getInstance()->createTexture(textureName);
                     // reset the value of UIImage notify
                     FileUtils::getInstance()->setPopupNotify(notify);
                 }
