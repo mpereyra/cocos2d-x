@@ -947,7 +947,7 @@ void Renderer::drawBatchedQuads()
     //Start drawing verties in batch
     for(const auto& cmd : _batchQuadCommands)
     {
-        /** BPC PATCH BGIN **/
+        /** BPC PATCH BEGIN **/
         bool const wantDepthTest = cmd->isForcedDepthTest();
         setDepthTest(wantDepthTest);
         /** BPC PATCH END **/

@@ -576,7 +576,9 @@ protected:
 
     bool _insideBounds;                     /// whether or not the sprite was inside bounds the previous frame
     
-    bool _force3d = false;           /// Force a depth test on this sprite, even if it's 2D
+    //BPC patch
+    bool _force3d = false;                  /// Force a depth test on this sprite, even if it's 2D
+    //end BPC patch
 private:
     CC_DISALLOW_COPY_AND_ASSIGN(Sprite);
 };
