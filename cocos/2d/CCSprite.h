@@ -358,6 +358,15 @@ public:
      * @param flippedY true if the sprite should be flipped vertically, false otherwise.
      */
     void setFlippedY(bool flippedY);
+    
+    //BPC patch
+    /**
+     * Sets whether we should force a depth test, even if the sprite is 2D
+     *
+     * @param value true will force a depth test, false defaults to the sprite's behavior (depth test only if sprite is 3d)
+     */
+    void setForce3d(bool value) { _force3d = value; }
+    //end BPC patch
 
     /// @} End of Sprite properties getter/setters
 
@@ -420,11 +429,6 @@ public:
     virtual void setOpacityModifyRGB(bool modify) override;
     virtual bool isOpacityModifyRGB() const override;
     /// @}
-    
-    
-    //BPC patch
-    void setIs3D(bool is3d) { _is3d = is3d; }
-    //BPC patch
 
 CC_CONSTRUCTOR_ACCESS:
 
@@ -573,7 +577,7 @@ protected:
     bool _insideBounds;                     /// whether or not the sprite was inside bounds the previous frame
     
     //BPC patch
-    bool _is3d{};
+    bool _force3d = false;                  /// Force a depth test on this sprite, even if it's 2D
     //end BPC patch
 private:
     CC_DISALLOW_COPY_AND_ASSIGN(Sprite);

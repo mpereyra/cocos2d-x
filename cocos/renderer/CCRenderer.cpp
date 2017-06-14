@@ -942,15 +942,15 @@ void Renderer::drawBatchedQuads()
 #pragma mark TODO make this changeable at quad command level
 /** BPC PATCH BEGIN **/
     bool oldDepthTest = _isDepthTestFor2D;
-    //setDepthTest(false);
 /** BPC PATCH END **/
     
     //Start drawing verties in batch
     for(const auto& cmd : _batchQuadCommands)
     {
-        //
-        bool const wantDepthTest = cmd->is3D();
+        /** BPC PATCH BEGIN **/
+        bool const wantDepthTest = cmd->isForcedDepthTest();
         setDepthTest(wantDepthTest);
+        /** BPC PATCH END **/
         
         auto newMaterialID = cmd->getMaterialID();
         if(_lastMaterialID != newMaterialID || newMaterialID == MATERIAL_ID_DO_NOT_BATCH)

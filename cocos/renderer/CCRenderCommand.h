@@ -88,6 +88,11 @@ public:
     inline float getDepth() const { return _depth; }
     
     /* BPC Patch */
+    /** force a depth test */
+    void force3d();
+    
+    inline bool isForcedDepthTest() const { return _forceDepthTest; }
+    
     inline void setName(const std::string& name) { _name = name; }
     inline Ref& getLifePartner() { return _lifePartner; }
     /* BPC Patch */
@@ -115,6 +120,11 @@ protected:
     
     // is the command been rendered on 3D pass
     bool _is3D;
+    
+    /* BPC Patch */
+    // force a depth test, even if the sprite is 2D
+    bool _forceDepthTest = false;
+    /* BPC Patch */
     
     // depth
     float _depth;
