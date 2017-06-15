@@ -32,6 +32,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
+import static android.view.KeyEvent.KEYCODE_ENTER;
+
 public class Cocos2dxTextInputWraper implements TextWatcher, OnEditorActionListener {
 	// ===========================================================
 	// Constants
@@ -75,30 +77,13 @@ public class Cocos2dxTextInputWraper implements TextWatcher, OnEditorActionListe
 
 	@Override
 	public void afterTextChanged(final Editable s) {
-		if (this.isFullScreenEdit()) {
-			return;
-		}
-
-		//if (BuildConfig.DEBUG) {
-			//Log.d(TAG, "afterTextChanged: " + s);
-		//}
 		int nModified = s.length() - this.mText.length();
 		if (nModified > 0) {
 			final String insertText = s.subSequence(this.mText.length(), s.length()).toString();
 			this.mCocos2dxGLSurfaceView.insertText(insertText);
-			/*
-			if (BuildConfig.DEBUG) {
-				Log.d(TAG, "insertText(" + insertText + ")");
-			}
-			*/
 		} else {
 			for (; nModified < 0; ++nModified) {
 				this.mCocos2dxGLSurfaceView.deleteBackward();
-				/*
-				if (BuildConfig.DEBUG) {
-					Log.d(TAG, "deleteBackward");
-				}
-				*/
 			}
 		}
 		this.mText = s.toString();
@@ -121,34 +106,10 @@ public class Cocos2dxTextInputWraper implements TextWatcher, OnEditorActionListe
 
 	@Override
 	public boolean onEditorAction(final TextView pTextView, final int pActionID, final KeyEvent pKeyEvent) {
-		if (this.mCocos2dxGLSurfaceView.getCocos2dxEditText() == pTextView && this.isFullScreenEdit()) {
-			// user press the action button, delete all old text and insert new text
-			for (int i = this.mOriginText.length(); i > 0; i--) {
-				this.mCocos2dxGLSurfaceView.deleteBackward();
-				/*
-				if (BuildConfig.DEBUG) {
-					Log.d(TAG, "deleteBackward");
-				}
-				*/
+		if (this.mCocos2dxGLSurfaceView.getCocos2dxEditText() == pTextView) {
+			if (pKeyEvent.getKeyCode() == KEYCODE_ENTER) {
+				this.mCocos2dxGLSurfaceView.insertText("\n");
 			}
-			String text = pTextView.getText().toString();
-
-			/* If user input nothing, translate "\n" to engine. */
-			if (text.compareTo("") == 0) {
-				text = "\n";
-			}
-
-			if ('\n' != text.charAt(text.length() - 1)) {
-				text += '\n';
-			}
-
-			final String insertText = text;
-			this.mCocos2dxGLSurfaceView.insertText(insertText);
-			/*
-			if (BuildConfig.DEBUG) {
-				Log.d(TAG, "insertText(" + insertText + ")");
-			}
-			*/
 		}
 		return false;
 	}
