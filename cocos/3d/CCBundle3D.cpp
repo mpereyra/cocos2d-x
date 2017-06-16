@@ -1989,7 +1989,7 @@ unsigned int Bundle3D::parseGLProgramAttribute(const std::string& str)
     }
     else
     {
-        CCASSERT(false, "Wrong Attribute type");
+        Fail("Invalid attribute type = '%s'", str.data());
         return -1;
     }
 }
