@@ -169,7 +169,9 @@ void CCGLProgram::updateUniforms()
     m_uUniforms[kCCUniformSampler] = glGetUniformLocation(m_uProgram, kCCUniformSampler_s);
 
     this->use();
-    this->setUniformLocationWith1i( m_uUniforms[kCCUniformSampler], 0 );
+    if (glGetUniformLocation(m_uProgram, kCCUniformSampler_s) > -1) { //If sampler doesn't exist we can't use it
+        this->setUniformLocationWith1i( m_uUniforms[kCCUniformSampler], 0 );
+    }
 }
 
 bool CCGLProgram::link()
