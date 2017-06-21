@@ -107,7 +107,7 @@ public class Cocos2dxTextInputWraper implements TextWatcher, OnEditorActionListe
 	@Override
 	public boolean onEditorAction(final TextView pTextView, final int pActionID, final KeyEvent pKeyEvent) {
 		if (this.mCocos2dxGLSurfaceView.getCocos2dxEditText() == pTextView) {
-			if (pKeyEvent.getKeyCode() == KEYCODE_ENTER) {
+			if (pKeyEvent != null && pKeyEvent.getKeyCode() == KEYCODE_ENTER) {
 				this.mCocos2dxGLSurfaceView.insertText("\n");
 			}
 		}
