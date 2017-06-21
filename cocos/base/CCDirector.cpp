@@ -351,11 +351,14 @@ void Director::calculateDeltaTime()
     }
 
 #if COCOS2D_DEBUG
+    // BPC patched this out; makes frame rate innacurate and
+    // slower devices even slower.
+    
     // If we are debugging our code, prevent big delta time
-    if (_deltaTime > 0.2f)
-    {
-        _deltaTime = 1 / 60.0f;
-    }
+//    if (_deltaTime > 0.2f)
+//    {
+//        _deltaTime = 1 / 60.0f;
+//    }
 #endif
 
     _lastUpdate = now;
