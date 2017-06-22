@@ -273,6 +273,11 @@ public:
      * is enabled
      */
     bool isEnabled(void) const { return _isEnabled; }
+    
+    bool useDepthOverride() const { return _useDepthOverride; }
+    float getDepthOverride() const { return _depthOverride; }
+    void setUseDepthOverride(bool use) { _useDepthOverride = use; }
+    void setDepthOverride(float depth) { _depthOverride = depth; }
 
 CC_CONSTRUCTOR_ACCESS:
     ParticleSystem3D();
@@ -294,6 +299,11 @@ protected:
 
     bool _keepLocal;
     bool _isEnabled;
+    
+    /*BPC PATCH BEGIN*/
+    bool _useDepthOverride = false;
+    float _depthOverride = 0.f;
+    /*BPC PATCH END*/
 };
 
 NS_CC_END

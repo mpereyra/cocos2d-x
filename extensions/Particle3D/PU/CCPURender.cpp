@@ -292,6 +292,10 @@ void PUParticle3DQuadRender::render(Renderer* renderer, const Mat4 &transform, P
                            Node::FLAGS_RENDER_AS_3D);
         _meshCommand->setSkipBatching(true);
         _meshCommand->setTransparent(true);
+        if (particleSystem->useDepthOverride()) {
+            _meshCommand->setDepth(particleSystem->getDepthOverride());
+        }
+        
         _glProgramState->setUniformVec4("u_color", Vec4(1,1,1,1));
         renderer->addCommand(_meshCommand);
     }
@@ -767,6 +771,9 @@ void PUParticle3DBoxRender::render( Renderer* renderer, const Mat4 &transform, P
                            Node::FLAGS_RENDER_AS_3D);
         _meshCommand->setSkipBatching(true);
         _meshCommand->setTransparent(true);
+        if (particleSystem->useDepthOverride()) {
+            _meshCommand->setDepth(particleSystem->getDepthOverride());
+        }
 
         _glProgramState->setUniformVec4("u_color", Vec4(1,1,1,1));
         renderer->addCommand(_meshCommand);
@@ -932,6 +939,9 @@ void PUSphereRender::render( Renderer* renderer, const Mat4 &transform, Particle
                            Node::FLAGS_RENDER_AS_3D);
         _meshCommand->setSkipBatching(true);
         _meshCommand->setTransparent(true);
+        if (particleSystem->useDepthOverride()) {
+            _meshCommand->setDepth(particleSystem->getDepthOverride());
+        }
 
         _glProgramState->setUniformVec4("u_color", Vec4(1,1,1,1));
         renderer->addCommand(_meshCommand);
