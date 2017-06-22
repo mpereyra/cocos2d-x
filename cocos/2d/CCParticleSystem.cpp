@@ -56,7 +56,7 @@ THE SOFTWARE.
 #include "renderer/CCTextureCache.h"
 #include "platform/CCFileUtils.h"
 
-#include "extensions/Particle3D/ParticleAssetCreator.h"
+#include "../../extensions/Particle3D/ParticleAssetCreator.h"
 
 using namespace std;
 
