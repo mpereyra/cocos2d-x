@@ -246,11 +246,12 @@ bool Configuration::supportsETC() const
 
 bool Configuration::supportsS3TC() const
 {
-#ifdef GL_EXT_texture_compression_s3tc
+    // BPC_PATCH removing ifdef; WTH cocos
+//#ifdef GL_EXT_texture_compression_s3tc
     return _supportsS3TC;
-#else
-    return false;
-#endif
+//#else
+//    return false;
+//#endif
 }
 
 bool Configuration::supportsATITC() const
