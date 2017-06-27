@@ -114,10 +114,11 @@ JNIEXPORT void Java_org_cocos2dx_lib_Cocos2dxRenderer_nativeOnSurfaceChanged(JNI
 
 jboolean Java_org_cocos2dx_lib_Cocos2dxGLSurfaceView_shouldPreserveGLContext(JNIEnv * const env, jobject const thiz)
 {
-#if DEBUG || ADHOC
-  return true; // We're not ready for this yet
+#if DEBUG // || ADHOC
+  ILog("Returning false for 'shouldPreserveGLContext' in debug; GLcontext will always be destroyed on background.");
+  return false;
 #else
-  return true;
+  return true; //GLcontext MAY be destroyed on background, on some phones.
 #endif
 }
 
