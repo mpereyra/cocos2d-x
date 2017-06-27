@@ -115,7 +115,7 @@ JNIEXPORT void Java_org_cocos2dx_lib_Cocos2dxRenderer_nativeOnSurfaceChanged(JNI
 jboolean Java_org_cocos2dx_lib_Cocos2dxGLSurfaceView_shouldPreserveGLContext(JNIEnv * const env, jobject const thiz)
 {
 #if DEBUG // || ADHOC
-  ILog("Returning false for 'shouldPreserveGLContext' in debug; GLcontext will always be destroyed on background.");
+    // always destroy GLcontext on background, to make Android background issues easier to repro
   return false;
 #else
   return true; //GLcontext MAY be destroyed on background, on some phones.
