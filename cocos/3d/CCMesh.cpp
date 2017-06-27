@@ -52,17 +52,17 @@ std::string s_uniformSamplerName[] =
 {
     "",//NTextureData::Usage::Unknown,
     "",//NTextureData::Usage::None
-    "u_diffuseTexture",//NTextureData::Usage::Diffuse
-    "u_emissiveTexture",//NTextureData::Usage::Emissive
+    "u_diffuseMap",//NTextureData::Usage::Diffuse
+    "u_emissiveMap",//NTextureData::Usage::Emissive
     "",//NTextureData::Usage::Ambient
-    "u_specularTexture",//NTextureData::Usage::Specular
+    "u_specularMap",//NTextureData::Usage::Specular
     "",//NTextureData::Usage::Shininess
-    "u_normalTexture",//NTextureData::Usage::Normal
+    "u_normalMap",//NTextureData::Usage::Normal
     "",//NTextureData::Usage::Bump
     "",//NTextureData::Usage::Transparency
     "u_reflectionCubeMap",//NTextureData::Usage::Reflection
-    "u_lightmapTexture",//NTextureData::Usage::Lightmap,
-    "u_diffuse2Texture",//NTextureData::Usage::SecondDiffuse
+    "u_lightmapMap",//NTextureData::Usage::Lightmap,
+    "u_secondDiffuseMap",//NTextureData::Usage::SecondDiffuse
     "u_dirtMap",//NTextureData::Usage::Dirtmap
     "u_rimMap",//NTextureData::Usage::RimMap
 };
