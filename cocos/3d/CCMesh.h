@@ -197,6 +197,7 @@ public:
     
     /**get AABB*/
     const AABB& getAABB() const { return _aabb; }
+    const AABB& getSkinnedAABB() const { return m_skinnedAABB; }
 
     /**  Sets a new GLProgramState for the Mesh
      * A new Material will be created for it
@@ -256,6 +257,7 @@ public:
     void setIsVertexLit(bool vertexLit) {m_isVertexLit = vertexLit;}
     void setReceiveFog(bool fog) { m_receiveFog = fog; }
     void setSkipRender(bool skip) {m_skipRender = skip;}
+    void setSkinnedAABB(const AABB& skinnedBB);
     
     bool boolFromWriteMode(GLWriteMode mode) const{
         switch(mode){
@@ -317,6 +319,7 @@ protected:
     GLWriteMode m_depthWriteMode{GLWriteMode::Default};
     GLWriteMode m_cullFaceMode{GLWriteMode::Default};
     float m_globalZ{std::numeric_limits<float>::max()};
+    AABB m_skinnedAABB;
     /*END BPC-PATCH*/
     
     
