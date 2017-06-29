@@ -259,6 +259,12 @@ bool TextureCube::init(const std::string& positive_x, const std::string& negativ
             glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         }
         
+        // steal one mipMap
+        if(img->getNumberOfMipmaps() > 1) {
+            // handle mipmaps for dxt.dds files / nexus 7 device
+            data = img->getMipmaps()[0].address;
+            datalen = img->getMipmaps()[0].len;
+        }
         
         if (info.compressed)
         {
