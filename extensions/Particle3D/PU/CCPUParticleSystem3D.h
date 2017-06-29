@@ -209,6 +209,9 @@ struct CC_DLL PUParticle3D : public Particle3D
     //float heightInWorld;
     //float depthInWorld;
     
+    /*BPC PATCH*/
+    float m_spawnT; //[0-1] t value, indicating spawn order. Used for interpolation.
+    /*END BPC PATCH*/
 };
 
 class CC_DLL PUParticleSystem3D : public ParticleSystem3D

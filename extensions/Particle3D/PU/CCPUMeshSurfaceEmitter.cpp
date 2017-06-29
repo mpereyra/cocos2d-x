@@ -461,7 +461,11 @@ void PUMeshSurfaceEmitter::initParticlePosition(PUParticle3D* particle)
                 {
                     Mat4 rotMat;
                     Mat4::createRotation(static_cast<PUParticleSystem3D *>(_particleSystem)->getDerivedOrientation(), &rotMat);
-                    particle->position = _derivedPosition + rotMat * Vec3(_emitterScale.x * pAndN.position.x, _emitterScale.y * pAndN.position.y, _emitterScale.z * pAndN.position.z);
+                    
+                    Vec3 basePos = getDerivedPosition();
+                    basePos = basePos - (_latestPositionDiff * particle->m_spawnT);
+                    
+                    particle->position = basePos + rotMat * Vec3(_emitterScale.x * pAndN.position.x, _emitterScale.y * pAndN.position.y, _emitterScale.z * pAndN.position.z);
                 }
                 //else
                 //{
@@ -491,7 +495,11 @@ void PUMeshSurfaceEmitter::initParticlePosition(PUParticle3D* particle)
             {
                 Mat4 rotMat;
                 Mat4::createRotation(static_cast<PUParticleSystem3D *>(_particleSystem)->getDerivedOrientation(), &rotMat);
-                particle->position = _derivedPosition + rotMat * Vec3(_emitterScale.x * pAndN.position.x, _emitterScale.y * pAndN.position.y, _emitterScale.z * pAndN.position.z);
+                
+                Vec3 basePos = getDerivedPosition();
+                basePos = basePos - (_latestPositionDiff * particle->m_spawnT);
+                
+                particle->position = basePos + rotMat * Vec3(_emitterScale.x * pAndN.position.x, _emitterScale.y * pAndN.position.y, _emitterScale.z * pAndN.position.z);
             }
             //else
             //{
