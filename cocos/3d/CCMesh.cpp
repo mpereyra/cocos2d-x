@@ -445,7 +445,7 @@ void Mesh::draw(Renderer* renderer, float globalZOrder, const Mat4& transform, u
     {
         if (Camera::getVisitingCamera())
         {
-            auto centerPt = _aabb.getCenter();
+            auto centerPt = m_skinnedAABB.getCenter();
             cocos2d::Mat4 bbTransform;
             transform.translate(centerPt, &bbTransform);
             float bbDepth = Camera::getVisitingCamera()->getDepthInView(bbTransform);
@@ -549,6 +549,7 @@ void Mesh::calculateAABB()
                 _aabb.transform(root->getWorldMat() * _skin->getInvBindPose(root));
             }
         }
+        m_skinnedAABB = _aabb;
     }
 }
 
@@ -838,6 +839,11 @@ int Mesh::getSpotLightCount()
 int Mesh::getFxSpotLightCount()
 {
     return m_fxSpotLightCount;
+}
+
+void Mesh::setSkinnedAABB(const AABB& skinnedBB)
+{
+    m_skinnedAABB = skinnedBB;
 }
 
 /*END BPC PATCH*/

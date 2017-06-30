@@ -909,6 +909,7 @@ void PUParticleSystem3D::emitParticles( ParticlePool &pool, PUEmitter* emitter, 
     Mat4::createRotation(getDerivedOrientation(), &rotMat);
     float timePoint = 0.0f;
     float timeInc = elapsedTime / requested;
+    float tInc = 1.f / requested;
     for (unsigned short i = 0; i < requested; ++i)
     {
         PUParticle3D *particle = static_cast<PUParticle3D *>(pool.createData());
@@ -916,6 +917,7 @@ void PUParticleSystem3D::emitParticles( ParticlePool &pool, PUEmitter* emitter, 
             return;
 
         particle->initForEmission();
+        particle->m_spawnT = i * tInc;
         emitter->initParticleForEmission(particle);
 
         particle->direction = (rotMat * Vec3(particle->direction.x, particle->direction.y, particle->direction.z));
