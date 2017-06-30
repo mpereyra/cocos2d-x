@@ -1082,6 +1082,7 @@ CCTexture2D* CCTextureCache::textureForKey(const char* key)
 void CCTextureCache::reloadAllTextures()
 {
 #if CC_ENABLE_CACHE_TEXTURE_DATA
+    CCLOG("VolatileTexture::reloadAllTextures");
     VolatileTexture::reloadAllTextures();
 #endif
 }
@@ -1270,7 +1271,7 @@ void VolatileTexture::reloadAllTextures()
         case kImageFile:
             {
                 CCImage image;
-                // BPC PATCH: changed filename comparison to format (PVR, DDS) check
+                // BPC PATCH: changed filename comparison to format (PVR, DDS, ASTC) check
 
                 if (vt->m_FmtImage == CCImage::kFmtPVR)
                 {
@@ -1287,7 +1288,15 @@ void VolatileTexture::reloadAllTextures()
 
                     vt->texture->initWithDDSFile(vt->m_strFileName.c_str());
                     CCTexture2D::setDefaultAlphaPixelFormat(oldPixelFormat);
-                } 
+                }
+                else if (vt->m_FmtImage == CCImage::kFmtASTC)
+                {
+                    CCTexture2DPixelFormat oldPixelFormat = CCTexture2D::defaultAlphaPixelFormat();
+                    CCTexture2D::setDefaultAlphaPixelFormat(vt->m_PixelFormat);
+
+                    vt->texture->initWithASTCFile(vt->m_strFileName.c_str());
+                    CCTexture2D::setDefaultAlphaPixelFormat(oldPixelFormat);
+                }
                 else 
                 {
                     unsigned long nSize = 0;
