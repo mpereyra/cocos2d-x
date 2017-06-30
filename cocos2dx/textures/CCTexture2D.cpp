@@ -203,6 +203,9 @@ bool CCTexture2D::initWithData(const void *data, CCTexture2DPixelFormat pixelFor
     }
 
 	glGenTextures(1, &m_uName);
+    if (m_uName == 0) {
+        return false;
+    }
     ccGLBindTexture2D(m_uName);
 
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
@@ -565,6 +568,9 @@ bool CCTexture2D::initWithPVRTCData(const void *data, int level, int bpp, bool h
 	}
 
 	glGenTextures(1, &m_uName);
+    if (m_uName == 0) {
+        return false;
+    }
 	glBindTexture(GL_TEXTURE_2D, m_uName);
 
 	this->setAntiAliasTexParameters();

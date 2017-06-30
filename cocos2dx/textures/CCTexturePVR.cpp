@@ -325,6 +325,9 @@ bool CCTexturePVR::createGLTexture()
         glPixelStorei(GL_UNPACK_ALIGNMENT,1);
         
         glGenTextures(1, &m_uName);
+        if (m_uName == 0) {
+            return false;
+        }
         ccGLBindTexture2D(m_uName);
         
         // Default: Anti alias.

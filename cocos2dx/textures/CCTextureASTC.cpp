@@ -98,6 +98,9 @@ bool CCTextureASTC::createGLTexture(){
         ccGLDeleteTexture(m_uName);
     }
     glGenTextures(1, &m_uName);
+    if (m_uName == 0) {
+        return false;
+    }
     ccGLBindTexture2D(m_uName);
     
     /* Upload texture data to ES. */
