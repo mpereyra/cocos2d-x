@@ -79,6 +79,9 @@ bool CCTextureDXT::createGLTexture() {
     }
     
     glGenTextures(1, &m_textureName);
+    if (m_textureName == 0) {
+        return false;
+    }
     glBindTexture(GL_TEXTURE_2D, m_textureName);
 
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
