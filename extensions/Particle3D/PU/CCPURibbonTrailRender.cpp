@@ -286,9 +286,11 @@ void PURibbonTrailRender::prepare()
             {
                 _trail->setInitialWidth(i, _rendererScale.x * static_cast<PUParticleSystem3D *>(_particleSystem)->getDefaultWidth());
             }
+            
+            //Right now, there's nothing in PU editor to set width change, so we're hardcoding it here.
+            _trail->setWidthChange(i, 1.f);
         }
         //_childNode->attachObject(_trail);
-        _trail->setAttachedNode(_childNode);
         _trail->setDepthTest(_depthTest);
         _trail->setDepthWrite(_depthWrite);
     }
@@ -301,7 +303,7 @@ void PURibbonTrailRender::unPrepare()
 
 void PURibbonTrailRender::updateRender( PUParticle3D *particle, float deltaTime, bool firstParticle )
 {
-    if (_trail)
+    if (firstParticle && _trail)
         _trail->update(deltaTime);
 }
 
@@ -399,6 +401,9 @@ void PURibbonTrailRender::updateParticles( const ParticlePool &pool )
             Node* node = visualData->node;
             node->setPosition3D(particle->position);
 
+            visualData->setVisible(true);
+            visualData->index = _trail->getChainIndexForNode(node);
+            
             // Set the width of the trail if required
             if (particle->particleType == PUParticle3D::PT_VISUAL)
             {
@@ -407,7 +412,7 @@ void PURibbonTrailRender::updateParticles( const ParticlePool &pool )
                     _trail->setInitialWidth(visualData->index, particle->width);
                 }
             }
-            visualData->setVisible(true);
+            _trail->setInitialColour(visualData->index, particle->color);
         }
     }
 }

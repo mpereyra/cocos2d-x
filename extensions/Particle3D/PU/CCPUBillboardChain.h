@@ -322,6 +322,7 @@ protected:
     Texture2D*              _texture;
     GLProgramState*         _glProgramState;
     IndexBuffer*            _indexBuffer; //index buffer
+    unsigned short          _indexCount {0};
     VertexBuffer*           _vertexBuffer; // vertex buffer
 
     std::vector<VertexInfo> _vertices;

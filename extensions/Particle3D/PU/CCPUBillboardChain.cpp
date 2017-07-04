@@ -25,6 +25,7 @@
 
 #include "extensions/Particle3D/PU/CCPUBillboardChain.h"
 #include "extensions/Particle3D/PU/CCPUParticleSystem3D.h"
+#include "extensions/Particle3D/ParticleAssetCreator.h"
 #include "base/CCDirector.h"
 #include "renderer/CCMeshCommand.h"
 #include "renderer/CCRenderer.h"
@@ -101,7 +102,7 @@ PUBillboardChain::~PUBillboardChain()
 {
     CC_SAFE_DELETE(_meshCommand);
     CC_SAFE_RELEASE(_stateBlock);
-    //CC_SAFE_RELEASE(_texture);
+    CC_SAFE_RELEASE(_texture);
     CC_SAFE_RELEASE(_glProgramState);
     CC_SAFE_RELEASE(_vertexBuffer);
     CC_SAFE_RELEASE(_indexBuffer);
@@ -645,8 +646,8 @@ void PUBillboardChain::updateIndexBuffer(void)
             }
 
         }
-
-        _indexBuffer->updateIndices(&_indices[0], (int)_indices.size(), 0);
+        _indexCount = index;
+        _indexBuffer->updateIndices(&_indices[0], _indexCount, 0);
         //_indexData->indexBuffer->unlock();
         _indexContentDirty = false;
     }
@@ -658,10 +659,11 @@ void PUBillboardChain::init( const std::string &texFile )
     GLProgram* glProgram = GLProgramCache::getInstance()->getGLProgram(GLProgram::SHADER_3D_PARTICLE_COLOR);
     if (!texFile.empty())
     {
-        auto tex = Director::getInstance()->getTextureCache()->addImage(texFile);
+        auto tex = ParticleAssetCreator::getInstance()->createTexture(texFile);
         if (tex)
         {
             _texture = tex;
+            _texture->retain();
             glProgram = GLProgramCache::getInstance()->getGLProgram(GLProgram::SHADER_3D_PARTICLE_TEXTURE);
         }
     }
@@ -706,7 +708,7 @@ void PUBillboardChain::render( Renderer* renderer, const Mat4 &transform, Partic
                                _indexBuffer->getVBO(),
                                GL_TRIANGLES,
                                GL_UNSIGNED_SHORT,
-                               _indices.size(),
+                               _indexCount,
                                transform,
                                Node::FLAGS_RENDER_AS_3D);
             _meshCommand->setSkipBatching(true);
@@ -734,20 +736,10 @@ void PUBillboardChain::setBlendFunc(const BlendFunc& blendFunc)
 
 GLuint PUBillboardChain::getTextureName()
 {
-    if (Director::getInstance()->getTextureCache()->getTextureForKey(_texFile) == nullptr)
-    {
-        _texture = nullptr;
-        this->init("");
-    }
-    else if (_texture == nullptr)
-    {
-        this->init(_texFile);
-    }
-
-    if (_texture == nullptr)
-        return 0;
-
-    return _texture->getName();
+    if (_texture)
+        return _texture->getName();
+    
+    return 0;
 }
 
 //-----------------------------------------------------------------------
