@@ -174,7 +174,11 @@ public class Cocos2dxMusic {
 		if (this.mBackgroundMediaPlayer == null) {
 			ret = false;
 		} else {
-			ret = this.mBackgroundMediaPlayer.isPlaying();
+			try {
+				ret = this.mBackgroundMediaPlayer.isPlaying();
+			} catch (Exception e) {
+				Log.e(Cocos2dxMusic.TAG, "MediaPlayer exception");
+			}
 		}
 
 		return ret;
