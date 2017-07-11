@@ -1780,6 +1780,9 @@ protected:
     //we need to clear the cached AABB if the caller specifies different exclude meshes
     mutable std::vector<std::string> _nodeToParentExcludeMeshes;
     mutable bool _nodeToParentAABBDirty {true};
+    
+public:
+    void forceAABBDirty() { _nodeToParentAABBDirty = true; }
     /** BPC PATCH END **/
 
 private:
