@@ -87,7 +87,15 @@ public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceChanged(final GL10 GL10, final int width, final int height) {
-        Cocos2dxRenderer.nativeOnSurfaceChanged(width, height);
+        /* BPC_PATCH */
+        // no-op dead end? Removed.
+        // Cocos2dxRenderer.nativeOnSurfaceChanged(width, height);
+        
+        /* BPC_PATCH */
+        // fix squished view on return from background with new context
+        GL10.glViewport(0, 0, this.mScreenWidth, this.mScreenHeight);
+        
+        Cocos2dxRenderer.nativeBPCResume(); // leads to EngineController::resume();
         Cocos2dxRenderer.nativeBPCResume();
     }
 
