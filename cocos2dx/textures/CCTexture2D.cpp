@@ -421,17 +421,16 @@ bool CCTexture2D::initPremultipliedATextureWithImage(CCImage *image, unsigned in
             *outPixel8++ = (*inPixel32 >> 8) & 0xFF; // G
             *outPixel8++ = (*inPixel32 >> 16) & 0xFF; // B
         }
-		}
+    }
 
-    initWithData(tempData, pixelFormat, width, height, imageSize);
+    const bool success = initWithData(tempData, pixelFormat, width, height, imageSize);
 
-    if (tempData != image->getData())
-	{
+    if (tempData != image->getData()) {
         delete [] tempData;
     }
 
-		m_bHasPremultipliedAlpha = image->isPremultipliedAlpha();
-	return true;
+    m_bHasPremultipliedAlpha = image->isPremultipliedAlpha();
+    return success;
 }
 
 // implementation CCTexture2D (Text)
