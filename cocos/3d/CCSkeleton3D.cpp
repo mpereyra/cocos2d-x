@@ -73,6 +73,13 @@ void Bone3D::updateWorldMat()
     }
 }
 
+/** BPC PATCH BEGIN   **/
+const Mat4& Bone3D::getOriPose() {
+    return _oriPose;
+}
+/** BPC PATCH END     **/
+
+
 const Mat4& Bone3D::getWorldMat()
 {
     if (_worldDirty)

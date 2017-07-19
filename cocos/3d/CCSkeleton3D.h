@@ -61,6 +61,11 @@ public:
     /**get world matrix*/
     const Mat4& getWorldMat();
     
+    /** BPC PATCH BEGIN   **
+     ** get original mat4 **/
+    const Mat4& getOriPose();
+    /** BPC PATCH END     **/
+    
     /**get bone name*/
     const std::string& getName() const { return _name; }
     
