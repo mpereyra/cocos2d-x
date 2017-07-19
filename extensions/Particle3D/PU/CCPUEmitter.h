@@ -92,6 +92,7 @@ public:
     virtual void emit(int count) override;
 
     void setLocalPosition(const Vec3 &pos) { _position = pos; };
+    void setLatestLocalPosition(const Vec3& pos) { _latestPosition = pos; };
     const Vec3 getLocalPosition() const { return _position; };
         /** Calculate the derived position of the affector.
     @remarks

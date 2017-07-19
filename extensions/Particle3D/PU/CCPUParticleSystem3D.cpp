@@ -1228,6 +1228,9 @@ void PUParticleSystem3D::processParticle( ParticlePool &pool, bool &firstActiveP
                 if (particle->particleType == PUParticle3D::PT_EMITTER){
                     auto emitter = static_cast<PUEmitter *>(particle->particleEntityPtr);
                     emitter->setLocalPosition(particle->position);
+                    if (particle->timeFraction == 0.f) {
+                        emitter->setLatestLocalPosition(particle->position);
+                    }
                     executeEmitParticles(emitter, emitter->calculateRequestedParticles(elapsedTime), elapsedTime);
                 }else if (particle->particleType == PUParticle3D::PT_TECHNIQUE){
                     auto system = static_cast<PUParticleSystem3D *>(particle->particleEntityPtr);
