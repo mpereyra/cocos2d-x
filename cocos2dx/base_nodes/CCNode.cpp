@@ -750,7 +750,7 @@ void CCNode::visit()
     }
 
     // reset for next frame
-    m_nOrderOfArrival = 0;
+//    m_nOrderOfArrival = 0;
 
      if (m_pGrid && m_pGrid->isActive())
      {
