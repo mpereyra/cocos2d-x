@@ -55,6 +55,13 @@ BaseLight::~BaseLight()
     
 }
 
+const Mat4& BaseLight::getNodeToParentTransform() const
+{
+    if (_transformDirty)
+        m_boundingVolumeDirty = true;
+    return Node::getNodeToParentTransform();
+}
+
 
 ////////////////////////////////////////////////////////////////////
 DirectionLight* DirectionLight::create(const Vec3 &direction, const Color3B &color)
@@ -108,6 +115,7 @@ PointLight* PointLight::create(const Vec3 &position, const Color3B &color, float
     light->setPosition3D(position);
     light->setColor(color);
     light->_range = range;
+    light->m_boundingVolumeDirty = true;
     light->autorelease();
     return light;
 }
@@ -121,6 +129,15 @@ void PointLight::setViewSpaceDataForCamera(const cocos2d::Camera* cam)
 const cocos2d::Vec3& PointLight::getViewSpacePosition() const
 {
     return m_viewSpacePosition;
+}
+
+void PointLight::setRange(float range)
+{
+    if (range != _range)
+    {
+        m_boundingVolumeDirty = true;
+        _range = range;
+    }
 }
 
 PointLight::PointLight()

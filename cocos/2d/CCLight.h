@@ -89,7 +89,10 @@ public:
     virtual void onExit() override;
     
     /*BPC PATCH*/
+    const Mat4& getNodeToParentTransform() const override;
     virtual void setViewSpaceDataForCamera(const cocos2d::Camera* cam) {}
+    bool isBoundingVolumeDirty() const { return m_boundingVolumeDirty || _transformDirty; }
+    void clearBoundingVolumeFlag() { m_boundingVolumeDirty = false; }
     /*END BPC PATCH*/
 CC_CONSTRUCTOR_ACCESS:
     BaseLight();
@@ -102,6 +105,10 @@ protected:
     float       _intensity;
     LightFlag   _lightFlag;
     bool        _enabled;
+    
+    /*BPC PATCH*/
+    mutable bool m_boundingVolumeDirty = false; //Represents if we've checked what objects this light is hitting yet. We mark it dirty if the position or range changes, and clear it when we check for what models are hit by this light. Only relevent for point/spot lights.
+    /*END BPC PATCH*/
 };
 
 /**
@@ -175,7 +182,7 @@ public:
     
     /** get or set range */
     float getRange() const { return _range; }
-    void setRange(float range) { _range = range; }
+    void setRange(float range);
     
     /*BPC PATCH*/
     void setViewSpaceDataForCamera(const cocos2d::Camera* cam) override;
