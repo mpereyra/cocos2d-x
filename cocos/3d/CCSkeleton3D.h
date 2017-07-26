@@ -61,9 +61,9 @@ public:
     /**get world matrix*/
     const Mat4& getWorldMat();
     
-    /** BPC PATCH BEGIN   **
-     ** get original mat4 **/
-    const Mat4& getOriPose();
+    /** BPC PATCH BEGIN   **/
+    const Mat4& getOffset() const;
+    void setOffset(const Mat4& offset);
     /** BPC PATCH END     **/
     
     /**get bone name*/
@@ -183,6 +183,11 @@ protected:
     bool          _worldDirty;
     Mat4          _world;
     Mat4          _local;
+    
+    /** BPC PATCH BEGIN   **
+     ** get original mat4 **/
+    Mat4 _offset{};
+    /** BPC PATCH END     **/
     
     std::vector<BoneBlendState> _blendStates;
     

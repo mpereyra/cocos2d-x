@@ -73,13 +73,6 @@ void Bone3D::updateWorldMat()
     }
 }
 
-/** BPC PATCH BEGIN   **/
-const Mat4& Bone3D::getOriPose() {
-    return _oriPose;
-}
-/** BPC PATCH END     **/
-
-
 const Mat4& Bone3D::getWorldMat()
 {
     if (_worldDirty)
@@ -262,9 +255,23 @@ void Bone3D::updateLocalMat()
         _local.rotate(quat);
         _local.scale(scale);
         
+        // BPC PATCH
+        _local.multiply(_offset);
+        // END BPC PATCH
+        
         _blendStates.clear();
     }
 }
+
+/** BPC PATCH BEGIN   **/
+const Mat4& Bone3D::getOffset() const {
+    return _offset;
+}
+void Bone3D::setOffset(const Mat4& offset) {
+    _offset = offset;
+    Mat4::multiply(_oriPose, _offset, &_local);
+}
+/** BPC PATCH END     **/
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
