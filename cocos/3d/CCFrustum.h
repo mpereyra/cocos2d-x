@@ -55,7 +55,11 @@ public:
      * init frustum from camera.
      */
     bool initFrustum(const Camera* camera);
-
+    
+    /*BPC PATCH*/
+    bool initFrustum(const Mat4& viewProjection);
+    /*#BPC PATCH END*/
+    
     /**
      * is aabb out of frustum.
      */

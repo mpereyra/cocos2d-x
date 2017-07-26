@@ -221,6 +221,41 @@ SpotLight::~SpotLight()
 
 }
 
+const Mat4& SpotLight::getNodeToParentTransform() const
+{
+    if (_transformDirty)
+        m_boundingVolumeDirty = m_frustumDirty = true;
+    return Node::getNodeToParentTransform();
+}
+
+void SpotLight::setRange(float range)
+{
+    _range = range;
+    m_frustumDirty = m_boundingVolumeDirty = true;
+}
+
+const cocos2d::Frustum& SpotLight::getBoundingFrustum() const
+{
+    if (m_frustumDirty)
+    {
+        refreshFrustum();
+        m_frustumDirty = false;
+    }
+    
+    return m_boundingFrustum;
+}
+
+void SpotLight::refreshFrustum() const
+{
+    float lightAngleDegrees = CC_RADIANS_TO_DEGREES(_outerAngle);
+    Mat4 projection;
+    Mat4::createPerspective(lightAngleDegrees * 2.f, 1.f, 0.01f, _range, &projection);
+    Mat4 view = getNodeToParentTransform().getInversed();
+    Mat4 viewProj;
+    Mat4::multiply(projection, view, &viewProj);
+    m_boundingFrustum.initFrustum(viewProj);
+}
+
 /////////////////////////////////////////////////////////////
 
 AmbientLight* AmbientLight::create( const Color3B &color )

@@ -26,6 +26,7 @@
 #define __CCLIGHT_H__
 
 #include "2d/CCNode.h"
+#include "3d/CCFrustum.h"
 
 NS_CC_BEGIN
 
@@ -245,7 +246,7 @@ public:
      *
      * @param range The range of point or spot light.
      */
-    void setRange(float range) { _range = range; }
+    void setRange(float range);
     
     /**
      * Returns the range of point or spot light.
@@ -287,6 +288,8 @@ public:
     void setViewSpaceDataForCamera(const cocos2d::Camera* cam) override;
     const cocos2d::Vec3& getViewSpacePosition() const;
     const cocos2d::Vec3& getViewSpaceDirection() const;
+    const Mat4& getNodeToParentTransform() const override;
+    const cocos2d::Frustum& getBoundingFrustum() const;
     /*END BPC PATCH*/
     
 CC_CONSTRUCTOR_ACCESS:
@@ -303,6 +306,9 @@ protected:
     /*BPC PATCH*/
     cocos2d::Vec3 m_viewSpacePosition;
     cocos2d::Vec3 m_viewSpaceDirection;
+    mutable cocos2d::Frustum m_boundingFrustum;
+    mutable bool m_frustumDirty = true;
+    void refreshFrustum() const;
     /*END BPC PATCH*/
 };
 

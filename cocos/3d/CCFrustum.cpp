@@ -79,9 +79,8 @@ bool Frustum::isOutOfFrustum(const OBB& obb) const
     return  false;
 }
 
-void Frustum::createPlane(const Camera* camera)
+void createFrustumPlanes(const Mat4& mat, Plane* _plane)
 {
-    const Mat4& mat = camera->getViewProjectionMatrix();
     //ref http://www.lighthouse3d.com/tutorials/view-frustum-culling/clip-space-approach-extracting-the-planes/
     //extract frustum plane
     _plane[0].initPlane(-Vec3(mat.m[3] + mat.m[0], mat.m[7] + mat.m[4], mat.m[11] + mat.m[8]), (mat.m[15] + mat.m[12]));//left
@@ -90,6 +89,19 @@ void Frustum::createPlane(const Camera* camera)
     _plane[3].initPlane(-Vec3(mat.m[3] - mat.m[1], mat.m[7] - mat.m[5], mat.m[11] - mat.m[9]), (mat.m[15] - mat.m[13]));//top
     _plane[4].initPlane(-Vec3(mat.m[3] + mat.m[2], mat.m[7] + mat.m[6], mat.m[11] + mat.m[10]), (mat.m[15] + mat.m[14]));//near
     _plane[5].initPlane(-Vec3(mat.m[3] - mat.m[2], mat.m[7] - mat.m[6], mat.m[11] - mat.m[10]), (mat.m[15] - mat.m[14]));//far
+}
+
+bool Frustum::initFrustum(const Mat4& viewProjection)
+{
+    _initialized = true;
+    createFrustumPlanes(viewProjection, _plane);
+    return true;
+}
+
+void Frustum::createPlane(const Camera* camera)
+{
+    const Mat4& mat = camera->getViewProjectionMatrix();
+    createFrustumPlanes(mat, _plane);
 }
 
 NS_CC_END
