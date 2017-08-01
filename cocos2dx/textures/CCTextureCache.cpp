@@ -630,7 +630,8 @@ void CCTextureCache::addImageAsyncCallBack(float dt)
                 {
                     texture = NULL;
                     CCLOG("Couldn't add %s", pAsyncStruct->filename.c_str());
-                    m_failedTextures.insert(pAsyncStruct->filename);
+                    // TODO - FUT-5872, re-enable this
+                    // m_failedTextures.insert(pAsyncStruct->filename);
                 }
                 else
                 {
@@ -805,7 +806,8 @@ CCTexture2D * CCTextureCache::addImage(const char * path)
 				{
 					CCLOG("cocos2d: Couldn't add image:%s in CCTextureCache", path);
                     /* BPC PATCH */
-                    m_failedTextures.insert(path);
+                    // TODO - FUT-5872, re-enable this
+                    // m_failedTextures.insert(path);
                     return NULL; // this was originally falling through, returning an invalid texture
                     /* END BPC PATCH */
 				}
