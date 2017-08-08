@@ -319,6 +319,7 @@ public:
     void addEmitter(PUEmitter* emitter);
 
     PUAffector* getAffector(const std::string &name);
+    const std::vector<Particle3DAffector*>& getAllAffectors() const { return _affectors; }
     PUEmitter* getEmitter(const std::string &name);
     void removeAllEmitter();
 
