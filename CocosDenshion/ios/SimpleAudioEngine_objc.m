@@ -102,19 +102,11 @@ static CDBufferManager *bufferManager = nil;
 }
 
 -(void) pauseBackgroundMusic {
-    //BPC patch GI-908
-    [am setMode:kAMM_FxOnly];
-    //end BPC patch
     [am pauseBackgroundMusic];
-    [am beginInterruption];
 }    
 
 -(void) resumeBackgroundMusic {
-    //BPC Patch GI-908
-    [am setMode:kAMM_FxPlusMusicIfNoOtherAudio];
-    //end BPC Patch
     [am resumeBackgroundMusic];
-    [am endInterruption];
 }    
 
 -(void) rewindBackgroundMusic {
@@ -246,6 +238,23 @@ static CDBufferManager *bufferManager = nil;
 }
 
 // BPC PATCH START
+
+-(void) interruptBackgroundMusic:(BOOL)interrupt {
+    if (interrupt) {
+        //BPC patch GI-908
+        [am setMode:kAMM_FxOnly];
+        //end BPC patch
+        [am pauseBackgroundMusic];
+        [am beginInterruption];
+    } else {
+        //BPC Patch GI-908
+        [am setMode:kAMM_FxPlusMusicIfNoOtherAudio];
+        //end BPC Patch
+        [am resumeBackgroundMusic];
+        [am endInterruption];
+    }
+}
+
 -(void) debugUsage {
     [soundEngine debugUsage];
 }

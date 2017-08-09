@@ -94,6 +94,7 @@
 /** Gets a CDSoundSource object set up to play the specified file. */
 -(CDSoundSource *) soundSourceForFile:(NSString*) filePath;
 // BPC PATCH START
+-(void) interruptBackgroundMusic:(BOOL) interrupt;
 -(void) debugUsage;
 // BPC PATCH END
 

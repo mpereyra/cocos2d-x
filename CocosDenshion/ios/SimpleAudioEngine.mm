@@ -137,6 +137,11 @@ static void static_stopAllEffects()
     [[SimpleAudioEngine sharedEngine] stopAllEffects];
 }
 
+static void static_interruptBackgroundMusic(bool interrupt)
+{
+    [[SimpleAudioEngine sharedEngine] interruptBackgroundMusic:interrupt];
+}
+
 // BPC PATCH START
 static void static_debugUsage()
 {
@@ -204,6 +209,11 @@ void SimpleAudioEngine::resumeBackgroundMusic()
     static_resumeBackgroundMusic();
 } 
 
+void SimpleAudioEngine::interruptBackgroundMusic(bool bInterrupt)
+{
+    static_interruptBackgroundMusic(bInterrupt);
+}
+    
 void SimpleAudioEngine::rewindBackgroundMusic()
 {
     static_rewindBackgroundMusic();

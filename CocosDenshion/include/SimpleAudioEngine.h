@@ -211,6 +211,7 @@ public:
     void unloadEffect(const char* pszFilePath);
     
 // BPC PATCH START
+    void interruptBackgroundMusic(bool bInterrupt);
     void debugUsage();
 // BPC PATCH END
 };
