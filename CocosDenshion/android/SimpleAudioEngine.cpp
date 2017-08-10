@@ -225,6 +225,18 @@ void SimpleAudioEngine::resumeBackgroundMusic()
     resumeBackgroundMusicJNI();
 } 
 
+void SimpleAudioEngine::interruptBackgroundMusic(bool interrupt)
+{
+	if (interrupt)
+	{
+		pauseBackgroundMusicJNI();
+	}
+	else
+	{
+		resumeBackgroundMusicJNI();
+	}
+}
+
 void SimpleAudioEngine::rewindBackgroundMusic()
 {
     rewindBackgroundMusicJNI();
