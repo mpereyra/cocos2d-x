@@ -232,9 +232,11 @@ public:
     static PUParticleSystem3D* create(const std::string &filePath);
     static PUParticleSystem3D* create(const std::string &filePath, const std::string &materialPath);
     
+    void visit(Renderer *renderer, const Mat4 &transform, uint32_t flags) override;
     virtual void draw(Renderer *renderer, const Mat4 &transform, uint32_t flags) override;
 
     virtual void update(float delta) override;
+    void updateSystem();
     void forceUpdate(float delta);
     
     /**
@@ -431,6 +433,10 @@ protected:
     Quaternion                          _latestOrientation;
 
     PUParticleSystem3D *                _parentParticleSystem;
+    
+    /*BPC PATCH - Particles can get out of sync if they are attached to bones, due to the order things are updated by the scheduler. So, we update in ::visit instead of ::update, using the frameDT we get in ::update. */
+    float m_frameDt = 0.f;
+    /*END BPC PATCH*/
 };
 
 NS_CC_END

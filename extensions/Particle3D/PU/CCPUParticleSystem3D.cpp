@@ -428,17 +428,29 @@ void PUParticleSystem3D::resumeParticleSystem()
 
 void PUParticleSystem3D::update(float delta)
 {
+    m_frameDt = delta;
+    return;
+}
+
+void PUParticleSystem3D::updateSystem()
+{
     if (!_isEnabled || _isMarkedForEmission) return;
     if (_state != State::RUNNING){
-        if (_state == State::PAUSE) 
+        if (_state == State::PAUSE)
             return;
         else if (_state == State::STOP && getAliveParticleCount() <= 0){
             forceStopParticleSystem();
             return;
         }
     }
+    
+    forceUpdate(m_frameDt);
+}
 
-    forceUpdate(delta);
+void PUParticleSystem3D::visit(Renderer *renderer, const Mat4 &transform, uint32_t flags)
+{
+    updateSystem();
+    Node::visit(renderer, transform, flags);
 }
 
 void PUParticleSystem3D::forceUpdate( float delta )
@@ -655,13 +667,29 @@ void PUParticleSystem3D::preUpdator( float elapsedTime )
 
 void PUParticleSystem3D::updator( float elapsedTime )
 {
+    /*BPC PATCH BEGIN - There are bugs with how an emitter's keep_local flag works. The position delta isn't updated until postUpdate is called on it, so particles that are updated this frame will have their position updated using the previous frame's position delta. This causes offset issues when you want to attach particles to bones, or anything else that has noticeable movement from frame-to-frame. So, we update emitter particles first and update their position deltas before updating visual particles, which keeps things in sync. */
+    for (auto it : _emitters) {
+        if (it->isEnabled()){
+            (static_cast<PUEmitter*>(it))->postUpdateEmitter(elapsedTime);
+        }
+    }
+    
     bool firstActiveParticle = true;
     bool firstParticle = true;
-    processParticle(_particlePool, firstActiveParticle, firstParticle, elapsedTime);
-
     for (auto &iter : _emittedEmitterParticlePool){
         processParticle(iter.second, firstActiveParticle, firstParticle, elapsedTime);
     }
+    for (auto &iter : _emittedEmitterParticlePool){
+        PUParticle3D *particle = static_cast<PUParticle3D *>(iter.second.getFirst());
+        while (particle)
+        {
+            static_cast<PUEmitter*>(particle->particleEntityPtr)->postUpdateEmitter(elapsedTime);
+            particle = static_cast<PUParticle3D *>(iter.second.getNext());
+        }
+    }
+    /*BPC PATCH END*/
+    
+    processParticle(_particlePool, firstActiveParticle, firstParticle, elapsedTime);
 
     for (auto &iter : _emittedSystemParticlePool){
         processParticle(iter.second, firstActiveParticle, firstParticle, elapsedTime);
@@ -676,12 +704,6 @@ void PUParticleSystem3D::postUpdator( float elapsedTime )
     //    emitter->postUpdateEmitter(elapsedTime);
     //}
 
-    for (auto it : _emitters) {
-        if (it->isEnabled()){
-            (static_cast<PUEmitter*>(it))->postUpdateEmitter(elapsedTime);
-        }
-    }
-
     for (auto it : _affectors) {
         if (it->isEnabled())
         {
@@ -693,15 +715,6 @@ void PUParticleSystem3D::postUpdator( float elapsedTime )
     for (auto it : _observers){
         if (it->isEnabled()){
             it->postUpdateObserver(elapsedTime);
-        }
-    }
-
-    for (auto &iter : _emittedEmitterParticlePool){
-        PUParticle3D *particle = static_cast<PUParticle3D *>(iter.second.getFirst());
-        while (particle)
-        {
-            static_cast<PUEmitter*>(particle->particleEntityPtr)->postUpdateEmitter(elapsedTime);
-            particle = static_cast<PUParticle3D *>(iter.second.getNext());
         }
     }
 
