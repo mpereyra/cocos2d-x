@@ -434,6 +434,7 @@ void PUParticleSystem3D::update(float delta)
 
 void PUParticleSystem3D::updateSystem()
 {
+    if (m_frameDt <= 0.f) return;
     if (!_isEnabled || _isMarkedForEmission) return;
     if (_state != State::RUNNING){
         if (_state == State::PAUSE)
@@ -445,6 +446,7 @@ void PUParticleSystem3D::updateSystem()
     }
     
     forceUpdate(m_frameDt);
+    m_frameDt = 0.f;
 }
 
 void PUParticleSystem3D::visit(Renderer *renderer, const Mat4 &transform, uint32_t flags)
