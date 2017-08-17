@@ -352,6 +352,8 @@ public:
 
     const ParticlePoolMap& getEmittedEmitterParticlePool() const { return _emittedEmitterParticlePool; };
     const ParticlePoolMap& getEmittedSystemParticlePool() const { return _emittedSystemParticlePool; };
+    
+    void setMaxStepSize(float stepSize) { m_maxStepSize = stepSize; }
 
     bool makeParticleLocal(PUParticle3D* particle);
     void calulateRotationOffset(void);
@@ -436,6 +438,7 @@ protected:
     
     /*BPC PATCH - Particles can get out of sync if they are attached to bones, due to the order things are updated by the scheduler. So, we update in ::visit instead of ::update, using the frameDT we get in ::update. */
     float m_frameDt = 0.f;
+    float m_maxStepSize = 1.f; //The max amount of time we pass to updateSystem. If frameDt is above this amount, we need to do multiple updates until we've passed all the time.
     /*END BPC PATCH*/
 };
 

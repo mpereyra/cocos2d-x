@@ -98,6 +98,8 @@ public:
     /** Get the starting ribbon colour. */
     virtual const Vec4& getInitialColour(size_t chainIndex) const;
 
+    void setInitialSystemColor(const Vec4& color) { m_systemInitialColor = color; }
+    
     /** Enables / disables fading the trail using colour. 
     @param chainIndex The index of the chain
     @param valuePerSecond The amount to subtract from colour each second
@@ -186,6 +188,7 @@ protected:
     Node *_parentNode;
     bool _needTimeUpdate;
 
+    Vec4 m_systemInitialColor; //When a new ribbon is created, the initial color. Different from _initialColor, which represents the color of the head element.
 };
 
 NS_CC_END

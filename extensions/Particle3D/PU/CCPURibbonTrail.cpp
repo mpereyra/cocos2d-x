@@ -272,6 +272,7 @@ void PURibbonTrail::updateTrail(size_t index, const Node* node)
 {
     // Repeat this entire process if chain is stretched beyond its natural length
     bool done = false;
+    bool addedElement = false;
     while (!done)
     {
         // Node has changed somehow, we're only interested in the derived position
@@ -301,6 +302,7 @@ void PURibbonTrail::updateTrail(size_t index, const Node* node)
             Element newElem( newPos, _initialWidth[index], 0.0f,
                 _initialColor[index], node->getRotationQuat() );
             addChainElement(index, newElem);
+            addedElement = true;
             // alter diff to represent new head size
             diff = newPos - headElem.position;
             // check whether another step is needed or not
@@ -340,6 +342,22 @@ void PURibbonTrail::updateTrail(size_t index, const Node* node)
         }
     } // end while
 
+    /*BPC PATCH - We need to update the elements' uv value when we add a new element, so that the head has uv = 1, and decrease by 1 / _maxElementsPerChain as we walk down the chain.*/
+    if (addedElement)
+    {
+        float uvStep = 1.f / _maxElementsPerChain;
+        float curUV = 1.f;
+        ChainSegment& seg = _chainSegmentList[index];
+        for(size_t e = seg.head;; ++e) // until break
+        {
+            e = e % _maxElementsPerChain;
+            Element& elem = _chainElementList[seg.start + e];
+            elem.texCoord = curUV;
+            curUV = clampf(curUV - uvStep, 0.f, 1.f);
+            if (e == seg.tail)
+                break;
+        }
+    }
     _vertexContentDirty = true;
     // Need to dirty the parent node, but can't do it using needUpdate() here 
     // since we're in the middle of the scene graph update (node listener), 
@@ -396,7 +414,7 @@ void PURibbonTrail::resetTrail(size_t index, const Node* node)
         _parentNode->getWorldToNodeTransform().transformPoint(position, &position);
     }
     Element e(position,
-        _initialWidth[index], 0.0f, _initialColor[index], node->getRotationQuat());
+        _initialWidth[index], 0.0f, m_systemInitialColor, node->getRotationQuat());
     // Add the start position
     addChainElement(index, e);
     // Add another on the same spot, this will extend

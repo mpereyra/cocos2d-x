@@ -286,13 +286,11 @@ void PURibbonTrailRender::prepare()
             {
                 _trail->setInitialWidth(i, _rendererScale.x * static_cast<PUParticleSystem3D *>(_particleSystem)->getDefaultWidth());
             }
-            
-            //Right now, there's nothing in PU editor to set width change, so we're hardcoding it here.
-            _trail->setWidthChange(i, 1.f);
         }
         //_childNode->attachObject(_trail);
         _trail->setDepthTest(_depthTest);
         _trail->setDepthWrite(_depthWrite);
+        _trail->setInitialSystemColor(_initialColor);
     }
 }
 

@@ -435,17 +435,23 @@ void PUParticleSystem3D::update(float delta)
 void PUParticleSystem3D::updateSystem()
 {
     if (m_frameDt <= 0.f) return;
-    if (!_isEnabled || _isMarkedForEmission) return;
-    if (_state != State::RUNNING){
-        if (_state == State::PAUSE)
-            return;
-        else if (_state == State::STOP && getAliveParticleCount() <= 0){
-            forceStopParticleSystem();
-            return;
+    
+    while (m_frameDt > 0.f) {
+        if (!_isEnabled || _isMarkedForEmission) break;
+        if (_state != State::RUNNING){
+            if (_state == State::PAUSE)
+                break;
+            else if (_state == State::STOP && getAliveParticleCount() <= 0){
+                forceStopParticleSystem();
+                break;
+            }
         }
+        
+        float dt = std::min(m_frameDt, m_maxStepSize);
+        forceUpdate(dt);
+        m_frameDt -= dt;
     }
     
-    forceUpdate(m_frameDt);
     m_frameDt = 0.f;
 }
 
