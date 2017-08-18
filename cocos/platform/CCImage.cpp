@@ -1241,7 +1241,7 @@ bool Image::initWithPngData(const unsigned char * data, ssize_t dataLen)
         png_read_end(png_ptr, nullptr);
 
         // premultiplied alpha for RGBA8888
-        if (PNG_PREMULTIPLIED_ALPHA_ENABLED && color_type == PNG_COLOR_TYPE_RGB_ALPHA)
+        if (PNG_PREMULTIPLIED_ALPHA_ENABLED && (color_type == PNG_COLOR_TYPE_RGB_ALPHA || color_type == PNG_COLOR_TYPE_GRAY_ALPHA))
         {
             premultipliedAlpha();
         }
@@ -2655,13 +2655,22 @@ void Image::premultipliedAlpha()
         _hasPremultipliedAlpha = false;
         return;
 #else
-    CCASSERT(_renderFormat == Texture2D::PixelFormat::RGBA8888, "The pixel format should be RGBA8888!");
+    CCASSERT(_renderFormat == Texture2D::PixelFormat::RGBA8888 || _renderFormat == Texture2D::PixelFormat::AI88, "The pixel format should be RGBA8888 or AI88!");
     
-    unsigned int* fourBytes = (unsigned int*)_data;
-    for(int i = 0; i < _width * _height; i++)
-    {
-        unsigned char* p = _data + i * 4;
-        fourBytes[i] = CC_RGB_PREMULTIPLY_ALPHA(p[0], p[1], p[2], p[3]);
+    if (_renderFormat == Texture2D::PixelFormat::AI88) {
+        for(int i = 0; i < _width * _height; i++)
+        {
+            unsigned char* p = _data + i * 2;
+            p[0] = (p[0] * p[1]) >> 8;
+        }
+    }
+    else {
+        unsigned int* fourBytes = (unsigned int*)_data;
+        for(int i = 0; i < _width * _height; i++)
+        {
+            unsigned char* p = _data + i * 4;
+            fourBytes[i] = CC_RGB_PREMULTIPLY_ALPHA(p[0], p[1], p[2], p[3]);
+        }
     }
     
     _hasPremultipliedAlpha = true;
