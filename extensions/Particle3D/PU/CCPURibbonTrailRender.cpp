@@ -288,6 +288,9 @@ void PURibbonTrailRender::prepare()
             }
         }
         //_childNode->attachObject(_trail);
+        if (_particleSystem->isKeepLocal()) {
+            _trail->setAttachedNode(_childNode);
+        }
         _trail->setDepthTest(_depthTest);
         _trail->setDepthWrite(_depthWrite);
         _trail->setInitialSystemColor(_initialColor);

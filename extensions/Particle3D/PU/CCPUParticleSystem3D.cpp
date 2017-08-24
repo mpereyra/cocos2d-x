@@ -953,9 +953,9 @@ void PUParticleSystem3D::emitParticles( ParticlePool &pool, PUEmitter* emitter, 
 
         initParticleForEmission(particle);
 
-        particle->position.add(particle->direction.x * scale.x * _particleSystemScaleVelocity * timePoint
+        /*particle->position.add(particle->direction.x * scale.x * _particleSystemScaleVelocity * timePoint
                                  , particle->direction.y * scale.y * _particleSystemScaleVelocity * timePoint
-                                 , particle->direction.z * scale.z * _particleSystemScaleVelocity * timePoint);
+                                 , particle->direction.z * scale.z * _particleSystemScaleVelocity * timePoint);*/
         // Increment time fragment
         timePoint += timeInc;
     }
@@ -1242,9 +1242,6 @@ void PUParticleSystem3D::processParticle( ParticlePool &pool, bool &firstActiveP
                 }
             }
 
-            if (_render)
-                static_cast<PURender *>(_render)->updateRender(particle, elapsedTime, firstActiveParticle);
-
             if (_isEnabled && particle->particleType != PUParticle3D::PT_VISUAL){
                 if (particle->particleType == PUParticle3D::PT_EMITTER){
                     auto emitter = static_cast<PUEmitter *>(particle->particleEntityPtr);
@@ -1319,6 +1316,9 @@ void PUParticleSystem3D::processParticle( ParticlePool &pool, bool &firstActiveP
         firstParticle = false;
         particle = static_cast<PUParticle3D *>(pool.getNext());
     }
+    
+    if (_render)
+        static_cast<PURender *>(_render)->updateRender(nullptr, elapsedTime, true);
 }
 
 bool PUParticleSystem3D::makeParticleLocal( PUParticle3D* particle )

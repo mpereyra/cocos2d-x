@@ -62,8 +62,6 @@ public:
     /** Get the chain index for a given Node being tracked. */
     virtual size_t getChainIndexForNode(const Node* n);
 
-    void setAttachedNode(Node *parent) { _parentNode = parent; }
-
     /** Set the length of the trail. 
     @remarks
         This sets the length of the trail, in world units. It also sets how
@@ -185,7 +183,6 @@ protected:
     /// Delta width of the ribbon
     RealList _deltaWidth;
 
-    Node *_parentNode;
     bool _needTimeUpdate;
 
     Vec4 m_systemInitialColor; //When a new ribbon is created, the initial color. Different from _initialColor, which represents the color of the head element.

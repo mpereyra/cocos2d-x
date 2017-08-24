@@ -478,11 +478,19 @@ void PUBillboardChain::updateVertexBuffer(const Mat4 &camMat)
                     chainTangent = _chainElementList[nexte + seg.start].position - _chainElementList[laste + seg.start].position;
 
                 }
-
+                
+                /*BPC PATCH convert to world space if we have a parent*/
+                Vec3 elementPos = elem.position;
+                if (_parentNode) {
+                    elementPos = _parentNode->convertToWorldSpace(elementPos);
+                    _parentNode->getNodeToWorldTransform().transformVector(&chainTangent);
+                }
+                /*BPC PATCH END*/
+                
                 Vec3 vP1ToEye;
 
                 //if( _faceCamera )
-                    vP1ToEye = eyePos - elem.position;
+                    vP1ToEye = eyePos - elementPos;
                 //else
                 //	vP1ToEye = elem.orientation * _normalBase;
 
@@ -491,8 +499,8 @@ void PUBillboardChain::updateVertexBuffer(const Mat4 &camMat)
                 vPerpendicular.normalize();
                 vPerpendicular *= (elem.width * 0.5f);
 
-                Vec3 pos0 = elem.position - vPerpendicular;
-                Vec3 pos1 = elem.position + vPerpendicular;
+                Vec3 pos0 = elementPos - vPerpendicular;
+                Vec3 pos1 = elementPos + vPerpendicular;
 
                 //float* pFloat = static_cast<float*>(pBase);
                 //// pos1
