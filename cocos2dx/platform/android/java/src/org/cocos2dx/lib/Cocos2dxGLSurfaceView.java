@@ -69,21 +69,16 @@ public class Cocos2dxGLSurfaceView extends GLSurfaceView {
 
 	public Cocos2dxGLSurfaceView(final Context context) {
 		super(context);
-
-		this.setEGLContextClientVersion(2);
-
 		this.initView();
 	}
 
 	public Cocos2dxGLSurfaceView(final Context context, final AttributeSet attrs) {
 		super(context, attrs);
-
-		this.setEGLContextClientVersion(2);
-
 		this.initView();
 	}
 
 	protected void initView() {
+		this.setEGLContextClientVersion(2);
 		this.setFocusableInTouchMode(true);
 
 		Cocos2dxGLSurfaceView.mCocos2dxGLSurfaceView = this;
@@ -155,7 +150,7 @@ public class Cocos2dxGLSurfaceView extends GLSurfaceView {
 	@Override
 	public void onResume() {
 		super.onResume();
-
+		this.setRenderMode(RENDERMODE_CONTINUOUSLY);
 		this.queueEvent(new Runnable() {
 			@Override
 			public void run() {
@@ -174,7 +169,7 @@ public class Cocos2dxGLSurfaceView extends GLSurfaceView {
 				Cocos2dxGLSurfaceView.this.mCocos2dxRenderer.handleOnPause();
 			}
 		});
-
+		this.setRenderMode(RENDERMODE_WHEN_DIRTY);
 		super.onPause();
 		//BPC PATCH: to interrupt onTouchEvent
 		mHandleTouches = false;
