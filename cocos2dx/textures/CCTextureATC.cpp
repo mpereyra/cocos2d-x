@@ -22,10 +22,8 @@ void CCTextureATC::deleteData() {
 
 // We cannot autorelease outside the main thread
 bool CCTextureATC::initWithDDSAsync(CCDDS* dds) {
-    
-    // format not correct, but avoids assert in
-    // CCTexture2D::bitsPerPixelForFormat
-    m_pixelFormat = kCCTexture2DPixelFormat_PVRTC4;
+    // Both variants of supported ATI texture compressions are 8bpp and have an alpha channel
+    m_pixelFormat = kCCTexture2DPixelFormat_RGBA8888;
     m_width  = dds->getHeaderInfo().width;
     m_height = dds->getHeaderInfo().height;
     m_glFormat = dds->getGLFormat();
@@ -35,7 +33,6 @@ bool CCTextureATC::initWithDDSAsync(CCDDS* dds) {
 }
 
 bool CCTextureATC::initWithDDS(CCDDS* dds) {
-    
     // Both variants of supported ATI texture compressions are 8bpp and have an alpha channel
     m_pixelFormat = kCCTexture2DPixelFormat_RGBA8888;
     m_width  = dds->getHeaderInfo().width;
