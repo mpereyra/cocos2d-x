@@ -340,8 +340,6 @@ bool CCParticleSystem::initWithDictionary(CCDictionary *dictionary)
                         CC_BREAK_IF(!isOK);
                         
                         setTexture(CCTextureCache::sharedTextureCache()->addUIImage(image, fullpath.c_str()));
-
-                        image->release();
                     }
                 }
                 CCAssert( this->m_pTexture != NULL, "CCParticleSystem: error loading the texture");
@@ -351,6 +349,7 @@ bool CCParticleSystem::initWithDictionary(CCDictionary *dictionary)
     } while (0);
     CC_SAFE_DELETE_ARRAY(buffer);
     CC_SAFE_DELETE_ARRAY(deflated);
+    CC_SAFE_RELEASE(image);
     return bRet;
 }
 
