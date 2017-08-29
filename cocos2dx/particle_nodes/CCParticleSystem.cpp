@@ -273,8 +273,8 @@ bool CCParticleSystem::initWithDictionary(CCDictionary *dictionary)
                 modeB.rotatePerSecondVar = dictionary->valueForKey("rotatePerSecondVariance")->floatValue();
 
             } else {
-                CCAssert( false, "Invalid emitterType in config file");
-                CC_BREAK_IF(true);
+                CCLOGERROR("Invalid emitterType in config file");
+                break;
             }
 
             // life span
@@ -290,52 +290,64 @@ bool CCParticleSystem::initWithDictionary(CCDictionary *dictionary)
                 // Set a compatible default for the alpha transfer
                 m_bOpacityModifyRGB = false;
 
-                // texture        
-                // Try to get the texture from the cache
-                const char* textureName = dictionary->valueForKey("textureFileName")->getCString();
+                // try to get the texture by relative path
+                if (CCTexture2D * texture = [&]() -> CCTexture2D * {
+                            const char * textureName = dictionary->valueForKey("textureFileName")->getCString();
+                            if (!textureName || strlen(textureName) == 0) return NULL;
 
-                CCTexture2D *tex = NULL;
-                
-                if (strlen(textureName) > 0)
-                {
-                    // set not pop-up message box when load image failed
-                    bool bNotify = CCFileUtils::sharedFileUtils()->isPopupNotify();
-                    CCFileUtils::sharedFileUtils()->setPopupNotify(false);
-                    tex = CCTextureCache::sharedTextureCache()->addImage(textureName);
-                    
-                    // reset the value of UIImage notify
-                    CCFileUtils::sharedFileUtils()->setPopupNotify(bNotify);
-                }
-                
-                if (tex)
-                {
-                    setTexture(tex);
-                }
-                else
-                {
-                    const char *textureData = dictionary->valueForKey("textureImageData")->getCString();
-                    size_t const dataLen = strlen(textureData);
-                    CCAssert(dataLen != 0, "CCParticleSystem: missing required textureImageData");
+                            // set not pop-up message box when load image failed
+                            bool bNotify = CCFileUtils::sharedFileUtils()->isPopupNotify();
+                            CCFileUtils::sharedFileUtils()->setPopupNotify(false);
+                            CCTexture2D * tex = CCTextureCache::sharedTextureCache()->addImage(textureName);
+                            
+                            // reset the value of UIImage notify
+                            CCFileUtils::sharedFileUtils()->setPopupNotify(bNotify);
+                            return tex;
+                        }()) {
+                    setTexture(texture);
 
-                    // if it fails, try to get it from the base64-gzipped data
-                    int decodeLen = base64Decode((unsigned char*)textureData, (unsigned int)dataLen, &buffer);
-                    CCAssert( buffer != NULL, "CCParticleSystem: error decoding textureImageData");
-                    CC_BREAK_IF(!buffer);
-                    
-                    int deflatedLen = ZipUtils::ccInflateMemory(buffer, decodeLen, &deflated);
-                    CCAssert( deflated != NULL, "CCParticleSystem: error ungzipping textureImageData");
-                    CC_BREAK_IF(!deflated);
-                    
-                    // For android, we should retain it in VolatileTexture::addCCImage which invoked in CCTextureCache::sharedTextureCache()->addUIImage()
-                    image = new CCImage();
-                    bool isOK = image->initWithImageData(deflated, deflatedLen);
-                    CCAssert(isOK, "CCParticleSystem: error init image with Data");
-                    CC_BREAK_IF(!isOK);
+                // try to get the texture by explicit image data
+                } else if (CCTexture2D * texture = [&]() -> CCTexture2D * {
+                            const char * textureData = dictionary->valueForKey("textureImageData")->getCString();
+                            size_t const dataLen = textureData ? strlen(textureData) : 0;
+                            if (dataLen == 0) {
+                                CCLOGERROR("CCParticleSystem: missing required textureImageData");
+                                return NULL;
+                            }
 
-                    const char * cacheKey = m_sPlistFile.c_str();
-                    setTexture(CCTextureCache::sharedTextureCache()->addUIImage(image, cacheKey));
+                            // if it fails, try to get it from the base64-gzipped data
+                            int decodeLen = base64Decode((unsigned char*)textureData, (unsigned int)dataLen, &buffer);
+                            if (!buffer) {
+                                CCLOGERROR("CCParticleSystem: error decoding textureImageData");
+                                return NULL;
+                            }
+                            
+                            int deflatedLen = ZipUtils::ccInflateMemory(buffer, decodeLen, &deflated);
+                            if (!deflated) {
+                                CCLOGERROR("CCParticleSystem: error ungzipping textureImageData");
+                                return NULL;
+                            }
+                            
+                            // For android, we should retain it in VolatileTexture::addCCImage which invoked in CCTextureCache::sharedTextureCache()->addUIImage()
+                            image = new CCImage();
+                            if (!image->initWithImageData(deflated, deflatedLen)) {
+                                CCLOGERROR("CCParticleSystem: error init image with Data");
+                                return NULL;
+                            }
+
+                            return CCTextureCache::sharedTextureCache()->addUIImage(image, [&] {
+                                    std::string::size_type const pos = m_sPlistFile.find_last_of('/');
+                                    if (pos != std::string::npos) return m_sPlistFile.substr(pos + 1);
+                                    else                          return m_sPlistFile;
+                                }().c_str());
+                        }()) {
+                    setTexture(texture);
                 }
-                CCAssert( this->m_pTexture != NULL, "CCParticleSystem: error loading the texture");
+
+                if (!this->m_pTexture) {
+                    CCLOGERROR("CCParticleSystem: error loading the texture");
+                    break;
+                }
             }
             bRet = true;
         }
