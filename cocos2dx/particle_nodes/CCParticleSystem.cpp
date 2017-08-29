@@ -299,6 +299,7 @@ bool CCParticleSystem::initWithDictionary(CCDictionary *dictionary)
                             bool bNotify = CCFileUtils::sharedFileUtils()->isPopupNotify();
                             CCFileUtils::sharedFileUtils()->setPopupNotify(false);
                             CCTexture2D * tex = CCTextureCache::sharedTextureCache()->addImage(textureName);
+                            if (!tex) CCLOGERROR("CCParticleSystem: error creating particle texture by filename");
                             
                             // reset the value of UIImage notify
                             CCFileUtils::sharedFileUtils()->setPopupNotify(bNotify);
