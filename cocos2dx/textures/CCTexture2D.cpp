@@ -971,6 +971,9 @@ const char* CCTexture2D::stringForFormat()
 		case kCCTexture2DPixelFormat_I8:
 			return  "I8";
 
+        case kCCTexture2DPixelFormat_ATC_RGBA:
+            return "ATC_RGBA";
+
 		case kCCTexture2DPixelFormat_PVRTC4:
 			return  "PVRTC4";
 
@@ -1033,6 +1036,9 @@ unsigned int CCTexture2D::bitsPerPixelForFormat(CCTexture2DPixelFormat format)
 		case kCCTexture2DPixelFormat_I8:
 			ret = 8;
 			break;
+        case kCCTexture2DPixelFormat_ATC_RGBA:
+            ret = 8;
+            break;
 		case kCCTexture2DPixelFormat_PVRTC4:
 			ret = 4;
 			break;
