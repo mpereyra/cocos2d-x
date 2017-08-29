@@ -55,7 +55,7 @@ MeshCommand::MeshCommand()
 , _matrixPaletteSize(0)
 , _materialID(0)
 , _vao(0)
-, _material(nullptr)
+, _technique(nullptr)
 , _stateBlock(nullptr)
 {
     _type = RenderCommand::Type::MESH_COMMAND;
@@ -68,7 +68,7 @@ MeshCommand::MeshCommand()
 }
 
 void MeshCommand::init(float globalZOrder,
-                       Material* material,
+                       Technique* technique,
                        GLuint vertexBuffer,
                        GLuint indexBuffer,
                        GLenum primitive,
@@ -77,12 +77,12 @@ void MeshCommand::init(float globalZOrder,
                        const cocos2d::Mat4 &mv,
                        uint32_t flags)
 {
-    CCASSERT(material, "material cannot be null");
+    CCASSERT(technique, "technique cannot be null");
 
     RenderCommand::init(globalZOrder, mv, flags);
 
     _globalOrder = globalZOrder;
-    _material = material;
+    _technique = technique;
     
     _vertexBuffer = vertexBuffer;
     _indexBuffer = indexBuffer;
@@ -108,7 +108,7 @@ void MeshCommand::init(float globalZOrder,
 {
     CCASSERT(glProgramState, "GLProgramState cannot be null");
     CCASSERT(stateBlock, "StateBlock cannot be null");
-    CCASSERT(!_material, "cannot init with GLProgramState if previously inited without GLProgramState");
+    CCASSERT(!_technique, "cannot init with GLProgramState if previously inited without GLProgramState");
 
     RenderCommand::init(globalZOrder, mv, flags);
     
@@ -133,21 +133,21 @@ void MeshCommand::init(float globalZOrder,
 
 void MeshCommand::setDisplayColor(const Vec4& color)
 {
-    CCASSERT(!_material, "If using material, you should set the color as a uniform: use u_color");
+    CCASSERT(!_technique, "If using technique, you should set the color as a uniform: use u_color");
 
     _displayColor = color;
 }
 
 void MeshCommand::setMatrixPalette(const Vec4* matrixPalette)
 {
-    CCASSERT(!_material, "If using material, you should set the color as a uniform: use u_matrixPalette");
+    CCASSERT(!_technique, "If using technique, you should set the color as a uniform: use u_matrixPalette");
 
     _matrixPalette = matrixPalette;
 }
 
 void MeshCommand::setMatrixPaletteSize(int size)
 {
-    CCASSERT(!_material, "If using material, you should set the color as a uniform: use u_matrixPalette with its size");
+    CCASSERT(!_technique, "If using technique, you should set the color as a uniform: use u_matrixPalette with its size");
 
     _matrixPaletteSize = size;
 }
@@ -162,7 +162,7 @@ MeshCommand::~MeshCommand()
 
 void MeshCommand::applyRenderState()
 {
-    CCASSERT(!_material, "Must not be called when using materials");
+    CCASSERT(!_technique, "Must not be called when using technique");
     CCASSERT(_stateBlock, "StateBlock must be non null");
 
     // blend and texture
@@ -190,8 +190,8 @@ uint32_t MeshCommand::getMaterialID() const
 
 void MeshCommand::preBatchDraw()
 {
-    // Do nothing if using material since each pass needs to bind its own VAO
-    if (!_material)
+    // Do nothing if using technique since each pass needs to bind its own VAO
+    if (!_technique)
     {
         if (Configuration::getInstance()->supportsShareableVAO() && _vao == 0)
             buildVAO();
@@ -204,8 +204,8 @@ void MeshCommand::preBatchDraw()
             glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
 
             // FIXME: Assumes that all the passes in the Material share the same Vertex Attribs
-            GLProgramState* programState = _material
-                                            ? _material->_currentTechnique->_passes.at(0)->getGLProgramState()
+            GLProgramState* programState = _technique
+                                            ? _technique->_passes.at(0)->getGLProgramState()
                                             : _glProgramState;
             programState->applyAttributes();
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer);
@@ -215,9 +215,9 @@ void MeshCommand::preBatchDraw()
 
 void MeshCommand::batchDraw()
 {
-    if (_material)
+    if (_technique)
     {
-        for(const auto& pass: _material->_currentTechnique->_passes)
+        for(const auto& pass: _technique->_passes)
         {
             pass->bind(_mv);
 
@@ -241,8 +241,8 @@ void MeshCommand::batchDraw()
 }
 void MeshCommand::postBatchDraw()
 {
-    // when using material, unbind is after draw
-    if (!_material)
+    // when using technique, unbind is after draw
+    if (!_technique)
     {
         if (_vao)
         {
@@ -266,9 +266,9 @@ void MeshCommand::execute()
     glBindBuffer(GL_ARRAY_BUFFER, _vertexBuffer);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _indexBuffer);
 
-    if (_material)
+    if (_technique)
     {
-        for(const auto& pass: _material->_currentTechnique->_passes)
+        for(const auto& pass: _technique->_passes)
         {
             pass->bind(_mv, true);
 
@@ -298,8 +298,8 @@ void MeshCommand::execute()
 void MeshCommand::buildVAO()
 {
     // FIXME: Assumes that all the passes in the Material share the same Vertex Attribs
-    GLProgramState* programState = (_material != nullptr)
-                                    ? _material->_currentTechnique->_passes.at(0)->getGLProgramState()
+    GLProgramState* programState = (_technique != nullptr)
+                                    ? _technique->_passes.at(0)->getGLProgramState()
                                     : _glProgramState;
 
     releaseVAO();

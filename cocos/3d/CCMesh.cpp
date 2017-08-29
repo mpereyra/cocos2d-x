@@ -395,8 +395,9 @@ void Mesh::draw(Renderer* renderer, float globalZOrder, const Mat4& transform, u
     if (isTransparent)
         flags |= Node::FLAGS_RENDER_AS_3D;
 
-    _meshCommand.init(globalZOrder,
-                      _material,
+    MeshCommand& commandToUse = getMeshCommand();
+    commandToUse.init(globalZOrder,
+                      _material ? _material->getTechnique() : nullptr,
                       getVertexBuffer(),
                       getIndexBuffer(),
                       getPrimitiveType(),
@@ -419,9 +420,9 @@ void Mesh::draw(Renderer* renderer, float globalZOrder, const Mat4& transform, u
     /*BPC PATCH*/
     
     
-    _meshCommand.setSkipBatching(isTransparent);
-    _meshCommand.setTransparent(isTransparent);
-    _meshCommand.set3D(!_force2DQueue);
+    commandToUse.setSkipBatching(isTransparent);
+    commandToUse.setTransparent(isTransparent);
+    commandToUse.set3D(!_force2DQueue);
     _material->getStateBlock()->setBlend(_force2DQueue || isTransparent);
 
     // set default uniforms for Mesh
@@ -441,7 +442,7 @@ void Mesh::draw(Renderer* renderer, float globalZOrder, const Mat4& transform, u
     }
     
     //BPC PATCH BEGIN Update depth for transparent objects
-    if (_meshCommand.isTransparent() && _meshCommand.is3D())
+    if (commandToUse.isTransparent() && commandToUse.is3D())
     {
         if (Camera::getVisitingCamera())
         {
@@ -449,12 +450,12 @@ void Mesh::draw(Renderer* renderer, float globalZOrder, const Mat4& transform, u
             cocos2d::Mat4 bbTransform;
             transform.translate(centerPt, &bbTransform);
             float bbDepth = Camera::getVisitingCamera()->getDepthInView(bbTransform);
-            _meshCommand.setDepth(bbDepth);
+            commandToUse.setDepth(bbDepth);
         }
     }
     //BPC PATCH END
 
-    renderer->addCommand(&_meshCommand);
+    renderer->addCommand(&commandToUse);
 }
 
 void Mesh::setSkin(MeshSkin* skin)
@@ -758,6 +759,39 @@ GLuint Mesh::getIndexBuffer() const
 }
 
 /*BPC PATCH*/
+MeshCommand& Mesh::getMeshCommand()
+{
+    if (!_material)
+        return _meshCommand;
+    
+    auto technique = _material->getTechnique();
+    auto it = m_techniqueToCommandOverrides.find(technique->getName());
+    if (it != m_techniqueToCommandOverrides.end())
+        return it->second;
+    
+    return _meshCommand;
+}
+
+void Mesh::addCommandOverride(const std::string& techniqueName)
+{
+    if (!_material)
+        return;
+    
+    auto technique = _material->getTechniqueByName(techniqueName);
+    if (!technique)
+        return;
+    
+    auto it = m_techniqueToCommandOverrides.find(techniqueName);
+    if (it == m_techniqueToCommandOverrides.end()) {
+        auto& command = m_techniqueToCommandOverrides[techniqueName];
+        auto pass = _material->_currentTechnique->_passes.at(0);
+        auto glprogramstate = pass->getGLProgramState();
+        auto texture = pass->getTexture();
+        auto textureid = texture ? texture->getName() : 0;
+        command.genMaterialID(textureid, glprogramstate, _meshIndexData->getVertexBuffer()->getVBO(), _meshIndexData->getIndexBuffer()->getVBO(), BlendFunc::ALPHA_PREMULTIPLIED);
+    }
+}
+
 void Mesh::setPointLightCount(int count)
 {
     if (count < 0)

@@ -36,7 +36,7 @@ NS_CC_BEGIN
 class GLProgramState;
 class EventListenerCustom;
 class EventCustom;
-class Material;
+class Technique;
 
     
 //it is a common mesh
@@ -47,7 +47,7 @@ public:
     MeshCommand();
     virtual ~MeshCommand();
 
-    void init(float globalZOrder, Material* material, GLuint vertexBuffer, GLuint indexBuffer, GLenum primitive, GLenum indexFormat, ssize_t indexCount, const Mat4 &mv, uint32_t flags);
+    void init(float globalZOrder, Technique* technique, GLuint vertexBuffer, GLuint indexBuffer, GLenum primitive, GLenum indexFormat, ssize_t indexCount, const Mat4 &mv, uint32_t flags);
 
     void init(float globalZOrder, GLuint textureID, GLProgramState* glProgramState, RenderState::StateBlock* stateBlock, GLuint vertexBuffer, GLuint indexBuffer, GLenum primitive, GLenum indexFormat, ssize_t indexCount, const Mat4 &mv, uint32_t flags);
 
@@ -102,9 +102,9 @@ protected:
     // ModelView transform
     Mat4 _mv;
 
-    // Mode A: Material
+    // Mode A: Technique
     // weak ref
-    Material* _material;
+    Technique* _technique;
 
     // Mode B: StateBlock
     // weak ref

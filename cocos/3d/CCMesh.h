@@ -215,7 +215,7 @@ public:
     /** 
      * Get the MeshCommand.
      */
-    MeshCommand& getMeshCommand() { return _meshCommand; }
+    MeshCommand& getMeshCommand();
 
     /**skin setter*/
     void setSkin(MeshSkin* skin);
@@ -273,6 +273,8 @@ public:
     void setMeshLightMask(unsigned int mask) { m_meshLightMask = mask; }
     unsigned int getMeshLightMask() const { return m_meshLightMask; }
     
+    void addCommandOverride(const std::string& techniqueName);
+    
     void setPointLightCount(int count);
     void setFxPointLightCount(int count);
     void setDirLightCount(int count);
@@ -320,6 +322,9 @@ protected:
     GLWriteMode m_cullFaceMode{GLWriteMode::Default};
     float m_globalZ{std::numeric_limits<float>::max()};
     AABB m_skinnedAABB;
+    
+    //Sometimes we want to render a mesh with different techniques in a single render pass. Renderer has a pointer to the MeshCommand, so for these instances we need to specify a different command.
+    std::map<std::string, MeshCommand> m_techniqueToCommandOverrides;
     /*END BPC-PATCH*/
     
     
