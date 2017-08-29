@@ -294,11 +294,6 @@ bool CCParticleSystem::initWithDictionary(CCDictionary *dictionary)
                 // Try to get the texture from the cache
                 const char* textureName = dictionary->valueForKey("textureFileName")->getCString();
                 const char *textureData = dictionary->valueForKey("textureImageData")->getCString();
-                std::string fullpath = CCFileUtils::sharedFileUtils()->fullPathFromRelativeFile(textureName, m_sPlistFile.c_str());
-                
-                if (fullpath.empty()) {
-                    fullpath = m_sPlistFile;
-                }
                 
                 CCTexture2D *tex = NULL;
                 
@@ -307,7 +302,7 @@ bool CCParticleSystem::initWithDictionary(CCDictionary *dictionary)
                     // set not pop-up message box when load image failed
                     bool bNotify = CCFileUtils::sharedFileUtils()->isPopupNotify();
                     CCFileUtils::sharedFileUtils()->setPopupNotify(false);
-                    tex = CCTextureCache::sharedTextureCache()->addImage(fullpath.c_str());
+                    tex = CCTextureCache::sharedTextureCache()->addImage(textureName);
                     
                     // reset the value of UIImage notify
                     CCFileUtils::sharedFileUtils()->setPopupNotify(bNotify);
@@ -339,8 +334,9 @@ bool CCParticleSystem::initWithDictionary(CCDictionary *dictionary)
                         CCAssert(isOK, "CCParticleSystem: error init image with Data");
                         CC_BREAK_IF(!isOK);
                         
-                        setTexture(CCTextureCache::sharedTextureCache()->addUIImage(image, fullpath.c_str()));
                     }
+                    const char * cacheKey = m_sPlistFile.c_str();
+                    setTexture(CCTextureCache::sharedTextureCache()->addUIImage(image, cacheKey));
                 }
                 CCAssert( this->m_pTexture != NULL, "CCParticleSystem: error loading the texture");
             }
