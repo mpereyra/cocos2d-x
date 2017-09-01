@@ -200,7 +200,8 @@ void PUForceField::initialise(ForceFieldType type,
                             const Vec3& worldSize)
 {
     // Create a factory
-    _forceFieldCalculationFactory = createForceFieldCalculationFactory(type);
+    //MATRIX_CALC isn't implemented, we have to force FF_REALTIME_CALC
+    _forceFieldCalculationFactory = createForceFieldCalculationFactory(FF_REALTIME_CALC);
 
     // Create all necessary data for the force field
     _forceFieldCalculationFactory->generate(forceFieldSize, octaves, frequency, amplitude, persistence, worldSize);
