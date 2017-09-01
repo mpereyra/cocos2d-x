@@ -775,7 +775,7 @@ void Sprite3D::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
         return;
 #endif
     
-    if (_skeleton)
+    if (_skeleton && (flags & FLAGS_UPDATE_SKELETON))
         _skeleton->updateBoneMatrix();
     
     Color4F color(getDisplayedColor());
