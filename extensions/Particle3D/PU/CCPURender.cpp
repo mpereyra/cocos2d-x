@@ -473,6 +473,24 @@ PUParticle3DQuadRender* PUParticle3DQuadRender::clone()
     return render;
 }
 
+void PUParticle3DQuadRender::setStencilEnabled(bool val)
+{
+    if (val)
+    {
+        _stateBlock->setStencilTest(true);
+        _stateBlock->setStencilFunction(RenderState::StencilFunction::STENCIL_EQUAL, 0, RenderState::StateBlock::RS_ALL_ONES);
+        _stateBlock->setStencilOperation(RenderState::StencilOperation::STENCIL_OP_KEEP, RenderState::StencilOperation::STENCIL_OP_KEEP, RenderState::StencilOperation::STENCIL_OP_KEEP);
+        _stateBlock->setStencilWrite(RenderState::StateBlock::RS_ALL_ONES);
+    }
+    else
+    {
+        _stateBlock->setStencilTest(false);
+        _stateBlock->setStencilFunction(RenderState::StencilFunction::STENCIL_ALWAYS, 0, RenderState::StateBlock::RS_ALL_ONES);
+        _stateBlock->setStencilOperation(RenderState::StencilOperation::STENCIL_OP_KEEP, RenderState::StencilOperation::STENCIL_OP_KEEP, RenderState::StencilOperation::STENCIL_OP_KEEP);
+        _stateBlock->setStencilWrite(RenderState::StateBlock::RS_ALL_ONES);
+    }
+}
+
 PUParticle3DModelRender* PUParticle3DModelRender::create( const std::string& modelFile, const std::string &texFile /*= ""*/ )
 {
     auto ret = new (std::nothrow) PUParticle3DModelRender();
