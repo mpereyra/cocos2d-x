@@ -490,7 +490,9 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
             RenderState::StateBlock::_defaultState->setBlend(true);
         }
         glDisable(GL_CULL_FACE);
+        glDisable(GL_STENCIL_TEST);
         RenderState::StateBlock::_defaultState->setCullFace(false);
+        RenderState::StateBlock::_defaultState->setStencilTest(false);
         
         for (auto it = zNegQueue.cbegin(); it != zNegQueue.cend(); ++it)
         {
@@ -510,10 +512,12 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
         glDepthMask(true);
         glDisable(GL_BLEND);
         glEnable(GL_CULL_FACE);
+        glDisable(GL_STENCIL_TEST);
         RenderState::StateBlock::_defaultState->setDepthTest(true);
         RenderState::StateBlock::_defaultState->setDepthWrite(true);
         RenderState::StateBlock::_defaultState->setBlend(false);
         RenderState::StateBlock::_defaultState->setCullFace(true);
+        RenderState::StateBlock::_defaultState->setStencilTest(false);
 
 
         for (auto it = opaqueQueue.cbegin(); it != opaqueQueue.cend(); ++it)
@@ -541,11 +545,13 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
         glDepthMask(false);
         glEnable(GL_BLEND);
         glEnable(GL_CULL_FACE);
+        glDisable(GL_STENCIL_TEST);
 
         RenderState::StateBlock::_defaultState->setDepthTest(true);
         RenderState::StateBlock::_defaultState->setDepthWrite(false);
         RenderState::StateBlock::_defaultState->setBlend(true);
         RenderState::StateBlock::_defaultState->setCullFace(true);
+        RenderState::StateBlock::_defaultState->setStencilTest(false);
 
 
         for (auto it = transQueue.cbegin(); it != transQueue.cend(); ++it)
@@ -582,7 +588,9 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
             RenderState::StateBlock::_defaultState->setBlend(true);
         }
         glDisable(GL_CULL_FACE);
+        glDisable(GL_STENCIL_TEST);
         RenderState::StateBlock::_defaultState->setCullFace(false);
+        RenderState::StateBlock::_defaultState->setStencilTest(false);
         
         for (auto it = zZeroQueue.cbegin(); it != zZeroQueue.cend(); ++it)
         {
@@ -618,7 +626,9 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
             RenderState::StateBlock::_defaultState->setBlend(true);
         }
         glDisable(GL_CULL_FACE);
+        glDisable(GL_STENCIL_TEST);
         RenderState::StateBlock::_defaultState->setCullFace(false);
+        RenderState::StateBlock::_defaultState->setStencilTest(false);
         
         for (auto it = zPosQueue.cbegin(); it != zPosQueue.cend(); ++it)
         {
