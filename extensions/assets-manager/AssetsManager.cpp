@@ -667,21 +667,9 @@ void AssetsManager::destroyStoragePath()
 {
     // Delete recorded version codes.
     deleteVersion();
-    
-    // Remove downloaded files
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT) || (CC_TARGET_PLATFORM == CC_PLATFORM_WP8)
+    //BPC patch
     FileUtils::getInstance()->removeDirectory(_storagePath.c_str());
-#elif (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
-    string command = "rd /s /q ";
-    // Path may include space.
-    command += "\"" + _storagePath + "\"";
-    system(command.c_str());
-#else
-    string command = "rm -r ";
-    // Path may include space.
-    command += "\"" + _storagePath + "\"";
-    system(command.c_str());    
-#endif
+    //End BPC patch
 }
 
 NS_CC_EXT_END;
