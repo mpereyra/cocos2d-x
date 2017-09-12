@@ -154,6 +154,7 @@ const char* GLProgram::ATTRIBUTE_NAME_BLEND_WEIGHT = "a_blendWeight";
 const char* GLProgram::ATTRIBUTE_NAME_BLEND_INDEX = "a_blendIndex";
 const char* GLProgram::ATTRIBUTE_NAME_TANGENT = "a_tangent";
 const char* GLProgram::ATTRIBUTE_NAME_BINORMAL = "a_binormal";
+const char* GLProgram::ATTRIBUTE_NAME_SOFT_NORMAL = "a_softNormal";
 
 
 

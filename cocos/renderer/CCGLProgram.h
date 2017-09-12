@@ -114,6 +114,7 @@ public:
         VERTEX_ATTRIB_TANGENT,
         /**Index 10 will be used as Binormal.*/
         VERTEX_ATTRIB_BINORMAL,
+        VERTEX_ATTRIB_SOFT_NORMAL,
         VERTEX_ATTRIB_MAX,
 
         // backward compatibility
@@ -345,6 +346,7 @@ public:
     static const char* ATTRIBUTE_NAME_TANGENT;
     /**Attribute blend binormal.*/
     static const char* ATTRIBUTE_NAME_BINORMAL;
+    static const char* ATTRIBUTE_NAME_SOFT_NORMAL;
     /**
     end of Built Attribute names
     @}

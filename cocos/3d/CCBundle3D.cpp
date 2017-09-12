@@ -2106,6 +2106,10 @@ unsigned int Bundle3D::parseGLProgramAttribute(const std::string& str)
     {
         return GLProgram::VERTEX_ATTRIB_BINORMAL;
     }
+    else if (str == "VERTEX_ATTRIB_SOFT_NORMAL")
+    {
+        return GLProgram::VERTEX_ATTRIB_SOFT_NORMAL;
+    }
     else
     {
         CCASSERT(false, "Wrong Attribute type");
