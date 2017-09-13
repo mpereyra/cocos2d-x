@@ -1361,13 +1361,14 @@ CCEaseBackOut* CCEaseBackOut::actionWithAction(CCActionInterval* pAction)
     return CCEaseBackOut::create(pAction);
 }
 
-CCEaseBackOut* CCEaseBackOut::create(CCActionInterval* pAction)
+CCEaseBackOut* CCEaseBackOut::create(CCActionInterval* pAction, float fOvershoot)
 {
     CCEaseBackOut *pRet = new CCEaseBackOut();
     if (pRet)
     {
         if (pRet->initWithAction(pAction))
         {
+            pRet->m_fOvershoot = fOvershoot;
             pRet->autorelease();
         }
         else
@@ -1402,10 +1403,8 @@ CCObject* CCEaseBackOut::copyWithZone(CCZone *pZone)
 
 void CCEaseBackOut::update(float time)
 {
-    float overshoot = 1.70158f;
-
     time = time - 1;
-    m_pOther->update(time * time * ((overshoot + 1) * time + overshoot) + 1);
+    m_pOther->update(time * time * ((m_fOvershoot + 1) * time + m_fOvershoot) + 1);
 }
 
 CCActionInterval* CCEaseBackOut::reverse(void)

@@ -504,6 +504,8 @@ public:
  */
 class CC_DLL CCEaseBackOut : public CCActionEase
 {
+protected:
+    float m_fOvershoot;
 public:
     virtual void update(float time);
     virtual CCActionInterval* reverse(void);
@@ -515,7 +517,7 @@ public:
     */
     CC_DEPRECATED_ATTRIBUTE static CCEaseBackOut* actionWithAction(CCActionInterval* pAction);
     /** creates the action */
-    static CCEaseBackOut* create(CCActionInterval* pAction);
+    static CCEaseBackOut* create(CCActionInterval* pAction, float fOvershoot = 1.70158f);
 };
 
 /** 
