@@ -276,8 +276,17 @@ void PUParticle3DQuadRender::render(Renderer* renderer, const Mat4 &transform, P
         _vertexBuffer->updateVertices(&_vertices[0], vertexindex/* * sizeof(_posuvcolors[0])*/, 0);
         _indexBuffer->updateIndices(&_indices[0], index/* * sizeof(unsigned short)*/, 0);
 
-        _stateBlock->setBlendFunc(particleSystem->getBlendFunc());
+        auto blend = particleSystem->getBlendFunc();
+        float opacityMod = particleSystem->getOpacityModifier();
+        Vec4 color = Vec4::ONE;
+        if (blend == BlendFunc::ADDITIVE || blend == BlendFunc::ONE) {
+            color.set(opacityMod, opacityMod, opacityMod, opacityMod);
+        }
+        else {
+            color.w = opacityMod;
+        }
         
+        _stateBlock->setBlendFunc(blend);
         GLuint texId = (_texture ? _texture->getName() : 0);
         _meshCommand->init(0,
                            texId,
@@ -296,7 +305,7 @@ void PUParticle3DQuadRender::render(Renderer* renderer, const Mat4 &transform, P
             _meshCommand->setDepth(particleSystem->getDepthOverride());
         }
         
-        _glProgramState->setUniformVec4("u_color", Vec4(1,1,1,1));
+        _glProgramState->setUniformVec4("u_color", color);
         renderer->addCommand(_meshCommand);
     }
 }
@@ -775,7 +784,17 @@ void PUParticle3DBoxRender::render( Renderer* renderer, const Mat4 &transform, P
         _indexBuffer->updateIndices(&_indices[0], index/* * sizeof(unsigned short)*/, 0);
 
         GLuint texId = (_texture ? _texture->getName() : 0);
-        _stateBlock->setBlendFunc(_particleSystem->getBlendFunc());
+        auto blend = particleSystem->getBlendFunc();
+        float opacityMod = particleSystem->getOpacityModifier();
+        Vec4 color = Vec4::ONE;
+        if (blend == BlendFunc::ADDITIVE || blend == BlendFunc::ONE) {
+            color.set(opacityMod, opacityMod, opacityMod, opacityMod);
+        }
+        else {
+            color.w = opacityMod;
+        }
+        
+        _stateBlock->setBlendFunc(blend);
         _meshCommand->init(0,
                            texId,
                            _glProgramState,
@@ -793,7 +812,7 @@ void PUParticle3DBoxRender::render( Renderer* renderer, const Mat4 &transform, P
             _meshCommand->setDepth(particleSystem->getDepthOverride());
         }
 
-        _glProgramState->setUniformVec4("u_color", Vec4(1,1,1,1));
+        _glProgramState->setUniformVec4("u_color", color);
         renderer->addCommand(_meshCommand);
     }
 }
@@ -942,7 +961,17 @@ void PUSphereRender::render( Renderer* renderer, const Mat4 &transform, Particle
         _indexBuffer->updateIndices(&_indices[0], index/* * sizeof(unsigned short)*/, 0);
 
         GLuint texId = (_texture ? _texture->getName() : 0);
-        _stateBlock->setBlendFunc(particleSystem->getBlendFunc());
+        auto blend = particleSystem->getBlendFunc();
+        float opacityMod = particleSystem->getOpacityModifier();
+        Vec4 color = Vec4::ONE;
+        if (blend == BlendFunc::ADDITIVE || blend == BlendFunc::ONE) {
+            color.set(opacityMod, opacityMod, opacityMod, opacityMod);
+        }
+        else {
+            color.w = opacityMod;
+        }
+        
+        _stateBlock->setBlendFunc(blend);
         _meshCommand->init(
                            0,
                            texId,
@@ -961,7 +990,7 @@ void PUSphereRender::render( Renderer* renderer, const Mat4 &transform, Particle
             _meshCommand->setDepth(particleSystem->getDepthOverride());
         }
 
-        _glProgramState->setUniformVec4("u_color", Vec4(1,1,1,1));
+        _glProgramState->setUniformVec4("u_color", color);
         renderer->addCommand(_meshCommand);
     }
 }

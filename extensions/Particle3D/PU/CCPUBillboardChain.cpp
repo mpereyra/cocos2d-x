@@ -707,7 +707,16 @@ void PUBillboardChain::render( Renderer* renderer, const Mat4 &transform, Partic
         if (!_vertices.empty() && !_indices.empty())
         {
             GLuint texId = this->getTextureName();
-            _stateBlock->setBlendFunc(particleSystem->getBlendFunc());
+            auto blend = particleSystem->getBlendFunc();
+            float opacityMod = particleSystem->getOpacityModifier();
+            Vec4 color = Vec4::ONE;
+            if (blend == BlendFunc::ADDITIVE || blend == BlendFunc::ONE) {
+                color.set(opacityMod, opacityMod, opacityMod, opacityMod);
+            }
+            else {
+                color.w = opacityMod;
+            }
+            _stateBlock->setBlendFunc(blend);
             _meshCommand->init(0,
                                texId,
                                _glProgramState,
@@ -721,7 +730,7 @@ void PUBillboardChain::render( Renderer* renderer, const Mat4 &transform, Partic
                                Node::FLAGS_RENDER_AS_3D);
             _meshCommand->setSkipBatching(true);
             _meshCommand->setTransparent(true);            
-            _glProgramState->setUniformVec4("u_color", Vec4(1,1,1,1));
+            _glProgramState->setUniformVec4("u_color", color);
             renderer->addCommand(_meshCommand);
         }
     }

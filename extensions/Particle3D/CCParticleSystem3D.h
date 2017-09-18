@@ -278,6 +278,8 @@ public:
     float getDepthOverride() const { return _depthOverride; }
     void setUseDepthOverride(bool use) { _useDepthOverride = use; }
     void setDepthOverride(float depth) { _depthOverride = depth; }
+    void setOpacityModifier(float opacity) { _opacityModifier = opacity; }
+    float getOpacityModifier() const { return _opacityModifier; }
 
 CC_CONSTRUCTOR_ACCESS:
     ParticleSystem3D();
@@ -303,6 +305,7 @@ protected:
     /*BPC PATCH BEGIN*/
     bool _useDepthOverride = false;
     float _depthOverride = 0.f;
+    float _opacityModifier = 1.f;
     /*BPC PATCH END*/
 };
 
