@@ -889,11 +889,19 @@ void ParticleSystem::update(float dt)
                     _particleData.atlasIndex[_particleCount - 1] = currentIndex;
                 }
                 --_particleCount;
-                if( _particleCount == 0 && _isAutoRemoveOnFinish )
+                if( _particleCount == 0 )
                 {
-                    this->unscheduleUpdate();
-                    _parent->removeChild(this, true);
-                    return;
+                    //it is reasonable for the doneCallback to destroy the ParticleSystem.  So we assume it will, and skip trying to autoRemove if the user has passed us a callback.
+                    if(_doneCallback) {
+                        _doneCallback(this);
+                        return;
+                    }
+                    
+                    if(_isAutoRemoveOnFinish) {
+                        this->unscheduleUpdate();
+                        _parent->removeChild(this, true);
+                        return;
+                    }
                 }
             }
         }
@@ -1293,9 +1301,23 @@ bool ParticleSystem::isAutoRemoveOnFinish() const
 
 void ParticleSystem::setAutoRemoveOnFinish(bool var)
 {
+    if(var && _doneCallback){
+        DFail("Having a done callback will disable autoRemoveOnFinish.  They cannot be active at the same time.");
+        return;
+    }
+    
     _isAutoRemoveOnFinish = var;
 }
 
+void ParticleSystem::setDoneCallback(std::function<void(ParticleSystem*)> cb)
+{
+    _doneCallback = cb;
+    
+    if(_isAutoRemoveOnFinish) {
+        DFail("Having a done callback will disable autoRemoveOnFinish.  They cannot be active at the same time.");
+        _isAutoRemoveOnFinish = false;
+    }
+}
 
 // ParticleSystem - methods for batchNode rendering
 

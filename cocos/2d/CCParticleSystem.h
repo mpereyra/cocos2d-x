@@ -287,6 +287,8 @@ public:
      */
     virtual void setAutoRemoveOnFinish(bool var);
 
+    virtual void setDoneCallback(std::function<void(ParticleSystem*)> cb);
+    
     // mode A
     /** Gets the gravity.
      *
@@ -830,6 +832,8 @@ protected:
      @since v0.8
      */
     bool _isAutoRemoveOnFinish;
+    
+    std::function<void(ParticleSystem*)> _doneCallback {nullptr};
 
     std::string _plistFile;
     //! time elapsed since the start of the system (in seconds)

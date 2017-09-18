@@ -142,7 +142,7 @@ public:
     // BPC PATCH END
 
     // BPC PATCH isSprite()
-    virtual bool isSprite() const { return true; }
+    virtual bool isSprite() const override { return true; }
     
     /* 
      * Get AABB Recursively

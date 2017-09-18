@@ -407,7 +407,8 @@ void ParticleSystemQuad::updateParticleQuads()
             GLubyte colorR = *r * *a * 255;
             GLubyte colorG = *g * *a * 255;
             GLubyte colorB = *b * *a * 255;
-            GLubyte colorA = *a * 255;
+            GLubyte colorA = (*a * _displayedOpacity/255.f) * 255;
+            
             quad->bl.colors.set(colorR, colorG, colorB, colorA);
             quad->br.colors.set(colorR, colorG, colorB, colorA);
             quad->tl.colors.set(colorR, colorG, colorB, colorA);
@@ -427,7 +428,8 @@ void ParticleSystemQuad::updateParticleQuads()
             GLubyte colorR = *r * 255;
             GLubyte colorG = *g * 255;
             GLubyte colorB = *b * 255;
-            GLubyte colorA = *a * 255;
+            GLubyte colorA = (*a * _displayedOpacity/255.f) * 255;
+            
             quad->bl.colors.set(colorR, colorG, colorB, colorA);
             quad->br.colors.set(colorR, colorG, colorB, colorA);
             quad->tl.colors.set(colorR, colorG, colorB, colorA);
