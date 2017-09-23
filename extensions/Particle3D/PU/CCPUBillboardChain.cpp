@@ -717,7 +717,7 @@ void PUBillboardChain::render( Renderer* renderer, const Mat4 &transform, Partic
                 color.w = opacityMod;
             }
             _stateBlock->setBlendFunc(blend);
-            _meshCommand->init(0,
+            _meshCommand->init(particleSystem->getGlobalZOrder() > 0 ? particleSystem->getGlobalZOrder() : 0,
                                texId,
                                _glProgramState,
                                _stateBlock,

@@ -288,7 +288,7 @@ void PUParticle3DQuadRender::render(Renderer* renderer, const Mat4 &transform, P
         
         _stateBlock->setBlendFunc(blend);
         GLuint texId = (_texture ? _texture->getName() : 0);
-        _meshCommand->init(0,
+        _meshCommand->init(particleSystem->getGlobalZOrder() > 0 ? particleSystem->getGlobalZOrder() : 0,
                            texId,
                            _glProgramState,
                            _stateBlock,
@@ -795,7 +795,7 @@ void PUParticle3DBoxRender::render( Renderer* renderer, const Mat4 &transform, P
         }
         
         _stateBlock->setBlendFunc(blend);
-        _meshCommand->init(0,
+        _meshCommand->init(particleSystem->getGlobalZOrder() > 0 ? particleSystem->getGlobalZOrder() : 0,
                            texId,
                            _glProgramState,
                            _stateBlock,
@@ -972,8 +972,7 @@ void PUSphereRender::render( Renderer* renderer, const Mat4 &transform, Particle
         }
         
         _stateBlock->setBlendFunc(blend);
-        _meshCommand->init(
-                           0,
+        _meshCommand->init(particleSystem->getGlobalZOrder() > 0 ? particleSystem->getGlobalZOrder() : 0,
                            texId,
                            _glProgramState,
                            _stateBlock,
