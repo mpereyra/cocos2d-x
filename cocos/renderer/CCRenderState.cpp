@@ -51,6 +51,7 @@ RenderState::RenderState()
 RenderState::~RenderState()
 {
     CC_SAFE_RELEASE(_state);
+    CC_SAFE_RELEASE(_texture);
 }
 
 void RenderState::initialize()
@@ -176,6 +177,7 @@ void RenderState::cloneInto(RenderState* renderState) const
     }
 
     renderState->_name = _name;
+    CC_SAFE_RELEASE(renderState->_texture);
     renderState->_texture = _texture;
     CC_SAFE_RETAIN(renderState->_texture);
     // weak ref. don't retain
