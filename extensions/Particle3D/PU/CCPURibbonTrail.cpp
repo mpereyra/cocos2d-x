@@ -341,11 +341,13 @@ void PURibbonTrail::updateTrail(size_t index, const Node* node)
         }
     } // end while
 
-    /*BPC PATCH - We need to update the elements' uv value when we add a new element, so that the head has uv = 1, and decrease by 1 / _maxElementsPerChain as we walk down the chain.*/
+    /*BPC PATCH - We need to update the elements' uv/width value when we add a new element, so that the head has uv = 1, width=maxWidth, and decrease by amount / _maxElementsPerChain as we walk down the chain.*/
     if (addedElement)
     {
         float uvStep = 1.f / _maxElementsPerChain;
+        float widthStep = _initialWidth[index] / _maxElementsPerChain;
         float curUV = 1.f;
+        float curWidth = _initialWidth[index];
         ChainSegment& seg = _chainSegmentList[index];
         for(size_t e = seg.head;; ++e) // until break
         {
@@ -353,6 +355,8 @@ void PURibbonTrail::updateTrail(size_t index, const Node* node)
             Element& elem = _chainElementList[seg.start + e];
             elem.texCoord = curUV;
             curUV = clampf(curUV - uvStep, 0.f, 1.f);
+            elem.width = curWidth;
+            curWidth = clampf(curWidth - widthStep, 0.01f, _initialWidth[index]);
             if (e == seg.tail)
                 break;
         }
