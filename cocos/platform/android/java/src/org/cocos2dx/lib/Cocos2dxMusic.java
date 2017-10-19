@@ -226,7 +226,7 @@ public class Cocos2dxMusic {
         }
 
         this.mLeftVolume = this.mRightVolume = volume;
-        if (this.mBackgroundMediaPlayer != null) {
+        if (this.mBackgroundMediaPlayer != null && !this.mPaused) {
             this.mBackgroundMediaPlayer.setVolume(this.mLeftVolume, this.mRightVolume);
         }
     }
