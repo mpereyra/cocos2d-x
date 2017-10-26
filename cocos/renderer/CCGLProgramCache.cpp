@@ -108,6 +108,21 @@ void GLProgramCache::purgeSharedShaderCache()
     GLProgramCache::destroyInstance();
 }
 
+void GLProgramCache::removeUnusedShaders()
+{
+    for( auto it=_programs.cbegin(); it!=_programs.cend(); /* nothing */) {
+        GLProgram *prog = it->second;
+        if (prog->getReferenceCount() == 1) {
+            CCLOG("cocos2d: GLProgramCache: removing unused program: %s", it->first.c_str());
+            
+            prog->release();
+            _programs.erase(it++);
+        } else {
+            ++it;
+        }
+    }
+}
+
 GLProgramCache::GLProgramCache()
 : _programs()
 {
