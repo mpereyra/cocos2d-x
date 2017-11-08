@@ -428,7 +428,10 @@ public:
     *In lua: local setBlendFunc(local src, local dst).
     *@endcode
     */
-    inline void setBlendFunc(const BlendFunc &blendFunc) override { _blendFunc = blendFunc; }
+    inline void setBlendFunc(const BlendFunc &blendFunc) override {
+        _blendFunc = blendFunc;
+        _blendFuncSet = true; /// TC patch
+    }
     /**
     * @js  NA
     * @lua NA
@@ -608,6 +611,7 @@ protected:
     // Data used when the sprite is self-rendered
     //
     BlendFunc        _blendFunc;            /// It's required for TextureProtocol inheritance
+    bool             _blendFuncSet {false}; /// TC patch: So we don't override _blendFunc if it was manually set
     Texture2D*       _texture;              /// Texture2D object that is used to render the sprite
     SpriteFrame*     _spriteFrame;
     TrianglesCommand _trianglesCommand;     ///
