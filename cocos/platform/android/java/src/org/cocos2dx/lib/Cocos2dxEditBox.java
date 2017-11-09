@@ -27,6 +27,7 @@ package org.cocos2dx.lib;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.view.inputmethod.InputConnection;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
@@ -152,6 +153,15 @@ public class Cocos2dxEditBox extends EditText {
 
     public void setMultilineEnabled(boolean flag){
         this.mInputModeConstraints |= InputType.TYPE_TEXT_FLAG_MULTI_LINE;
+    }
+
+    //BPC PATCH: This will prevent us from opening a "fullscreen" keyboard input
+    //Not sure how bad that is in the grand scheme of things...
+    //but it doesn't seem like fullscreen maps directly to visual representation of textbox anyway.
+    @Override
+    public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
+        outAttrs.imeOptions = EditorInfo.IME_ACTION_NONE | EditorInfo.IME_FLAG_NO_EXTRACT_UI;
+        return super.onCreateInputConnection(outAttrs);
     }
 
     public void setReturnType(int returnType) {
