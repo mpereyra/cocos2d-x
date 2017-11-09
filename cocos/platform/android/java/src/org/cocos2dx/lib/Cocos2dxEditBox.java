@@ -160,7 +160,7 @@ public class Cocos2dxEditBox extends EditText {
     //but it doesn't seem like fullscreen maps directly to visual representation of textbox anyway.
     @Override
     public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
-        outAttrs.imeOptions = EditorInfo.IME_ACTION_NONE | EditorInfo.IME_FLAG_NO_EXTRACT_UI;
+        outAttrs.imeOptions = EditorInfo.IME_ACTION_DONE | EditorInfo.IME_FLAG_NO_EXTRACT_UI;
         return super.onCreateInputConnection(outAttrs);
     }
 
