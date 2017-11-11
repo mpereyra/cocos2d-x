@@ -40,6 +40,10 @@ THE SOFTWARE.
 #include <android/log.h>
 #include <jni.h>
 
+/* BPC PATCH */ 
+#include "renderer/CCTexture2D.h"
+/* END PATCH */
+
 #define  LOG_TAG    "main"
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG,__VA_ARGS__)
 
@@ -71,6 +75,11 @@ JNIEXPORT void Java_org_cocos2dx_lib_Cocos2dxRenderer_nativeInit(JNIEnv*  env, j
     }
     else
     {
+
+        /* BPC PATCH */ 
+        // invalidate texture id's and re-bind them to new context
+        cocos2d::Texture2D::invalidateOldContextNames();
+        /* END PATCH */
         cocos2d::GL::invalidateStateCache();
 
         // BPC PATCH: Reload all GL programs synchronously, since nothing is

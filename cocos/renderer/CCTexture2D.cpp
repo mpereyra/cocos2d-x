@@ -52,6 +52,10 @@ THE SOFTWARE.
     #include "renderer/CCTextureCache.h"
 #endif
 
+/* BPC PATCH */
+#include <set>
+/* END PATCH */
+
 NS_CC_BEGIN
 
 
@@ -447,6 +451,23 @@ void Texture2D::convertRGBA8888ToRGB5A1(const unsigned char* data, ssize_t dataL
 // converter function end
 //////////////////////////////////////////////////////////////////////////
 
+/* BPC PATCH */
+static std::set<Texture2D *> liveTextures;
+
+// called on android after we lose gl context and regain
+void Texture2D::invalidateOldContextNames() {
+    // remove and re-generate all the gl texture id's so we can't delete
+    // something that doesn't exist in the new gl context
+    for (auto live : liveTextures) {
+        if (live->_name != 0) {
+            live->_name = 0;
+            glGenTextures(1, &(live->_name));
+            GL::bindTexture2D(live->_name);
+        }
+    }
+}
+/* END PATCH */
+
 Texture2D::Texture2D()
 : _pixelFormat(Texture2D::PixelFormat::DEFAULT)
 , _pixelsWide(0)
@@ -462,6 +483,9 @@ Texture2D::Texture2D()
 , _valid(true)
 , _alphaTexture(nullptr)
 {
+/* BPC PATCH */
+    liveTextures.insert(this);
+/* END PATCH */
 }
 
 Texture2D::~Texture2D()
@@ -480,6 +504,9 @@ Texture2D::~Texture2D()
     {
         GL::deleteTexture(_name);
     }
+/* BPC PATCH */
+    liveTextures.erase(this);
+/* END PATCH */
 }
 
 void Texture2D::releaseGLTexture()
@@ -1212,8 +1239,13 @@ void Texture2D::drawAtPoint(const Vec2& point)
     _shaderProgram->use();
     _shaderProgram->setUniformsForBuiltins();
 
+/* BPC PATCH */
+    if (!_name) {
+        DLog("Texture2D::drawAtPoint with invalidated texture, bailing out");
+        return;
+    }
+/* END PATCH */
     GL::bindTexture2D( _name );
-
 
     glVertexAttribPointer(GLProgram::VERTEX_ATTRIB_POSITION, 2, GL_FLOAT, GL_FALSE, 0, vertices);
     glVertexAttribPointer(GLProgram::VERTEX_ATTRIB_TEX_COORD, 2, GL_FLOAT, GL_FALSE, 0, coordinates);
@@ -1237,7 +1269,13 @@ void Texture2D::drawInRect(const Rect& rect)
     GL::enableVertexAttribs( GL::VERTEX_ATTRIB_FLAG_POSITION | GL::VERTEX_ATTRIB_FLAG_TEX_COORD );
     _shaderProgram->use();
     _shaderProgram->setUniformsForBuiltins();
-
+    
+/* BPC PATCH */
+    if (!_name) {
+        DLog("Texture2D::drawInRect with invalidated texture, bailing out");
+        return;
+    }
+/* END PATCH */
     GL::bindTexture2D( _name );
 
     glVertexAttribPointer(GLProgram::VERTEX_ATTRIB_POSITION, 2, GL_FLOAT, GL_FALSE, 0, vertices);
@@ -1258,6 +1296,12 @@ void Texture2D::PVRImagesHavePremultipliedAlpha(bool haveAlphaPremultiplied)
 
 void Texture2D::generateMipmap()
 {
+/* BPC PATCH */
+    if (!_name) {
+        DLog("Texture2D::generateMipmap with invalidated texture, bailing out");
+        return;
+    }
+/* END PATCH */
     CCASSERT(_pixelsWide == ccNextPOT(_pixelsWide) && _pixelsHigh == ccNextPOT(_pixelsHigh), "Mipmap texture only works in POT textures");
     GL::bindTexture2D( _name );
     glGenerateMipmap(GL_TEXTURE_2D);
@@ -1278,6 +1322,12 @@ void Texture2D::setTexParameters(const TexParams &texParams)
         (_pixelsHigh == ccNextPOT(_pixelsHigh) || texParams.wrapT == GL_CLAMP_TO_EDGE),
         "GL_CLAMP_TO_EDGE should be used in NPOT dimensions");
 
+/* BPC PATCH */
+    if (!_name) {
+        DLog("Texture2D::setTexParameters with invalidated texture, bailing out");
+        return;
+    }
+/* END PATCH */
     GL::bindTexture2D( _name );
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, texParams.minFilter );
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, texParams.magFilter );
@@ -1298,11 +1348,12 @@ void Texture2D::setAliasTexParameters()
 
     _antialiasEnabled = false;
 
-    if (_name == 0)
-    {
+/* BPC PATCH */
+    if (!_name) {
+        DLog("Texture2D::setAliasTexParameters with invalidated texture, bailing out");
         return;
     }
-
+/* END PATCH */
     GL::bindTexture2D( _name );
 
     if( ! _hasMipmaps )
@@ -1330,10 +1381,12 @@ void Texture2D::setAntiAliasTexParameters()
 
     _antialiasEnabled = true;
 
-    if (_name == 0)
-    {
+/* BPC PATCH */
+    if (!_name) {
+        DLog("Texture2D::setAntiAliasTexParameters with invalidated texture, bailing out");
         return;
     }
+/* END PATCH */
 
     GL::bindTexture2D( _name );
 
