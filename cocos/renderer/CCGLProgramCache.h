@@ -32,7 +32,6 @@ THE SOFTWARE.
 #include <unordered_map>
 
 #include "base/CCRef.h"
-#include "base/CCVector.h"
 
 /**
  * @addtogroup renderer
@@ -109,11 +108,6 @@ private:
     /**
     @}
     */
-    
-    /*** BPC PATCH ***/
-    // - use this container to hold default shaders so they aren't cleared from cache ***/
-    Vector<GLProgram *> _builtInPrograms;
-    /*** PATCH END ***/
 
     /**Get macro define for lights in current openGL driver.*/
     std::string getShaderMacrosForLight() const;
