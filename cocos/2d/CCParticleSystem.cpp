@@ -893,7 +893,9 @@ void ParticleSystem::update(float dt)
                 {
                     //it is reasonable for the doneCallback to destroy the ParticleSystem.  So we assume it will, and skip trying to autoRemove if the user has passed us a callback.
                     if(_doneCallback) {
+                        this->retain(); // keep alive in case callback removes us
                         _doneCallback(this);
+                        this->release();
                         return;
                     }
                     
