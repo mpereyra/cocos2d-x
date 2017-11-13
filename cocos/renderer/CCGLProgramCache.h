@@ -89,9 +89,7 @@ public:
     CC_DEPRECATED_ATTRIBUTE GLProgram * programForKey(const std::string &key){ return getGLProgram(key); }
     
     /*BPC PATCH*/
-    void removeUnusedShaders();
     void purgeGLProgram(const std::string &key);
-    ssize_t getCacheSize() const { return _programs.size(); }
     /*END BPC PATCH*/
 
     /** adds a GLProgram to the cache for a given name */
