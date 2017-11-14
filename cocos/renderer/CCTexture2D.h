@@ -119,6 +119,7 @@ public:
         
         /*BPC PATCH*/
         DEPTH_TEXTURE, //Depth format for offscreen rendering
+        DEPTH_STENCIL_TEXTURE, // Depth-stencil for offscreen rendering
         RG16F,    //RG channels, each with 16-bit HalfFloat format.
         /*END BPC PATCH*/
         
