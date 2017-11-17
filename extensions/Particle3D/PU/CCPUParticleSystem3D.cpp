@@ -428,6 +428,7 @@ void PUParticleSystem3D::resumeParticleSystem()
 
 void PUParticleSystem3D::update(float delta)
 {
+    prepared();
     m_frameDt = delta;
     return;
 }
