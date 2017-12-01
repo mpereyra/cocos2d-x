@@ -200,6 +200,7 @@ public:
     virtual void setGlobalZOrder(float globalZOrder) override;
     void setSkinAABB(bool active){ m_skinAABB = active; }
     void setAllowCulling(bool cull) {m_allowCulling = cull; }
+    void setForceCulling(bool cull) {m_forceCulling = cull; }
     /* BPC PATCH END */
 
     /**draw*/
@@ -249,6 +250,7 @@ CC_CONSTRUCTOR_ACCESS:
     bool m_skinAABB {false};
     
     bool m_allowCulling {true};
+    bool m_forceCulling {false};
     //END BPC PATCH
     
     
