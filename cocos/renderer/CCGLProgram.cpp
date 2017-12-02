@@ -257,6 +257,10 @@ bool GLProgram::initWithByteArrays(const GLchar* vShaderByteArray, const GLchar*
 {
     _program = glCreateProgram();
     CHECK_GL_ERROR_DEBUG();
+    if(_program==0){
+        CCLOG("Invalid (0) GLProgram %p was the context lost?", this);
+        CCASSERT(false, "Invalid (0) GL Program; was the context lost?");
+    }
 
     // convert defines here. If we do it in "compileShader" we will do it twice.
     // a cache for the defines could be useful, but seems like overkill at this point
@@ -630,7 +634,10 @@ bool GLProgram::link()
 
 void GLProgram::use()
 {
-    CCASSERT(_program, "Invalid (0) GL Program; was the context lost?");
+    if(_program==0){
+        CCLOG("Invalid (0) GLProgram %p was the context lost?", this);
+        CCASSERT(false, "Invalid (0) GL Program; was the context lost?");
+    }
     glCheck(GL::useProgram(_program));
 }
 
