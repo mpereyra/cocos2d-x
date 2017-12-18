@@ -414,6 +414,9 @@ void Mesh::draw(Renderer* renderer, float globalZOrder, const Mat4& transform, u
 //        _material->getStateBlock()->setDepthWrite(true);
     
     bool shouldWriteDepth = boolFromWriteMode(m_depthWriteMode);
+    if (Camera::getVisitingCamera()->getCameraFlag() == CameraFlag::USER8) {
+        shouldWriteDepth = true;
+    }
     _material->getStateBlock()->setDepthWrite(shouldWriteDepth);
     bool shouldCull = boolFromWriteMode(m_cullFaceMode);
     _material->getStateBlock()->setCullFace(shouldCull);
