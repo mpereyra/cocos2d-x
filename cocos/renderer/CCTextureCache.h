@@ -122,6 +122,7 @@ public:
     * @since v0.8
     */
     virtual void addImageAsync(const std::string &filepath, const std::function<void(Texture2D*)>& callback, Ref * const targ=nullptr);
+    virtual void addImageAsync(std::string const &path, std::function<void(Texture2D*)> const &callback, Ref* const target, bool const required);
     
     /* Unbind a specified bound image asynchronous callback
      * In the case an object who was bound to an image asynchronous callback was destroyed before the callback is invoked,
@@ -228,31 +229,41 @@ public:
         using loadedCallback = std::function< void (Texture2D*)>;
         std::string filename;
         std::vector<std::pair<Ref * , loadedCallback>> requestorToCallbacks;
+        //! Default = \c false. When \c true, an assert is thrown when failing to load the image.
+        bool const m_assertSuccess{};
         
-        AsyncStruct(const std::string& fn, std::function<void(Texture2D*)> f, Ref * const targ) : filename(fn){
-            if(targ){
-                targ->retain();
-            }
-            requestorToCallbacks.push_back({targ,f});
+        AsyncStruct(const std::string& fn, std::function<void(Texture2D*)> f, Ref * const targ)
+        : AsyncStruct(fn, f, targ, false) {
+        }
+        
+        AsyncStruct(std::string const &file, std::function<void(Texture2D*)> const &callback, Ref* const requestor, bool const assertSuccess)
+        : filename(file)
+        , m_assertSuccess(assertSuccess) {
+            CC_SAFE_RETAIN(requestor);
+            requestorToCallbacks.emplace_back(requestor, callback);
         }
         
         ~AsyncStruct() {
-            for(auto pair : requestorToCallbacks){
-                if(pair.first){
-                    pair.first->release();
-                }
+            for (auto &pair : requestorToCallbacks){
+                CC_SAFE_RELEASE(pair.first);
             }
         }
-
         
         void addRequestor(Ref * requestor, loadedCallback f){
             requestor->retain();
             requestorToCallbacks.push_back({requestor, f});
         }
         void removeRequestor(Ref * requestor){
-            requestorToCallbacks.erase(remove_if(requestorToCallbacks.begin(), requestorToCallbacks.end(), [=](std::pair<Ref* const, loadedCallback> pair){
-                return pair.first == requestor;
-            }), requestorToCallbacks.end());
+            // Everything that doesn't have this requestor should be to the left of the partition.
+            auto rmPartition = std::stable_partition(requestorToCallbacks.begin(), requestorToCallbacks.end(), [=](auto const &pair) {
+                return pair.first != requestor;
+            });
+            
+            for (auto it = rmPartition; it != requestorToCallbacks.end(); it++) {
+                CC_SAFE_RELEASE(it->first);
+            }
+            
+            requestorToCallbacks.erase(rmPartition, requestorToCallbacks.end());
         }
         //std::function<void(Texture2D*)> callback;
         //Ref * const target {nullptr};

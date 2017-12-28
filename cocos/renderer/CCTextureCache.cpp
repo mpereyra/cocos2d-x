@@ -130,6 +130,11 @@ Texture2D* TextureCache::findTexture(std::string const& fullpath) const {
 
 void TextureCache::addImageAsync(const std::string &path, const std::function<void(Texture2D*)>& callback, Ref * const target)
 {
+    addImageAsync(path, callback, target, {});
+}
+
+void TextureCache::addImageAsync(std::string const &path, std::function<void(Texture2D*)> const &callback, Ref* const target, bool const required)
+{
     Texture2D *texture = nullptr;
 
     std::string fullpath = FileUtils::getInstance()->fullPathForFilename(path);
@@ -190,7 +195,7 @@ void TextureCache::addImageAsync(const std::string &path, const std::function<vo
         }
         // generate async struct
         if(found == false){
-            AsyncStruct *data = new (std::nothrow) AsyncStruct(fullpath, callback, target);
+            AsyncStruct *data = new (std::nothrow) AsyncStruct(fullpath, callback, target, required);
             // add async struct into queue
             _asyncStructQueue->push_back(data);
         }
@@ -303,6 +308,7 @@ void TextureCache::loadImage()
             if (image && !image->initWithImageFileThreadSafe(filename))
             {
                 CC_SAFE_RELEASE(image);
+                Assert(!asyncStruct->m_assertSuccess, "Failed to load '%s'", filename.data());
                 CCLOG("can not load %s", filename.c_str());
                 continue;
             }
