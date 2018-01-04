@@ -71,18 +71,25 @@ public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
         /* END BPC PATCH */
     }
 
-    // ===========================================================
-    // Methods for/from SuperClass/Interfaces
-    // ===========================================================
-
-    @Override
-    public void onSurfaceCreated(final GL10 GL10, final EGLConfig EGLConfig) {
+    /* BPC PATCH */
+    public void onContextAvailable() {
         Cocos2dxRenderer.nativeInit(this.mScreenWidth, this.mScreenHeight);
         this.mLastTickInNanoSeconds = System.nanoTime();
         if(mNativeInitCompleted){ //we dont need to do this the first time only on restarts...
             Cocos2dxRenderer.nativeOnRegainedGLContext();
         }
         mNativeInitCompleted = true;
+    }
+
+    /* END BPC PATCH */
+
+    // ===========================================================
+    // Methods for/from SuperClass/Interfaces
+    // ===========================================================
+
+    @Override
+    public void onSurfaceCreated(final GL10 GL10, final EGLConfig EGLConfig) {
+        onContextAvailable();
     }
 
     @Override

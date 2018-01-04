@@ -443,6 +443,10 @@ public class Cocos2dxGLSurfaceView extends GLSurfaceView {
         });
     }
 
+    public void onContextAvailable() {
+        this.mCocos2dxRenderer.onContextAvailable();
+    }
+
     private static void dumpMotionEvent(final MotionEvent event) {
         final String names[] = { "DOWN", "UP", "MOVE", "CANCEL", "OUTSIDE", "POINTER_DOWN", "POINTER_UP", "7?", "8?", "9?" };
         final StringBuilder sb = new StringBuilder();
