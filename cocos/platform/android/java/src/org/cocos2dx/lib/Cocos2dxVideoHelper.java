@@ -79,7 +79,7 @@ public class Cocos2dxVideoHelper {
             switch (msg.what) {
             case VideoTaskCreate: {
                 Cocos2dxVideoHelper helper = mReference.get();
-                helper._createVideoView(msg.arg1);
+                helper._createVideoView(msg.arg1, (OnVideoEventListener)msg.obj);
                 break;
             }
             case VideoTaskRemove: {
@@ -196,16 +196,17 @@ public class Cocos2dxVideoHelper {
     };
     
     
-    public static int createVideoWidget() {
+    public static int createVideoWidget(OnVideoEventListener customListener) {
         Message msg = new Message();
         msg.what = VideoTaskCreate;
         msg.arg1 = videoTag;
+        msg.obj = customListener;
         mVideoHandler.sendMessage(msg);
         
         return videoTag++;
     }
     
-    private void _createVideoView(int index) {
+    private void _createVideoView(int index, OnVideoEventListener customListener) {
         Cocos2dxVideoView videoView = new Cocos2dxVideoView(mActivity,index);
         sVideoViews.put(index, videoView);
         FrameLayout.LayoutParams lParams = new FrameLayout.LayoutParams(
@@ -213,7 +214,11 @@ public class Cocos2dxVideoHelper {
                 FrameLayout.LayoutParams.WRAP_CONTENT);
         mLayout.addView(videoView, lParams);
         videoView.setZOrderOnTop(true);
-        videoView.setOnCompletionListener(videoEventListener);
+        if(customListener != null) {
+            videoView.setOnCompletionListener(customListener);
+        }else {
+            videoView.setOnCompletionListener(videoEventListener);
+        }
     }
     
     public static void removeVideoWidget(int index){

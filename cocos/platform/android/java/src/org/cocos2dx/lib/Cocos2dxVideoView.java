@@ -187,6 +187,9 @@ public class Cocos2dxVideoView extends SurfaceView implements MediaPlayerControl
         mVideoWidth = 0;
         mVideoHeight = 0;
         getHolder().addCallback(mSHCallback);
+        if(getHolder().getSurface() != null && getHolder().getSurface().isValid()) {
+            mSHCallback.surfaceCreated(getHolder());
+        }
         //Fix issue#11516:Can't play video on Android 2.3.x
         getHolder().setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         setFocusable(true);
@@ -294,12 +297,12 @@ public class Cocos2dxVideoView extends SurfaceView implements MediaPlayerControl
             
             mDuration = -1;
             mCurrentBufferPercentage = 0;
-            if (mIsAssetRouse) {
-                AssetFileDescriptor afd = mCocos2dxActivity.getAssets().openFd(mVideoFilePath);
-                mMediaPlayer.setDataSource(afd.getFileDescriptor(),afd.getStartOffset(),afd.getLength());
-            } else {
+            //if (mIsAssetRouse) {
+                //AssetFileDescriptor afd = mCocos2dxActivity.getAssets().openFd(mVideoFilePath);
+                //mMediaPlayer.setDataSource(afd.getFileDescriptor(),afd.getStartOffset(),afd.getLength());
+            //} else {
                 mMediaPlayer.setDataSource(mCocos2dxActivity, mVideoUri);
-            }
+            //}
             
             mMediaPlayer.prepareAsync();
 
@@ -587,6 +590,9 @@ public class Cocos2dxVideoView extends SurfaceView implements MediaPlayerControl
     
     public void start() {
         if (isInPlaybackState()) {
+
+            if(mMediaPlayer != null && mMediaPlayer.isPlaying()) return;
+
             mMediaPlayer.start();
             mCurrentState = STATE_PLAYING;
             if (mOnVideoEventListener != null) {
