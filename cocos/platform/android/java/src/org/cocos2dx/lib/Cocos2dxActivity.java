@@ -38,6 +38,7 @@ import android.os.Message;
 import android.preference.PreferenceManager.OnActivityResultListener;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.SurfaceHolder;
 import android.view.ViewGroup;
 import android.view.View;
 import android.view.Window;
@@ -405,6 +406,10 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
     }
 
     public void addCustomFrameLayout(ResizeLayout layout) {
+    }
+
+    public SurfaceHolder getSurfaceHolder() {
+        return this.mGLSurfaceView.getSurfaceHolder();
     }
 
     protected void hideVirtualButton() {

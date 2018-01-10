@@ -33,6 +33,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
@@ -52,6 +53,7 @@ public class Cocos2dxGLSurfaceView extends GLSurfaceView {
 
     // TODO Static handler -> Potential leak!
     private static Handler sHandler;
+    private SurfaceHolder mSurfaceHolder = null;
 
     private static Cocos2dxGLSurfaceView mCocos2dxGLSurfaceView;
     private static Cocos2dxTextInputWraper sCocos2dxTextInputWraper;
@@ -134,6 +136,8 @@ public class Cocos2dxGLSurfaceView extends GLSurfaceView {
                 }
             }
         };
+
+        getHolder().addCallback(mSHCallback);
     }
 
     // ===========================================================
@@ -447,6 +451,10 @@ public class Cocos2dxGLSurfaceView extends GLSurfaceView {
         this.mCocos2dxRenderer.onContextAvailable();
     }
 
+    public SurfaceHolder getSurfaceHolder() {
+        return mSurfaceHolder;
+    }
+
     private static void dumpMotionEvent(final MotionEvent event) {
         final String names[] = { "DOWN", "UP", "MOVE", "CANCEL", "OUTSIDE", "POINTER_DOWN", "POINTER_UP", "7?", "8?", "9?" };
         final StringBuilder sb = new StringBuilder();
@@ -470,6 +478,27 @@ public class Cocos2dxGLSurfaceView extends GLSurfaceView {
         sb.append("]");
         Log.d(Cocos2dxGLSurfaceView.TAG, sb.toString());
     }
+
+    SurfaceHolder.Callback mSHCallback = new SurfaceHolder.Callback()
+    {
+        public void surfaceChanged(SurfaceHolder holder, int format,
+                                   int w, int h)
+        {
+            Log.d(Cocos2dxGLSurfaceView.TAG, "surface changed");
+        }
+
+        public void surfaceCreated(SurfaceHolder holder)
+        {
+            Log.d(Cocos2dxGLSurfaceView.TAG, "surface created");
+            mSurfaceHolder = holder;
+        }
+
+        public void surfaceDestroyed(SurfaceHolder holder)
+        {
+            Log.d(Cocos2dxGLSurfaceView.TAG, "surface destroyed");
+            mSurfaceHolder = null;
+        }
+    };
 
     public native boolean shouldPreserveGLContext();
 }

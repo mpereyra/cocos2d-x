@@ -29,6 +29,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.SparseArray;
 import android.view.View;
+import android.view.SurfaceHolder;
 import android.widget.FrameLayout;
 
 import org.cocos2dx.lib.Cocos2dxVideoView.OnVideoEventListener;
@@ -65,6 +66,7 @@ public class Cocos2dxVideoHelper {
     private final static int VideoTaskRestart = 10;
     private final static int VideoTaskKeepRatio = 11;
     private final static int VideoTaskFullScreen = 12;
+    private final static int VideoTaskSetSurface = 13;
     final static int KeyEventBack = 1000;
     
     static class VideoHandler extends Handler{
@@ -156,6 +158,10 @@ public class Cocos2dxVideoHelper {
                 }
                 break;
             }
+            case VideoTaskSetSurface: {
+                Cocos2dxVideoHelper helper = mReference.get();
+                helper._setCustomSurface(msg.arg1, (SurfaceHolder)msg.obj);
+            }
             case KeyEventBack: {
                 Cocos2dxVideoHelper helper = mReference.get();
                 helper.onBackKeyEvent();
@@ -169,7 +175,7 @@ public class Cocos2dxVideoHelper {
         }
     }
     
-    private class VideoEventRunnable implements Runnable
+    /*private class VideoEventRunnable implements Runnable
     {
         private int mVideoTag;
         private int mVideoEvent;
@@ -193,7 +199,7 @@ public class Cocos2dxVideoHelper {
         public void onVideoEvent(int tag,int event) {
             mActivity.runOnGLThread(new VideoEventRunnable(tag, event));
         }
-    };
+    };*/
     
     
     public static int createVideoWidget(OnVideoEventListener customListener) {
@@ -214,13 +220,28 @@ public class Cocos2dxVideoHelper {
                 FrameLayout.LayoutParams.WRAP_CONTENT);
         mLayout.addView(videoView, lParams);
         videoView.setZOrderOnTop(true);
-        if(customListener != null) {
+        //if(customListener != null) {
             videoView.setOnCompletionListener(customListener);
-        }else {
-            videoView.setOnCompletionListener(videoEventListener);
+        //}else {
+            //videoView.setOnCompletionListener(videoEventListener);
+        //}
+    }
+
+    public static void setCustomSurface(int index, SurfaceHolder customSurface) {
+        Message msg = new Message();
+        msg.what = VideoTaskSetSurface;
+        msg.arg1 = index;
+        msg.obj = customSurface;
+        mVideoHandler.sendMessage(msg);
+    }
+
+    private void _setCustomSurface(int index, SurfaceHolder customSurface) {
+        Cocos2dxVideoView videoView = sVideoViews.get(index);
+        if (videoView != null) {
+            videoView.setCustomSurface(customSurface);
         }
     }
-    
+
     public static void removeVideoWidget(int index){
         Message msg = new Message();
         msg.what = VideoTaskRemove;
@@ -304,7 +325,7 @@ public class Cocos2dxVideoHelper {
             Cocos2dxVideoView videoView = sVideoViews.get(key);
             if (videoView != null) {
                 videoView.setFullScreenEnabled(false, 0, 0);
-                mActivity.runOnGLThread(new VideoEventRunnable(key, KeyEventBack));
+                //mActivity.runOnGLThread(new VideoEventRunnable(key, KeyEventBack));
             }
         }
     }

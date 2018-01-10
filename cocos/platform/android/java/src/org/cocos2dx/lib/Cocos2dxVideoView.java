@@ -64,6 +64,7 @@ public class Cocos2dxVideoView extends SurfaceView implements MediaPlayerControl
 
     // All the stuff we need for playing and showing a video
     private SurfaceHolder mSurfaceHolder = null;
+    private SurfaceHolder mCachedSurface = null;
     private MediaPlayer mMediaPlayer = null;
     private int         mVideoWidth = 0;
     private int         mVideoHeight = 0;
@@ -293,6 +294,13 @@ public class Cocos2dxVideoView extends SurfaceView implements MediaPlayerControl
                 mMediaPlayer.setDisplay(mSurfaceHolder);
                 mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 mMediaPlayer.setScreenOnWhilePlaying(true);
+                if(mCachedSurface != null) {
+                    mMediaPlayer.setDisplay(mCachedSurface);
+                    if(mCachedSurface.getSurface() == null || !mCachedSurface.getSurface().isValid()) {
+                        Log.d("Cocos2dxVideoView", "ERROR: Surface isn't ready!");
+                    }
+                    mCachedSurface = null;
+                }
             //}
             
             mDuration = -1;
@@ -695,6 +703,14 @@ public class Cocos2dxVideoView extends SurfaceView implements MediaPlayerControl
                 mCurrentState != STATE_ERROR &&
                 mCurrentState != STATE_IDLE &&
                 mCurrentState != STATE_PREPARING);
+    }
+
+    public void setCustomSurface(SurfaceHolder surface) {
+        if(mMediaPlayer != null) {
+            mMediaPlayer.setDisplay(surface);
+        }else{
+            mCachedSurface = surface;
+        }
     }
 
     @Override
