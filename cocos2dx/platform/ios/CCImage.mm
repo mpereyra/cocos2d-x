@@ -129,13 +129,16 @@ static bool _initWithData(void * pBuffer, int length, tImageInfo *pImageinfo)
     
     if (pBuffer) 
     {
-        CGImageRef CGImage;
+        UIImage * image;
         NSData *data;
         
-        data = [NSData dataWithBytes:pBuffer length:length];
-        CGImage = [[UIImage imageWithData:data] CGImage];
+        data = [[NSData alloc] initWithBytes:pBuffer length:length];
+        image = [[UIImage alloc] initWithData:data];
         
-        ret = _initWithImage(CGImage, pImageinfo);
+        ret = _initWithImage([image CGImage], pImageinfo);
+        [image release];
+        [data release];
+        
     }
     
     return ret;
