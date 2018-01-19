@@ -100,6 +100,8 @@ public:
      */
     void setOriPose(const Mat4& m);
     
+    const Mat4& getOriPose() const { return _oriPose; }
+    
     /**
      * reset pose to origin
      */
