@@ -96,7 +96,6 @@ public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
         GL10.glViewport(0, 0, this.mScreenWidth, this.mScreenHeight);
         
         Cocos2dxRenderer.nativeBPCResume(); // leads to EngineController::resume();
-        Cocos2dxRenderer.nativeBPCResume();
     }
 
     @Override
