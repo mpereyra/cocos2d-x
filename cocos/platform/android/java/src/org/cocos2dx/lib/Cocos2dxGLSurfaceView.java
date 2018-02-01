@@ -404,6 +404,7 @@ public class Cocos2dxGLSurfaceView extends GLSurfaceView {
         mInputType &= ~InputType.TYPE_TEXT_VARIATION_URI;
         mInputType &= ~InputType.TYPE_CLASS_NUMBER;
         mInputType &= ~InputType.TYPE_CLASS_PHONE;
+        mInputType &= ~InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
 
         //keyboardType mapped from CCTextFieldTTF::KeyboardType
         switch(keyboardType) {
@@ -418,6 +419,9 @@ public class Cocos2dxGLSurfaceView extends GLSurfaceView {
             break;
             case 4:  //kKTPhonePad
                 mInputType |= InputType.TYPE_CLASS_PHONE;
+            break;
+            case 5: //kKTAsciiKeyboard, there isn't actually an Ascii keyboard type in Android, this one is close enough.
+                mInputType |= InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD;
             break;
             default:
                 mInputType |= InputType.TYPE_TEXT_VARIATION_NORMAL;

@@ -246,6 +246,9 @@ void GLViewImpl::setIMEKeyboardType(TextFieldTTF::KeyboardType type)
         case TextFieldTTF::kKTPhonePad:
             uikType = UIKeyboardTypePhonePad;
             break;
+        case TextFieldTTF::kKTAsciiKeyboard:
+            uikType = UIKeyboardTypeASCIICapable;
+            break;
         default:
             uikType = UIKeyboardTypeDefault;
             break;

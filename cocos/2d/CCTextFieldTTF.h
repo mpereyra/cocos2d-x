@@ -236,6 +236,7 @@ public:
         kKTURL,
         kKTNumberPad,
         kKTPhonePad,
+        kKTAsciiKeyboard,
     };
     
     virtual void setKeyboardType(KeyboardType type);
