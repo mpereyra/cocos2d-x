@@ -254,6 +254,14 @@ bool GLProgram::initWithByteArrays(const GLchar* vShaderByteArray, const GLchar*
 }
 
 bool GLProgram::initWithByteArrays(const GLchar* vShaderByteArray, const GLchar* fShaderByteArray, const std::string& compileTimeDefines)
+/** BPC PATCH **/
+{
+    CompileResult result;
+    return initWithByteArrays(vShaderByteArray, fShaderByteArray, compileTimeDefines, result);
+}
+
+bool GLProgram::initWithByteArrays(const GLchar* vShaderByteArray, const GLchar* fShaderByteArray, const std::string& compileTimeDefines, CompileResult& result)
+/** END PATCH **/
 {
     _program = glCreateProgram();
     CHECK_GL_ERROR_DEBUG();
@@ -271,7 +279,10 @@ bool GLProgram::initWithByteArrays(const GLchar* vShaderByteArray, const GLchar*
 
     if (vShaderByteArray)
     {
-        if (!compileShader(&_vertShader, GL_VERTEX_SHADER, vShaderByteArray, replacedDefines))
+        /** BPC PATCH **/
+        result.filename = "vert";
+        if (!compileShader(&_vertShader, GL_VERTEX_SHADER, vShaderByteArray, replacedDefines, result))
+        /** END PATCH **/
         {
             CCLOG("cocos2d: ERROR: Failed to compile vertex shader");
             return false;
@@ -281,7 +292,10 @@ bool GLProgram::initWithByteArrays(const GLchar* vShaderByteArray, const GLchar*
     // Create and compile fragment shader
     if (fShaderByteArray)
     {
-        if (!compileShader(&_fragShader, GL_FRAGMENT_SHADER, fShaderByteArray, replacedDefines))
+        /** BPC PATCH **/
+        result.filename = "frag";
+        if (!compileShader(&_fragShader, GL_FRAGMENT_SHADER, fShaderByteArray, replacedDefines, result))
+        /** END PATCH **/
         {
             CCLOG("cocos2d: ERROR: Failed to compile fragment shader");
             return false;
@@ -476,12 +490,22 @@ bool GLProgram::compileShader(GLuint * shader, GLenum type, const GLchar* source
 
 bool GLProgram::compileShader(GLuint* shader, GLenum type, const GLchar* source, const std::string& convertedDefines)
 {
+    /** BPC PATCH **/
+    CompileResult result;
+    return compileShader(shader, type, source, convertedDefines, result);
+}
+
+bool GLProgram::compileShader(GLuint* shader, GLenum type, const GLchar* source, const std::string& convertedDefines, CompileResult& result)
+{
     GLint status;
 
     if (!source)
     {
+        result.success = false;
+        result.errorMsg = "shader source is null";
         return false;
     }
+    /** END PATCH **/
 
     const GLchar *sources[] = { _extensionsString.c_str(),
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WINRT
@@ -499,6 +523,8 @@ bool GLProgram::compileShader(GLuint* shader, GLenum type, const GLchar* source,
 
     glGetShaderiv(*shader, GL_COMPILE_STATUS, &status);
 
+    /** BPC PATCH **/
+    result.success = status == GL_TRUE;
     if (! status)
     {
         GLsizei length;
@@ -510,10 +536,12 @@ bool GLProgram::compileShader(GLuint* shader, GLenum type, const GLchar* source,
 
         if (type == GL_VERTEX_SHADER)
         {
+            result.errorMsg = getVertexShaderLog();
             CCLOG("cocos2d: %s", getVertexShaderLog().c_str());
         }
         else
         {
+            result.errorMsg = getFragmentShaderLog();
             CCLOG("cocos2d: %s", getFragmentShaderLog().c_str());
         }
         free(src);
@@ -521,6 +549,7 @@ bool GLProgram::compileShader(GLuint* shader, GLenum type, const GLchar* source,
         return false;
     }
     glCheck();
+    /** END PATCH **/
 
     return (status == GL_TRUE);
 }

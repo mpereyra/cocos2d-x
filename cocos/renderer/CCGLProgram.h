@@ -170,6 +170,15 @@ public:
         // handy way to initialize the bitfield
         UniformFlags() { memset(this, 0, sizeof(*this)); }
     };
+    
+    
+    /** BPC PATCH **/
+    struct CompileResult {
+        bool success{true};
+        std::string filename{};
+        std::string errorMsg{};
+    };
+    /** END PATCH **/
 
     /**
     @name Built Shader types
@@ -366,6 +375,9 @@ public:
     bool initWithByteArrays(const GLchar* vShaderByteArray, const GLchar* fShaderByteArray);
     static GLProgram* createWithByteArrays(const GLchar* vShaderByteArray, const GLchar* fShaderByteArray, const std::string& compileTimeDefines);
     bool initWithByteArrays(const GLchar* vShaderByteArray, const GLchar* fShaderByteArray, const std::string& compileTimeDefines);
+    /** BPC PATCH **/
+    bool initWithByteArrays(const GLchar* vShaderByteArray, const GLchar* fShaderByteArray, const std::string& compileTimeDefines, CompileResult& result);
+    /** END PATCH **/
 
     /**
     @}
@@ -551,6 +563,9 @@ protected:
     /**Parse user defined uniform automatically.*/
     void parseUniforms();
     /**Compile the shader sources.*/
+    /** BPC PATCH **/
+    bool compileShader(GLuint * shader, GLenum type, const GLchar* source, const std::string& convertedDefines, CompileResult& result);
+    /** END PATCH **/
     bool compileShader(GLuint * shader, GLenum type, const GLchar* source, const std::string& convertedDefines);
     bool compileShader(GLuint * shader, GLenum type, const GLchar* source);
     void clearShader();
