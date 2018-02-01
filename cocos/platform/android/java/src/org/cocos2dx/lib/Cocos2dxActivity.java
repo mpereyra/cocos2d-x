@@ -42,6 +42,7 @@ import android.view.ViewGroup;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.widget.FrameLayout;
 
 import org.cocos2dx.lib.Cocos2dxHelper.Cocos2dxHelperListener;
@@ -369,6 +370,9 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
                                        ViewGroup.LayoutParams.WRAP_CONTENT);
         Cocos2dxEditBox edittext = new Cocos2dxEditBox(this);
         edittext.setLayoutParams(edittext_layout_params);
+
+        //Set some default IME options
+        edittext.setImeOptions(EditorInfo.IME_ACTION_DONE | EditorInfo.IME_FLAG_NO_EXTRACT_UI | EditorInfo.IME_FLAG_NO_FULLSCREEN);
 
 
         mFrameLayout.addView(edittext);
