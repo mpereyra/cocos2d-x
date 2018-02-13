@@ -272,6 +272,14 @@ public class Cocos2dxMusic {
     private MediaPlayer createMediaPlayer(final String path) {
         MediaPlayer mediaPlayer = new MediaPlayer();
 
+        mediaPlayer.setOnErrorListener(
+            new MediaPlayer.OnErrorListener() {
+                public boolean onError(MediaPlayer mp, int what, int extra) {
+                    Log.e(Cocos2dxMusic.TAG, "Error in MediaPlayer: (" + what +") with extra (" +extra +")" );
+                    return false; 
+                } 
+            }); 
+
         try {
             if (path.startsWith("/")) {
                 final FileInputStream fis = new FileInputStream(path);

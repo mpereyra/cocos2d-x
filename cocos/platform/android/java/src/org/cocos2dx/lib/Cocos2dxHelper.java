@@ -344,31 +344,66 @@ public class Cocos2dxHelper {
     }
 
     public static void preloadBackgroundMusic(final String pPath) {
-        Cocos2dxHelper.sCocos2dMusic.preloadBackgroundMusic(pPath);
+        try {
+            Cocos2dxHelper.sCocos2dMusic.preloadBackgroundMusic(pPath);
+        } catch (Exception e) {
+            Log.e(TAG, "preloadBackgroundMusic failed", e);
+            return; //Add logic here if we ever end up caring if this fails
+        }
     }
 
     public static void playBackgroundMusic(final String pPath, final boolean isLoop) {
-        Cocos2dxHelper.sCocos2dMusic.playBackgroundMusic(pPath, isLoop);
+        try {
+            Cocos2dxHelper.sCocos2dMusic.playBackgroundMusic(pPath, isLoop);
+        } catch (Exception e) {
+            Log.e(TAG, "playBackgroundMusic failed", e);
+            return; //Add logic here if we ever end up caring if this fails
+        }
     }
 
     public static void resumeBackgroundMusic() {
-        Cocos2dxHelper.sCocos2dMusic.resumeBackgroundMusic();
+        try {
+            Cocos2dxHelper.sCocos2dMusic.resumeBackgroundMusic();
+        } catch (Exception e) {
+            Log.e(TAG, "resumeBackgroundMusic failed", e);
+            return; //Add logic here if we ever end up caring if this fails
+        }
     }
 
     public static void pauseBackgroundMusic() {
-        Cocos2dxHelper.sCocos2dMusic.pauseBackgroundMusic();
+        try {
+            Cocos2dxHelper.sCocos2dMusic.pauseBackgroundMusic();
+        } catch (Exception e) {
+            Log.e(TAG, "pauseBackgroundMusic failed", e);
+            return; //Add logic here if we ever end up caring if this fails
+        }
     }
 
     public static void stopBackgroundMusic() {
-        Cocos2dxHelper.sCocos2dMusic.stopBackgroundMusic();
+        try {
+            Cocos2dxHelper.sCocos2dMusic.stopBackgroundMusic();
+        } catch (Exception e) {
+            Log.e(TAG, "stopBackgroundMusic failed", e);
+            return; //Add logic here if we ever end up caring if this fails
+        }
     }
 
     public static void rewindBackgroundMusic() {
-        Cocos2dxHelper.sCocos2dMusic.rewindBackgroundMusic();
+        try {
+            Cocos2dxHelper.sCocos2dMusic.rewindBackgroundMusic();
+        } catch (Exception e) {
+            Log.e(TAG, "rewindBackgroundMusic failed", e);
+            return; //Add logic here if we ever end up caring if this fails
+        }
     }
 
     public static boolean willPlayBackgroundMusic() {
-        return Cocos2dxHelper.sCocos2dMusic.willPlayBackgroundMusic();
+        try {
+            return Cocos2dxHelper.sCocos2dMusic.willPlayBackgroundMusic();
+        } catch (Exception e) {
+            Log.e(TAG, "willPlayBackgroundMusic failed", e);
+            return false; //Add logic here if we ever end up caring if this fails
+        }
     }
 
     public static boolean isBackgroundMusicPlaying() {
@@ -376,60 +411,127 @@ public class Cocos2dxHelper {
         try {
             return Cocos2dxHelper.sCocos2dMusic.isBackgroundMusicPlaying();
         } catch (Exception e) {
+            Log.e(TAG, "isBackgroundMusicPlaying failed", e);
             return false;
         }
     }
 
     public static float getBackgroundMusicVolume() {
-        return Cocos2dxHelper.sCocos2dMusic.getBackgroundVolume();
+        try {
+            return Cocos2dxHelper.sCocos2dMusic.getBackgroundVolume();
+        } catch (Exception e) {
+            Log.e(TAG, "getBackgroundMusicVolume failed", e);
+            return 0.0f; //Add logic here if we ever end up caring if this fails
+        }
     }
 
     public static void setBackgroundMusicVolume(final float volume) {
-        Cocos2dxHelper.sCocos2dMusic.setBackgroundVolume(volume);
+        try {
+            Cocos2dxHelper.sCocos2dMusic.setBackgroundVolume(volume);
+        } catch (Exception e) {
+            Log.e(TAG, "setBackgroundMusicVolume failed", e);
+            return; //Really don't give a shit if this fails
+        }
+        
     }
 
     public static void preloadEffect(final String path) {
-        Cocos2dxHelper.sCocos2dSound.preloadEffect(path);
+        try {
+            Cocos2dxHelper.sCocos2dSound.preloadEffect(path);
+        } catch (Exception e) {
+            Log.e(TAG, "preloadEffect failed", e);
+            return; //Add logic here if we ever end up caring if this fails
+        }
     }
 
     public static int playEffect(final String path, final boolean isLoop, final float pitch, final float pan, final float gain) {
-        return Cocos2dxHelper.sCocos2dSound.playEffect(path, isLoop, pitch, pan, gain);
+        try {
+            return Cocos2dxHelper.sCocos2dSound.playEffect(path, isLoop, pitch, pan, gain);
+        } catch (Exception e) {
+            Log.e(TAG, "playEffect failed", e);
+            return -1; //Add logic here if we ever end up caring if this fails
+        }
     }
 
     public static void resumeEffect(final int soundId) {
-        Cocos2dxHelper.sCocos2dSound.resumeEffect(soundId);
+        try {
+            Cocos2dxHelper.sCocos2dSound.resumeEffect(soundId);
+        } catch (Exception e) {
+            Log.e(TAG, "resumeEffect failed", e);
+            return; //Add logic here if we ever end up caring if this fails
+        }
     }
 
     public static void pauseEffect(final int soundId) {
-        Cocos2dxHelper.sCocos2dSound.pauseEffect(soundId);
+        try {
+            Cocos2dxHelper.sCocos2dSound.pauseEffect(soundId);
+        } catch (Exception e) {
+            Log.e(TAG, "pauseEffect failed", e);
+            return; //Add logic here if we ever end up caring if this fails
+        }
     }
 
     public static void stopEffect(final int soundId) {
-        Cocos2dxHelper.sCocos2dSound.stopEffect(soundId);
+        try {
+            Cocos2dxHelper.sCocos2dSound.stopEffect(soundId);
+        } catch (Exception e) {
+            Log.e(TAG, "stopEffect failed", e);
+            return; //Add logic here if we ever end up caring if this fails
+        }
     }
 
     public static float getEffectsVolume() {
-        return Cocos2dxHelper.sCocos2dSound.getEffectsVolume();
+        try {
+            return Cocos2dxHelper.sCocos2dSound.getEffectsVolume();
+        } catch (Exception e) {
+            Log.e(TAG, "getEffectsVolume failed", e);
+            return 0.0f; //Add logic here if we ever end up caring if this fails
+        }
     }
 
     public static void setEffectsVolume(final float volume) {
-        Cocos2dxHelper.sCocos2dSound.setEffectsVolume(volume);
+        try {
+            Cocos2dxHelper.sCocos2dSound.setEffectsVolume(volume);
+        } catch (Exception e) {
+            Log.e(TAG, "setEffectsVolume failed", e);
+            return; //Add logic here if we ever end up caring if this fails
+        }
     }
 
     public static void unloadEffect(final String path) {
-        Cocos2dxHelper.sCocos2dSound.unloadEffect(path);
+        try {
+            Cocos2dxHelper.sCocos2dSound.unloadEffect(path);
+        } catch (Exception e) {
+            Log.e(TAG, "unloadEffect failed", e);
+            return; //Add logic here if we ever end up caring if this fails
+        }
     }
 
     public static void pauseAllEffects() {
-        Cocos2dxHelper.sCocos2dSound.pauseAllEffects();
+        try {
+            Cocos2dxHelper.sCocos2dSound.pauseAllEffects();
+        } catch (Exception e) {
+            Log.e(TAG, "pauseAllEffects failed", e);
+            return; //Add logic here if we ever end up caring if this fails
+        }
     }
 
     public static void resumeAllEffects() {
-        Cocos2dxHelper.sCocos2dSound.resumeAllEffects();
+        try {
+            Cocos2dxHelper.sCocos2dSound.resumeAllEffects();
+        } catch (Exception e) {
+            Log.e(TAG, "resumeAllEffects failed", e);
+            return; //Add logic here if we ever end up caring if this fails
+        }
     }
 
     public static void stopAllEffects() {
-        Cocos2dxHelper.sCocos2dSound.stopAllEffects();
+        try {
+            Cocos2dxHelper.sCocos2dSound.stopAllEffects();
+        } catch (Exception e) {
+            Log.e(TAG, "stopAllEffects failed", e);
+            return; //Add logic here if we ever end up caring if this fails
+        }
     }
 
     public static void end() {
