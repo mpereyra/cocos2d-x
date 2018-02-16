@@ -269,9 +269,17 @@ Rect GLViewImpl::getSafeAreaRect() const
 {
     CCEAGLView *eaglview = (CCEAGLView*) _eaglview;
 
-    if (@available(iOS 11.0, *)) {
+    // Note from cocos commit - 8baa4b4639f7553de60c8303daf98b08af76c1d2
+    // @available(iOS 11.0, *) isn't supported in Xcode8. So we use the old way.
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000
+    float version = [[UIDevice currentDevice].systemVersion floatValue];
+    if (version >= 11.0f)
+    {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpartial-availability"
             UIEdgeInsets safeAreaInsets = eaglview.safeAreaInsets;
-    
+#pragma clang diagnostic pop
+        
             // Multiply contentScaleFactor since safeAreaInsets return points.
             safeAreaInsets.left *= eaglview.contentScaleFactor;
             safeAreaInsets.right *= eaglview.contentScaleFactor;
@@ -300,7 +308,8 @@ Rect GLViewImpl::getSafeAreaRect() const
     
             return Rect(leftBottom.x, leftBottom.y, rightTop.x - leftBottom.x, rightTop.y - leftBottom.y);
         }
-
+#endif
+    
     // If running on iOS devices lower than 11.0, return visiable rect instead.
     return GLView::getSafeAreaRect();
 }
