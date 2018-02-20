@@ -77,6 +77,8 @@ public:
     virtual void setIMEKeyboardType(TextFieldTTF::KeyboardType type) override;
     virtual void setSecureTextEntry(bool secure) override;
 
+    Rect getSafeAreaRect() const override;
+    
 protected:
     GLViewImpl();
     virtual ~GLViewImpl();
