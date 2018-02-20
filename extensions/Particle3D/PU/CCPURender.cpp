@@ -278,13 +278,8 @@ void PUParticle3DQuadRender::render(Renderer* renderer, const Mat4 &transform, P
 
         auto blend = particleSystem->getBlendFunc();
         float opacityMod = particleSystem->getOpacityModifier();
-        Vec4 color = Vec4::ONE;
-        if (blend == BlendFunc::ADDITIVE || blend == BlendFunc::ONE) {
-            color.set(opacityMod, opacityMod, opacityMod, opacityMod);
-        }
-        else {
-            color.w = opacityMod;
-        }
+        Vec4 color;
+        color.set(opacityMod, opacityMod, opacityMod, opacityMod);
         
         _stateBlock->setBlendFunc(blend);
         GLuint texId = (_texture ? _texture->getName() : 0);
@@ -786,13 +781,8 @@ void PUParticle3DBoxRender::render( Renderer* renderer, const Mat4 &transform, P
         GLuint texId = (_texture ? _texture->getName() : 0);
         auto blend = particleSystem->getBlendFunc();
         float opacityMod = particleSystem->getOpacityModifier();
-        Vec4 color = Vec4::ONE;
-        if (blend == BlendFunc::ADDITIVE || blend == BlendFunc::ONE) {
-            color.set(opacityMod, opacityMod, opacityMod, opacityMod);
-        }
-        else {
-            color.w = opacityMod;
-        }
+        Vec4 color;
+        color.set(opacityMod, opacityMod, opacityMod, opacityMod);
         
         _stateBlock->setBlendFunc(blend);
         _meshCommand->init(particleSystem->getGlobalZOrder() > 0 ? particleSystem->getGlobalZOrder() : 0,
@@ -963,13 +953,8 @@ void PUSphereRender::render( Renderer* renderer, const Mat4 &transform, Particle
         GLuint texId = (_texture ? _texture->getName() : 0);
         auto blend = particleSystem->getBlendFunc();
         float opacityMod = particleSystem->getOpacityModifier();
-        Vec4 color = Vec4::ONE;
-        if (blend == BlendFunc::ADDITIVE || blend == BlendFunc::ONE) {
-            color.set(opacityMod, opacityMod, opacityMod, opacityMod);
-        }
-        else {
-            color.w = opacityMod;
-        }
+        Vec4 color;
+        color.set(opacityMod, opacityMod, opacityMod, opacityMod);
         
         _stateBlock->setBlendFunc(blend);
         _meshCommand->init(particleSystem->getGlobalZOrder() > 0 ? particleSystem->getGlobalZOrder() : 0,
