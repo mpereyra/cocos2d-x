@@ -568,6 +568,9 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
 #endif
     };
     
+#if (DEBUG)
+    glPushGroupMarkerEXT(0, "RenderQueue: Global-Z < 0");
+#endif
     //
     //Process Global-Z < 0 Objects
     //
@@ -591,6 +594,11 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
         Assert(queueSize == zNegQueue.size(), "zNegQueue modified during processing!");
     }
     
+#if (DEBUG)
+    glPopGroupMarkerEXT();
+    glPushGroupMarkerEXT(0, "RenderQueue: Opaque");
+#endif
+    
     //
     //Process Opaque Object
     //
@@ -607,6 +615,11 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
         Assert(queueSize == opaqueQueue.size(), "opaqueQueue modified during processing!");
     }
     
+#if (DEBUG)
+    glPopGroupMarkerEXT();
+    glPushGroupMarkerEXT(0, "RenderQueue: Transparent");
+#endif
+    
     //
     //Process 3D Transparent object
     //
@@ -621,6 +634,11 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
         processCommandQueue(transQueue);
         Assert(queueSize == transQueue.size(), "transQueue modified during processing!");
     }
+    
+#if (DEBUG)
+    glPopGroupMarkerEXT();
+    glPushGroupMarkerEXT(0, "RenderQueue: Global-Z = 0");
+#endif
     
     //
     //Process Global-Z = 0 Queue
@@ -648,6 +666,11 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
         Assert(queueSize == zZeroQueue.size(), "zZeroQueue modified during processing!");
     }
     
+#if (DEBUG)
+    glPopGroupMarkerEXT();
+    glPushGroupMarkerEXT(0, "RenderQueue: Global-Z > 0");
+#endif
+    
     //
     //Process Global-Z > 0 Queue
     //
@@ -659,6 +682,10 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
         processCommandQueue(zPosQueue);
         Assert(queueSize == zPosQueue.size(), "zPosQueue modified during processing!");
     }
+    
+#if (DEBUG)
+    glPopGroupMarkerEXT();
+#endif
     
     queue.restoreRenderState();
 }
