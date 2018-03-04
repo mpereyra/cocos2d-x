@@ -56,6 +56,9 @@ static CDBufferManager *bufferManager = nil;
         am = [CDAudioManager sharedManager];
         [am setResignBehavior:kAMRBStopPlay autoHandle:YES]; // fix stopping user music on short sleep
         soundEngine = am.soundEngine;
+        // BPC PATCH - set sound engine to not interrupt playing audio channels when we run out of free ones
+        [soundEngine setSourceGroupNonInterruptible:0 isNonInterruptible:true];
+        // END PATCH
         bufferManager = [[CDBufferManager alloc] initWithEngine:soundEngine];
         mute_ = NO;
         enabled_ = YES;
