@@ -67,6 +67,9 @@ public class Cocos2dxSound {
     private static final int MAX_SIMULTANEOUS_STREAMS_I9100 = 3;
     private static final float SOUND_RATE = 1.0f;
     private static final int SOUND_PRIORITY = 1;
+    // BPC PATCH - give looping effects higher priority so they are less likely to get interrupted
+    private static final int LOOPING_SOUND_PRIORITY = 10;
+    // END PATCH
     private static final int SOUND_QUALITY = 5;
 
     private final static int INVALID_SOUND_ID = -1;
@@ -303,7 +306,13 @@ public class Cocos2dxSound {
         float soundRate = this.clamp(SOUND_RATE * pitch, 0.5f, 2.0f);
 
         // play sound
-        int streamID = this.mSoundPool.play(soundId, this.clamp(leftVolume, 0.0f, 1.0f), this.clamp(rightVolume, 0.0f, 1.0f), Cocos2dxSound.SOUND_PRIORITY, loop ? -1 : 0, soundRate);
+        int streamID = this.mSoundPool.play(soundId,
+                this.clamp(leftVolume, 0.0f, 1.0f),
+                this.clamp(rightVolume, 0.0f, 1.0f),
+                // BPC PATCH - give looping effects higher priority so they are less likely to get interrupted
+                loop ? Cocos2dxSound.LOOPING_SOUND_PRIORITY : Cocos2dxSound.SOUND_PRIORITY,
+                // END PATCH
+                loop ? -1 : 0, soundRate);
 
         // record stream id
         ArrayList<Integer> streamIDs = this.mPathStreamIDsMap.get(path);
