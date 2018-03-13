@@ -64,6 +64,7 @@ public:
     /** BPC PATCH BEGIN   **/
     const Mat4& getOffset() const;
     void setOffset(const Mat4& offset);
+    void setWorldMatDirtyNoRecurse(bool dirty = true);
     /** BPC PATCH END     **/
     
     /**get bone name*/

@@ -271,6 +271,9 @@ void Bone3D::setOffset(const Mat4& offset) {
     _offset = offset;
     Mat4::multiply(_oriPose, _offset, &_local);
 }
+void Bone3D::setWorldMatDirtyNoRecurse(bool dirty) {
+    _worldDirty = dirty;
+}
 /** BPC PATCH END     **/
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
