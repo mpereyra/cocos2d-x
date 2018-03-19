@@ -445,7 +445,7 @@ void Mesh::draw(Renderer* renderer, float globalZOrder, const Mat4& transform, u
     }
     
     //BPC PATCH BEGIN Update depth for transparent objects
-    if (commandToUse.isTransparent() && commandToUse.is3D())
+    if (commandToUse.isTransparent() && commandToUse.is3D() && m_useMeshDepth)
     {
         if (Camera::getVisitingCamera())
         {
