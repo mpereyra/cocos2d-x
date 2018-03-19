@@ -94,7 +94,7 @@ VideoPlayer::~VideoPlayer()
 
 void VideoPlayer::setFileName(const std::string& fileName)
 {
-    _videoURL = FileUtils::getInstance()->fullPathForFilename(fileName);
+    _videoURL = fileName; // TC patch
     _videoSource = VideoPlayer::Source::FILENAME;
     JniHelper::callStaticVoidMethod(videoHelperClassName, "setVideoUrl", _videoPlayerIndex, 
                                     (int)Source::FILENAME,_videoURL);
