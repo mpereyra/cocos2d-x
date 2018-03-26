@@ -258,6 +258,7 @@ public:
     void setReceiveFog(bool fog) { m_receiveFog = fog; }
     void setSkipRender(bool skip) {m_skipRender = skip;}
     void setSkinnedAABB(const AABB& skinnedBB);
+    void setUseMeshDepth(bool use) { m_useMeshDepth = use; }
     
     bool boolFromWriteMode(GLWriteMode mode) const{
         switch(mode){
@@ -322,6 +323,7 @@ protected:
     GLWriteMode m_cullFaceMode{GLWriteMode::Default};
     float m_globalZ{std::numeric_limits<float>::max()};
     AABB m_skinnedAABB;
+    bool m_useMeshDepth{true};
     
     //Sometimes we want to render a mesh with different techniques in a single render pass. Renderer has a pointer to the MeshCommand, so for these instances we need to specify a different command.
     std::map<std::string, MeshCommand> m_techniqueToCommandOverrides;
