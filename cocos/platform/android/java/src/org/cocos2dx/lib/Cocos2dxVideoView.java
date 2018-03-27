@@ -18,6 +18,7 @@
 package org.cocos2dx.lib;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
@@ -36,6 +37,8 @@ import android.widget.MediaController.MediaPlayerControl;
 
 import java.io.IOException;
 import java.util.Map;
+
+import static org.cocos2dx.lib.Cocos2dxActivity.getContext;
 
 public class Cocos2dxVideoView extends SurfaceView implements MediaPlayerControl {
     private String TAG = "Cocos2dxVideoView";
@@ -295,8 +298,15 @@ public class Cocos2dxVideoView extends SurfaceView implements MediaPlayerControl
             mDuration = -1;
             mCurrentBufferPercentage = 0;
             if (mIsAssetRouse) {
-                AssetFileDescriptor afd = mCocos2dxActivity.getAssets().openFd(mVideoFilePath);
-                mMediaPlayer.setDataSource(afd.getFileDescriptor(),afd.getStartOffset(),afd.getLength());
+                /* TC patch start */
+                Context appContext = mCocos2dxActivity.getApplicationContext();
+                String packageName = appContext.getPackageName();
+                String stripped = mVideoFilePath.substring(0, mVideoFilePath.lastIndexOf('.'));
+                int resId = mCocos2dxActivity.getResources().getIdentifier(stripped, "raw", packageName);
+                String path = "android.resource://" + packageName + "/" + resId;
+                /* TC patch end */
+
+                mMediaPlayer.setDataSource(mCocos2dxActivity, Uri.parse(path));
             } else {
                 mMediaPlayer.setDataSource(mCocos2dxActivity, mVideoUri);
             }
