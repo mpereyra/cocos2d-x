@@ -594,7 +594,7 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
         Assert(queueSize == zNegQueue.size(), "zNegQueue modified during processing!");
     }
     
-#if (DEBUG)
+#if (DEBUG && CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
     glPopGroupMarkerEXT();
     glPushGroupMarkerEXT(0, "RenderQueue: Opaque");
 #endif
@@ -615,7 +615,7 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
         Assert(queueSize == opaqueQueue.size(), "opaqueQueue modified during processing!");
     }
     
-#if (DEBUG)
+#if (DEBUG && CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
     glPopGroupMarkerEXT();
     glPushGroupMarkerEXT(0, "RenderQueue: Transparent");
 #endif
@@ -635,7 +635,7 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
         Assert(queueSize == transQueue.size(), "transQueue modified during processing!");
     }
     
-#if (DEBUG)
+#if (DEBUG && CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
     glPopGroupMarkerEXT();
     glPushGroupMarkerEXT(0, "RenderQueue: Global-Z = 0");
 #endif
@@ -666,7 +666,7 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
         Assert(queueSize == zZeroQueue.size(), "zZeroQueue modified during processing!");
     }
     
-#if (DEBUG)
+#if (DEBUG && CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
     glPopGroupMarkerEXT();
     glPushGroupMarkerEXT(0, "RenderQueue: Global-Z > 0");
 #endif
@@ -683,7 +683,7 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
         Assert(queueSize == zPosQueue.size(), "zPosQueue modified during processing!");
     }
     
-#if (DEBUG)
+#if (DEBUG && CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
     glPopGroupMarkerEXT();
 #endif
     
