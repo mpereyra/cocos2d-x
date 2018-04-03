@@ -624,6 +624,12 @@ void GLProgram::updateUniforms()
 
 bool GLProgram::link()
 {
+    CompileResult result;
+    link(result);
+}
+
+bool GLProgram::link(CompileResult& result)
+{
     CCASSERT(_program != 0, "Cannot link invalid program");
 
     GLint status = GL_TRUE;
@@ -641,6 +647,10 @@ bool GLProgram::link()
 
     if (status == GL_FALSE)
     {
+        result.success = false;
+        result.filename = "link";
+        result.errorMsg = getProgramLog();
+        
         GLchar erLog[1024];
         GLsizei len;
         glGetProgramInfoLog(_program, 1024, &len, erLog);
@@ -652,6 +662,8 @@ bool GLProgram::link()
     }
     else
     {
+        result.success = true;
+        
         parseVertexAttribs();
         parseUniforms();
 

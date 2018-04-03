@@ -415,6 +415,7 @@ public:
 
     /** links the glProgram */
     bool link();
+    bool link(CompileResult& result);
     /** it will call glUseProgram() */
     void use();
 /** It will create 4 uniforms:
