@@ -153,7 +153,7 @@ using namespace cocos2d::experimental::ui;
     }
 
     if (_keepRatioEnabled) {
-        self.moviePlayer.scalingMode = MPMovieScalingModeAspectFit;
+        self.moviePlayer.scalingMode = MPMovieScalingModeAspectFill; // TC patch: change default to fill instead fo fit
     } else {
         self.moviePlayer.scalingMode = MPMovieScalingModeFill;
     }
