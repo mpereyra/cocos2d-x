@@ -98,6 +98,8 @@ public:
     /** reload default programs these are relative to light */
     void reloadDefaultGLProgramsRelativeToLights();
 
+    void removeUnusedShaders();
+    
 private:
     /**
     @{
