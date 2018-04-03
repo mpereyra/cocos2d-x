@@ -634,6 +634,7 @@ void GLProgramCache::addGLProgram(GLProgram* program, const std::string &key)
     if (program)
         program->retain();
     _programs[key] = program;
+    // CCLOG("added shader %zu:  %s", _programs.size(), key.c_str() );
 }
 
 /*BPC PATCH*/
@@ -646,6 +647,26 @@ void GLProgramCache::purgeGLProgram(const std::string &key)
     CC_SAFE_RELEASE(it->second);
     _programs.erase(it);
 }
+/*END BPC PATCH*/
+
+void GLProgramCache::removeUnusedShaders(){
+    
+    for( auto it=_programs.cbegin(); it!=_programs.cend(); /* nothing */) {
+        auto *p = it->second;
+        if (p->getReferenceCount() == 1) {
+            //CCLOG("cocos2d: GLProgramCache: removing unused shader: %s", it->first.c_str());
+            
+            p->release();
+            _programs.erase(it++);
+        } else {
+            ++it;
+        }
+        
+    }
+    
+    CCLOG("GLProgramCache::removeUnusedShaders down to %zu", _programs.size() );
+}
+
 /*END BPC PATCH*/
 
 std::string GLProgramCache::getShaderMacrosForLight() const
