@@ -153,7 +153,14 @@ using namespace cocos2d::experimental::ui;
     }
 
     if (_keepRatioEnabled) {
-        self.moviePlayer.scalingMode = MPMovieScalingModeAspectFill; // TC patch: change default to fill instead fo fit
+         // TC patch: change default to fill instead fo fit on iPhone X
+        cocos2d::Rect rect = cocos2d::Director::getInstance()->getSafeAreaRect();
+        BOOL iphoneX = rect.origin.y > 1;
+        if (iphoneX) {
+            self.moviePlayer.scalingMode = MPMovieScalingModeAspectFill;
+        } else {
+            self.moviePlayer.scalingMode = MPMovieScalingModeAspectFit;
+        }
     } else {
         self.moviePlayer.scalingMode = MPMovieScalingModeFill;
     }
