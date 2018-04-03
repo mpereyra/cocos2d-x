@@ -300,6 +300,11 @@ void GLProgramCache::loadDefaultGLPrograms()
     p = new(std::nothrow) GLProgram();
     loadDefaultGLProgram(p, kShaderType_ETC1ASPositionTextureGray_noMVP);
     _programs.insert(std::make_pair(GLProgram::SHADER_NAME_ETC1AS_POSITION_TEXTURE_GRAY_NO_MVP, p));
+    
+    // RETAIN ALL so the don't get purged evar
+    for(const auto& keyShaderPair : _programs){
+        keyShaderPair.second->retain();
+    }
 }
 
 void GLProgramCache::reloadDefaultGLPrograms()
