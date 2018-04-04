@@ -625,7 +625,7 @@ void GLProgram::updateUniforms()
 bool GLProgram::link()
 {
     CompileResult result;
-    link(result);
+    return link(result);
 }
 
 bool GLProgram::link(CompileResult& result)
