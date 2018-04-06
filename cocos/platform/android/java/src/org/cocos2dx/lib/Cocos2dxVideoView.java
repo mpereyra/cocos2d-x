@@ -197,7 +197,8 @@ public class Cocos2dxVideoView extends SurfaceView implements MediaPlayerControl
         mCurrentState = STATE_IDLE;
         mTargetState  = STATE_IDLE;
     }
-    
+
+    /* TC PATCH
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP)
@@ -208,10 +209,11 @@ public class Cocos2dxVideoView extends SurfaceView implements MediaPlayerControl
                 resume();
             }
         }
-        
+
         return true;
     }
-    
+    */
+
     private boolean mIsAssetRouse = false;
     private String mVideoFilePath = null;
     private static final String AssetResourceRoot = "assets/";
