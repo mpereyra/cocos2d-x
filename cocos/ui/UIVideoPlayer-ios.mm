@@ -177,7 +177,7 @@ using namespace cocos2d::experimental::ui;
 {
     if(_videoPlayer != nullptr)
     {
-        if([self.moviePlayer playbackState] != MPMoviePlaybackStateStopped)
+        if([self.moviePlayer playbackState] != MPMoviePlaybackStatePlaying)
         {
             _videoPlayer->onPlayEvent((int)VideoPlayer::EventType::COMPLETED);
         }
