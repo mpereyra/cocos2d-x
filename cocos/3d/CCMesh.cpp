@@ -449,11 +449,16 @@ void Mesh::draw(Renderer* renderer, float globalZOrder, const Mat4& transform, u
     {
         if (Camera::getVisitingCamera())
         {
-            auto centerPt = m_skinnedAABB.getCenter();
-            cocos2d::Mat4 bbTransform;
-            transform.translate(centerPt, &bbTransform);
-            float bbDepth = Camera::getVisitingCamera()->getDepthInView(bbTransform);
-            commandToUse.setDepth(bbDepth);
+            if (m_localDepthSort >= 0) {
+                commandToUse.setDepth(commandToUse.getDepth() + m_localDepthSort*0.01);
+            }
+            else {
+                auto centerPt = m_skinnedAABB.getCenter();
+                cocos2d::Mat4 bbTransform;
+                transform.translate(centerPt, &bbTransform);
+                float bbDepth = Camera::getVisitingCamera()->getDepthInView(bbTransform);
+                commandToUse.setDepth(bbDepth);
+            }
         }
     }
     //BPC PATCH END
