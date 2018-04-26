@@ -568,7 +568,7 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
 #endif
     };
     
-#if (DEBUG)
+#if (DEBUG && CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
     glPushGroupMarkerEXT(0, "RenderQueue: Global-Z < 0");
 #endif
     //
