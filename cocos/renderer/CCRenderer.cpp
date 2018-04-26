@@ -526,15 +526,7 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
         }
         flush();
     }
-    
-    // This is to fix an apparent defect with submitting many small draw calls on ios 9.3.
-    // may be fixed in future we hope??
-    // see https://forums.developer.apple.com/thread/9589
-    // see https://tinyco.atlassian.net/browse/MAR-8930
-#if  CC_TARGET_PLATFORM == CC_PLATFORM_IOS
-    glFlush();
-#endif
-    
+   
     //
     //Process 3D Transparent object
     //
