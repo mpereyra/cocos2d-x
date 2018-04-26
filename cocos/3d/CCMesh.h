@@ -259,6 +259,8 @@ public:
     void setSkipRender(bool skip) {m_skipRender = skip;}
     void setSkinnedAABB(const AABB& skinnedBB);
     void setUseMeshDepth(bool use) { m_useMeshDepth = use; }
+    void setLocalSortOrder(int order) {m_localDepthSort = order;}
+    int getLocalSortORder() const {return m_localDepthSort;}
     
     bool boolFromWriteMode(GLWriteMode mode) const{
         switch(mode){
@@ -344,6 +346,7 @@ protected:
     bool m_isVertexLit = false;
     bool m_receiveFog = false;
     bool m_skipRender = false;
+    int m_localDepthSort = -1;
     /*END BPC PATCH*/
     
     std::vector<Vec3> _dirLightUniformColorValues;
