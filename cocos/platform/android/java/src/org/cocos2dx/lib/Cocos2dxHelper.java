@@ -127,12 +127,11 @@ public class Cocos2dxHelper {
                 AudioManager am = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
                 String strSampleRate = am.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
                 String strBufferSizeInFrames = am.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER);
-
-                if (!strSampleRate.isEmpty()) {
+                try {
                     sampleRate = Integer.parseInt(strSampleRate);
-                }
-                if (!strBufferSizeInFrames.isEmpty()) {
                     bufferSizeInFrames = Integer.parseInt(strBufferSizeInFrames);
+                } catch (NumberFormatException e) {
+                    Log.e(TAG, "parseInt failed", e);
                 }
 
                 Log.d(TAG, "sampleRate: " + sampleRate + ", framesPerBuffer: " + bufferSizeInFrames);
