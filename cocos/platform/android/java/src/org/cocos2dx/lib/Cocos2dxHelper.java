@@ -128,8 +128,12 @@ public class Cocos2dxHelper {
                 String strSampleRate = am.getProperty(AudioManager.PROPERTY_OUTPUT_SAMPLE_RATE);
                 String strBufferSizeInFrames = am.getProperty(AudioManager.PROPERTY_OUTPUT_FRAMES_PER_BUFFER);
 
-                sampleRate = Integer.parseInt(strSampleRate);
-                bufferSizeInFrames = Integer.parseInt(strBufferSizeInFrames);
+                if (!strSampleRate.isEmpty()) {
+                    sampleRate = Integer.parseInt(strSampleRate);
+                }
+                if (!strBufferSizeInFrames.isEmpty()) {
+                    bufferSizeInFrames = Integer.parseInt(strBufferSizeInFrames);
+                }
 
                 Log.d(TAG, "sampleRate: " + sampleRate + ", framesPerBuffer: " + bufferSizeInFrames);
             } else {
