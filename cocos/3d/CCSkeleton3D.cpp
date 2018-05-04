@@ -256,7 +256,9 @@ void Bone3D::updateLocalMat()
         _local.scale(scale);
         
         // BPC PATCH
-        _local.multiply(_offset);
+        if (_hasOffset) {
+            _local.multiply(_offset);
+        }
         // END BPC PATCH
         
         _blendStates.clear();
@@ -269,6 +271,12 @@ const Mat4& Bone3D::getOffset() const {
 }
 void Bone3D::setOffset(const Mat4& offset) {
     _offset = offset;
+    _hasOffset = true;
+    Mat4::multiply(_oriPose, _offset, &_local);
+}
+void Bone3D::resetOffset() {
+    _offset = Mat4::IDENTITY;
+    _hasOffset = false;
     Mat4::multiply(_oriPose, _offset, &_local);
 }
 void Bone3D::setWorldMatDirtyNoRecurse(bool dirty) {
@@ -359,10 +367,19 @@ int Skeleton3D::getBoneIndex(Bone3D* bone) const
 //refresh bone world matrix
 void Skeleton3D::updateBoneMatrix()
 {
+    if (!_isDirty) {
+        return;
+    }
+    
     for (const auto& it : _rootBones) {
         it->setWorldMatDirty(true);
         it->updateWorldMat();
     }
+    _isDirty = false;
+}
+
+void Skeleton3D::setDirty(bool dirty) {
+    _isDirty = dirty;
 }
 
 void Skeleton3D::removeAllBones()

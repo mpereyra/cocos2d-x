@@ -64,6 +64,7 @@ public:
     /** BPC PATCH BEGIN   **/
     const Mat4& getOffset() const;
     void setOffset(const Mat4& offset);
+    void resetOffset();
     void setWorldMatDirtyNoRecurse(bool dirty = true);
     /** BPC PATCH END     **/
     
@@ -190,6 +191,7 @@ protected:
     /** BPC PATCH BEGIN   **
      ** get original mat4 **/
     Mat4 _offset{};
+    bool _hasOffset {false};
     /** BPC PATCH END     **/
     
     std::vector<BoneBlendState> _blendStates;
@@ -224,7 +226,7 @@ public:
     
     /**refresh bone world matrix*/
     void updateBoneMatrix();
-    
+    void setDirty(bool dirty);
 CC_CONSTRUCTOR_ACCESS:
     
     Skeleton3D();
@@ -249,6 +251,7 @@ protected:
     // BPC PATCH BEGIN
     // fast lookup into _bones
     std::unordered_map<std::string, Bone3D*> _nameToBoneMap;
+    bool _isDirty {true};
     // BPC PATCH END
 };
 
