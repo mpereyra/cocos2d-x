@@ -68,6 +68,9 @@ public:
      * is obb out of frustum
      */
     bool isOutOfFrustum(const OBB& obb) const;
+    
+    //BPC PATCH
+    bool isOutOfFrustum(const Vec3& pt) const;
 
     /**
      * get & set z clip. if bclipZ == true use near and far plane

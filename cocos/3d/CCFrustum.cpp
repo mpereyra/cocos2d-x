@@ -79,6 +79,20 @@ bool Frustum::isOutOfFrustum(const OBB& obb) const
     return  false;
 }
 
+//BPC PATCH
+bool Frustum::isOutOfFrustum(const Vec3& pt) const {
+    if (_initialized)
+    {
+        int plane = _clipZ ? 6 : 4;
+        for (int i = 0; i < plane; i++)
+        {
+            if (_plane[i].getSide(pt) == PointSide::FRONT_PLANE )
+                return true;
+        }
+    }
+    return false;
+}
+
 void createFrustumPlanes(const Mat4& mat, Plane* _plane)
 {
     //ref http://www.lighthouse3d.com/tutorials/view-frustum-culling/clip-space-approach-extracting-the-planes/
