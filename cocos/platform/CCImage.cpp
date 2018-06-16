@@ -55,6 +55,13 @@ extern "C"
 #endif
 #endif
 #include "png.h"
+
+// <BPC_PATCH>
+#ifdef PNG_SET_OPTION_SUPPORTED
+    // Suppress libpng messsages: libpng warning: iCCP: known incorrect sRGB profile
+    png_set_option(png_ptr, PNG_SKIP_sRGB_CHECK_PROFILE, PNG_OPTION_ON);
+#endif
+// </BPC_PATCH>
     
 #if CC_USE_TIFF
 #include "tiffio.h"
