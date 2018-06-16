@@ -2351,6 +2351,21 @@ void Node::setCameraMask(unsigned short mask, bool applyChildren)
     }
 }
 
+// <BPC_PATCH>
+bool Node::isParentInHierarchy(cocos2d::Node const * const node) const {
+    if (!node) {
+        return false;
+    }
+    
+    for (auto parent = getParent(); parent != nullptr; parent = parent->getParent()) {
+        if (parent == node) {
+            return true;
+        }
+    }
+    return false;
+}
+// </BPC_PATCH>
+
 // MARK: Deprecated
 
 __NodeRGBA::__NodeRGBA()

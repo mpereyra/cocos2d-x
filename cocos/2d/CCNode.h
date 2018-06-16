@@ -816,7 +816,10 @@ public:
      */
     virtual Node* getParent() { return _parent; }
     virtual const Node* getParent() const { return _parent; }
-
+    
+    // <BPC_PATCH>
+    bool isParentInHierarchy(cocos2d::Node const * const node) const;
+    // </BPC_PATCH>
 
     ////// REMOVES //////
 
