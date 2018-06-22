@@ -1987,6 +1987,12 @@ unsigned int Bundle3D::parseGLProgramAttribute(const std::string& str)
     {
         return GLProgram::VERTEX_ATTRIB_BLEND_INDEX;
     }
+// TC patch: ignore HP's soft normals until we switch to newer cocos
+    else if (str == "VERTEX_ATTRIB_SOFT_NORMAL")
+    {
+        return GLProgram::VERTEX_ATTRIB_NORMAL;
+    }
+// TC patch end
     else
     {
         CCASSERT(false, "Wrong Attribute type");
