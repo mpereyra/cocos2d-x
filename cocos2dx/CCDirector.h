@@ -28,6 +28,7 @@ THE SOFTWARE.
 #define __CCDIRECTOR_H__
 
 #include "platform/CCPlatformMacros.h"
+#include "platform/platform.h"
 #include "cocoa/CCObject.h"
 #include "ccTypes.h"
 #include "cocoa/CCGeometry.h"

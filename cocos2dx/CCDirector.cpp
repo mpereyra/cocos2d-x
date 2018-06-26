@@ -36,7 +36,6 @@ THE SOFTWARE.
 #include "textures/CCTextureCache.h"
 #include "sprite_nodes/CCSpriteFrameCache.h"
 #include "cocoa/CCAutoreleasePool.h"
-#include "platform/platform.h"
 #include "platform/CCFileUtils.h"
 #include "CCApplication.h"
 #include "label_nodes/CCLabelBMFont.h"
