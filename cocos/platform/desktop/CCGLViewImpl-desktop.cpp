@@ -345,7 +345,7 @@ bool GLViewImpl::initWithRect(const std::string& viewName, Rect rect, float fram
 
     _frameZoomFactor = frameZoomFactor;
 
-    glfwWindowHint(GLFW_RESIZABLE,GL_FALSE);
+    glfwWindowHint(GLFW_RESIZABLE,GL_TRUE);
     glfwWindowHint(GLFW_RED_BITS,_glContextAttrs.redBits);
     glfwWindowHint(GLFW_GREEN_BITS,_glContextAttrs.greenBits);
     glfwWindowHint(GLFW_BLUE_BITS,_glContextAttrs.blueBits);
@@ -730,10 +730,17 @@ void GLViewImpl::onGLFWframebuffersize(GLFWwindow* window, int w, int h)
 
 void GLViewImpl::onGLFWWindowSizeFunCallback(GLFWwindow *window, int width, int height)
 {
-    if (_resolutionPolicy != ResolutionPolicy::UNKNOWN)
+    if (width && height && _resolutionPolicy != ResolutionPolicy::UNKNOWN)
     {
-        updateDesignResolutionSize();
+        Size baseDesignSize = _designResolutionSize;
+        ResolutionPolicy baseResolutionPolicy = _resolutionPolicy;
+
+        int frameWidth = width / _frameZoomFactor;
+        int frameHeight = height / _frameZoomFactor;
+        setFrameSize(frameWidth, frameHeight);
+        setDesignResolutionSize(baseDesignSize.width, baseDesignSize.height, baseResolutionPolicy);
         Director::getInstance()->setViewport();
+//        Director::getInstance()->getEventDispatcher()->dispatchCustomEvent(GLViewImpl::EVENT_WINDOW_RESIZED, nullptr);
     }
 }
 

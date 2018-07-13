@@ -276,9 +276,9 @@ public:
     virtual id getCocoaWindow() = 0;
 #endif /* (CC_TARGET_PLATFORM == CC_PLATFORM_MAC) */
     
-protected:
+public:
     void updateDesignResolutionSize();
-    
+protected:
     void handleTouchesOfEndOrCancel(EventTouch::EventCode eventCode, int num, intptr_t ids[], float xs[], float ys[]);
 
     // real screen size
