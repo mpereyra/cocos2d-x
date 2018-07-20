@@ -425,6 +425,7 @@ public class Cocos2dxGLSurfaceView extends GLSurfaceView {
             break;
             default:
                 mInputType |= InputType.TYPE_TEXT_VARIATION_NORMAL;
+                mInputType |= InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE;
             break;
         }
     }
