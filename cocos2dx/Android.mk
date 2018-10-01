@@ -159,7 +159,7 @@ LOCAL_WHOLE_STATIC_LIBRARIES += cocos_libtiff_static
 LOCAL_WHOLE_STATIC_LIBRARIES += cocos_zlib_static
 
 # define the macro to compile through support/zip_support/ioapi.c                L
-LOCAL_CFLAGS := -DUSE_FILE32API
+LOCAL_CFLAGS := -DUSE_FILE32API -Wno-conversion -Wno-c++11-narrowing
 LOCAL_EXPORT_CFLAGS := -DUSE_FILE32API
 
 ifneq ($(NDK_DEBUG),1)
