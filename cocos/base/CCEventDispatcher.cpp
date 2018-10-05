@@ -444,10 +444,12 @@ void EventDispatcher::addEventListener(EventListener* listener)
 {
     if (_inDispatch == 0)
     {
+        ELog("none in dispatch, force");
         forceAddEventListener(listener);
     }
     else
     {
+        ELog("queued in _toAddedListeners");
         _toAddedListeners.push_back(listener);
     }
 #if CC_ENABLE_GC_FOR_NATIVE_OBJECTS
@@ -582,8 +584,10 @@ void EventDispatcher::addEventListenerWithFixedPriority(EventListener* listener,
     CCASSERT(!listener->isRegistered(), "The listener has been registered.");
     CCASSERT(fixedPriority != 0, "0 priority is forbidden for fixed priority since it's used for scene graph based priority.");
     
-    if (!listener->checkAvailable())
+    if (!listener->checkAvailable()) {
+        ELog("listener unavailable");
         return;
+    }
     
     listener->setAssociatedNode(nullptr);
     listener->setFixedPriority(fixedPriority);
