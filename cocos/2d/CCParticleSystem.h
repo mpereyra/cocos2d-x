@@ -372,6 +372,10 @@ public:
     */
     virtual const BlendFunc &getBlendFunc() const override;
     
+    /* BPC_PATCH start */
+    bool reinitWithDictionary(cocos2d::ValueMap &dictionary);
+    /* BPC_PATCH end */
+    
 CC_CONSTRUCTOR_ACCESS:
     /**
      * @js ctor

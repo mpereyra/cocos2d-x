@@ -1178,5 +1178,10 @@ void ParticleSystem::setScaleY(float newScaleY)
     Node::setScaleY(newScaleY);
 }
 
+/* BPC_PATCH start */
+bool ParticleSystem::reinitWithDictionary(cocos2d::ValueMap &dictionary) {
+    return initWithDictionary(dictionary);
+}
+/* BPC_PATCH end */
 
 NS_CC_END
