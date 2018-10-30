@@ -1394,6 +1394,11 @@ void ParticleSystem::resumeEmissions()
     _paused = false;
 }
 
+/* BPC_PATCH start */
+bool ParticleSystem::reinitWithDictionary(cocos2d::ValueMap &dictionary) {
+    return initWithDictionary(dictionary);
+}
+/* BPC_PATCH end */
 
 
 NS_CC_END

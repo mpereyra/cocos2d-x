@@ -763,6 +763,10 @@ public:
     */
     virtual const BlendFunc &getBlendFunc() const override;
 
+    /* BPC_PATCH start */
+    bool reinitWithDictionary(cocos2d::ValueMap &dictionary);
+    /* BPC_PATCH end */
+    
     const std::string& getResourceFile() const { return _plistFile; }
 
     /// @{
