@@ -1272,6 +1272,7 @@
 				PRODUCT_NAME = "libluacocos2d Mac";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(inherited) $(SRCROOT)/../../../platform/mac $(SRCROOT)/../../../../external/glfw3/include/mac";
+				VALID_ARCHS = x86_64;
 			};
 			name = Debug;
 		};
@@ -1296,6 +1297,7 @@
 				PRODUCT_NAME = "libluacocos2d Mac";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				USER_HEADER_SEARCH_PATHS = "$(inherited) $(SRCROOT)/../../../platform/mac $(SRCROOT)/../../../../external/glfw3/include/mac";
+				VALID_ARCHS = x86_64;
 			};
 			name = Release;
 		};
