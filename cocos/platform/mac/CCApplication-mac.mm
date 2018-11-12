@@ -34,6 +34,10 @@ THE SOFTWARE.
 #include "math/CCGeometry.h"
 #include "base/CCDirector.h"
 
+/* BPC_PATCH start */
+#include "platform/desktop/CCGLViewImpl-desktop.h"
+/* BPC_PATCH end */
+
 NS_CC_BEGIN
 
 static long getCurrentMillSecond()
@@ -78,8 +82,34 @@ int Application::run()
     // Retain glview to avoid glview being released in the while loop
     glview->retain();
     
+    /* BPC_PATCH start */
+    // https://github.com/cocos2d/cocos2d-x/issues/19080#issuecomment-435314956
+    // Issue appeared in 10.14.0 but will be fixed in 10.14.2 (can't negate @available expression).
+    BOOL const needsPatch = ^{
+        if (@available(macOS 10.14, *)) {
+            if (@available(macOS 10.14.2, *)) {
+                return NO;
+            }
+            return YES;
+        }
+        return NO;
+    }();
+    /* BPC_PATCH end */
+
     while (!glview->windowShouldClose())
     {
+        /* BPC_PATCH start */
+        // https://github.com/cocos2d/cocos2d-x/issues/19080#issuecomment-426241312
+        // Fixes once the window is dragged but can be "fixed" with a few forced context updates.
+        if (needsPatch) {
+            static auto refreshCount = 0u;
+            if (refreshCount < 2u) {
+                refreshCount++;
+                [(NSOpenGLContext*)glfwGetNSGLContext(static_cast<GLViewImpl*>(glview)->getWindow()) update];
+            }
+        }
+        /* BPC_PATCH end */
+        
         lastTime = getCurrentMillSecond();
         
         director->mainLoop();
