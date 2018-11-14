@@ -26,6 +26,7 @@ package org.cocos2dx.lib;
 
 import java.lang.ref.WeakReference;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Handler;
@@ -63,13 +64,15 @@ public class Cocos2dxHandler extends Handler {
 	// ===========================================================
 
 	public void handleMessage(Message msg) {
-		switch (msg.what) {
-		case Cocos2dxHandler.HANDLER_SHOW_DIALOG:
-			showDialog(msg);
-			break;
-		case Cocos2dxHandler.HANDLER_SHOW_EDITBOX_DIALOG:
-			showEditBoxDialog(msg);
-			break;
+		if (((Activity)this.mActivity.get()).isFinishing()) {
+			switch (msg.what) {
+				case Cocos2dxHandler.HANDLER_SHOW_DIALOG:
+					showDialog(msg);
+					break;
+				case Cocos2dxHandler.HANDLER_SHOW_EDITBOX_DIALOG:
+					showEditBoxDialog(msg);
+					break;
+			}
 		}
 	}
 	
