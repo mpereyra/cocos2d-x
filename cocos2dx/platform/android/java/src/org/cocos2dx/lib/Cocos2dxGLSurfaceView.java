@@ -156,24 +156,14 @@ public class Cocos2dxGLSurfaceView extends GLSurfaceView {
 	public void onResume() {
 		super.onResume();
 
-		this.queueEvent(new Runnable() {
-			@Override
-			public void run() {
-				Cocos2dxGLSurfaceView.this.mCocos2dxRenderer.handleOnResume();
-			}
-		});
+		Cocos2dxGLSurfaceView.this.mCocos2dxRenderer.handleOnResume();
 		//BPC PATCH: to resume onTouchEvent
 		mHandleTouches = true;
 	}
 
 	@Override
 	public void onPause() {
-		this.queueEvent(new Runnable() {
-			@Override
-			public void run() {
-				Cocos2dxGLSurfaceView.this.mCocos2dxRenderer.handleOnPause();
-			}
-		});
+		Cocos2dxGLSurfaceView.this.mCocos2dxRenderer.handleOnPause();
 
 		super.onPause();
 		//BPC PATCH: to interrupt onTouchEvent
