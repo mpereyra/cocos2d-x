@@ -347,6 +347,14 @@ void Director::calculateDeltaTime()
     else
     {
         _deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(now - _lastUpdate).count() / 1000000.0f;
+        /* BPC_PATCH start */
+        if (_deltaTime < 0.0f) {
+            static auto constexpr const MIN_NEGATIVE_DT = -60.0f;
+            
+            m_bSumNegativeDeltaTime += _deltaTime;
+            m_bDetectedNegativeDeltaTime = m_bDetectedNegativeDeltaTime || (m_bSumNegativeDeltaTime < MIN_NEGATIVE_DT);
+        }
+        /* BPC_PATCH end */
         _deltaTime = MAX(0, _deltaTime);
     }
 
@@ -1368,6 +1376,17 @@ void Director::setEventDispatcher(EventDispatcher* dispatcher)
         _eventDispatcher = dispatcher;
     }
 }
+
+/* BPC_PATCH start */
+bool Director::getDetectedNegativeDeltaTime() const {
+    return m_bDetectedNegativeDeltaTime;
+}
+
+void Director::resetDetectedNegativeDeltaTime() {
+    m_bDetectedNegativeDeltaTime = false;
+    m_bSumNegativeDeltaTime = 0;
+}
+/* BPC_PATCH end */
 
 /***************************************************
 * implementation of DisplayLinkDirector

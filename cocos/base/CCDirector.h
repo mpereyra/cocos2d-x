@@ -509,6 +509,11 @@ public:
      */
     const std::thread::id& getCocos2dThreadId() const { return _cocos2d_thread_id; }
 
+    /* BPC_PATCH start */
+    bool getDetectedNegativeDeltaTime() const;
+    void resetDetectedNegativeDeltaTime(); // only allow outside peeps to set to false    
+    /* BPC_PATCH end */
+    
 protected:
     void reset();
     
@@ -632,6 +637,12 @@ protected:
 
     // GLView will recreate stats labels to fit visible rect
     friend class GLView;
+    
+    /* BPC_PATCH start */
+    // Flag to check if we calculated negative dt before the engine caps it to 0.
+    bool m_bDetectedNegativeDeltaTime{};
+    float m_bSumNegativeDeltaTime{};
+    /* BPC_PATCH end */
 };
 
 // end of base group
