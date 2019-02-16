@@ -56,6 +56,9 @@ namespace CocosDenshion {
 class EXPORT_DLL SimpleAudioEngine
 {
 public:
+    /* BPC_PATCH start: https://github.com/brooklynpacket/cocos2d-x/commit/52d887f2f58009c4a24dfc4cd3072a0671b3db29 */
+    void debugUsage();
+    /* BPC_PATCH end */
     /**
      * Returns a shared instance of the SimpleAudioEngine.
      * @js NA

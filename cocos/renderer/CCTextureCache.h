@@ -292,8 +292,6 @@ public:
      * Removes an asynchronous request for an image, should the target no longer care about it. */
     void removeAsyncImage(Ref * const target, std::string const & filename);
     
-    static void removeAllAsyncImages();
-    
     void pauseAsync();
     void resumeAsync();
 

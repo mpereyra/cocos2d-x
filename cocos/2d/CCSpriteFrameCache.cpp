@@ -42,6 +42,12 @@ THE SOFTWARE.
 #include "renderer/CCTexture2D.h"
 #include "renderer/CCTextureCache.h"
 #include "base/CCNinePatchImageParser.h"
+/* BPC_PATCH start */
+// We need to convert /path/to/texture.compressed to the proper extension.
+#include "../../../shared/core/Asset/AssetDescriptor.h"
+#include "../../../shared/core/ImageManager.h"
+/* BPC_PATCH end */
+
 
 using namespace std;
 
@@ -382,7 +388,11 @@ void SpriteFrameCache::addSpriteFramesWithFile(const std::string& plist, const s
     _loadedFileNames->insert(plist);
 }
 
-void SpriteFrameCache::addSpriteFramesWithFile(const std::string& plist)
+void SpriteFrameCache::addSpriteFramesWithFile(const std::string& plist) {
+    addSpriteFramesWithFile(plist, Bpc::Asset::SizingStyle::kNative);
+}
+
+void SpriteFrameCache::addSpriteFramesWithFile(std::string const &plist, Bpc::Asset::SizingStyle const sizingStyle)
 {
     CCASSERT(plist.size()>0, "plist filename should not be nullptr");
     
@@ -410,8 +420,26 @@ void SpriteFrameCache::addSpriteFramesWithFile(const std::string& plist)
 
         if (!texturePath.empty())
         {
-            // build texture path relative to plist file
-            texturePath = FileUtils::getInstance()->fullPathFromRelativeFile(texturePath, plist);
+            /* BPC_PATCH start: Multiple commits from https://github.com/brooklynpacket/cocos2d-x/blob/30bd76c85b97d6733d2e2851f0a9b099a7c767e4/cocos2dx/sprite_nodes/CCSpriteFrameCache.cpp#L253-L267 */
+//            // build texture path relative to plist file
+//            texturePath = FileUtils::getInstance()->fullPathFromRelativeFile(texturePath, plist);
+            
+            // resolve any compression formats
+            texturePath = Bpc::ImageManager::getPreferredFilename(texturePath);
+            
+            // DO NOT build texture paths relative to plist file;
+            // plist may be in bundle while texture path is downloaded.
+            Bpc::ImageInfo iInfo = Bpc::ImageManager::shared().findImage(texturePath, sizingStyle);
+            if(iInfo.found)
+            {
+                texturePath = iInfo.path;
+            }
+            else //if somehow our image manager can't find it, fallback to default behavior.
+            {
+                CCLOG("texture not found: %s", texturePath.c_str());
+                texturePath = FileUtils::sharedFileUtils()->fullPathFromRelativeFile(texturePath, plist);
+            }
+            /* BPC_PATCH end */
         }
         else
         {

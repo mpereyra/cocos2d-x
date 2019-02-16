@@ -37,6 +37,12 @@ THE SOFTWARE.
 #include "base/CCValue.h"
 #include "base/CCMap.h"
 
+/* BPC_PATCH start */
+namespace Bpc { namespace Asset {
+    enum class SizingStyle;
+}}
+/* BPC_PATCH end */
+
 NS_CC_BEGIN
 
 class Sprite;
@@ -130,6 +136,9 @@ public:
      * @param plist Plist file name.
      */
     void addSpriteFramesWithFile(const std::string& plist);
+    /* BPC_PATCH start */
+    void addSpriteFramesWithFile(std::string const &plist, Bpc::Asset::SizingStyle const sizingStyle);
+    /* BPC_PATCH end */
 
     /** Adds multiple Sprite Frames from a plist file. The texture will be associated with the created sprite frames.
      @since v0.99.5

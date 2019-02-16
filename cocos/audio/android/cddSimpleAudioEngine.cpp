@@ -79,4 +79,11 @@ namespace CocosDenshion {
     void SimpleAudioEngine::stopAllEffects() { }
     void SimpleAudioEngine::preloadEffect(const char* pszFilePath) { }
     void SimpleAudioEngine::unloadEffect(const char* pszFilePath) { }
+
+    /* BPC_PATCH start: https://github.com/brooklynpacket/cocos2d-x/commit/52d887f2f58009c4a24dfc4cd3072a0671b3db29 */
+    void SimpleAudioEngine::debugUsage() 
+    {
+
+    }
+    /* BPC_PATCH end */
 }

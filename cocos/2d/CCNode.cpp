@@ -2274,6 +2274,69 @@ void Node::setTraversalCameraMask(unsigned short mask, bool applyChildren)
 }
 /*END BPC PATCH*/
 
+// BPC PATCH START - Memory usage debug
+// https://github.com/brooklynpacket/cocos2d-x/commit/95058b29d06161b19c6830cebf8a08126b8e6d28
+#if (BPC_ENABLE_MEMORY_USAGE_DEBUG)
+size_t Node::nodeSize() {
+    return sizeof(Node);
+}
+
+std::vector<const Ref*> Node::getSharedResources() {
+    return {};
+}
+
+void Node::debugUsage(DebugData &data, std::set<std::string> tags, bool printReport /*= false*/) {
+    if (!m_bpcTag.empty()) {
+        tags.emplace(m_bpcTag);
+    }
+    
+    // gather usage info for this node
+    for (auto const &tag : tags) {
+        auto &usage = data[tag];
+        auto sharedResources = getSharedResources();
+        usage.shared_resources.insert(std::make_move_iterator(sharedResources.begin()), std::make_move_iterator(sharedResources.end()));
+        
+        usage.numberOfNodes++;
+        usage.bytesUsed += nodeSize();
+    }
+    
+    // recurse over children
+    for (auto child : _children) {
+        child->debugUsage(data, tags, false);
+    }
+    
+    if (printReport) {
+        auto &totalUsage = data[m_bpcTag];
+        CCLOG("---- Tag ----  Num nodes           |    Node data mem   |    Textures");
+        for (auto const &tagUsage : data) {
+            int texMemUsed = 0;
+            int numTex = 0;
+            auto const &usage = tagUsage.second;
+            for (auto const * const resource : usage.shared_resources) {
+                if (!resource) {
+                    continue;
+                }
+                
+                if (auto texture = dynamic_cast<Texture2D const*>(resource)) {
+                    texMemUsed += static_cast<float>(texture->getPixelsHigh() * texture->getPixelsWide()) * (static_cast<float>(texture->bitsPerPixelForFormat()) / 8.0f);
+                    numTex++;
+                    continue;
+                }
+            }
+            
+            auto const numNodesPercentage = static_cast<float>(usage.numberOfNodes) / totalUsage.numberOfNodes * 100.0f;
+            auto const bytesPercentage = static_cast<float>(usage.bytesUsed) / totalUsage.bytesUsed * 100.0f;
+            CCLOG("%12s: %5u nodes (%5.1f%%) | %6.2f MB (%5.1f%%) | %4i %6.2f MB",
+                  tagUsage.first.data(),
+                  usage.numberOfNodes, numNodesPercentage,
+                  static_cast<float>(usage.bytesUsed)/(1024*1024), bytesPercentage,
+                  numTex, static_cast<float>(texMemUsed)/(1024*1024));
+        }
+    }
+}
+#endif
+// BPC PATCH END
+
 // MARK: Deprecated
 
 __NodeRGBA::__NodeRGBA()

@@ -94,6 +94,10 @@
 /** Gets a CDSoundSource object set up to play the specified file. */
 -(CDSoundSource *) soundSourceForFile:(NSString*) filePath;
 
+/* BPC_PATCH start: https://github.com/brooklynpacket/cocos2d-x/commit/52d887f2f58009c4a24dfc4cd3072a0671b3db29 */
+-(void) debugUsage;
+/* BPC_PATCH end */
+
 /** Shuts down the shared audio engine instance so that it can be reinitialised */
 +(void) end;
 

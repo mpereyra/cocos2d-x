@@ -44,6 +44,19 @@
 #include "physics/CCPhysicsBody.h"
 #endif
 
+/* BPC_PATCH start */
+#ifndef BPC_ENABLE_MEMORY_USAGE_DEBUG
+    #if ((defined(COCOS2D_DEBUG) && (COCOS2D_DEBUG > 0)) || DEBUG)
+        #define BPC_ENABLE_MEMORY_USAGE_DEBUG 1
+    #else
+        #define BPC_ENABLE_MEMORY_USAGE_DEBUG 0
+    #endif
+#endif  // BPC_ENABLE_MEMORY_USAGE_DEBUG
+
+#if (BPC_ENABLE_MEMORY_USAGE_DEBUG)
+    #include <set>
+#endif
+/* BPC_PATCH end */
 NS_CC_BEGIN
 
 class GridBase;
@@ -109,6 +122,26 @@ class EventListener;
 class CC_DLL Node : public Ref
 {
 public:
+    // BPC PATCH START - Memory usage debug
+    // https://github.com/brooklynpacket/cocos2d-x/commit/95058b29d06161b19c6830cebf8a08126b8e6d28
+#if (BPC_ENABLE_MEMORY_USAGE_DEBUG)
+    struct TagUsage {
+        unsigned int numberOfNodes{};
+        size_t bytesUsed{};
+        std::set<Ref const*> shared_resources;
+    };
+    using DebugData = std::map<std::string, TagUsage>;
+    
+    CC_SYNTHESIZE(std::string, m_bpcTag, BpcTag);
+    virtual size_t nodeSize();
+    virtual std::vector<const Ref*> getSharedResources();
+    void debugUsage(DebugData &data, std::set<std::string> tags, bool printReport = true);
+    #define SET_BPC_TAG(name)   setBpcTag(name)
+#else
+    #define SET_BPC_TAG(name)   REQUIRE_SEMICOLON
+#endif
+    // BPC PATCH END
+    
     /** Default tag used for all the nodes */
     static const int INVALID_TAG = -1;
 
@@ -831,7 +864,7 @@ public:
      *
      * @since v3.2
      */
-    virtual void enumerateChildren(const std::string &name, std::function<bool(Node* node)> callback) const;
+    virtual void enumerateChildren(const std::string &name, std::function<bool(Node* node)> callback) const;   
     /**
      * Returns the array of the node's children.
      *

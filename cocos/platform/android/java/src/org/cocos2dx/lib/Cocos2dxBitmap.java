@@ -260,7 +260,10 @@ public final class Cocos2dxBitmap {
         paint.setAntiAlias(true);
 
         // Set type face for paint, now it support .ttf file.
-        if (fontName.endsWith(".ttf")) {
+        /* BPC_PATCH start: https://github.com/brooklynpacket/cocos2d-x/commit/5d303079586f7126d69dea1e302b93d93937f93a */
+        // if (fontName.endsWith(".ttf")) {
+        if (fontName.endsWith(".ttf") || fontName.endsWith(".otf")) {
+        /* BPC_PATCH end */
             try {
                 final Typeface typeFace = Cocos2dxTypefaces.get(
                         Cocos2dxBitmap.sContext, fontName);

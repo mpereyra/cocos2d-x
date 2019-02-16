@@ -683,6 +683,19 @@ static BOOL _mixerRateSet = NO;
     }    
 }
 
+/* BPC_PATCH start: https://github.com/brooklynpacket/cocos2d-x/commit/52d887f2f58009c4a24dfc4cd3072a0671b3db29 */
+- (void) debugUsage {
+    int total = 0, nonEmptyBuffers = 0;
+    ALint result;
+    for (int i=0; i < bufferTotal; i++) {
+        alGetBufferi(_buffers[i].bufferId, AL_SIZE, &result);
+        total += result;
+        if (result>0) nonEmptyBuffers++;
+    }
+    NSLog(@"Total sounds data: %.2fKB (%i/%i buffers used)", (float)total/1024, nonEmptyBuffers, bufferTotal);
+}
+/* BPC_PATCH end */
+
 #pragma mark CDSoundEngine AudioInterrupt protocol
 - (BOOL) mute {
     return mute_;
