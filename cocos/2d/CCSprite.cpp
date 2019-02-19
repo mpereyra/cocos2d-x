@@ -1204,4 +1204,14 @@ void Sprite::setPolygonInfo(const PolygonInfo& info)
     _polyInfo = info;
 }
 
+/* BPC_PATCH start: https://github.com/brooklynpacket/cocos2d-x/commit/95058b29d06161b19c6830cebf8a08126b8e6d28 */
+#if (defined(COCOS2D_DEBUG) && (COCOS2D_DEBUG > 0)) || DEBUG
+std::vector<Ref const*> Sprite::getSharedResources() {
+    std::vector<Ref const*> result = Node::getSharedResources();
+    result.push_back(getTexture());
+    return result;
+}
+#endif
+/* BPC_PATCH end */
+
 NS_CC_END

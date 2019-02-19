@@ -713,4 +713,18 @@ std::string SpriteBatchNode::getDescription() const
     return StringUtils::format("<SpriteBatchNode | tag = %d>", _tag);
 }
 
+/* BPC_PATCH start: https://github.com/brooklynpacket/cocos2d-x/commit/95058b29d06161b19c6830cebf8a08126b8e6d28 */
+#if (defined(COCOS2D_DEBUG) && (COCOS2D_DEBUG > 0)) || DEBUG
+size_t SpriteBatchNode::nodeSize() {
+    return Node::nodeSize() + sizeof(TextureAtlas);
+}
+
+std::vector<Ref const*> SpriteBatchNode::getSharedResources() {
+    std::vector<Ref const*> result = Node::getSharedResources();
+    result.push_back(getTextureAtlas()->getTexture());
+    return result;
+}
+#endif
+/* BPC_PATCH end */
+
 NS_CC_END

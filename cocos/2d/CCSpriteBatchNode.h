@@ -66,6 +66,13 @@ class CC_DLL SpriteBatchNode : public Node, public TextureProtocol
     static const int DEFAULT_CAPACITY = 29;
 
 public:
+    /* BPC_PATCH start: https://github.com/brooklynpacket/cocos2d-x/commit/95058b29d06161b19c6830cebf8a08126b8e6d28 */
+#if (defined(COCOS2D_DEBUG) && (COCOS2D_DEBUG > 0)) || DEBUG
+    size_t nodeSize() override;
+    std::vector<Ref const*> getSharedResources() override;
+#endif
+    /* BPC_PATCH end */
+    
     /** Creates a SpriteBatchNode with a texture2d and capacity of children.
      * The capacity will be increased in 33% in runtime if it runs out of space.
      *

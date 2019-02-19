@@ -85,6 +85,12 @@ struct transformValues_;
 class CC_DLL Sprite : public Node, public TextureProtocol
 {
 public:
+    /* BPC_PATCH start: https://github.com/brooklynpacket/cocos2d-x/commit/95058b29d06161b19c6830cebf8a08126b8e6d28 */
+#if (defined(COCOS2D_DEBUG) && (COCOS2D_DEBUG > 0)) || DEBUG
+    std::vector<Ref const*> getSharedResources() override;
+#endif
+    /* BPC_PATCH end */
+    
      /** Sprite invalid index on the SpriteBatchNode. */
     static const int INDEX_NOT_INITIALIZED = -1;
 
