@@ -50,6 +50,7 @@ public:
     void setIMEKeyboardState(bool bOpen) override;
     virtual void setIMEKeyboardType(TextFieldTTF::KeyboardType type) override;
     virtual void setSecureTextEntry(bool secure) override;
+    virtual Rect getSafeAreaRect() const override;
 
 protected:
     GLViewImpl();

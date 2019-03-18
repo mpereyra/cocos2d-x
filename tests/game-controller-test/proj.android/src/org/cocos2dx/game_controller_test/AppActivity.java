@@ -27,12 +27,22 @@ import org.cocos2dx.lib.GameControllerActivity;
 //import org.cocos2dx.lib.GameControllerHelper.ControllerListener;
 
 import android.os.Bundle;
+import android.os.Build;
+import android.view.WindowManager;
+import android.view.WindowManager.LayoutParams;
 
 public class AppActivity extends GameControllerActivity {
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        }
+        // Make sure we're running on Pie or higher to change cutout mode
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            // Enable rendering into the cutout area
+            WindowManager.LayoutParams lp = getWindow().getAttributes();
+            lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+            getWindow().setAttributes(lp);
         
         //The standard controller,without doing anything special. e.g: Amazon Fire TV
         
