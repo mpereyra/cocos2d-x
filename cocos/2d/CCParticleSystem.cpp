@@ -56,7 +56,6 @@ THE SOFTWARE.
 #include "renderer/CCTextureCache.h"
 #include "platform/CCFileUtils.h"
 
-#include "../../extensions/Particle3D/ParticleAssetCreator.h"
 
 using namespace std;
 
@@ -482,7 +481,7 @@ bool ParticleSystem::initWithDictionary(ValueMap& dictionary, const std::string&
                     bool notify = FileUtils::getInstance()->isPopupNotify();
                     FileUtils::getInstance()->setPopupNotify(false);
                     
-                    tex = ParticleAssetCreator::getInstance()->createTexture(textureName);
+                    tex = Director::getInstance()->getTextureCache()->addImage(textureName);
                     // reset the value of UIImage notify
                     FileUtils::getInstance()->setPopupNotify(notify);
                 }
