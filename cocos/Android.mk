@@ -92,6 +92,7 @@ cocos2d.cpp \
 2d/CCAutoPolygon.cpp \
 3d/CCFrustum.cpp \
 3d/CCPlane.cpp \
+3d/CCAABB.cpp \
 platform/CCFileUtils.cpp \
 platform/CCGLView.cpp \
 platform/CCImage.cpp \

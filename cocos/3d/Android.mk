@@ -11,7 +11,6 @@ LOCAL_ARM_MODE := arm
 
 LOCAL_SRC_FILES := \
 CCRay.cpp \
-CCAABB.cpp \
 CCOBB.cpp \
 CCAnimate3D.cpp \
 CCAnimation3D.cpp \
