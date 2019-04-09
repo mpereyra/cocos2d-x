@@ -43,6 +43,9 @@ THE SOFTWARE.
 
 // helper functions
 
+static int attachedShaders = 0;
+static int livePrograms = 0;
+
 static void replaceDefines(const std::string& compileTimeDefines, std::string& out)
 {
     // Replace semicolons with '#define ... \n'
@@ -235,10 +238,11 @@ GLProgram::~GLProgram()
     CCLOGINFO("%s %d deallocing GLProgram: %p", __FUNCTION__, __LINE__, this);
 
     clearShader();
-
+//    DLog("program deleting");
     if (_program)
     {
         glCheck(GL::deleteProgram(_program));
+        livePrograms--;
     }
 
     for (auto const &e : _hashForUniforms)
@@ -269,6 +273,7 @@ bool GLProgram::initWithByteArrays(const GLchar* vShaderByteArray, const GLchar*
         CCLOG("Invalid (0) GLProgram %p was the context lost?", this);
         CCASSERT(false, "Invalid (0) GL Program; was the context lost?");
     }
+    livePrograms++;
 
     // convert defines here. If we do it in "compileShader" we will do it twice.
     // a cache for the defines could be useful, but seems like overkill at this point
@@ -305,12 +310,14 @@ bool GLProgram::initWithByteArrays(const GLchar* vShaderByteArray, const GLchar*
     if (_vertShader)
     {
         glAttachShader(_program, _vertShader);
+        attachedShaders++;
     }
     CHECK_GL_ERROR_DEBUG();
 
     if (_fragShader)
     {
         glAttachShader(_program, _fragShader);
+        attachedShaders++;
     }
 
     _hashForUniforms.clear();
@@ -636,6 +643,8 @@ bool GLProgram::link(CompileResult& result)
 
     bindPredefinedVertexAttribs();
 
+//    DLog("Currently live programs = %d", livePrograms);
+//    DLog("Currently attached shaders = %d", attachedShaders);
     glLinkProgram(_program);
 
     // Calling glGetProgramiv(...GL_LINK_STATUS...) will force linking of the program at this moment.
@@ -658,6 +667,7 @@ bool GLProgram::link(CompileResult& result)
         CCLOG("cocos2d: ERROR: Failed to link program: %i", _program);
         CCLOG("%s", erLog);
         glCheck(GL::deleteProgram(_program));
+        livePrograms--;
         _program = 0;
     }
     else
@@ -1037,12 +1047,16 @@ void GLProgram::setUniformsForBuiltins(const Mat4 &matrixMV)
 
 void GLProgram::reset()
 {
-    _vertShader = _fragShader = 0;
+    clearShader();
     memset(_builtInUniforms, 0, sizeof(_builtInUniforms));
 
 
     // it is already deallocated by android
-    //GL::deleteProgram(_program);
+//    DLog("reset! are these programs really deleted?");
+//    if (_program != 0) {
+//        GL::deleteProgram(_program);
+//        livePrograms--;
+//    }
     _program = 0;
 
     for (auto const &e : _hashForUniforms)
@@ -1064,12 +1078,14 @@ inline void GLProgram::clearShader()
     {
         glCheck(glDetachShader(_program, _vertShader));
         glCheck(glDeleteShader(_vertShader));
+        attachedShaders--;
     }
 
     if (_fragShader)
     {
         glCheck(glDetachShader(_program, _fragShader));
         glCheck(glDeleteShader(_fragShader));
+        attachedShaders--;
     }
 
     _vertShader = _fragShader = 0;
@@ -1084,6 +1100,7 @@ void GLProgram::setExtensionsString(const std::string& extensions)
 void GLProgram::setupForProgramBinary()
 {
     _program = glCreateProgram();
+    livePrograms++;
     CHECK_GL_ERROR_DEBUG();
 }
 
@@ -1099,6 +1116,7 @@ void GLProgram::onProgramBinaryFailed()
     if (_program)
     {
         glCheck(GL::deleteProgram(_program));
+        livePrograms--;
     }
     
     reset();

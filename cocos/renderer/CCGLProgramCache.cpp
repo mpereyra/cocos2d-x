@@ -628,11 +628,17 @@ GLProgram* GLProgramCache::getGLProgram(const std::string &key)
 
 void GLProgramCache::addGLProgram(GLProgram* program, const std::string &key)
 {
+//    if (_programs.size() > 200) {
+//        removeUnusedShaders();
+//    }
     // release old one
     auto prev = getGLProgram(key);
     if( prev == program )
         return;
 
+//    if (prev == nullptr) {
+//        DLog("program cache size = %lu", _programs.size());
+//    }
     _programs.erase(key);
     CC_SAFE_RELEASE_NULL(prev);
 
