@@ -22,7 +22,9 @@ namespace Protego {
     bool cast() {
         if (applied)
             return false;
-        return apply();
+        apply(); // return value is "is device affected?", throw on the floor
+        applied = true;
+        return applied;
     }
 }
 
