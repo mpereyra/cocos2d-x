@@ -37,6 +37,7 @@ THE SOFTWARE.
 #include <sys/system_properties.h>
 #include <stdlib.h>
 #include <algorithm> // for std::find_if
+#include <string.h>
 
 namespace cocos2d { namespace experimental {
 

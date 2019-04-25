@@ -37,6 +37,7 @@
 #include "base/allocator/CCAllocatorBase.h"
 #include "base/allocator/CCAllocatorGlobal.h"
 #include "base/allocator/CCAllocatorStrategyFixedBlock.h"
+#include <cstring>
 
 NS_CC_BEGIN
 NS_CC_ALLOCATOR_BEGIN
