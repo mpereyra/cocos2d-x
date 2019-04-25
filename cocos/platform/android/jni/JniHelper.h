@@ -321,9 +321,11 @@ private:
     }
 
     /* TC patch start */
+#ifndef __aarch64__
     static std::string getJNISignature(jlong) {
         return "J";
     }
+#endif
     /* TC patch end*/
 
     static std::string getJNISignature(float) {
