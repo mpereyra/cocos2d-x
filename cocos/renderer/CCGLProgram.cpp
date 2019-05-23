@@ -1062,11 +1062,13 @@ inline void GLProgram::clearShader()
 {
     if (_vertShader)
     {
+        glCheck(glDetachShader(_program, _vertShader));
         glCheck(glDeleteShader(_vertShader));
     }
 
     if (_fragShader)
     {
+        glCheck(glDetachShader(_program, _fragShader));
         glCheck(glDeleteShader(_fragShader));
     }
 
