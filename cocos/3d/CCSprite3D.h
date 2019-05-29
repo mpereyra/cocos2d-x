@@ -283,8 +283,6 @@ CC_CONSTRUCTOR_ACCESS:
     
     void onAABBDirty() { _aabbDirty = true; }
     
-    void onModelVisibilityDirty() { _modelVisibilityDirty = true; }
-    
     void afterAsyncLoad(void* param);
 
     static AABB getAABBRecursivelyImp(Node *node);
@@ -308,7 +306,6 @@ protected:
     mutable AABB                 _aabb;                 // cache current aabb
     mutable Mat4                 _nodeToWorldTransform; // cache the matrix
     mutable bool                 _aabbDirty;
-    mutable bool                 _modelVisibilityDirty;
     unsigned int                 _lightMask;
     bool                         _shaderUsingLight; // is current shader using light ?
     bool                         _forceDepthWrite; // Always write to depth buffer
