@@ -1,6 +1,6 @@
 {
-    "version":"v3-deps-104-tc-1",
-    "zip_file_size":"135059757",
+    "version":"v3-deps-107",
+    "zip_file_size":"128440074",
     "repo_name":"cocos2d-x-3rd-party-libs-bin",
     "repo_parent":"https://github.com/brooklynpacket/",
     "move_dirs":{

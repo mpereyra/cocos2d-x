@@ -366,7 +366,7 @@ void Sprite::setTexture(const std::string &filename)
 void Sprite::setTexture(Texture2D *texture)
 {
     if(getGLProgramState()==nullptr){
-        setGLProgramState(GLProgramState::getOrCreateWithGLProgramName(GLProgram::SHADER_NAME_POSITION_TEXTURE_COLOR_NO_MVP));
+        setGLProgramState(GLProgramState::getOrCreateWithGLProgramName(GLProgram::SHADER_NAME_POSITION_TEXTURE_COLOR_NO_MVP, texture));
     }
 
     // If batchnode, then texture id should be the same
