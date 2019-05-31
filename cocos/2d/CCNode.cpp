@@ -1005,9 +1005,17 @@ void Node::addChildHelper(Node* child, int localZOrder, int tag, const std::stri
         child->setName(name);
     
     child->setParent(this);
+
+    // begin BPC patch
+
+    //  brooke added setCameraMask and setGlobalZOrder with commit fedaf54
+    //  cocos commit abb97b1b71fa3de04a64894aaa0a7e47bdd653d9 removes it from their code.
+    //  but if it's gone, hogwarts becomes seriously black. so uh, let's leave it in for now.
     child->setCameraMask(getCameraMask());
     child->setTraversalCameraMask(_traversalCameraMask);
 	child->setGlobalZOrder(getGlobalZOrder());
+
+    // end BPC patch
 
     child->updateOrderOfArrival();
 
