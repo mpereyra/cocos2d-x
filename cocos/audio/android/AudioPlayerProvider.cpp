@@ -32,6 +32,7 @@ THE SOFTWARE.
 #include "audio/android/PcmAudioService.h"
 #include "audio/android/CCThreadPool.h"
 #include "audio/android/ICallerThreadUtils.h"
+#include "audio/android/utils/Utils.h"
 
 #include <sys/system_properties.h>
 #include <stdlib.h>
@@ -47,12 +48,9 @@ static int getSystemAPILevel()
         return __systemApiLevel;
     }
 
-    int apiLevel = -1;
-    char sdk_ver_str[PROP_VALUE_MAX] = {0};
-    auto len = __system_property_get("ro.build.version.sdk", sdk_ver_str);
-    if (len > 0)
+    int apiLevel = getSystemProperty("ro.build.version.sdk");
+    if (apiLevel > 0)
     {
-        apiLevel = atoi(sdk_ver_str);
         ALOGD("Android API level: %d", apiLevel);
     }
     else
