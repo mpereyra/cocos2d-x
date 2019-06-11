@@ -39,38 +39,19 @@ const int OFFSET_2 = 0x7f945A;
 const int INSTR_1 = 0x20d0f8d0;
 const int INSTR_2 = 0x20d0f8c0;
 
+
+static int getSharedLibraryBaseCallback(struct dl_phdr_info *info, size_t size, void *data) {
+    auto out = reinterpret_cast<dl_phdr_info *>(data);
+    if (strcmp(info->dlpi_name, out->dlpi_name) != 0)
+        return 0;
+    *out = *info;
+    return 1;
+}
+
 bool getSharedLibraryBase(const char *libraryName, dl_phdr_info &out) {
-    // Unfortunately, android 19 does not have dl_iterate_phdr,
-    // so we have to resort to good ol' proc parsing.
-
-    // Read the /proc/PID/maps file which has the following format:
-    // address           perms offset  dev   inode   pathname
-    // 08048000-08056000 r-xp 00000000 03:0c 64593   /usr/sbin/gpm
-    std::ostrstream os;
-    os << "/proc/" << getpid() << "/maps" << std::ends;
-    std::ifstream infile(os.str());
-
-    // Parse line by line
-    std::string line;
-    while (std::getline(infile, line)) {
-        uint32_t sa, ea, ofs, inode;
-        char perms[16], dev[16], name[256];
-        int items = sscanf(line.c_str(), "%x-%x %s %x %s %d %s", &sa, &ea, perms, &ofs, dev, &inode, name); // NOLINT(cert-err34-c)
-
-        // If we parsed all 7 items, the region is executable and pathname matches we got it
-        if (items == 7 && perms[2] == 'x' && strcmp(name, libraryName) == 0) {
-            // Interpret the starting address as an ELF header
-            auto *header = reinterpret_cast<const Elf32_Ehdr *>(sa);
-
-            // Extract the program header information and return the newly concocted structure
-            out.dlpi_phdr = reinterpret_cast<const Elf32_Phdr *>(sa + header->e_phoff);
-            out.dlpi_phnum = header->e_phnum;
-            out.dlpi_name = libraryName;
-            out.dlpi_addr = sa - (out.dlpi_phdr[0].p_vaddr & ~0xFFFu);
-            return true;
-        }
-    }
-    return false;
+    out.dlpi_name = libraryName;
+    auto result = dl_iterate_phdr(getSharedLibraryBaseCallback, (void *)&out) != 0;
+    return static_cast<bool>(result);
 }
 
 inline uint32_t peek32(uint32_t addr) {
