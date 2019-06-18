@@ -40,11 +40,17 @@ const int INSTR_1 = 0x20d0f8d0;
 const int INSTR_2 = 0x20d0f8c0;
 
 
-static int getSharedLibraryBaseCallback(struct dl_phdr_info *info, size_t size, void *data) {
+static int getSharedLibraryBaseCallback(struct dl_phdr_info *hdr_info, size_t size, void *data) {
     auto out = reinterpret_cast<dl_phdr_info *>(data);
-    if (strcmp(info->dlpi_name, out->dlpi_name) != 0)
+    if(hdr_info->dlpi_name == 0 || strlen(hdr_info->dlpi_name) == 0) {
+        //For some reason on the Galaxy S8 first entry always seems to not have a valid name...
+        //Bail out here to avoid strcmp choking on it
         return 0;
-    *out = *info;
+    } 
+    if (strcmp(hdr_info->dlpi_name, out->dlpi_name) != 0) {
+        return 0;
+    }
+    *out = *hdr_info;
     return 1;
 }
 
