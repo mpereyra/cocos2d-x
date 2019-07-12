@@ -17,7 +17,6 @@ CCGLViewImpl-android.cpp \
 CCFileUtils-android.cpp \
 javaactivity-android.cpp \
 CCEnhanceAPI-android.cpp \
-protego/Protego.cpp \
 jni/Java_org_cocos2dx_lib_Cocos2dxAccelerometer.cpp \
 jni/Java_org_cocos2dx_lib_Cocos2dxBitmap.cpp \
 jni/Java_org_cocos2dx_lib_Cocos2dxHelper.cpp \

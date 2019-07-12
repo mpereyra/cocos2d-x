@@ -8,10 +8,6 @@
 #include "platform/android/jni/JniHelper.h"
 #include <jni.h>
 
-/* BPC PATCH */
-#include "protego/Protego.h"
-/* END BPC PATCH */
-
 #include "base/ccUTF8.h"
 
 using namespace cocos2d;
@@ -32,9 +28,6 @@ extern "C" {
 
     JNIEXPORT void JNICALL Java_org_cocos2dx_lib_Cocos2dxRenderer_nativeOnResume() {
         static bool firstTime = true;
-        /* BPC PATCH */
-        Protego::cast();
-        /* END BPC PATCH */
         if (Director::getInstance()->getOpenGLView()) {
             // don't invoke at first to keep the same logic as iOS
             // can refer to https://github.com/cocos2d/cocos2d-x/issues/14206
