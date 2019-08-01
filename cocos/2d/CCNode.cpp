@@ -145,6 +145,19 @@ Node * Node::create()
     return ret;
 }
 
+//BPC PATCH
+
+
+void Node::release() {
+    if (_referenceCount == 1 && _parent != nullptr) {
+        Fail("Node released with refCount of 1 but still believes it has a parent");
+    } else {
+        Ref::release();
+    }
+}
+
+//END BPC PATCH
+
 Node::~Node()
 {
     CCLOGINFO( "deallocing Node: %p - tag: %i", this, _tag );

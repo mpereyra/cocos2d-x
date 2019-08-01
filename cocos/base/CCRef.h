@@ -97,7 +97,8 @@ public:
      * @see retain, autorelease
      * @js NA
      */
-    void release();
+    //BPC PATCH (virtual)
+    virtual void release();
 
     /**
      * Releases the ownership sometime soon automatically.

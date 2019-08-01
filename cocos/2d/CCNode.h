@@ -139,7 +139,11 @@ public:
 
     /// @} end of initializers
 
-
+    // BPC PATCH 
+    
+    virtual void release();
+    
+    // END BPC PATCH
 
     /// @{
     /// @name Setters & Getters for Graphic Properties
