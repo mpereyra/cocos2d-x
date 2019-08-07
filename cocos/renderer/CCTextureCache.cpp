@@ -2,7 +2,7 @@
 Copyright (c) 2008-2010 Ricardo Quesada
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2011      Zynga Inc.
-Copyright (c) 2013-2014 Chukong Technologies Inc.
+Copyright (c) 2013-2016 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
 
@@ -95,9 +95,11 @@ TextureCache::~TextureCache()
 {
     CCLOGINFO("deallocing TextureCache: %p", this);
 
-    std::lock_guard<std::mutex> locky(_texturesMutex);
-    for( auto it=_textures.begin(); it!=_textures.end(); ++it)
-        (it->second)->release();
+	// BPC PATCH
+	std::lock_guard<std::mutex> locky(_texturesMutex); 
+	// END BPC PATCH   
+	for (auto& texture : _textures)
+        texture.second->release();
 
     CC_SAFE_DELETE(_loadingThread);
 }
@@ -381,7 +383,7 @@ void TextureCache::loadImage()
     }
 }
 
-void TextureCache::addImageAsyncCallBack(float dt)
+void TextureCache::addImageAsyncCallBack(float /*dt*/)
 {
     // the image is generated in loading thread
     std::deque<ImageInfo*> *imagesQueue = _imageInfoQueue;
@@ -418,7 +420,7 @@ void TextureCache::addImageAsyncCallBack(float dt)
         	// cache the texture. retain it, since it is added in the map
             {
                	std::lock_guard<std::mutex> locky(_texturesMutex);
-               	_textures.insert( std::make_pair(filename, texture) );
+               	_textures.emplace(filename, texture);
            	}
            	texture->retain();
 
@@ -512,7 +514,7 @@ Texture2D * TextureCache::addImage(const std::string &path)
 #endif
                 // texture already retained, no need to re-retain it
                 std::lock_guard<std::mutex> locky(_texturesMutex);
-                _textures.insert(std::make_pair(fullpath, texture));
+                _textures.emplace(fullpath, texture);
 
                 //-- ANDROID ETC1 ALPHA SUPPORTS.
                 std::string alphaFullPath = path + s_etc1AlphaFileSuffix;
@@ -571,23 +573,27 @@ Texture2D* TextureCache::addImage(Image *image, const std::string &key)
             break;
         }
 
-        // prevents overloading the autorelease pool
         texture = new (std::nothrow) Texture2D();
-        texture->initWithImage(image);
 
         if (texture)
         {
+            if (texture->initWithImage(image))
             {
-                std::lock_guard<std::mutex> locky(_texturesMutex);
-                _textures.insert( std::make_pair(key, texture) );
+				//BPC PATCH
+				std::lock_guard<std::mutex> locky(_texturesMutex);
+				//BPC PATCH
+                _textures.emplace(key, texture);
             }
-            texture->retain();
-
-            texture->autorelease();
+            else
+            {
+                CC_SAFE_RELEASE(texture);
+                texture = nullptr;
+                CCLOG("cocos2d: initWithImage failed!");
+            }
         }
         else
         {
-            CCLOG("cocos2d: Couldn't add UIImage in TextureCache");
+            CCLOG("cocos2d: Allocating memory for Texture2D failed!");
         }
 
     } while (0);
@@ -639,10 +645,11 @@ bool TextureCache::reloadTexture(const std::string& fileName)
 
 void TextureCache::removeAllTextures()
 {
-    std::lock_guard<std::mutex> locky(_texturesMutex);
-    
-    for( auto it=_textures.begin(); it!=_textures.end(); ++it ) {
-        (it->second)->release();
+    // BPC PATCH
+	std::lock_guard<std::mutex> locky(_texturesMutex);
+	// BPC PATCH
+	for (auto& texture : _textures) {
+        texture.second->release();
     }
     _textures.clear();
 }
@@ -793,13 +800,15 @@ std::string TextureCache::getCachedTextureInfo() const
     unsigned int count = 0;
     unsigned int totalBytes = 0;
 
-    std::lock_guard<std::mutex> locky(_texturesMutex);
-    for( auto it = _textures.begin(); it != _textures.end(); ++it ) {
+    // BPC PATCH
+	std::lock_guard<std::mutex> locky(_texturesMutex);	
+	// BPC PATCH
+    for (auto& texture : _textures) {
 
         memset(buftmp, 0, sizeof(buftmp));
 
 
-        Texture2D* tex = it->second;
+        Texture2D* tex = texture.second;
         unsigned int bpp = tex->getBitsPerPixelForFormat();
         // Each texture takes up width * height * bytesPerPixel bytes.
         auto bytes = tex->getPixelsWide() * tex->getPixelsHigh() * bpp / 8;
@@ -811,7 +820,7 @@ std::string TextureCache::getCachedTextureInfo() const
         snprintf(buftmp,sizeof(buftmp)-1,"%lu %s \"%s\" rc=%lu id=%lu %lu x %lu @ %ld bpp \n",
                 kb,
                  big? "!KB!" : "KB:",
-               it->first.c_str(),
+               texture.first.c_str(),
                (long)tex->getReferenceCount(),
                (long)tex->getName(),
                (long)tex->getPixelsWide(),
@@ -854,7 +863,7 @@ void TextureCache::renameTextureWithKey(const std::string& srcName, const std::s
             if (ret)
             {
                 tex->initWithImage(image);
-                _textures.insert(std::make_pair(fullpath, tex));
+                _textures.emplace(fullpath, tex);
                 _textures.erase(it);
             }
             CC_SAFE_DELETE(image);
@@ -904,6 +913,9 @@ void VolatileTextureMgr::addImageTexture(Texture2D *tt, const std::string& image
 
 void VolatileTextureMgr::addImage(Texture2D *tt, Image *image)
 {
+    if (tt == nullptr || image == nullptr)
+        return;
+    
     VolatileTexture *vt = findVolotileTexture(tt);
     image->retain();
     vt->_uiImage = image;
@@ -913,10 +925,9 @@ void VolatileTextureMgr::addImage(Texture2D *tt, Image *image)
 VolatileTexture* VolatileTextureMgr::findVolotileTexture(Texture2D *tt)
 {
     VolatileTexture *vt = nullptr;
-    auto i = _textures.begin();
-    while (i != _textures.end())
+    for (const auto& texture : _textures)
     {
-        VolatileTexture *v = *i++;
+        VolatileTexture *v = texture;
         if (v->_texture == tt)
         {
             vt = v;
@@ -985,10 +996,9 @@ void VolatileTextureMgr::setTexParameters(Texture2D *t, const Texture2D::TexPara
 
 void VolatileTextureMgr::removeTexture(Texture2D *t)
 {
-    auto i = _textures.begin();
-    while (i != _textures.end())
+    for (auto& item : _textures)
     {
-        VolatileTexture *vt = *i++;
+        VolatileTexture *vt = item;
         if (vt->_texture == t)
         {
             _textures.remove(vt);
@@ -1005,11 +1015,10 @@ void VolatileTextureMgr::reloadAllTextures()
     // BPC PATCH: These texture names no longer exist when we reload.
     // Don't try to release them.
 
-    auto iter = _textures.begin();
 
-    while (iter != _textures.end())
+    for (auto& texture : _textures)
     {
-        VolatileTexture *vt = *iter++;
+        VolatileTexture *vt = texture;
 
         switch (vt->_cashedImageType)
         {

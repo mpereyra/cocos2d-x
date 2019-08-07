@@ -1,6 +1,6 @@
 /****************************************************************************
 Copyright (c) 2010-2012 cocos2d-x.org
-Copyright (c) 2013-2014 Chukong Technologies Inc.
+Copyright (c) 2013-2016 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
 
@@ -651,7 +651,7 @@ bool Image::isPng(const unsigned char * data, ssize_t dataLen)
 }
 
 
-bool Image::isEtc(const unsigned char * data, ssize_t dataLen)
+bool Image::isEtc(const unsigned char * data, ssize_t /*dataLen*/)
 {
     return etc1_pkm_is_valid((etc1_byte*)data) ? true : false;
 }
@@ -1308,11 +1308,8 @@ namespace
         return p;
     }
     
-    static tmsize_t tiffWriteProc(thandle_t fd, void* buf, tmsize_t size)
+    static tmsize_t tiffWriteProc(thandle_t /*fd*/, void* /*buf*/, tmsize_t /*size*/)
     {
-        CC_UNUSED_PARAM(fd);
-        CC_UNUSED_PARAM(buf);
-        CC_UNUSED_PARAM(size);
         return 0;
     }
     
@@ -1354,25 +1351,18 @@ namespace
         return imageSrc->size;
     }
     
-    static int tiffCloseProc(thandle_t fd)
+    static int tiffCloseProc(thandle_t /*fd*/)
     {
-        CC_UNUSED_PARAM(fd);
         return 0;
     }
     
-    static int tiffMapProc(thandle_t fd, void** base, toff_t* size)
+    static int tiffMapProc(thandle_t /*fd*/, void** /*base*/, toff_t* /*size*/)
     {
-        CC_UNUSED_PARAM(fd);
-        CC_UNUSED_PARAM(base);
-        CC_UNUSED_PARAM(size);
         return 0;
     }
     
-    static void tiffUnmapProc(thandle_t fd, void* base, toff_t size)
+    static void tiffUnmapProc(thandle_t /*fd*/, void* /*base*/, toff_t /*size*/)
     {
-        CC_UNUSED_PARAM(fd);
-        CC_UNUSED_PARAM(base);
-        CC_UNUSED_PARAM(size);
     }
 }
 #endif // CC_USE_TIFF
@@ -1447,7 +1437,7 @@ bool Image::initWithTiffData(const unsigned char * data, ssize_t dataLen)
 
 namespace
 {
-    bool testFormatForPvr2TCSupport(PVR2TexturePixelFormat format)
+    bool testFormatForPvr2TCSupport(PVR2TexturePixelFormat /*format*/)
     {
         return true;
     }
@@ -1840,6 +1830,8 @@ bool Image::initWithETCData(const unsigned char * data, ssize_t dataLen)
         _data = static_cast<unsigned char*>(malloc(_dataLen * sizeof(unsigned char)));
         memcpy(_data, static_cast<const unsigned char*>(data) + ETC_PKM_HEADER_SIZE, _dataLen);
         return true;
+#else
+        CC_UNUSED_PARAM(dataLen);
 #endif
     }
     else
@@ -2355,7 +2347,7 @@ bool Image::initWithASTCData(const unsigned char* data, ssize_t dataLen)
     return true;
 }
 
-bool Image::initWithRawData(const unsigned char * data, ssize_t dataLen, int width, int height, int bitsPerComponent, bool preMulti)
+bool Image::initWithRawData(const unsigned char * data, ssize_t /*dataLen*/, int width, int height, int /*bitsPerComponent*/, bool preMulti)
 {
     bool ret = false;
     do 

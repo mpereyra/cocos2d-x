@@ -1,5 +1,5 @@
 /****************************************************************************
- Copyright (c) 2013-2014 Chukong Technologies Inc.
+ Copyright (c) 2013-2016 Chukong Technologies Inc.
 
  http://www.cocos2d-x.org
 
@@ -496,9 +496,9 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
         RenderState::StateBlock::_defaultState->setCullFace(false);
         RenderState::StateBlock::_defaultState->setStencilTest(false);
         
-        for (auto it = zNegQueue.cbegin(); it != zNegQueue.cend(); ++it)
+        for (const auto& zNegNext : zNegQueue)
         {
-            processRenderCommand(*it);
+            processRenderCommand(zNegNext);
         }
         flush();
         
@@ -525,10 +525,9 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
         RenderState::StateBlock::_defaultState->setCullFace(true);
         RenderState::StateBlock::_defaultState->setStencilTest(false);
 
-
-        for (auto it = opaqueQueue.cbegin(); it != opaqueQueue.cend(); ++it)
+        for (const auto& opaqueNext : opaqueQueue)
         {
-            processRenderCommand(*it);
+            processRenderCommand(opaqueNext);
         }
         flush();
         
@@ -556,9 +555,9 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
         RenderState::StateBlock::_defaultState->setStencilTest(false);
 
 
-        for (auto it = transQueue.cbegin(); it != transQueue.cend(); ++it)
+        for (const auto& transNext : transQueue)
         {
-            processRenderCommand(*it);
+            processRenderCommand(transNext);
         }
         flush();
         
@@ -598,9 +597,9 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
         RenderState::StateBlock::_defaultState->setCullFace(false);
         RenderState::StateBlock::_defaultState->setStencilTest(false);
         
-        for (auto it = zZeroQueue.cbegin(); it != zZeroQueue.cend(); ++it)
+        for (const auto& zZeroNext : zZeroQueue)
         {
-            processRenderCommand(*it);
+            processRenderCommand(zZeroNext);
         }
         flush();
         
@@ -640,9 +639,9 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
         RenderState::StateBlock::_defaultState->setCullFace(false);
         RenderState::StateBlock::_defaultState->setStencilTest(false);
         
-        for (auto it = zPosQueue.cbegin(); it != zPosQueue.cend(); ++it)
+        for (const auto& zPosNext : zPosQueue)
         {
-            processRenderCommand(*it);
+            processRenderCommand(zPosNext);
         }
         flush();
         
@@ -677,7 +676,7 @@ void Renderer::render()
 void Renderer::clean()
 {
     // Clear render group
-    for (size_t j = 0 ; j < _renderGroups.size(); j++)
+    for (size_t j = 0, size = _renderGroups.size() ; j < size; j++)
     {
         //commands are owned by nodes
         // for (const auto &cmd : _renderGroups[j])
@@ -771,9 +770,8 @@ void Renderer::drawBatchedTriangles()
     int prevMaterialID = -1;
     bool firstCommand = true;
 
-    for(auto it = std::begin(_queuedTriangleCommands); it != std::end(_queuedTriangleCommands); ++it)
+    for(const auto& cmd : _queuedTriangleCommands)
     {
-        const auto& cmd = *it;
         auto currentMaterialID = cmd->getMaterialID();
         const bool batchable = !cmd->isSkipBatching();
 

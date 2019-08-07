@@ -2,7 +2,7 @@
 Copyright (c) 2008-2010 Ricardo Quesada
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2011      Zynga Inc.
-Copyright (c) 2013-2014 Chukong Technologies Inc.
+Copyright (c) 2013-2016 Chukong Technologies Inc.
 
 http://www.cocos2d-x.org
 
@@ -259,7 +259,7 @@ public:
         std::string filename;
         std::vector<std::pair<Ref * , loadedCallback>> requestorToCallbacks;
         
-        AsyncStruct(const std::string& fn, std::function<void(Texture2D*)> f, Ref * const targ) : filename(fn){
+        AsyncStruct(const std::string& fn, const std::function<void(Texture2D*)> & f, Ref * const targ) : filename(fn){
             if(targ){
                 targ->retain();
             }

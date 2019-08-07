@@ -1,11 +1,11 @@
 
-const char* cc3D_Color_frag = STRINGIFY(
+const char* cc3D_Color_frag = R"(
 
-\n#ifdef GL_ES\n
+#ifdef GL_ES
 varying lowp vec4 DestinationColor;
-\n#else\n
+#else
 varying vec4 DestinationColor;
-\n#endif\n
+#endif
 uniform vec4 u_color;
 uniform float alpha;
                                         
@@ -14,4 +14,4 @@ void main(void)
     gl_FragColor = u_color;
     gl_FragColor.a *= alpha;
 }
-);
+)";

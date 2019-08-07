@@ -23,11 +23,11 @@
  * THE SOFTWARE.
  */
 
-const char* ccPositionTexture_frag = STRINGIFY(
+const char* ccPositionTexture_frag = R"(
 
-\n#ifdef GL_ES\n
+#ifdef GL_ES
 precision lowp float;
-\n#endif\n
+#endif
 
 varying vec2 v_texCoord;
 uniform float alpha;
@@ -36,4 +36,4 @@ void main()
     vec4 col = texture2D(CC_Texture0, v_texCoord);
     gl_FragColor = vec4(col.rgb, col.a * alpha);
 }
-);
+)";

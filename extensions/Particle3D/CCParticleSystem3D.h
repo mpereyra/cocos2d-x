@@ -77,7 +77,7 @@ public:
         _released.push_back(p);
         _locked.pop_back();
         return p;
-    };
+    }
 
     void lockLatestData(){
         _locked.push_back(*_releasedIter);
@@ -87,7 +87,7 @@ public:
         {
             --_releasedIter;
         }
-    };
+    }
 
     void lockData(T *data){
         PoolIterator tempIter = _releasedIter;
@@ -107,27 +107,27 @@ public:
         //_locked.insert(_locked.end(), _released.begin(), _released.end());
         _released.clear();
         _releasedIter = _released.begin();
-    };
+    }
 
     T* getFirst(){
         _releasedIter = _released.begin();
         if (_releasedIter == _released.end()) return nullptr;
         return *_releasedIter;
-    };
+    }
 
     T* getNext(){
         if (_releasedIter == _released.end()) return nullptr;
         ++_releasedIter;
         if (_releasedIter == _released.end()) return nullptr;
         return *_releasedIter;
-    };
+    }
 
     const PoolList& getActiveDataList() const { return _released; };
     const PoolList& getUnActiveDataList() const { return _locked; };
 
     void addData(T* data){
         _locked.push_back(data); 
-    };
+    }
 
     bool empty() const { return _released.empty(); };
 
@@ -137,7 +137,7 @@ public:
             delete iter;
         }
         _locked.clear();
-    };
+    }
 
 private:
 
