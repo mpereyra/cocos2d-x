@@ -191,6 +191,7 @@ bool BillBoard::calculateBillbaordTransform()
         
         Mat4 rotationMatrix;
         rotationMatrix.setIdentity();
+        rotationMatrix.rotate(rotationQuaternion);
 
         Vec3 upAxis(rotationMatrix.m[4],rotationMatrix.m[5],rotationMatrix.m[6]);
         Vec3 x, y;
@@ -212,6 +213,9 @@ bool BillBoard::calculateBillbaordTransform()
         billboardTransform.m[12] = localToWorld.m[12]; billboardTransform.m[13] = localToWorld.m[13]; billboardTransform.m[14] = localToWorld.m[14];
         
         billboardTransform.translate(-anchorPoint);
+        
+        billboardTransform.scale(_billboardScale);
+        
         _mvTransform = _modelViewTransform = billboardTransform;
         
         _camWorldMat = camWorldMat;
@@ -220,6 +224,10 @@ bool BillBoard::calculateBillbaordTransform()
     }
     
     return false;
+}
+
+void BillBoard::setBillboardScale(float scale) {
+    _billboardScale = scale;
 }
 
 void BillBoard::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)

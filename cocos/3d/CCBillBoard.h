@@ -103,6 +103,8 @@ public:
      */
     virtual void draw(Renderer *renderer, const Mat4 &transform, uint32_t flags) override;
 
+    void setBillboardScale(float scale);
+    
 
 CC_CONSTRUCTOR_ACCESS:
     BillBoard();
@@ -120,6 +122,8 @@ protected:
 
     Mode _mode;
     bool _modeDirty;
+    
+    float _billboardScale;
 
 private:
     CC_DISALLOW_COPY_AND_ASSIGN(BillBoard);
