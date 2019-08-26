@@ -305,7 +305,9 @@ protected:
     
     typedef struct _ImageInfo
     {
-        AsyncStruct *asyncStruct;
+        //BPC PATCH - shared_ptr
+        std::shared_ptr<AsyncStruct> asyncStruct;
+        //END BPC PATCH
         Image        *image = nullptr;
         Image        *imageAlpha = nullptr;
         // BPC PATCH
@@ -324,8 +326,10 @@ protected:
     
     std::thread* _loadingThread;
 
-    std::deque<AsyncStruct*>* _asyncStructQueue = nullptr;
-    std::deque<ImageInfo*>* _imageInfoQueue = nullptr;
+    //BPC PATCH - shared_ptr
+    std::deque<std::shared_ptr<AsyncStruct>>* _asyncStructQueue = nullptr;
+    std::deque<std::shared_ptr<ImageInfo>>* _imageInfoQueue = nullptr;
+    //END BPC PATCH
 
     std::mutex _asyncStructQueueMutex;
     std::mutex _imageInfoMutex;

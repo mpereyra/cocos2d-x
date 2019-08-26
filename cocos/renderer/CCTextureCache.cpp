@@ -177,10 +177,12 @@ void TextureCache::addImageAsync(const std::string &path, const std::function<vo
 
     // lazy init
     if (_asyncStructQueue == nullptr)
-    {             
-        _asyncStructQueue = new deque<AsyncStruct*>();
-        _imageInfoQueue   = new deque<ImageInfo*>();        
-
+    {
+        //BPC PATCH - shared_ptr
+        _asyncStructQueue = new deque<std::shared_ptr<AsyncStruct>>();
+        _imageInfoQueue   = new deque<std::shared_ptr<ImageInfo>>();
+        //END BPC PATCH
+        
         // create a new thread to load images
         _loadingThread = new (std::nothrow) std::thread(&TextureCache::loadImage, this);
         _needQuit = false;
@@ -222,7 +224,9 @@ void TextureCache::addImageAsync(const std::string &path, const std::function<vo
         }
         // generate async struct
         if(found == false){
-            AsyncStruct *data = new (std::nothrow) AsyncStruct(fullpath, callback, target);
+            //BPC PATCH - shared_ptr
+            shared_ptr<AsyncStruct> data {new (std::nothrow) AsyncStruct(fullpath, callback, target)};
+            //END BPC PATCH
             // add async struct into queue
             _asyncStructQueue->push_back(data);
         }
@@ -238,7 +242,9 @@ void TextureCache::unbindImageAsync(const std::string& filename)
     if (_imageInfoQueue && !_imageInfoQueue->empty())
     {
         std::string fullpath = FileUtils::getInstance()->fullPathForFilename(filename);
-        auto found = std::find_if(_imageInfoQueue->begin(), _imageInfoQueue->end(), [&fullpath](ImageInfo* ptr)->bool{ return ptr->asyncStruct->filename == fullpath; });
+        //BPC PATCH - shared_ptr
+        auto found = std::find_if(_imageInfoQueue->begin(), _imageInfoQueue->end(), [&fullpath](std::shared_ptr<ImageInfo> ptr)->bool{ return ptr->asyncStruct->filename == fullpath; });
+        //END BPC PATCH
         if (found != _imageInfoQueue->end())
         {
             for(auto pair : (*found)->asyncStruct->requestorToCallbacks){
@@ -255,20 +261,24 @@ void TextureCache::unbindAllImageAsync()
     _imageInfoMutex.lock();
     if (_imageInfoQueue && !_imageInfoQueue->empty())
     {
+        //BPC PATCH - shared_ptr
         std::for_each(_imageInfoQueue->begin(), _imageInfoQueue->end(),
-              [](ImageInfo* ptr) {
+              [](std::shared_ptr<ImageInfo> ptr) {
                     for(auto pair : ptr->asyncStruct->requestorToCallbacks){
                         pair.first->release();
                     }
                   ptr->asyncStruct->requestorToCallbacks.clear();
               });
+        //END BPC PATCH
     }
     _imageInfoMutex.unlock();
 }
 
 void TextureCache::loadImage()
 {
-    AsyncStruct *asyncStruct = nullptr;
+    //BPC PATCH - shared_ptr
+    std::shared_ptr<AsyncStruct> asyncStruct = nullptr;
+    //END BPC PATCH
     while (true)
     {
         // wait for queue pauses
@@ -278,7 +288,9 @@ void TextureCache::loadImage()
         }
         pthread_mutex_unlock(&s_pauseMutex);
         
-        std::deque<AsyncStruct*> *pQueue = _asyncStructQueue;
+        //BPC PATCH - shared_ptr
+        std::deque<std::shared_ptr<AsyncStruct>> *pQueue = _asyncStructQueue;
+        //END BPC PATCH
         _asyncStructQueueMutex.lock();
         if (pQueue->empty())
         {
@@ -308,7 +320,9 @@ void TextureCache::loadImage()
         if( foundtex == nullptr )
         {
            _imageInfoMutex.lock();
-           ImageInfo *imageInfo;
+           //BPC PATCH - shared_ptr
+           std::shared_ptr<ImageInfo> imageInfo;
+           //END BPC PATCH
            size_t pos = 0;
            size_t infoSize = _imageInfoQueue->size();
            for (; pos < infoSize; pos++)
@@ -352,13 +366,14 @@ void TextureCache::loadImage()
         }    
 
         if (passedToOtherTask){
-            delete asyncStruct;
+            //BPC PATCH - shared_ptr
+            //END BPC PATCH
             continue;
         }
         
         // BPC PATCH
         // generate image info
-        ImageInfo *imageInfo = new (std::nothrow) ImageInfo();
+        std::shared_ptr<ImageInfo> imageInfo {new (std::nothrow) ImageInfo()};
         imageInfo->asyncStruct = asyncStruct;
         imageInfo->image = image;
         imageInfo->imageAlpha = imageAlpha;
@@ -384,8 +399,10 @@ void TextureCache::loadImage()
 void TextureCache::addImageAsyncCallBack(float dt)
 {
     // the image is generated in loading thread
-    std::deque<ImageInfo*> *imagesQueue = _imageInfoQueue;
-
+    //BPC PATCH - shared_ptr
+    std::deque<std::shared_ptr<ImageInfo>> *imagesQueue = _imageInfoQueue;
+    //END BPC PATCH
+    
     _imageInfoMutex.lock();
     if (imagesQueue->empty())
     {
@@ -393,11 +410,14 @@ void TextureCache::addImageAsyncCallBack(float dt)
     }
     else
     {
-        ImageInfo *imageInfo = imagesQueue->front();
+        //BPC PATCH - shared_ptr
+        std::shared_ptr<ImageInfo> imageInfo = imagesQueue->front();
         imagesQueue->pop_front();
         _imageInfoMutex.unlock();
 
-        AsyncStruct *asyncStruct = imageInfo->asyncStruct;
+        std::shared_ptr<AsyncStruct> asyncStruct = imageInfo->asyncStruct;
+        //END BPC PATCH
+        
         Image* image = imageInfo->image;
 
         const std::string& filename = asyncStruct->filename;
@@ -451,8 +471,8 @@ void TextureCache::addImageAsyncCallBack(float dt)
             image->release();
         }
         
-        delete asyncStruct;
-        delete imageInfo;
+        //BPC PATCH - shared_ptr
+        //END BPC PATCH
 
         --_asyncRefCount;
         if (0 == _asyncRefCount)
@@ -711,7 +731,8 @@ void TextureCache::removeAsyncImage(Ref * const target, string const & filename)
         if((*structIt)->filename == filename) {
             (*structIt)->removeRequestor(target);
             if((*structIt)->requestorToCallbacks.empty()){
-                delete (*structIt);
+                //BPC PATCH - shared_ptr
+                //END BPC PATCH
                 structIt = _asyncStructQueue->erase(structIt);
             }
             break;
@@ -727,8 +748,8 @@ void TextureCache::removeAsyncImage(Ref * const target, string const & filename)
     while (infoIt != _imageInfoQueue->end()) {
         if((*infoIt)->asyncStruct->filename == filename) {
                 if( (*infoIt)->asyncStruct->requestorToCallbacks.empty()){
-                delete (*infoIt)->asyncStruct;
-                delete (*infoIt);
+                 //BPC PATCH - shared_ptr
+                 //END BPC PATCH
                 infoIt = _imageInfoQueue->erase(infoIt);
             }
             break;
