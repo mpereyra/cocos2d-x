@@ -150,7 +150,7 @@ Node * Node::create()
 
 void Node::release() {
     if (_referenceCount == 1 && _parent != nullptr) {
-        Fail("Node released with refCount of 1 but still believes it has a parent");
+        DFail("Node released with refCount of 1 but still believes it has a parent");
     } else {
         Ref::release();
     }
