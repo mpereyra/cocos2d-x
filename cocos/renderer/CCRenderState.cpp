@@ -52,7 +52,6 @@ RenderState::~RenderState()
 {
     CC_SAFE_RELEASE(_texture);
     CC_SAFE_RELEASE(_state);
-    CC_SAFE_RELEASE(_texture);
 }
 
 void RenderState::initialize()

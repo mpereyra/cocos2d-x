@@ -302,7 +302,7 @@ void PURibbonTrailRender::unPrepare()
     destroyAll();
 }
 
-void PURibbonTrailRender::updateRender( PUParticle3D* /*particle*/, float deltaTime, bool /*firstParticle*/ )
+void PURibbonTrailRender::updateRender( PUParticle3D* /*particle*/, float deltaTime, bool firstParticle )
 {
     if (firstParticle && _trail)
         _trail->update(deltaTime);

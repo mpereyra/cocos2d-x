@@ -172,10 +172,10 @@ const PUTriangle::PositionAndNormal PUTriangle::getRandomVertexAndNormal (void)
 //-----------------------------------------------------------------------
 //-----------------------------------------------------------------------
 //-----------------------------------------------------------------------
-MeshInfo::MeshInfo (const std::string& /*meshName*/,
+MeshInfo::MeshInfo (const std::string& meshName,
     MeshSurfaceDistribution distribution,
-    const Quaternion& /*orientation*/,
-    const Vec3& /*scale*/) :
+    const Quaternion& orientation,
+    const Vec3& scale) :
     mDistribution(distribution)
 {
     std::string meshFile = ParticleAssetCreator::getInstance()->getSprite3DFilename(meshName);

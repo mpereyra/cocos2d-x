@@ -383,7 +383,7 @@ void TextureCache::loadImage()
     }
 }
 
-void TextureCache::addImageAsyncCallBack(float /*dt*/)
+void TextureCache::addImageAsyncCallBack(float dt)
 {
     // the image is generated in loading thread
     std::deque<ImageInfo*> *imagesQueue = _imageInfoQueue;
