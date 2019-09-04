@@ -1,5 +1,5 @@
 /****************************************************************************
- Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2013-2017 Chukong Technologies Inc.
 
  http://www.cocos2d-x.org
 
@@ -310,10 +310,10 @@ void Renderer::setupVBO()
 {
     glGenBuffers(2, &_buffersVBO[0]);
     // Issue #15652
-    // Should not initialzie VBO with a large size (VBO_SIZE=65536),
+    // Should not initialize VBO with a large size (VBO_SIZE=65536),
     // it may cause low FPS on some Android devices like LG G4 & Nexus 5X.
     // It's probably because some implementations of OpenGLES driver will
-    // copy the whole memory of VBO which initialzied at the first time
+    // copy the whole memory of VBO which initialized at the first time
     // once glBufferData/glBufferSubData is invoked.
     // For more discussion, please refer to https://github.com/cocos2d/cocos2d-x/issues/15652
 //    mapBuffers();
@@ -874,7 +874,7 @@ void Renderer::drawBatchedTriangles()
     }
 
     /************** 4: Cleanup *************/
-    if (Configuration::getInstance()->supportsShareableVAO())
+    if (Configuration::getInstance()->supportsShareableVAO() && conf->supportsMapBuffer())
     {
         //Unbind VAO
         GL::bindVAO(0);
@@ -928,7 +928,7 @@ bool Renderer::checkVisibility(const Mat4 &transform, const Size &size)
         return true;
 
     auto director = Director::getInstance();
-    Rect visiableRect(director->getVisibleOrigin(), director->getVisibleSize());
+    Rect visibleRect(director->getVisibleOrigin(), director->getVisibleSize());
     
     // transform center point to screen space
     float hSizeX = size.width/2;
@@ -942,11 +942,11 @@ bool Renderer::checkVisibility(const Mat4 &transform, const Size &size)
     float wshh = std::max(fabsf(hSizeX * transform.m[1] + hSizeY * transform.m[5]), fabsf(hSizeX * transform.m[1] - hSizeY * transform.m[5]));
     
     // enlarge visible rect half size in screen coord
-    visiableRect.origin.x -= wshw;
-    visiableRect.origin.y -= wshh;
-    visiableRect.size.width += wshw * 2;
-    visiableRect.size.height += wshh * 2;
-    bool ret = visiableRect.containsPoint(v2p);
+    visibleRect.origin.x -= wshw;
+    visibleRect.origin.y -= wshh;
+    visibleRect.size.width += wshw * 2;
+    visibleRect.size.height += wshh * 2;
+    bool ret = visibleRect.containsPoint(v2p);
     return ret;
 }
 

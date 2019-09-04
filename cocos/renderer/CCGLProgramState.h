@@ -1,5 +1,5 @@
 /****************************************************************************
-Copyright 2014 Chukong Technologies Inc.
+Copyright (c) 2014-2017 Chukong Technologies Inc.
  
 http://www.cocos2d-x.org
  
@@ -64,15 +64,17 @@ public:
      Constructor. The Uniform and Glprogram will be nullptr.
      */
     UniformValue();
-    UniformValue(UniformValue const&) = default;
+    //UniformValue(UniformValue const&) = default;
     UniformValue(UniformValue &&) = default;
-    UniformValue& operator=(UniformValue const&) = default;
+    //UniformValue& operator=(UniformValue const&) = default;
     /**
      Constructor with uniform and glprogram.
      @param uniform Uniform to apply the value.
      @param glprogram Specify the owner GLProgram of this uniform and uniform value.
      */
     UniformValue(Uniform *uniform, GLProgram* glprogram);
+
+    UniformValue(const UniformValue& o);
 
     /**Destructor.*/
     ~UniformValue();
@@ -105,11 +107,22 @@ public:
      Set texture to uniform value.
      @param textureId The texture handle.
      @param textureUnit The binding texture unit to be used in shader.
+     @deprecated please use setTexture(Texture2D* texture, GLuint textureUnit) instead,
+                 Passing a `textureId` may trigger texture lost issue (https://github.com/cocos2d/cocos2d-x/issues/16871).
     */
-    void setTexture(GLuint textureId, GLuint textureUnit);
+    CC_DEPRECATED_ATTRIBUTE void setTexture(GLuint textureId, GLuint textureUnit);
+
+    /**
+     Set texture to uniform value.
+     @param texture The texture.
+     @param textureUnit The binding texture unit to be used in shader.
+     */
+    void setTexture(Texture2D* texture, GLuint textureUnit);
     
     /**Apply the uniform value to openGL pipeline.*/
     void apply();
+
+    UniformValue& operator=(const UniformValue& o);
 
 protected:
 
@@ -138,8 +151,9 @@ protected:
         float v4Value[4];
         float matrixValue[16];
         struct {
-            GLuint textureId;
+            GLuint textureId; // textureId will be deprecated since we use 'texture->getName()' to get textureId.
             GLuint textureUnit;
+            Texture2D* texture;
         } tex;
         struct {
             const float* pointer;
@@ -326,7 +340,11 @@ public:
     void setUniformMat4v(const std::string& uniformName, ssize_t size, const Mat4* pointer);
     void setUniformCallback(const std::string& uniformName, const std::function<void(GLProgram*, Uniform*)> &callback);
     void setUniformTexture(const std::string& uniformName, Texture2D *texture);
-    void setUniformTexture(const std::string& uniformName, GLuint textureId);
+    /**
+     * @deprecated, please use setUniformTexture(const std::string& uniformName, Texture2D *texture) instead,
+     * Passing a `textureId` may trigger texture lost issue (https://github.com/cocos2d/cocos2d-x/issues/16871).
+     */
+    CC_DEPRECATED_ATTRIBUTE void setUniformTexture(const std::string& uniformName, GLuint textureId);
     /**@}*/
     
     /** @{
@@ -345,7 +363,11 @@ public:
     void setUniformMat4v(GLint uniformLocation, ssize_t size, const Mat4* pointer);
     void setUniformCallback(GLint uniformLocation, const std::function<void(GLProgram*, Uniform*)> &callback);
     void setUniformTexture(GLint uniformLocation, Texture2D *texture);
-    void setUniformTexture(GLint uniformLocation, GLuint textureId);
+    /**
+     * @deprecated, please use setUniformTexture(GLint uniformLocation, Texture2D *texture) instead,
+     * Passing a `textureId` may trigger texture lost issue (https://github.com/cocos2d/cocos2d-x/issues/16871).
+     */
+    CC_DEPRECATED_ATTRIBUTE void setUniformTexture(GLint uniformLocation, GLuint textureId);
     /**@}*/
 
     /** 

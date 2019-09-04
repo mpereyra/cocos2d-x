@@ -710,6 +710,53 @@ int lua_cocos2dx_Console_delSubCommand(lua_State* tolua_S)
 
     return 0;
 }
+int lua_cocos2dx_Console_isIpv6Server(lua_State* tolua_S)
+{
+    int argc = 0;
+    cocos2d::Console* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"cc.Console",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (cocos2d::Console*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_cocos2dx_Console_isIpv6Server'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 0) 
+    {
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_Console_isIpv6Server'", nullptr);
+            return 0;
+        }
+        bool ret = cobj->isIpv6Server();
+        tolua_pushboolean(tolua_S,(bool)ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.Console:isIpv6Server",argc, 0);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_cocos2dx_Console_isIpv6Server'.",&tolua_err);
+#endif
+
+    return 0;
+}
 static int lua_cocos2dx_Console_finalize(lua_State* tolua_S)
 {
     printf("luabindings: finalizing LUA object (Console)");
@@ -732,6 +779,7 @@ int lua_register_cocos2dx_Console(lua_State* tolua_S)
         tolua_function(tolua_S,"listenOnFileDescriptor",lua_cocos2dx_Console_listenOnFileDescriptor);
         tolua_function(tolua_S,"setBindAddress",lua_cocos2dx_Console_setBindAddress);
         tolua_function(tolua_S,"delSubCommand",lua_cocos2dx_Console_delSubCommand);
+        tolua_function(tolua_S,"isIpv6Server",lua_cocos2dx_Console_isIpv6Server);
     tolua_endmodule(tolua_S);
     std::string typeName = typeid(cocos2d::Console).name();
     g_luaType[typeName] = "cc.Console";
@@ -1586,7 +1634,7 @@ int lua_cocos2dx_Texture2D_getPath(lua_State* tolua_S)
             return 0;
         }
         std::string ret = cobj->getPath();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.Texture2D:getPath",argc, 0);
@@ -1837,6 +1885,53 @@ int lua_cocos2dx_Texture2D_generateMipmap(lua_State* tolua_S)
 
     return 0;
 }
+int lua_cocos2dx_Texture2D_getAlphaTexture(lua_State* tolua_S)
+{
+    int argc = 0;
+    cocos2d::Texture2D* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"cc.Texture2D",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (cocos2d::Texture2D*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_cocos2dx_Texture2D_getAlphaTexture'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 0) 
+    {
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_Texture2D_getAlphaTexture'", nullptr);
+            return 0;
+        }
+        cocos2d::Texture2D* ret = cobj->getAlphaTexture();
+        object_to_luaval<cocos2d::Texture2D>(tolua_S, "cc.Texture2D",(cocos2d::Texture2D*)ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.Texture2D:getAlphaTexture",argc, 0);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_cocos2dx_Texture2D_getAlphaTexture'.",&tolua_err);
+#endif
+
+    return 0;
+}
 int lua_cocos2dx_Texture2D_getDescription(lua_State* tolua_S)
 {
     int argc = 0;
@@ -1871,7 +1966,7 @@ int lua_cocos2dx_Texture2D_getDescription(lua_State* tolua_S)
             return 0;
         }
         std::string ret = cobj->getDescription();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.Texture2D:getDescription",argc, 0);
@@ -2408,6 +2503,7 @@ int lua_register_cocos2dx_Texture2D(lua_State* tolua_S)
         tolua_function(tolua_S,"setAliasTexParameters",lua_cocos2dx_Texture2D_setAliasTexParameters);
         tolua_function(tolua_S,"setAntiAliasTexParameters",lua_cocos2dx_Texture2D_setAntiAliasTexParameters);
         tolua_function(tolua_S,"generateMipmap",lua_cocos2dx_Texture2D_generateMipmap);
+        tolua_function(tolua_S,"getAlphaTexture",lua_cocos2dx_Texture2D_getAlphaTexture);
         tolua_function(tolua_S,"getDescription",lua_cocos2dx_Texture2D_getDescription);
         tolua_function(tolua_S,"getPixelFormat",lua_cocos2dx_Texture2D_getPixelFormat);
         tolua_function(tolua_S,"setGLProgram",lua_cocos2dx_Texture2D_setGLProgram);
@@ -3936,7 +4032,7 @@ int lua_cocos2dx_Component_getName(lua_State* tolua_S)
             return 0;
         }
         const std::string& ret = cobj->getName();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.Component:getName",argc, 0);
@@ -4298,7 +4394,7 @@ int lua_cocos2dx_Node_getDescription(lua_State* tolua_S)
             return 0;
         }
         std::string ret = cobj->getDescription();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.Node:getDescription",argc, 0);
@@ -6361,7 +6457,7 @@ int lua_cocos2dx_Node_getName(lua_State* tolua_S)
             return 0;
         }
         const std::string& ret = cobj->getName();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.Node:getName",argc, 0);
@@ -12173,7 +12269,7 @@ int lua_cocos2dx_GLView_getViewName(lua_State* tolua_S)
             return 0;
         }
         const std::string& ret = cobj->getViewName();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.GLView:getViewName",argc, 0);
@@ -13600,9 +13696,9 @@ int lua_cocos2dx_Director_pushProjectionMatrix(lua_State* tolua_S)
     argc = lua_gettop(tolua_S)-1;
     if (argc == 1) 
     {
-        unsigned int arg0;
+        unsigned long arg0;
 
-        ok &= luaval_to_uint32(tolua_S, 2,&arg0, "cc.Director:pushProjectionMatrix");
+        ok &= luaval_to_ulong(tolua_S, 2, &arg0, "cc.Director:pushProjectionMatrix");
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_Director_pushProjectionMatrix'", nullptr);
@@ -13650,9 +13746,9 @@ int lua_cocos2dx_Director_popProjectionMatrix(lua_State* tolua_S)
     argc = lua_gettop(tolua_S)-1;
     if (argc == 1) 
     {
-        unsigned int arg0;
+        unsigned long arg0;
 
-        ok &= luaval_to_uint32(tolua_S, 2,&arg0, "cc.Director:popProjectionMatrix");
+        ok &= luaval_to_ulong(tolua_S, 2, &arg0, "cc.Director:popProjectionMatrix");
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_Director_popProjectionMatrix'", nullptr);
@@ -13750,9 +13846,9 @@ int lua_cocos2dx_Director_loadProjectionIdentityMatrix(lua_State* tolua_S)
     argc = lua_gettop(tolua_S)-1;
     if (argc == 1) 
     {
-        unsigned int arg0;
+        unsigned long arg0;
 
-        ok &= luaval_to_uint32(tolua_S, 2,&arg0, "cc.Director:loadProjectionIdentityMatrix");
+        ok &= luaval_to_ulong(tolua_S, 2, &arg0, "cc.Director:loadProjectionIdentityMatrix");
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_Director_loadProjectionIdentityMatrix'", nullptr);
@@ -14956,11 +15052,11 @@ int lua_cocos2dx_Director_multiplyProjectionMatrix(lua_State* tolua_S)
     if (argc == 2) 
     {
         cocos2d::Mat4 arg0;
-        unsigned int arg1;
+        unsigned long arg1;
 
         ok &= luaval_to_mat4(tolua_S, 2, &arg0, "cc.Director:multiplyProjectionMatrix");
 
-        ok &= luaval_to_uint32(tolua_S, 3,&arg1, "cc.Director:multiplyProjectionMatrix");
+        ok &= luaval_to_ulong(tolua_S, 3, &arg1, "cc.Director:multiplyProjectionMatrix");
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_Director_multiplyProjectionMatrix'", nullptr);
@@ -16458,11 +16554,11 @@ int lua_cocos2dx_Director_loadProjectionMatrix(lua_State* tolua_S)
     if (argc == 2) 
     {
         cocos2d::Mat4 arg0;
-        unsigned int arg1;
+        unsigned long arg1;
 
         ok &= luaval_to_mat4(tolua_S, 2, &arg0, "cc.Director:loadProjectionMatrix");
 
-        ok &= luaval_to_uint32(tolua_S, 3,&arg1, "cc.Director:loadProjectionMatrix");
+        ok &= luaval_to_ulong(tolua_S, 3, &arg1, "cc.Director:loadProjectionMatrix");
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_Director_loadProjectionMatrix'", nullptr);
@@ -16510,9 +16606,9 @@ int lua_cocos2dx_Director_initProjectionMatrixStack(lua_State* tolua_S)
     argc = lua_gettop(tolua_S)-1;
     if (argc == 1) 
     {
-        unsigned int arg0;
+        unsigned long arg0;
 
-        ok &= luaval_to_uint32(tolua_S, 2,&arg0, "cc.Director:initProjectionMatrixStack");
+        ok &= luaval_to_ulong(tolua_S, 2, &arg0, "cc.Director:initProjectionMatrixStack");
         if(!ok)
         {
             tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_Director_initProjectionMatrixStack'", nullptr);
@@ -17295,6 +17391,53 @@ int lua_cocos2dx_Timer_update(lua_State* tolua_S)
 
     return 0;
 }
+int lua_cocos2dx_Timer_isAborted(lua_State* tolua_S)
+{
+    int argc = 0;
+    cocos2d::Timer* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"cc.Timer",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (cocos2d::Timer*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_cocos2dx_Timer_isAborted'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 0) 
+    {
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_Timer_isAborted'", nullptr);
+            return 0;
+        }
+        bool ret = cobj->isAborted();
+        tolua_pushboolean(tolua_S,(bool)ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.Timer:isAborted",argc, 0);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_cocos2dx_Timer_isAborted'.",&tolua_err);
+#endif
+
+    return 0;
+}
 int lua_cocos2dx_Timer_trigger(lua_State* tolua_S)
 {
     int argc = 0;
@@ -17392,6 +17535,53 @@ int lua_cocos2dx_Timer_cancel(lua_State* tolua_S)
 
     return 0;
 }
+int lua_cocos2dx_Timer_setAborted(lua_State* tolua_S)
+{
+    int argc = 0;
+    cocos2d::Timer* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"cc.Timer",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (cocos2d::Timer*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_cocos2dx_Timer_setAborted'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 0) 
+    {
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_Timer_setAborted'", nullptr);
+            return 0;
+        }
+        cobj->setAborted();
+        lua_settop(tolua_S, 1);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.Timer:setAborted",argc, 0);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_cocos2dx_Timer_setAborted'.",&tolua_err);
+#endif
+
+    return 0;
+}
 static int lua_cocos2dx_Timer_finalize(lua_State* tolua_S)
 {
     printf("luabindings: finalizing LUA object (Timer)");
@@ -17408,8 +17598,10 @@ int lua_register_cocos2dx_Timer(lua_State* tolua_S)
         tolua_function(tolua_S,"setupTimerWithInterval",lua_cocos2dx_Timer_setupTimerWithInterval);
         tolua_function(tolua_S,"setInterval",lua_cocos2dx_Timer_setInterval);
         tolua_function(tolua_S,"update",lua_cocos2dx_Timer_update);
+        tolua_function(tolua_S,"isAborted",lua_cocos2dx_Timer_isAborted);
         tolua_function(tolua_S,"trigger",lua_cocos2dx_Timer_trigger);
         tolua_function(tolua_S,"cancel",lua_cocos2dx_Timer_cancel);
+        tolua_function(tolua_S,"setAborted",lua_cocos2dx_Timer_setAborted);
     tolua_endmodule(tolua_S);
     std::string typeName = typeid(cocos2d::Timer).name();
     g_luaType[typeName] = "cc.Timer";
@@ -17463,6 +17655,53 @@ int lua_cocos2dx_Scheduler_setTimeScale(lua_State* tolua_S)
 #if COCOS2D_DEBUG >= 1
     tolua_lerror:
     tolua_error(tolua_S,"#ferror in function 'lua_cocos2dx_Scheduler_setTimeScale'.",&tolua_err);
+#endif
+
+    return 0;
+}
+int lua_cocos2dx_Scheduler_removeAllFunctionsToBePerformedInCocosThread(lua_State* tolua_S)
+{
+    int argc = 0;
+    cocos2d::Scheduler* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"cc.Scheduler",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (cocos2d::Scheduler*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_cocos2dx_Scheduler_removeAllFunctionsToBePerformedInCocosThread'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 0) 
+    {
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_Scheduler_removeAllFunctionsToBePerformedInCocosThread'", nullptr);
+            return 0;
+        }
+        cobj->removeAllFunctionsToBePerformedInCocosThread();
+        lua_settop(tolua_S, 1);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.Scheduler:removeAllFunctionsToBePerformedInCocosThread",argc, 0);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_cocos2dx_Scheduler_removeAllFunctionsToBePerformedInCocosThread'.",&tolua_err);
 #endif
 
     return 0;
@@ -17565,6 +17804,7 @@ int lua_register_cocos2dx_Scheduler(lua_State* tolua_S)
     tolua_beginmodule(tolua_S,"Scheduler");
         tolua_function(tolua_S,"new",lua_cocos2dx_Scheduler_constructor);
         tolua_function(tolua_S,"setTimeScale",lua_cocos2dx_Scheduler_setTimeScale);
+        tolua_function(tolua_S,"removeAllFunctionsToBePerformedInCocosThread",lua_cocos2dx_Scheduler_removeAllFunctionsToBePerformedInCocosThread);
         tolua_function(tolua_S,"getTimeScale",lua_cocos2dx_Scheduler_getTimeScale);
     tolua_endmodule(tolua_S);
     std::string typeName = typeid(cocos2d::Scheduler).name();
@@ -19871,7 +20111,7 @@ int lua_cocos2dx_Image_getFilePath(lua_State* tolua_S)
             return 0;
         }
         std::string ret = cobj->getFilePath();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.Image:getFilePath",argc, 0);
@@ -21213,38 +21453,6 @@ int lua_cocos2dx_GLProgramState_setUniformTexture(lua_State* tolua_S)
     argc = lua_gettop(tolua_S)-1;
     do{
         if (argc == 2) {
-            std::string arg0;
-            ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.GLProgramState:setUniformTexture");
-
-            if (!ok) { break; }
-            unsigned int arg1;
-            ok &= luaval_to_uint32(tolua_S, 3,&arg1, "cc.GLProgramState:setUniformTexture");
-
-            if (!ok) { break; }
-            cobj->setUniformTexture(arg0, arg1);
-            lua_settop(tolua_S, 1);
-            return 1;
-        }
-    }while(0);
-    ok  = true;
-    do{
-        if (argc == 2) {
-            std::string arg0;
-            ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.GLProgramState:setUniformTexture");
-
-            if (!ok) { break; }
-            cocos2d::Texture2D* arg1;
-            ok &= luaval_to_object<cocos2d::Texture2D>(tolua_S, 3, "cc.Texture2D",&arg1, "cc.GLProgramState:setUniformTexture");
-
-            if (!ok) { break; }
-            cobj->setUniformTexture(arg0, arg1);
-            lua_settop(tolua_S, 1);
-            return 1;
-        }
-    }while(0);
-    ok  = true;
-    do{
-        if (argc == 2) {
             int arg0;
             ok &= luaval_to_int32(tolua_S, 2,(int *)&arg0, "cc.GLProgramState:setUniformTexture");
 
@@ -21261,12 +21469,12 @@ int lua_cocos2dx_GLProgramState_setUniformTexture(lua_State* tolua_S)
     ok  = true;
     do{
         if (argc == 2) {
-            int arg0;
-            ok &= luaval_to_int32(tolua_S, 2,(int *)&arg0, "cc.GLProgramState:setUniformTexture");
+            std::string arg0;
+            ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.GLProgramState:setUniformTexture");
 
             if (!ok) { break; }
-            unsigned int arg1;
-            ok &= luaval_to_uint32(tolua_S, 3,&arg1, "cc.GLProgramState:setUniformTexture");
+            cocos2d::Texture2D* arg1;
+            ok &= luaval_to_object<cocos2d::Texture2D>(tolua_S, 3, "cc.Texture2D",&arg1, "cc.GLProgramState:setUniformTexture");
 
             if (!ok) { break; }
             cobj->setUniformTexture(arg0, arg1);
@@ -21821,7 +22029,7 @@ int lua_cocos2dx_PolygonInfo_getFilename(lua_State* tolua_S)
             return 0;
         }
         const std::string& ret = cobj->getFilename();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.PolygonInfo:getFilename",argc, 0);
@@ -32097,7 +32305,7 @@ int lua_cocos2dx_UserDefault_getStringForKey(lua_State* tolua_S)
 
             if (!ok) { break; }
             std::string ret = cobj->getStringForKey(arg0, arg1);
-            tolua_pushcppstring(tolua_S,ret);
+            lua_pushlstring(tolua_S,ret.c_str(),ret.length());
             return 1;
         }
     }while(0);
@@ -32109,7 +32317,7 @@ int lua_cocos2dx_UserDefault_getStringForKey(lua_State* tolua_S)
 
             if (!ok) { break; }
             std::string ret = cobj->getStringForKey(arg0);
-            tolua_pushcppstring(tolua_S,ret);
+            lua_pushlstring(tolua_S,ret.c_str(),ret.length());
             return 1;
         }
     }while(0);
@@ -32452,7 +32660,7 @@ int lua_cocos2dx_UserDefault_getXMLFilePath(lua_State* tolua_S)
             return 0;
         }
         const std::string& ret = cocos2d::UserDefault::getXMLFilePath();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "cc.UserDefault:getXMLFilePath",argc, 0);
@@ -32568,7 +32776,7 @@ int lua_cocos2dx_FileUtils_fullPathForFilename(lua_State* tolua_S)
             return 0;
         }
         std::string ret = cobj->fullPathForFilename(arg0);
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.FileUtils:fullPathForFilename",argc, 1);
@@ -32586,42 +32794,55 @@ int lua_cocos2dx_FileUtils_getStringFromFile(lua_State* tolua_S)
     int argc = 0;
     cocos2d::FileUtils* cobj = nullptr;
     bool ok  = true;
-
 #if COCOS2D_DEBUG >= 1
     tolua_Error tolua_err;
 #endif
 
-
 #if COCOS2D_DEBUG >= 1
     if (!tolua_isusertype(tolua_S,1,"cc.FileUtils",0,&tolua_err)) goto tolua_lerror;
 #endif
-
     cobj = (cocos2d::FileUtils*)tolua_tousertype(tolua_S,1,0);
-
 #if COCOS2D_DEBUG >= 1
-    if (!cobj) 
+    if (!cobj)
     {
         tolua_error(tolua_S,"invalid 'cobj' in function 'lua_cocos2dx_FileUtils_getStringFromFile'", nullptr);
         return 0;
     }
 #endif
-
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
-    {
-        std::string arg0;
+    do{
+        if (argc == 2) {
+            std::string arg0;
+            ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.FileUtils:getStringFromFile");
 
-        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.FileUtils:getStringFromFile");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_FileUtils_getStringFromFile'", nullptr);
-            return 0;
+            if (!ok) { break; }
+            std::function<void (std::basic_string<char>)> arg1;
+            do {
+			// Lambda binding for lua is not supported.
+			assert(false);
+		} while(0)
+		;
+
+            if (!ok) { break; }
+            cobj->getStringFromFile(arg0, arg1);
+            lua_settop(tolua_S, 1);
+            return 1;
         }
-        std::string ret = cobj->getStringFromFile(arg0);
-        tolua_pushcppstring(tolua_S,ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.FileUtils:getStringFromFile",argc, 1);
+    }while(0);
+    ok  = true;
+    do{
+        if (argc == 1) {
+            std::string arg0;
+            ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.FileUtils:getStringFromFile");
+
+            if (!ok) { break; }
+            std::string ret = cobj->getStringFromFile(arg0);
+            lua_pushlstring(tolua_S,ret.c_str(),ret.length());
+            return 1;
+        }
+    }while(0);
+    ok  = true;
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n",  "cc.FileUtils:getStringFromFile",argc, 1);
     return 0;
 
 #if COCOS2D_DEBUG >= 1
@@ -32686,42 +32907,55 @@ int lua_cocos2dx_FileUtils_removeFile(lua_State* tolua_S)
     int argc = 0;
     cocos2d::FileUtils* cobj = nullptr;
     bool ok  = true;
-
 #if COCOS2D_DEBUG >= 1
     tolua_Error tolua_err;
 #endif
 
-
 #if COCOS2D_DEBUG >= 1
     if (!tolua_isusertype(tolua_S,1,"cc.FileUtils",0,&tolua_err)) goto tolua_lerror;
 #endif
-
     cobj = (cocos2d::FileUtils*)tolua_tousertype(tolua_S,1,0);
-
 #if COCOS2D_DEBUG >= 1
-    if (!cobj) 
+    if (!cobj)
     {
         tolua_error(tolua_S,"invalid 'cobj' in function 'lua_cocos2dx_FileUtils_removeFile'", nullptr);
         return 0;
     }
 #endif
-
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
-    {
-        std::string arg0;
+    do{
+        if (argc == 2) {
+            std::string arg0;
+            ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.FileUtils:removeFile");
 
-        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.FileUtils:removeFile");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_FileUtils_removeFile'", nullptr);
-            return 0;
+            if (!ok) { break; }
+            std::function<void (bool)> arg1;
+            do {
+			// Lambda binding for lua is not supported.
+			assert(false);
+		} while(0)
+		;
+
+            if (!ok) { break; }
+            cobj->removeFile(arg0, arg1);
+            lua_settop(tolua_S, 1);
+            return 1;
         }
-        bool ret = cobj->removeFile(arg0);
-        tolua_pushboolean(tolua_S,(bool)ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.FileUtils:removeFile",argc, 1);
+    }while(0);
+    ok  = true;
+    do{
+        if (argc == 1) {
+            std::string arg0;
+            ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.FileUtils:removeFile");
+
+            if (!ok) { break; }
+            bool ret = cobj->removeFile(arg0);
+            tolua_pushboolean(tolua_S,(bool)ret);
+            return 1;
+        }
+    }while(0);
+    ok  = true;
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n",  "cc.FileUtils:removeFile",argc, 1);
     return 0;
 
 #if COCOS2D_DEBUG >= 1
@@ -32803,6 +33037,54 @@ int lua_cocos2dx_FileUtils_renameFile(lua_State* tolua_S)
 #endif
     argc = lua_gettop(tolua_S)-1;
     do{
+        if (argc == 4) {
+            std::string arg0;
+            ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.FileUtils:renameFile");
+
+            if (!ok) { break; }
+            std::string arg1;
+            ok &= luaval_to_std_string(tolua_S, 3,&arg1, "cc.FileUtils:renameFile");
+
+            if (!ok) { break; }
+            std::string arg2;
+            ok &= luaval_to_std_string(tolua_S, 4,&arg2, "cc.FileUtils:renameFile");
+
+            if (!ok) { break; }
+            std::function<void (bool)> arg3;
+            do {
+			// Lambda binding for lua is not supported.
+			assert(false);
+		} while(0)
+		;
+
+            if (!ok) { break; }
+            cobj->renameFile(arg0, arg1, arg2, arg3);
+            lua_settop(tolua_S, 1);
+            return 1;
+        }
+    }while(0);
+    ok  = true;
+    do{
+        if (argc == 3) {
+            std::string arg0;
+            ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.FileUtils:renameFile");
+
+            if (!ok) { break; }
+            std::string arg1;
+            ok &= luaval_to_std_string(tolua_S, 3,&arg1, "cc.FileUtils:renameFile");
+
+            if (!ok) { break; }
+            std::string arg2;
+            ok &= luaval_to_std_string(tolua_S, 4,&arg2, "cc.FileUtils:renameFile");
+
+            if (!ok) { break; }
+            bool ret = cobj->renameFile(arg0, arg1, arg2);
+            tolua_pushboolean(tolua_S,(bool)ret);
+            return 1;
+        }
+    }while(0);
+    ok  = true;
+    do{
         if (argc == 2) {
             std::string arg0;
             ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.FileUtils:renameFile");
@@ -32828,12 +33110,16 @@ int lua_cocos2dx_FileUtils_renameFile(lua_State* tolua_S)
             ok &= luaval_to_std_string(tolua_S, 3,&arg1, "cc.FileUtils:renameFile");
 
             if (!ok) { break; }
-            std::string arg2;
-            ok &= luaval_to_std_string(tolua_S, 4,&arg2, "cc.FileUtils:renameFile");
+            std::function<void (bool)> arg2;
+            do {
+			// Lambda binding for lua is not supported.
+			assert(false);
+		} while(0)
+		;
 
             if (!ok) { break; }
-            bool ret = cobj->renameFile(arg0, arg1, arg2);
-            tolua_pushboolean(tolua_S,(bool)ret);
+            cobj->renameFile(arg0, arg1, arg2);
+            lua_settop(tolua_S, 1);
             return 1;
         }
     }while(0);
@@ -32844,6 +33130,53 @@ int lua_cocos2dx_FileUtils_renameFile(lua_State* tolua_S)
 #if COCOS2D_DEBUG >= 1
     tolua_lerror:
     tolua_error(tolua_S,"#ferror in function 'lua_cocos2dx_FileUtils_renameFile'.",&tolua_err);
+#endif
+
+    return 0;
+}
+int lua_cocos2dx_FileUtils_getDefaultResourceRootPath(lua_State* tolua_S)
+{
+    int argc = 0;
+    cocos2d::FileUtils* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"cc.FileUtils",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (cocos2d::FileUtils*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_cocos2dx_FileUtils_getDefaultResourceRootPath'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 0) 
+    {
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_FileUtils_getDefaultResourceRootPath'", nullptr);
+            return 0;
+        }
+        const std::string& ret = cobj->getDefaultResourceRootPath();
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.FileUtils:getDefaultResourceRootPath",argc, 0);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_cocos2dx_FileUtils_getDefaultResourceRootPath'.",&tolua_err);
 #endif
 
     return 0;
@@ -33095,6 +33428,53 @@ int lua_cocos2dx_FileUtils_writeToFile(lua_State* tolua_S)
 
     return 0;
 }
+int lua_cocos2dx_FileUtils_getOriginalSearchPaths(lua_State* tolua_S)
+{
+    int argc = 0;
+    cocos2d::FileUtils* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"cc.FileUtils",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (cocos2d::FileUtils*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_cocos2dx_FileUtils_getOriginalSearchPaths'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 0) 
+    {
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_FileUtils_getOriginalSearchPaths'", nullptr);
+            return 0;
+        }
+        const std::vector<std::string>& ret = cobj->getOriginalSearchPaths();
+        ccvector_std_string_to_luaval(tolua_S, ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.FileUtils:getOriginalSearchPaths",argc, 0);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_cocos2dx_FileUtils_getOriginalSearchPaths'.",&tolua_err);
+#endif
+
+    return 0;
+}
 int lua_cocos2dx_FileUtils_getNewFilename(lua_State* tolua_S)
 {
     int argc = 0;
@@ -33132,7 +33512,7 @@ int lua_cocos2dx_FileUtils_getNewFilename(lua_State* tolua_S)
             return 0;
         }
         std::string ret = cobj->getNewFilename(arg0);
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.FileUtils:getNewFilename",argc, 1);
@@ -33141,6 +33521,56 @@ int lua_cocos2dx_FileUtils_getNewFilename(lua_State* tolua_S)
 #if COCOS2D_DEBUG >= 1
     tolua_lerror:
     tolua_error(tolua_S,"#ferror in function 'lua_cocos2dx_FileUtils_getNewFilename'.",&tolua_err);
+#endif
+
+    return 0;
+}
+int lua_cocos2dx_FileUtils_listFiles(lua_State* tolua_S)
+{
+    int argc = 0;
+    cocos2d::FileUtils* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"cc.FileUtils",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (cocos2d::FileUtils*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_cocos2dx_FileUtils_listFiles'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 1) 
+    {
+        std::string arg0;
+
+        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.FileUtils:listFiles");
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_FileUtils_listFiles'", nullptr);
+            return 0;
+        }
+        std::vector<std::string> ret = cobj->listFiles(arg0);
+        ccvector_std_string_to_luaval(tolua_S, ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.FileUtils:listFiles",argc, 1);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_cocos2dx_FileUtils_listFiles'.",&tolua_err);
 #endif
 
     return 0;
@@ -33200,42 +33630,55 @@ int lua_cocos2dx_FileUtils_getFileSize(lua_State* tolua_S)
     int argc = 0;
     cocos2d::FileUtils* cobj = nullptr;
     bool ok  = true;
-
 #if COCOS2D_DEBUG >= 1
     tolua_Error tolua_err;
 #endif
 
-
 #if COCOS2D_DEBUG >= 1
     if (!tolua_isusertype(tolua_S,1,"cc.FileUtils",0,&tolua_err)) goto tolua_lerror;
 #endif
-
     cobj = (cocos2d::FileUtils*)tolua_tousertype(tolua_S,1,0);
-
 #if COCOS2D_DEBUG >= 1
-    if (!cobj) 
+    if (!cobj)
     {
         tolua_error(tolua_S,"invalid 'cobj' in function 'lua_cocos2dx_FileUtils_getFileSize'", nullptr);
         return 0;
     }
 #endif
-
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
-    {
-        std::string arg0;
+    do{
+        if (argc == 2) {
+            std::string arg0;
+            ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.FileUtils:getFileSize");
 
-        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.FileUtils:getFileSize");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_FileUtils_getFileSize'", nullptr);
-            return 0;
+            if (!ok) { break; }
+            std::function<void (long)> arg1;
+            do {
+			// Lambda binding for lua is not supported.
+			assert(false);
+		} while(0)
+		;
+
+            if (!ok) { break; }
+            cobj->getFileSize(arg0, arg1);
+            lua_settop(tolua_S, 1);
+            return 1;
         }
-        long ret = cobj->getFileSize(arg0);
-        tolua_pushnumber(tolua_S,(lua_Number)ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.FileUtils:getFileSize",argc, 1);
+    }while(0);
+    ok  = true;
+    do{
+        if (argc == 1) {
+            std::string arg0;
+            ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.FileUtils:getFileSize");
+
+            if (!ok) { break; }
+            long ret = cobj->getFileSize(arg0);
+            tolua_pushnumber(tolua_S,(lua_Number)ret);
+            return 1;
+        }
+    }while(0);
+    ok  = true;
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n",  "cc.FileUtils:getFileSize",argc, 1);
     return 0;
 
 #if COCOS2D_DEBUG >= 1
@@ -33303,42 +33746,55 @@ int lua_cocos2dx_FileUtils_removeDirectory(lua_State* tolua_S)
     int argc = 0;
     cocos2d::FileUtils* cobj = nullptr;
     bool ok  = true;
-
 #if COCOS2D_DEBUG >= 1
     tolua_Error tolua_err;
 #endif
 
-
 #if COCOS2D_DEBUG >= 1
     if (!tolua_isusertype(tolua_S,1,"cc.FileUtils",0,&tolua_err)) goto tolua_lerror;
 #endif
-
     cobj = (cocos2d::FileUtils*)tolua_tousertype(tolua_S,1,0);
-
 #if COCOS2D_DEBUG >= 1
-    if (!cobj) 
+    if (!cobj)
     {
         tolua_error(tolua_S,"invalid 'cobj' in function 'lua_cocos2dx_FileUtils_removeDirectory'", nullptr);
         return 0;
     }
 #endif
-
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
-    {
-        std::string arg0;
+    do{
+        if (argc == 2) {
+            std::string arg0;
+            ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.FileUtils:removeDirectory");
 
-        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.FileUtils:removeDirectory");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_FileUtils_removeDirectory'", nullptr);
-            return 0;
+            if (!ok) { break; }
+            std::function<void (bool)> arg1;
+            do {
+			// Lambda binding for lua is not supported.
+			assert(false);
+		} while(0)
+		;
+
+            if (!ok) { break; }
+            cobj->removeDirectory(arg0, arg1);
+            lua_settop(tolua_S, 1);
+            return 1;
         }
-        bool ret = cobj->removeDirectory(arg0);
-        tolua_pushboolean(tolua_S,(bool)ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.FileUtils:removeDirectory",argc, 1);
+    }while(0);
+    ok  = true;
+    do{
+        if (argc == 1) {
+            std::string arg0;
+            ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.FileUtils:removeDirectory");
+
+            if (!ok) { break; }
+            bool ret = cobj->removeDirectory(arg0);
+            tolua_pushboolean(tolua_S,(bool)ret);
+            return 1;
+        }
+    }while(0);
+    ok  = true;
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n",  "cc.FileUtils:removeDirectory",argc, 1);
     return 0;
 
 #if COCOS2D_DEBUG >= 1
@@ -33403,45 +33859,63 @@ int lua_cocos2dx_FileUtils_writeStringToFile(lua_State* tolua_S)
     int argc = 0;
     cocos2d::FileUtils* cobj = nullptr;
     bool ok  = true;
-
 #if COCOS2D_DEBUG >= 1
     tolua_Error tolua_err;
 #endif
 
-
 #if COCOS2D_DEBUG >= 1
     if (!tolua_isusertype(tolua_S,1,"cc.FileUtils",0,&tolua_err)) goto tolua_lerror;
 #endif
-
     cobj = (cocos2d::FileUtils*)tolua_tousertype(tolua_S,1,0);
-
 #if COCOS2D_DEBUG >= 1
-    if (!cobj) 
+    if (!cobj)
     {
         tolua_error(tolua_S,"invalid 'cobj' in function 'lua_cocos2dx_FileUtils_writeStringToFile'", nullptr);
         return 0;
     }
 #endif
-
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 2) 
-    {
-        std::string arg0;
-        std::string arg1;
+    do{
+        if (argc == 3) {
+            std::string arg0;
+            ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.FileUtils:writeStringToFile");
 
-        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.FileUtils:writeStringToFile");
+            if (!ok) { break; }
+            std::string arg1;
+            ok &= luaval_to_std_string(tolua_S, 3,&arg1, "cc.FileUtils:writeStringToFile");
 
-        ok &= luaval_to_std_string(tolua_S, 3,&arg1, "cc.FileUtils:writeStringToFile");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_FileUtils_writeStringToFile'", nullptr);
-            return 0;
+            if (!ok) { break; }
+            std::function<void (bool)> arg2;
+            do {
+			// Lambda binding for lua is not supported.
+			assert(false);
+		} while(0)
+		;
+
+            if (!ok) { break; }
+            cobj->writeStringToFile(arg0, arg1, arg2);
+            lua_settop(tolua_S, 1);
+            return 1;
         }
-        bool ret = cobj->writeStringToFile(arg0, arg1);
-        tolua_pushboolean(tolua_S,(bool)ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.FileUtils:writeStringToFile",argc, 2);
+    }while(0);
+    ok  = true;
+    do{
+        if (argc == 2) {
+            std::string arg0;
+            ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.FileUtils:writeStringToFile");
+
+            if (!ok) { break; }
+            std::string arg1;
+            ok &= luaval_to_std_string(tolua_S, 3,&arg1, "cc.FileUtils:writeStringToFile");
+
+            if (!ok) { break; }
+            bool ret = cobj->writeStringToFile(arg0, arg1);
+            tolua_pushboolean(tolua_S,(bool)ret);
+            return 1;
+        }
+    }while(0);
+    ok  = true;
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n",  "cc.FileUtils:writeStringToFile",argc, 2);
     return 0;
 
 #if COCOS2D_DEBUG >= 1
@@ -33640,45 +34114,63 @@ int lua_cocos2dx_FileUtils_writeValueVectorToFile(lua_State* tolua_S)
     int argc = 0;
     cocos2d::FileUtils* cobj = nullptr;
     bool ok  = true;
-
 #if COCOS2D_DEBUG >= 1
     tolua_Error tolua_err;
 #endif
 
-
 #if COCOS2D_DEBUG >= 1
     if (!tolua_isusertype(tolua_S,1,"cc.FileUtils",0,&tolua_err)) goto tolua_lerror;
 #endif
-
     cobj = (cocos2d::FileUtils*)tolua_tousertype(tolua_S,1,0);
-
 #if COCOS2D_DEBUG >= 1
-    if (!cobj) 
+    if (!cobj)
     {
         tolua_error(tolua_S,"invalid 'cobj' in function 'lua_cocos2dx_FileUtils_writeValueVectorToFile'", nullptr);
         return 0;
     }
 #endif
-
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 2) 
-    {
-        cocos2d::ValueVector arg0;
-        std::string arg1;
+    do{
+        if (argc == 3) {
+            cocos2d::ValueVector arg0;
+            ok &= luaval_to_ccvaluevector(tolua_S, 2, &arg0, "cc.FileUtils:writeValueVectorToFile");
 
-        ok &= luaval_to_ccvaluevector(tolua_S, 2, &arg0, "cc.FileUtils:writeValueVectorToFile");
+            if (!ok) { break; }
+            std::string arg1;
+            ok &= luaval_to_std_string(tolua_S, 3,&arg1, "cc.FileUtils:writeValueVectorToFile");
 
-        ok &= luaval_to_std_string(tolua_S, 3,&arg1, "cc.FileUtils:writeValueVectorToFile");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_FileUtils_writeValueVectorToFile'", nullptr);
-            return 0;
+            if (!ok) { break; }
+            std::function<void (bool)> arg2;
+            do {
+			// Lambda binding for lua is not supported.
+			assert(false);
+		} while(0)
+		;
+
+            if (!ok) { break; }
+            cobj->writeValueVectorToFile(arg0, arg1, arg2);
+            lua_settop(tolua_S, 1);
+            return 1;
         }
-        bool ret = cobj->writeValueVectorToFile(arg0, arg1);
-        tolua_pushboolean(tolua_S,(bool)ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.FileUtils:writeValueVectorToFile",argc, 2);
+    }while(0);
+    ok  = true;
+    do{
+        if (argc == 2) {
+            cocos2d::ValueVector arg0;
+            ok &= luaval_to_ccvaluevector(tolua_S, 2, &arg0, "cc.FileUtils:writeValueVectorToFile");
+
+            if (!ok) { break; }
+            std::string arg1;
+            ok &= luaval_to_std_string(tolua_S, 3,&arg1, "cc.FileUtils:writeValueVectorToFile");
+
+            if (!ok) { break; }
+            bool ret = cobj->writeValueVectorToFile(arg0, arg1);
+            tolua_pushboolean(tolua_S,(bool)ret);
+            return 1;
+        }
+    }while(0);
+    ok  = true;
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n",  "cc.FileUtils:writeValueVectorToFile",argc, 2);
     return 0;
 
 #if COCOS2D_DEBUG >= 1
@@ -33693,42 +34185,55 @@ int lua_cocos2dx_FileUtils_isFileExist(lua_State* tolua_S)
     int argc = 0;
     cocos2d::FileUtils* cobj = nullptr;
     bool ok  = true;
-
 #if COCOS2D_DEBUG >= 1
     tolua_Error tolua_err;
 #endif
 
-
 #if COCOS2D_DEBUG >= 1
     if (!tolua_isusertype(tolua_S,1,"cc.FileUtils",0,&tolua_err)) goto tolua_lerror;
 #endif
-
     cobj = (cocos2d::FileUtils*)tolua_tousertype(tolua_S,1,0);
-
 #if COCOS2D_DEBUG >= 1
-    if (!cobj) 
+    if (!cobj)
     {
         tolua_error(tolua_S,"invalid 'cobj' in function 'lua_cocos2dx_FileUtils_isFileExist'", nullptr);
         return 0;
     }
 #endif
-
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
-    {
-        std::string arg0;
+    do{
+        if (argc == 2) {
+            std::string arg0;
+            ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.FileUtils:isFileExist");
 
-        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.FileUtils:isFileExist");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_FileUtils_isFileExist'", nullptr);
-            return 0;
+            if (!ok) { break; }
+            std::function<void (bool)> arg1;
+            do {
+			// Lambda binding for lua is not supported.
+			assert(false);
+		} while(0)
+		;
+
+            if (!ok) { break; }
+            cobj->isFileExist(arg0, arg1);
+            lua_settop(tolua_S, 1);
+            return 1;
         }
-        bool ret = cobj->isFileExist(arg0);
-        tolua_pushboolean(tolua_S,(bool)ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.FileUtils:isFileExist",argc, 1);
+    }while(0);
+    ok  = true;
+    do{
+        if (argc == 1) {
+            std::string arg0;
+            ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.FileUtils:isFileExist");
+
+            if (!ok) { break; }
+            bool ret = cobj->isFileExist(arg0);
+            tolua_pushboolean(tolua_S,(bool)ret);
+            return 1;
+        }
+    }while(0);
+    ok  = true;
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n",  "cc.FileUtils:isFileExist",argc, 1);
     return 0;
 
 #if COCOS2D_DEBUG >= 1
@@ -33825,7 +34330,7 @@ int lua_cocos2dx_FileUtils_fullPathFromRelativeFile(lua_State* tolua_S)
             return 0;
         }
         std::string ret = cobj->fullPathFromRelativeFile(arg0, arg1);
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.FileUtils:fullPathFromRelativeFile",argc, 2);
@@ -33875,7 +34380,7 @@ int lua_cocos2dx_FileUtils_getSuitableFOpen(lua_State* tolua_S)
             return 0;
         }
         std::string ret = cobj->getSuitableFOpen(arg0);
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.FileUtils:getSuitableFOpen",argc, 1);
@@ -33893,45 +34398,63 @@ int lua_cocos2dx_FileUtils_writeValueMapToFile(lua_State* tolua_S)
     int argc = 0;
     cocos2d::FileUtils* cobj = nullptr;
     bool ok  = true;
-
 #if COCOS2D_DEBUG >= 1
     tolua_Error tolua_err;
 #endif
 
-
 #if COCOS2D_DEBUG >= 1
     if (!tolua_isusertype(tolua_S,1,"cc.FileUtils",0,&tolua_err)) goto tolua_lerror;
 #endif
-
     cobj = (cocos2d::FileUtils*)tolua_tousertype(tolua_S,1,0);
-
 #if COCOS2D_DEBUG >= 1
-    if (!cobj) 
+    if (!cobj)
     {
         tolua_error(tolua_S,"invalid 'cobj' in function 'lua_cocos2dx_FileUtils_writeValueMapToFile'", nullptr);
         return 0;
     }
 #endif
-
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 2) 
-    {
-        cocos2d::ValueMap arg0;
-        std::string arg1;
+    do{
+        if (argc == 3) {
+            cocos2d::ValueMap arg0;
+            ok &= luaval_to_ccvaluemap(tolua_S, 2, &arg0, "cc.FileUtils:writeValueMapToFile");
 
-        ok &= luaval_to_ccvaluemap(tolua_S, 2, &arg0, "cc.FileUtils:writeValueMapToFile");
+            if (!ok) { break; }
+            std::string arg1;
+            ok &= luaval_to_std_string(tolua_S, 3,&arg1, "cc.FileUtils:writeValueMapToFile");
 
-        ok &= luaval_to_std_string(tolua_S, 3,&arg1, "cc.FileUtils:writeValueMapToFile");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_FileUtils_writeValueMapToFile'", nullptr);
-            return 0;
+            if (!ok) { break; }
+            std::function<void (bool)> arg2;
+            do {
+			// Lambda binding for lua is not supported.
+			assert(false);
+		} while(0)
+		;
+
+            if (!ok) { break; }
+            cobj->writeValueMapToFile(arg0, arg1, arg2);
+            lua_settop(tolua_S, 1);
+            return 1;
         }
-        bool ret = cobj->writeValueMapToFile(arg0, arg1);
-        tolua_pushboolean(tolua_S,(bool)ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.FileUtils:writeValueMapToFile",argc, 2);
+    }while(0);
+    ok  = true;
+    do{
+        if (argc == 2) {
+            cocos2d::ValueMap arg0;
+            ok &= luaval_to_ccvaluemap(tolua_S, 2, &arg0, "cc.FileUtils:writeValueMapToFile");
+
+            if (!ok) { break; }
+            std::string arg1;
+            ok &= luaval_to_std_string(tolua_S, 3,&arg1, "cc.FileUtils:writeValueMapToFile");
+
+            if (!ok) { break; }
+            bool ret = cobj->writeValueMapToFile(arg0, arg1);
+            tolua_pushboolean(tolua_S,(bool)ret);
+            return 1;
+        }
+    }while(0);
+    ok  = true;
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n",  "cc.FileUtils:writeValueMapToFile",argc, 2);
     return 0;
 
 #if COCOS2D_DEBUG >= 1
@@ -33978,7 +34501,7 @@ int lua_cocos2dx_FileUtils_getFileExtension(lua_State* tolua_S)
             return 0;
         }
         std::string ret = cobj->getFileExtension(arg0);
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.FileUtils:getFileExtension",argc, 1);
@@ -34096,42 +34619,55 @@ int lua_cocos2dx_FileUtils_isDirectoryExist(lua_State* tolua_S)
     int argc = 0;
     cocos2d::FileUtils* cobj = nullptr;
     bool ok  = true;
-
 #if COCOS2D_DEBUG >= 1
     tolua_Error tolua_err;
 #endif
 
-
 #if COCOS2D_DEBUG >= 1
     if (!tolua_isusertype(tolua_S,1,"cc.FileUtils",0,&tolua_err)) goto tolua_lerror;
 #endif
-
     cobj = (cocos2d::FileUtils*)tolua_tousertype(tolua_S,1,0);
-
 #if COCOS2D_DEBUG >= 1
-    if (!cobj) 
+    if (!cobj)
     {
         tolua_error(tolua_S,"invalid 'cobj' in function 'lua_cocos2dx_FileUtils_isDirectoryExist'", nullptr);
         return 0;
     }
 #endif
-
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
-    {
-        std::string arg0;
+    do{
+        if (argc == 2) {
+            std::string arg0;
+            ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.FileUtils:isDirectoryExist");
 
-        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.FileUtils:isDirectoryExist");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_FileUtils_isDirectoryExist'", nullptr);
-            return 0;
+            if (!ok) { break; }
+            std::function<void (bool)> arg1;
+            do {
+			// Lambda binding for lua is not supported.
+			assert(false);
+		} while(0)
+		;
+
+            if (!ok) { break; }
+            cobj->isDirectoryExist(arg0, arg1);
+            lua_settop(tolua_S, 1);
+            return 1;
         }
-        bool ret = cobj->isDirectoryExist(arg0);
-        tolua_pushboolean(tolua_S,(bool)ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.FileUtils:isDirectoryExist",argc, 1);
+    }while(0);
+    ok  = true;
+    do{
+        if (argc == 1) {
+            std::string arg0;
+            ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.FileUtils:isDirectoryExist");
+
+            if (!ok) { break; }
+            bool ret = cobj->isDirectoryExist(arg0);
+            tolua_pushboolean(tolua_S,(bool)ret);
+            return 1;
+        }
+    }while(0);
+    ok  = true;
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n",  "cc.FileUtils:isDirectoryExist",argc, 1);
     return 0;
 
 #if COCOS2D_DEBUG >= 1
@@ -34243,6 +34779,69 @@ int lua_cocos2dx_FileUtils_createDirectory(lua_State* tolua_S)
     int argc = 0;
     cocos2d::FileUtils* cobj = nullptr;
     bool ok  = true;
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"cc.FileUtils",0,&tolua_err)) goto tolua_lerror;
+#endif
+    cobj = (cocos2d::FileUtils*)tolua_tousertype(tolua_S,1,0);
+#if COCOS2D_DEBUG >= 1
+    if (!cobj)
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_cocos2dx_FileUtils_createDirectory'", nullptr);
+        return 0;
+    }
+#endif
+    argc = lua_gettop(tolua_S)-1;
+    do{
+        if (argc == 2) {
+            std::string arg0;
+            ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.FileUtils:createDirectory");
+
+            if (!ok) { break; }
+            std::function<void (bool)> arg1;
+            do {
+			// Lambda binding for lua is not supported.
+			assert(false);
+		} while(0)
+		;
+
+            if (!ok) { break; }
+            cobj->createDirectory(arg0, arg1);
+            lua_settop(tolua_S, 1);
+            return 1;
+        }
+    }while(0);
+    ok  = true;
+    do{
+        if (argc == 1) {
+            std::string arg0;
+            ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.FileUtils:createDirectory");
+
+            if (!ok) { break; }
+            bool ret = cobj->createDirectory(arg0);
+            tolua_pushboolean(tolua_S,(bool)ret);
+            return 1;
+        }
+    }while(0);
+    ok  = true;
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n",  "cc.FileUtils:createDirectory",argc, 1);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_cocos2dx_FileUtils_createDirectory'.",&tolua_err);
+#endif
+
+    return 0;
+}
+int lua_cocos2dx_FileUtils_listFilesRecursively(lua_State* tolua_S)
+{
+    int argc = 0;
+    cocos2d::FileUtils* cobj = nullptr;
+    bool ok  = true;
 
 #if COCOS2D_DEBUG >= 1
     tolua_Error tolua_err;
@@ -34258,32 +34857,35 @@ int lua_cocos2dx_FileUtils_createDirectory(lua_State* tolua_S)
 #if COCOS2D_DEBUG >= 1
     if (!cobj) 
     {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_cocos2dx_FileUtils_createDirectory'", nullptr);
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_cocos2dx_FileUtils_listFilesRecursively'", nullptr);
         return 0;
     }
 #endif
 
     argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
+    if (argc == 2) 
     {
         std::string arg0;
+        std::vector<std::basic_string<char>, std::allocator<std::basic_string<char> > >* arg1;
 
-        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.FileUtils:createDirectory");
+        ok &= luaval_to_std_string(tolua_S, 2,&arg0, "cc.FileUtils:listFilesRecursively");
+
+        ok &= luaval_to_object<std::vector<std::basic_string<char>, std::allocator<std::basic_string<char> > >>(tolua_S, 3, "std::vector<std::basic_string<char>, std::allocator<std::basic_string<char> > >*",&arg1, "cc.FileUtils:listFilesRecursively");
         if(!ok)
         {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_FileUtils_createDirectory'", nullptr);
+            tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_FileUtils_listFilesRecursively'", nullptr);
             return 0;
         }
-        bool ret = cobj->createDirectory(arg0);
-        tolua_pushboolean(tolua_S,(bool)ret);
+        cobj->listFilesRecursively(arg0, arg1);
+        lua_settop(tolua_S, 1);
         return 1;
     }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.FileUtils:createDirectory",argc, 1);
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.FileUtils:listFilesRecursively",argc, 2);
     return 0;
 
 #if COCOS2D_DEBUG >= 1
     tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_cocos2dx_FileUtils_createDirectory'.",&tolua_err);
+    tolua_error(tolua_S,"#ferror in function 'lua_cocos2dx_FileUtils_listFilesRecursively'.",&tolua_err);
 #endif
 
     return 0;
@@ -34322,7 +34924,7 @@ int lua_cocos2dx_FileUtils_getWritablePath(lua_State* tolua_S)
             return 0;
         }
         std::string ret = cobj->getWritablePath();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.FileUtils:getWritablePath",argc, 0);
@@ -34421,12 +35023,15 @@ int lua_register_cocos2dx_FileUtils(lua_State* tolua_S)
         tolua_function(tolua_S,"removeFile",lua_cocos2dx_FileUtils_removeFile);
         tolua_function(tolua_S,"isAbsolutePath",lua_cocos2dx_FileUtils_isAbsolutePath);
         tolua_function(tolua_S,"renameFile",lua_cocos2dx_FileUtils_renameFile);
+        tolua_function(tolua_S,"getDefaultResourceRootPath",lua_cocos2dx_FileUtils_getDefaultResourceRootPath);
         tolua_function(tolua_S,"loadFilenameLookup",lua_cocos2dx_FileUtils_loadFilenameLookupDictionaryFromFile);
         tolua_function(tolua_S,"isPopupNotify",lua_cocos2dx_FileUtils_isPopupNotify);
         tolua_function(tolua_S,"getValueVectorFromFile",lua_cocos2dx_FileUtils_getValueVectorFromFile);
         tolua_function(tolua_S,"getSearchPaths",lua_cocos2dx_FileUtils_getSearchPaths);
         tolua_function(tolua_S,"writeToFile",lua_cocos2dx_FileUtils_writeToFile);
+        tolua_function(tolua_S,"getOriginalSearchPaths",lua_cocos2dx_FileUtils_getOriginalSearchPaths);
         tolua_function(tolua_S,"getNewFilename",lua_cocos2dx_FileUtils_getNewFilename);
+        tolua_function(tolua_S,"listFiles",lua_cocos2dx_FileUtils_listFiles);
         tolua_function(tolua_S,"getValueMapFromFile",lua_cocos2dx_FileUtils_getValueMapFromFile);
         tolua_function(tolua_S,"getFileSize",lua_cocos2dx_FileUtils_getFileSize);
         tolua_function(tolua_S,"getValueMapFromData",lua_cocos2dx_FileUtils_getValueMapFromData);
@@ -34449,6 +35054,7 @@ int lua_register_cocos2dx_FileUtils(lua_State* tolua_S)
         tolua_function(tolua_S,"setDefaultResourceRootPath",lua_cocos2dx_FileUtils_setDefaultResourceRootPath);
         tolua_function(tolua_S,"getSearchResolutionsOrder",lua_cocos2dx_FileUtils_getSearchResolutionsOrder);
         tolua_function(tolua_S,"createDirectory",lua_cocos2dx_FileUtils_createDirectory);
+        tolua_function(tolua_S,"listFilesRecursively",lua_cocos2dx_FileUtils_listFilesRecursively);
         tolua_function(tolua_S,"getWritablePath",lua_cocos2dx_FileUtils_getWritablePath);
         tolua_function(tolua_S,"destroyInstance", lua_cocos2dx_FileUtils_destroyInstance);
         tolua_function(tolua_S,"getInstance", lua_cocos2dx_FileUtils_getInstance);
@@ -34512,7 +35118,7 @@ int lua_cocos2dx_EventCustom_getEventName(lua_State* tolua_S)
             return 0;
         }
         const std::string& ret = cobj->getEventName();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.EventCustom:getEventName",argc, 0);
@@ -36321,7 +36927,7 @@ int lua_cocos2dx_EventMouse_getMouseButton(lua_State* tolua_S)
             tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_EventMouse_getMouseButton'", nullptr);
             return 0;
         }
-        int ret = cobj->getMouseButton();
+        int ret = (int)cobj->getMouseButton();
         tolua_pushnumber(tolua_S,(lua_Number)ret);
         return 1;
     }
@@ -36604,7 +37210,7 @@ int lua_cocos2dx_EventMouse_setMouseButton(lua_State* tolua_S)
     argc = lua_gettop(tolua_S)-1;
     if (argc == 1) 
     {
-        int arg0;
+        cocos2d::EventMouse::MouseButton arg0;
 
         ok &= luaval_to_int32(tolua_S, 2,(int *)&arg0, "cc.EventMouse:setMouseButton");
         if(!ok)
@@ -53297,7 +53903,7 @@ int lua_cocos2dx_Label_getString(lua_State* tolua_S)
             return 0;
         }
         const std::string& ret = cobj->getString();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.Label:getString",argc, 0);
@@ -54164,7 +54770,7 @@ int lua_cocos2dx_Label_getOutlineSize(lua_State* tolua_S)
             tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_Label_getOutlineSize'", nullptr);
             return 0;
         }
-        int ret = cobj->getOutlineSize();
+        double ret = cobj->getOutlineSize();
         tolua_pushnumber(tolua_S,(lua_Number)ret);
         return 1;
     }
@@ -55328,7 +55934,7 @@ int lua_cocos2dx_Label_getSystemFontName(lua_State* tolua_S)
             return 0;
         }
         const std::string& ret = cobj->getSystemFontName();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.Label:getSystemFontName",argc, 0);
@@ -56198,7 +56804,7 @@ int lua_cocos2dx_Label_getBMFontFilePath(lua_State* tolua_S)
             return 0;
         }
         const std::string& ret = cobj->getBMFontFilePath();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.Label:getBMFontFilePath",argc, 0);
@@ -57146,7 +57752,7 @@ int lua_cocos2dx_LabelAtlas_getString(lua_State* tolua_S)
             return 0;
         }
         const std::string& ret = cobj->getString();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.LabelAtlas:getString",argc, 0);
@@ -59354,7 +59960,7 @@ int lua_cocos2dx_MenuItemLabel_getString(lua_State* tolua_S)
             return 0;
         }
         std::string ret = cobj->getString();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.MenuItemLabel:getString",argc, 0);
@@ -59843,7 +60449,7 @@ int lua_cocos2dx_MenuItemFont_getFontNameObj(lua_State* tolua_S)
             return 0;
         }
         const std::string& ret = cobj->getFontNameObj();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.MenuItemFont:getFontNameObj",argc, 0);
@@ -60153,7 +60759,7 @@ int lua_cocos2dx_MenuItemFont_getFontName(lua_State* tolua_S)
             return 0;
         }
         const std::string& ret = cocos2d::MenuItemFont::getFontName();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "cc.MenuItemFont:getFontName",argc, 0);
@@ -66708,7 +67314,7 @@ int lua_cocos2dx_ParticleSystem_getResourceFile(lua_State* tolua_S)
             return 0;
         }
         const std::string& ret = cobj->getResourceFile();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.ParticleSystem:getResourceFile",argc, 0);
@@ -74095,6 +74701,53 @@ int lua_cocos2dx_Sprite_setCenterRectNormalized(lua_State* tolua_S)
 
     return 0;
 }
+int lua_cocos2dx_Sprite_isStretchEnabled(lua_State* tolua_S)
+{
+    int argc = 0;
+    cocos2d::Sprite* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"cc.Sprite",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (cocos2d::Sprite*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_cocos2dx_Sprite_isStretchEnabled'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 0) 
+    {
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_Sprite_isStretchEnabled'", nullptr);
+            return 0;
+        }
+        bool ret = cobj->isStretchEnabled();
+        tolua_pushboolean(tolua_S,(bool)ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.Sprite:isStretchEnabled",argc, 0);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_cocos2dx_Sprite_isStretchEnabled'.",&tolua_err);
+#endif
+
+    return 0;
+}
 int lua_cocos2dx_Sprite_setTextureRect(lua_State* tolua_S)
 {
     int argc = 0;
@@ -74204,6 +74857,56 @@ int lua_cocos2dx_Sprite_initWithSpriteFrameName(lua_State* tolua_S)
 #if COCOS2D_DEBUG >= 1
     tolua_lerror:
     tolua_error(tolua_S,"#ferror in function 'lua_cocos2dx_Sprite_initWithSpriteFrameName'.",&tolua_err);
+#endif
+
+    return 0;
+}
+int lua_cocos2dx_Sprite_setStretchEnabled(lua_State* tolua_S)
+{
+    int argc = 0;
+    cocos2d::Sprite* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"cc.Sprite",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (cocos2d::Sprite*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_cocos2dx_Sprite_setStretchEnabled'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 1) 
+    {
+        bool arg0;
+
+        ok &= luaval_to_boolean(tolua_S, 2,&arg0, "cc.Sprite:setStretchEnabled");
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_Sprite_setStretchEnabled'", nullptr);
+            return 0;
+        }
+        cobj->setStretchEnabled(arg0);
+        lua_settop(tolua_S, 1);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.Sprite:setStretchEnabled",argc, 1);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_cocos2dx_Sprite_setStretchEnabled'.",&tolua_err);
 #endif
 
     return 0;
@@ -74583,7 +75286,7 @@ int lua_cocos2dx_Sprite_getResourceName(lua_State* tolua_S)
             return 0;
         }
         const std::string& ret = cobj->getResourceName();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.Sprite:getResourceName",argc, 0);
@@ -74916,56 +75619,6 @@ int lua_cocos2dx_Sprite_isTextureRectRotated(lua_State* tolua_S)
 
     return 0;
 }
-int lua_cocos2dx_Sprite_setStrechEnabled(lua_State* tolua_S)
-{
-    int argc = 0;
-    cocos2d::Sprite* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"cc.Sprite",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (cocos2d::Sprite*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_cocos2dx_Sprite_setStrechEnabled'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 1) 
-    {
-        bool arg0;
-
-        ok &= luaval_to_boolean(tolua_S, 2,&arg0, "cc.Sprite:setStrechEnabled");
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_Sprite_setStrechEnabled'", nullptr);
-            return 0;
-        }
-        cobj->setStrechEnabled(arg0);
-        lua_settop(tolua_S, 1);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.Sprite:setStrechEnabled",argc, 1);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_cocos2dx_Sprite_setStrechEnabled'.",&tolua_err);
-#endif
-
-    return 0;
-}
 int lua_cocos2dx_Sprite_getTextureRect(lua_State* tolua_S)
 {
     int argc = 0;
@@ -75009,53 +75662,6 @@ int lua_cocos2dx_Sprite_getTextureRect(lua_State* tolua_S)
 #if COCOS2D_DEBUG >= 1
     tolua_lerror:
     tolua_error(tolua_S,"#ferror in function 'lua_cocos2dx_Sprite_getTextureRect'.",&tolua_err);
-#endif
-
-    return 0;
-}
-int lua_cocos2dx_Sprite_isStrechEnabled(lua_State* tolua_S)
-{
-    int argc = 0;
-    cocos2d::Sprite* cobj = nullptr;
-    bool ok  = true;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_Error tolua_err;
-#endif
-
-
-#if COCOS2D_DEBUG >= 1
-    if (!tolua_isusertype(tolua_S,1,"cc.Sprite",0,&tolua_err)) goto tolua_lerror;
-#endif
-
-    cobj = (cocos2d::Sprite*)tolua_tousertype(tolua_S,1,0);
-
-#if COCOS2D_DEBUG >= 1
-    if (!cobj) 
-    {
-        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_cocos2dx_Sprite_isStrechEnabled'", nullptr);
-        return 0;
-    }
-#endif
-
-    argc = lua_gettop(tolua_S)-1;
-    if (argc == 0) 
-    {
-        if(!ok)
-        {
-            tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_Sprite_isStrechEnabled'", nullptr);
-            return 0;
-        }
-        bool ret = cobj->isStrechEnabled();
-        tolua_pushboolean(tolua_S,(bool)ret);
-        return 1;
-    }
-    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.Sprite:isStrechEnabled",argc, 0);
-    return 0;
-
-#if COCOS2D_DEBUG >= 1
-    tolua_lerror:
-    tolua_error(tolua_S,"#ferror in function 'lua_cocos2dx_Sprite_isStrechEnabled'.",&tolua_err);
 #endif
 
     return 0;
@@ -75614,8 +76220,10 @@ int lua_register_cocos2dx_Sprite(lua_State* tolua_S)
         tolua_function(tolua_S,"getCenterRect",lua_cocos2dx_Sprite_getCenterRect);
         tolua_function(tolua_S,"removeAllChildrenWithCleanup",lua_cocos2dx_Sprite_removeAllChildrenWithCleanup);
         tolua_function(tolua_S,"setCenterRectNormalized",lua_cocos2dx_Sprite_setCenterRectNormalized);
+        tolua_function(tolua_S,"isStretchEnabled",lua_cocos2dx_Sprite_isStretchEnabled);
         tolua_function(tolua_S,"setTextureRect",lua_cocos2dx_Sprite_setTextureRect);
         tolua_function(tolua_S,"initWithSpriteFrameName",lua_cocos2dx_Sprite_initWithSpriteFrameName);
+        tolua_function(tolua_S,"setStretchEnabled",lua_cocos2dx_Sprite_setStretchEnabled);
         tolua_function(tolua_S,"isFrameDisplayed",lua_cocos2dx_Sprite_isFrameDisplayed);
         tolua_function(tolua_S,"getAtlasIndex",lua_cocos2dx_Sprite_getAtlasIndex);
         tolua_function(tolua_S,"setBatchNode",lua_cocos2dx_Sprite_setBatchNode);
@@ -75630,9 +76238,7 @@ int lua_register_cocos2dx_Sprite(lua_State* tolua_S)
         tolua_function(tolua_S,"initWithTexture",lua_cocos2dx_Sprite_initWithTexture);
         tolua_function(tolua_S,"setDirty",lua_cocos2dx_Sprite_setDirty);
         tolua_function(tolua_S,"isTextureRectRotated",lua_cocos2dx_Sprite_isTextureRectRotated);
-        tolua_function(tolua_S,"setStrechEnabled",lua_cocos2dx_Sprite_setStrechEnabled);
         tolua_function(tolua_S,"getTextureRect",lua_cocos2dx_Sprite_getTextureRect);
-        tolua_function(tolua_S,"isStrechEnabled",lua_cocos2dx_Sprite_isStrechEnabled);
         tolua_function(tolua_S,"initWithFile",lua_cocos2dx_Sprite_initWithFile);
         tolua_function(tolua_S,"setBlendFunc",lua_cocos2dx_Sprite_setBlendFunc);
         tolua_function(tolua_S,"getTextureAtlas",lua_cocos2dx_Sprite_getTextureAtlas);
@@ -87989,7 +88595,7 @@ int lua_cocos2dx_GLProgram_getFragmentShaderLog(lua_State* tolua_S)
             return 0;
         }
         std::string ret = cobj->getFragmentShaderLog();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.GLProgram:getFragmentShaderLog",argc, 0);
@@ -88265,7 +88871,7 @@ int lua_cocos2dx_GLProgram_getVertexShaderLog(lua_State* tolua_S)
             return 0;
         }
         std::string ret = cobj->getVertexShaderLog();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.GLProgram:getVertexShaderLog",argc, 0);
@@ -89462,7 +90068,7 @@ int lua_cocos2dx_RenderState_getName(lua_State* tolua_S)
             return 0;
         }
         std::string ret = cobj->getName();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.RenderState:getName",argc, 0);
@@ -90304,7 +90910,7 @@ int lua_cocos2dx_Technique_getName(lua_State* tolua_S)
             return 0;
         }
         std::string ret = cobj->getName();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.Technique:getName",argc, 0);
@@ -90696,7 +91302,7 @@ int lua_cocos2dx_Material_getName(lua_State* tolua_S)
             return 0;
         }
         std::string ret = cobj->getName();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.Material:getName",argc, 0);
@@ -91321,7 +91927,7 @@ int lua_cocos2dx_TextureCache_getDescription(lua_State* tolua_S)
             return 0;
         }
         std::string ret = cobj->getDescription();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.TextureCache:getDescription",argc, 0);
@@ -91368,7 +91974,7 @@ int lua_cocos2dx_TextureCache_getCachedTextureInfo(lua_State* tolua_S)
             return 0;
         }
         std::string ret = cobj->getCachedTextureInfo();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.TextureCache:getCachedTextureInfo",argc, 0);
@@ -91577,7 +92183,7 @@ int lua_cocos2dx_TextureCache_getTextureFilePath(lua_State* tolua_S)
             return 0;
         }
         std::string ret = cobj->getTextureFilePath(arg0);
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.TextureCache:getTextureFilePath",argc, 1);
@@ -91823,6 +92429,40 @@ int lua_cocos2dx_TextureCache_setETC1AlphaFileSuffix(lua_State* tolua_S)
 #endif
     return 0;
 }
+int lua_cocos2dx_TextureCache_getETC1AlphaFileSuffix(lua_State* tolua_S)
+{
+    int argc = 0;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertable(tolua_S,1,"cc.TextureCache",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    argc = lua_gettop(tolua_S) - 1;
+
+    if (argc == 0)
+    {
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_TextureCache_getETC1AlphaFileSuffix'", nullptr);
+            return 0;
+        }
+        std::string ret = cocos2d::TextureCache::getETC1AlphaFileSuffix();
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "cc.TextureCache:getETC1AlphaFileSuffix",argc, 0);
+    return 0;
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_cocos2dx_TextureCache_getETC1AlphaFileSuffix'.",&tolua_err);
+#endif
+    return 0;
+}
 int lua_cocos2dx_TextureCache_constructor(lua_State* tolua_S)
 {
     int argc = 0;
@@ -91888,6 +92528,7 @@ int lua_register_cocos2dx_TextureCache(lua_State* tolua_S)
         tolua_function(tolua_S,"removeTexture",lua_cocos2dx_TextureCache_removeTexture);
         tolua_function(tolua_S,"waitForQuit",lua_cocos2dx_TextureCache_waitForQuit);
         tolua_function(tolua_S,"setETC1AlphaFileSuffix", lua_cocos2dx_TextureCache_setETC1AlphaFileSuffix);
+        tolua_function(tolua_S,"getETC1AlphaFileSuffix", lua_cocos2dx_TextureCache_getETC1AlphaFileSuffix);
     tolua_endmodule(tolua_S);
     std::string typeName = typeid(cocos2d::TextureCache).name();
     g_luaType[typeName] = "cc.TextureCache";
@@ -92322,7 +92963,7 @@ int lua_cocos2dx_Application_getVersion(lua_State* tolua_S)
             return 0;
         }
         std::string ret = cobj->getVersion();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.Application:getVersion",argc, 0);
@@ -95654,7 +96295,7 @@ int lua_cocos2dx_TMXObjectGroup_getGroupName(lua_State* tolua_S)
             return 0;
         }
         const std::string& ret = cobj->getGroupName();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.TMXObjectGroup:getGroupName",argc, 0);
@@ -97252,7 +97893,7 @@ int lua_cocos2dx_TMXMapInfo_getExternalTilesetFileName(lua_State* tolua_S)
             return 0;
         }
         const std::string& ret = cobj->getExternalTilesetFileName();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.TMXMapInfo:getExternalTilesetFileName",argc, 0);
@@ -97346,7 +97987,7 @@ int lua_cocos2dx_TMXMapInfo_getTMXFileName(lua_State* tolua_S)
             return 0;
         }
         const std::string& ret = cobj->getTMXFileName();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.TMXMapInfo:getTMXFileName",argc, 0);
@@ -97643,7 +98284,7 @@ int lua_cocos2dx_TMXMapInfo_getCurrentString(lua_State* tolua_S)
             return 0;
         }
         const std::string& ret = cobj->getCurrentString();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.TMXMapInfo:getCurrentString",argc, 0);
@@ -98961,7 +99602,7 @@ int lua_cocos2dx_TMXLayer_getLayerName(lua_State* tolua_S)
             return 0;
         }
         const std::string& ret = cobj->getLayerName();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.TMXLayer:getLayerName",argc, 0);
@@ -99614,7 +100255,7 @@ int lua_cocos2dx_TMXTiledMap_getResourceFile(lua_State* tolua_S)
             return 0;
         }
         const std::string& ret = cobj->getResourceFile();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.TMXTiledMap:getResourceFile",argc, 0);

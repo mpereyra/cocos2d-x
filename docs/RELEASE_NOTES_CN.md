@@ -2,92 +2,63 @@
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 **Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
-- [v3.14](#v314)
+- [v3.15](#v315)
   - [新特性](#%E6%96%B0%E7%89%B9%E6%80%A7)
-  - [特性详细介绍](#%E7%89%B9%E6%80%A7%E8%AF%A6%E7%BB%86%E4%BB%8B%E7%BB%8D)
-    - [所有平台使用luajit 2.10-beta2](#%E6%89%80%E6%9C%89%E5%B9%B3%E5%8F%B0%E4%BD%BF%E7%94%A8luajit-210-beta2)
-    - [Sprite支持九宫格特性](#sprite%E6%94%AF%E6%8C%81%E4%B9%9D%E5%AE%AB%E6%A0%BC%E7%89%B9%E6%80%A7)
-    - [支持Spine二进制格式](#%E6%94%AF%E6%8C%81spine%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%A0%BC%E5%BC%8F)
-    - [新增加动作类](#%E6%96%B0%E5%A2%9E%E5%8A%A0%E5%8A%A8%E4%BD%9C%E7%B1%BB)
-  - [已知问题](#%E5%B7%B2%E7%9F%A5%E9%97%AE%E9%A2%98)
-  - [其他](#%E5%85%B6%E4%BB%96)
+  - [新特性详细介绍](#%E6%96%B0%E7%89%B9%E6%80%A7%E8%AF%A6%E7%BB%86%E4%BB%8B%E7%BB%8D)
+    - [全面支持Android Studio](#%E5%85%A8%E9%9D%A2%E6%94%AF%E6%8C%81android-studio)
+    - [音频模块在Android平台的改进](#%E9%9F%B3%E9%A2%91%E6%A8%A1%E5%9D%97%E5%9C%A8android%E5%B9%B3%E5%8F%B0%E7%9A%84%E6%94%B9%E8%BF%9B)
+    - [去除Windows 8.1的支持](#%E5%8E%BB%E9%99%A4windows-81%E7%9A%84%E6%94%AF%E6%8C%81)
+    - [去除32位linux支持](#%E5%8E%BB%E9%99%A432%E4%BD%8Dlinux%E6%94%AF%E6%8C%81)
+    - [其他](#%E5%85%B6%E4%BB%96)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# v3.14
+# v3.15
 
 ## 新特性
 
-* 支持Spine二进制格式
-* 所有平台使用luajit 2.10-beta2
-* 新增动作类：`ResizeBy`和`ResizeTo`
-* Android模拟支持关闭多点触摸
-* Sprite支持九宫格特性
-* 动作类新增功能，可以根据tag查询某一节点正在运行的动作数量
-* Button类可以设置title内容
-* EditBox支持文本水平对齐
-* 支持Mac平台手柄
+* 全面支持 __Android Studio__，包括编译、代码编辑和调试C++代码：[使用文档](https://github.com/chukong/cocos-docs/blob/v3-unified-documentation/installation/Android-Studio.md)
+* 音频模块在Android平台使用[tremolo](http://wss.co.uk/pinknoise/tremolo/)和 __MP3 Decoder Library__ 解码音频文件，使得音频模块效率更高，兼容更多的Android设备
+* __WebSockets__ 和 __SocketIO__ 支持 __SSL__
+* AssetsManagerEx更加稳定
+* 更新 __Spine runtime__ 到v3.5.35
+* 更新 __flatbuffer__ 到v1.5
+* 升级 __OpenSSL__ 到v1.1.0
+* 去除 __Windows 8.1__ 的支持
+* 去除32位linux的支持
 
-## 特性详细介绍
 
-### 所有平台使用luajit 2.10-beta2
+## 新特性详细介绍
 
-之前的luajit版本无法在PC上方便地编译出arm64的字节码，需要用真机（比如iPhone6真机)编译，因此在之前的版本，iOS 64位使用的是lua，iOS 32位使用的是luajit。
+### 全面支持Android Studio
 
-luajit 2.10-beta2版本，可以方便地在PC平台编译出arm64位的字节码，因此我们在各平台都使用了luajit，这样能够提升性能。如果使用cocos命令编译、打包的话，那么cocos命令会自动编译出对应平台的字节码，如果有生成64位字节码的话，那么会把这些字节码放到`64-bit`目录下。当然你也可以通过`cocos luacompile`自己编译字节码，具体的使用方式可以参考`cocos luacompile -h`输出的帮助信息。
+从 __3.15__ 版本开始，可以使用Android Studio 2.3+ 编辑、编译和调试C++代码。只需要通过Android Studio打开 __proj.android-studio__ 文件夹（比如 __tests/cpp-empty-test/proj.android-studio__ ），然后点击 __run__ 按钮就可以在Android设备或者模拟器运行、调试了。
 
-通过cocos命令编译、打包生成的字节码时各平台的情况如下：
+详细的使用方法请参考[这篇文档](https://github.com/chukong/cocos-docs/blob/v3-unified-documentation/installation/Android-Studio.md)。
 
-平台 | 生成32位字节码 | 生成64位字节码 |
----|---|---
-iOS | 是 | 是
-Android | 是，如果APP\_ABI的内容不是只包含64位架构(`APP_ABI := arm64-v8a`) | 是，如果APP\_ABI包含了64位架构，比如`APP_ABI := arm64-v8a ...`
-Mac | 否 | 是
-Windows | 是 | 否
-Linux | 否 |否
+### 音频模块在Android平台的改进
 
-### Sprite支持九宫格特性
+3.15版本之前，音频模块使用 __OpenSL ES__ 解码、播放音频文件，但是很多的Android设备厂商会修改这部分代码，导致音频模块在不同的Android设备上有兼容性问题。[该帖子](http://discuss.cocos2d-x.org/t/android-audio-decoding-issues-discussion/34610)就列出了许多音频模块的问题。
 
-Sprite现在支持九宫格特性了，使用方式如下
+为了解决兼容性问题，我们引入了第三方的解码库[tremolo](http://wss.co.uk/pinknoise/tremolo/)和 __MP3 Decoder Library__ 。该解码库也是Android源码使用的解码库。使用该解码库除了能解决Android设备的兼容性问题，同时还带来了不少性能提升：
 
-```c++
-auto sprite = Sprite::create(...);
-// set center rect
-// the origin is top-left
-sprite->setCenterRectNormalized(Rect(x, y, width, heigh));
-```
+![audio performance](https://raw.githubusercontent.com/minggo/Pictures/master/AudioDecodingPerfTest.png)
 
-详细信息可以参考`Sprite::setCenterNormalized()`的注释。
+引入该解码库会使最终的APK包增大100K左右，和带来的好处相比还是值得的。
 
-![sprite-slice](https://raw.githubusercontent.com/minggo/Pictures/master/sprite-slice.png)
+### 去除Windows 8.1的支持
 
-### 支持Spine二进制格式
+Windows 8.1的支持一直是微软的开发者在维护。因为市场占有率原因，微软觉得没必要继续支持Windows 8.1了。
 
-使用方式没有改变，只是文件格式变成了二进制格式。这样的好处就是解析效率更高，文件更小。具体的使用方法如下：
+### 去除32位linux支持
 
-```c++
-skeletonNode = SkeletonAnimation::createWithBinaryFile("spine/spineboy.skel", "spine/spineboy.atlas", 0.6f);
+目前大部分的PC都是64位了，所以我们觉得去除对32位linux的支持。去除这个支持意味着第三方库去掉了对应的32位版本，这样可以减小发行包的大小，也减少引擎维护的工作。开发者如果想支持32位版本的话，可以使用[这个仓库](https://github.com/cocos2d/cocos2d-x-3rd-party-libs-src)自己编译32位版本的第三方库。
 
-...
-```
+### 其他
 
-![spine-binary](https://raw.githubusercontent.com/minggo/Pictures/master/spine-binary.png)
+[Android SDK Tools 25.3.0+](http://tools.android.com/recent/androidsdktoolsrevision2530feb2017)去除了 __ant脚本__ 和 __android命令__ ，使得cocos命令无法打包Android的Eclipse工程（proj.android）。为了不至于在最后生成APK时才报错，现在cocos命令检查到这个版本后直接返回错误。有两个方法可以解决这个问题：
 
-### 新增加动作类
+* 从旧版本的Android SDK拷贝tools文件夹过来替换对应的目录
+* 使用Android Studio工程编译打包
 
-新增加两个动作类：`ResizeBy`和`ResizeTo`。和`ScaleBy`、`ScaleTo`不同的是，`ResizeBy`和`ResizeTo`改变的是节点的content size的大小。这种动作对于支持九宫格特性的节点的缩放效果比`ScaleBy`和`ScaleTo`好，因为`ScaleBy`和`ScaleTo`是对节点做整体缩放。效果对比如下：
-
-![resize-action-effect](https://raw.githubusercontent.com/minggo/Pictures/master/resize-action-effect.png)
-
-## 已知问题
-
-如果使用Xcode 8.2，那么lua工程会在iOS模拟器上崩溃。通过调试发现崩溃在`lua_open`函数的调用上。如果使用Xcode 8.1或一下版本，那么没有问题。我们怀疑这是Xcode的bug，在v3.14无法解决。使用lua的开发者在位iOS平台开发时有两个选择：
-
-* 使用Xcode 8.1或者一下版本
-* 使用Xcode 8.2，在Mac或者iOS真机开发、调试
-
-该问题的进展可以跟踪[这个issue](https://github.com/cocos2d/cocos2d-x/issues/17043)。
-
-## 其他
-
-[详细的改动内容](https://github.com/cocos2d/cocos2d-x/blob/v3/CHANGELOG)。
+从Android工具删除ant脚本和android的行为来看，谷歌是不希望大家继续使用Eclipse工程，所以建议大家还是使用Android Studio来编译打包吧。旧版本引擎虽然不支持Android Studio调试C++代码功能，但是编译打包还是没问题的。
