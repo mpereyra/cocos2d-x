@@ -840,6 +840,24 @@ public:
      * @since v3.2
      */
     virtual void enumerateChildren(const std::string &name, std::function<bool(Node* node)> callback) const;
+    
+    /* BPC_PATCH start */
+    template<bool recursive>
+    void enumerateChildren(std::function<void(Node*)> const &call) const {
+        if (!call) {
+            return;
+        }
+        
+        for (auto child : _children) {
+            call(child);
+            
+            if (recursive) {
+                child->enumerateChildren<recursive>(call);
+            }
+        }        
+    }
+    /* BPC_PATCH end */
+    
     /**
      * Returns the array of the node's children.
      *
@@ -870,7 +888,10 @@ public:
      */
     virtual Node* getParent() { return _parent; }
     virtual const Node* getParent() const { return _parent; }
-
+    
+    // <BPC_PATCH>
+    bool isParentInHierarchy(cocos2d::Node const * const node) const;
+    // </BPC_PATCH>
 
     ////// REMOVES //////
 
