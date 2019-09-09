@@ -315,4 +315,4 @@ Rect GLViewImpl::getSafeAreaRect() const
 
 NS_CC_END
 
-#endif // CC_PLATFOR_IOS
+#endif // CC_PLATFORM_IOS

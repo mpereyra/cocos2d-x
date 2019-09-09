@@ -130,6 +130,12 @@ public:
     static Node * create();
 
     /**
+     * Gets count of nodes those are attached to scene graph.
+     */
+    static int getAttachedNodeCount();
+public:
+    
+    /**
      * Gets the description string. It makes debugging easier.
      * @return A string
      * @js NA
@@ -526,7 +532,7 @@ public:
      * It's like a pin in the node where it is "attached" to its parent.
      * The anchorPoint is normalized, like a percentage. (0,0) means the bottom-left corner and (1,1) means the top-right corner.
      * But you can use values higher than (1,1) and lower than (0,0) too.
-     * The default anchorPoint is (0.5,0.5), so it starts in the center of the node.
+     * The default anchorPoint is (0,0), so it starts in the lower left corner of the node.
      * @note If node has a physics body, the anchor must be in the middle, you can't change this to other value.
      *
      * @param anchorPoint   The anchor point of node.
@@ -1373,7 +1379,7 @@ public:
      * @js NA
      * @lua NA
      */
-    bool isScheduled(SEL_SCHEDULE selector);
+    bool isScheduled(SEL_SCHEDULE selector) const;
 
     /**
      * Checks whether a lambda function is scheduled.
@@ -1383,7 +1389,7 @@ public:
      * @js NA
      * @lua NA
      */
-    bool isScheduled(const std::string &key);
+    bool isScheduled(const std::string &key) const;
 
     /**
      * Schedules the "update" method.
@@ -2081,6 +2087,8 @@ public:
     friend class PhysicsBody;
 #endif
 
+    static int __attachedNodeCount;
+    
 private:
     CC_DISALLOW_COPY_AND_ASSIGN(Node);
 };

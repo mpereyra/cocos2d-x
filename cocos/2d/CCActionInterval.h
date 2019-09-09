@@ -85,12 +85,12 @@ public:
      *
      * @return  The amplitude rate.
      */
-    float getAmplitudeRate(void);
+    float getAmplitudeRate();
 
     //
     // Overrides
     //
-    virtual bool isDone(void) const override;
+    virtual bool isDone() const override;
     /**
      * @param dt in seconds
      */
@@ -116,7 +116,8 @@ CC_CONSTRUCTOR_ACCESS:
 
 protected:
     float _elapsed;
-    bool   _firstTick;
+    bool _firstTick;
+    bool _done;
     /* BPC PATCH - BEGIN */
     bool _ignoreFirstTick {false};
     /* BPC PATCH - END */
@@ -188,7 +189,8 @@ public:
     virtual Sequence* clone() const override;
     virtual Sequence* reverse() const override;
     virtual void startWithTarget(Node *target) override;
-    virtual void stop(void) override;
+    virtual void stop() override;
+    virtual bool isDone() const override;
     /**
      * @param t In seconds.
      */
@@ -412,9 +414,9 @@ public:
     // Overrides
     //
     virtual Spawn* clone() const override;
-    virtual Spawn* reverse(void) const override;
+    virtual Spawn* reverse() const override;
     virtual void startWithTarget(Node *target) override;
-    virtual void stop(void) override;
+    virtual void stop() override;
     /**
      * @param time In seconds.
      */
@@ -550,7 +552,7 @@ public:
     // Override
     //
     virtual RotateBy* clone() const override;
-    virtual RotateBy* reverse(void) const override;
+    virtual RotateBy* reverse() const override;
     virtual void startWithTarget(Node *target) override;
     /**
      * @param time In seconds.
@@ -611,7 +613,7 @@ public:
     // Overrides
     //
     virtual MoveBy* clone() const override;
-    virtual MoveBy* reverse(void) const  override;
+    virtual MoveBy* reverse() const  override;
     virtual void startWithTarget(Node *target) override;
     /**
      * @param time in seconds
@@ -709,7 +711,7 @@ public:
     // Overrides
     //
     virtual SkewTo* clone() const override;
-    virtual SkewTo* reverse(void) const override;
+    virtual SkewTo* reverse() const override;
     virtual void startWithTarget(Node *target) override;
     /**
      * @param time In seconds.
@@ -759,7 +761,7 @@ public:
     //
     virtual void startWithTarget(Node *target) override;
     virtual SkewBy* clone() const  override;
-    virtual SkewBy* reverse(void) const override;
+    virtual SkewBy* reverse() const override;
     
 CC_CONSTRUCTOR_ACCESS:
     SkewBy() {}
@@ -835,7 +837,7 @@ public:
     // Overrides
     //
     virtual ResizeBy* clone() const override;
-    virtual ResizeBy* reverse(void) const  override;
+    virtual ResizeBy* reverse() const  override;
     virtual void startWithTarget(Node *target) override;
     /**
     * @param time in seconds
@@ -879,7 +881,7 @@ public:
     // Overrides
     //
     virtual JumpBy* clone() const override;
-    virtual JumpBy* reverse(void) const override;
+    virtual JumpBy* reverse() const override;
     virtual void startWithTarget(Node *target) override;
     /**
      * @param time In seconds.
@@ -928,7 +930,7 @@ public:
     //
     virtual void startWithTarget(Node *target) override;
     virtual JumpTo* clone() const override;
-    virtual JumpTo* reverse(void) const override;
+    virtual JumpTo* reverse() const override;
 
 CC_CONSTRUCTOR_ACCESS:
     JumpTo() {}
@@ -980,7 +982,7 @@ public:
     // Overrides
     //
     virtual BezierBy* clone() const override;
-    virtual BezierBy* reverse(void) const override;
+    virtual BezierBy* reverse() const override;
     virtual void startWithTarget(Node *target) override;
     /**
      * @param time In seconds.
@@ -1030,7 +1032,7 @@ public:
     //
     virtual void startWithTarget(Node *target) override;
     virtual BezierTo* clone() const override;
-    virtual BezierTo* reverse(void) const override;
+    virtual BezierTo* reverse() const override;
     
 CC_CONSTRUCTOR_ACCESS:
     BezierTo() {}
@@ -1086,7 +1088,7 @@ public:
     // Overrides
     //
     virtual ScaleTo* clone() const override;
-    virtual ScaleTo* reverse(void) const override;
+    virtual ScaleTo* reverse() const override;
     virtual void startWithTarget(Node *target) override;
     /**
      * @param time In seconds.
@@ -1170,7 +1172,7 @@ public:
     //
     virtual void startWithTarget(Node *target) override;
     virtual ScaleBy* clone() const override;
-    virtual ScaleBy* reverse(void) const override;
+    virtual ScaleBy* reverse() const override;
 
 CC_CONSTRUCTOR_ACCESS:
     ScaleBy() {}
@@ -1244,7 +1246,7 @@ public:
     // Overrides
     //
     virtual FadeTo* clone() const override;
-    virtual FadeTo* reverse(void) const override;
+    virtual FadeTo* reverse() const override;
     virtual void startWithTarget(Node *target) override;
     /**
      * @param time In seconds.
@@ -1289,7 +1291,7 @@ public:
     //
     virtual void startWithTarget(Node *target) override;
     virtual FadeIn* clone() const override;
-    virtual FadeTo* reverse(void) const override;
+    virtual FadeTo* reverse() const override;
 
     /**
      * @js NA
@@ -1323,7 +1325,7 @@ public:
     //
     virtual void startWithTarget(Node *target) override;
     virtual FadeOut* clone() const  override;
-    virtual FadeTo* reverse(void) const override;
+    virtual FadeTo* reverse() const override;
 
     /**
      * @js NA
@@ -1367,7 +1369,7 @@ public:
     // Overrides
     //
     virtual TintTo* clone() const override;
-    virtual TintTo* reverse(void) const override;
+    virtual TintTo* reverse() const override;
     virtual void startWithTarget(Node *target) override;
     /**
      * @param time In seconds.
@@ -1492,7 +1494,7 @@ public:
     virtual ReverseTime* reverse() const override;
     virtual ReverseTime* clone() const override;
     virtual void startWithTarget(Node *target) override;
-    virtual void stop(void) override;
+    virtual void stop() override;
     /**
      * @param time In seconds.
      */
@@ -1500,7 +1502,7 @@ public:
     
 CC_CONSTRUCTOR_ACCESS:
     ReverseTime();
-    virtual ~ReverseTime(void);
+    virtual ~ReverseTime();
 
     /** initializes the action */
     bool initWithAction(FiniteTimeAction *action);
@@ -1549,7 +1551,7 @@ public:
     virtual Animate* clone() const override;
     virtual Animate* reverse() const override;
     virtual void startWithTarget(Node *target) override;
-    virtual void stop(void) override;
+    virtual void stop() override;
     /**
      * @param t In seconds.
      */
@@ -1609,7 +1611,7 @@ public:
     virtual TargetedAction* clone() const override;
     virtual TargetedAction* reverse() const  override;
     virtual void startWithTarget(Node *target) override;
-    virtual void stop(void) override;
+    virtual void stop() override;
     /**
      * @param time In seconds.
      */

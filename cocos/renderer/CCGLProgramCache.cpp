@@ -74,6 +74,7 @@ enum {
 
     kShaderType_ETC1ASPositionTextureGray,
     kShaderType_ETC1ASPositionTextureGray_noMVP,
+    kShaderType_LayerRadialGradient,
     kShaderType_MAX,
 };
 
@@ -301,6 +302,10 @@ void GLProgramCache::loadDefaultGLPrograms()
     loadDefaultGLProgram(p, kShaderType_ETC1ASPositionTextureGray_noMVP);
     _programs.emplace(GLProgram::SHADER_NAME_ETC1AS_POSITION_TEXTURE_GRAY_NO_MVP, p);
     
+    p = new(std::nothrow) GLProgram();
+    loadDefaultGLProgram(p, kShaderType_LayerRadialGradient);
+    _programs.emplace(GLProgram::SHADER_LAYER_RADIAL_GRADIENT, p);
+
     // RETAIN ALL so the don't get purged evar
     for(const auto& keyShaderPair : _programs){
         keyShaderPair.second->retain();
@@ -472,6 +477,10 @@ void GLProgramCache::reloadDefaultGLPrograms()
     p = getGLProgram(GLProgram::SHADER_NAME_ETC1AS_POSITION_TEXTURE_GRAY_NO_MVP);
     p->reset();
     loadDefaultGLProgram(p, kShaderType_ETC1ASPositionTextureGray_noMVP);
+    
+    p = getGLProgram(GLProgram::SHADER_LAYER_RADIAL_GRADIENT);
+    loadDefaultGLProgram(p, kShaderType_LayerRadialGradient);
+    _programs.emplace(GLProgram::SHADER_LAYER_RADIAL_GRADIENT, p);
 }
 
 void GLProgramCache::reloadDefaultGLProgramsRelativeToLights()
@@ -624,6 +633,9 @@ void GLProgramCache::loadDefaultGLProgram(GLProgram *p, int type)
             break;
         case kShaderType_ETC1ASPositionTextureGray_noMVP:
             p->initWithByteArrays(ccPositionTextureColor_noMVP_vert, ccETC1ASPositionTextureGray_frag);
+            break;
+        case kShaderType_LayerRadialGradient:
+            p->initWithByteArrays(ccPosition_vert, ccShader_LayerRadialGradient_frag);
             break;
         default:
             CCLOG("cocos2d: %s:%d, error shader type", __FUNCTION__, __LINE__);
