@@ -2,7 +2,8 @@
 Copyright (c) 2008-2010 Ricardo Quesada
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2011      Zynga Inc.
-Copyright (c) 2013-2017 Chukong Technologies Inc.
+Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -232,8 +233,8 @@ void TextureCache::addImageAsync(const std::string &path, const std::function<vo
         _imageInfoQueue   = new deque<ImageInfo*>();        
 
         // create a new thread to load images
-        _loadingThread = new (std::nothrow) std::thread(&TextureCache::loadImage, this);
         _needQuit = false;
+        _loadingThread = new (std::nothrow) std::thread(&TextureCache::loadImage, this);
     }
 
     if (0 == _asyncRefCount)
@@ -244,22 +245,23 @@ void TextureCache::addImageAsync(const std::string &path, const std::function<vo
     ++_asyncRefCount;
     
     bool found = false;
-    _imageInfoMutex.lock();
-    auto infoIt(_imageInfoQueue->begin());
-    while (infoIt != _imageInfoQueue->end()) {
-        if((*infoIt)->asyncStruct->callbackKey == callbackKey) {
-            (*infoIt)->asyncStruct->addRequestor(target, callback);
-            found = true;
-            break;
-        }
-        else {
-            ++infoIt;
-        }
-    }
-    _imageInfoMutex.unlock();
+	{
+    	std::unique_lock<std::mutex> imageInfoLock(_imageInfoMutex);
+    	auto infoIt(_imageInfoQueue->begin());
+    	while (infoIt != _imageInfoQueue->end()) {
+        	if((*infoIt)->asyncStruct->callbackKey == callbackKey) {
+            	(*infoIt)->asyncStruct->addRequestor(target, callback);
+            	found = true;
+            	break;
+        	}
+        	else {
+            	++infoIt;
+        	}
+    	}
+	}
     
     if(found == false) {
-        _asyncStructQueueMutex.lock();
+        std::unique_lock<std::mutex> ul(_asyncStructQueueMutex);
         auto structIt(_asyncStructQueue->begin());
         while(structIt != _asyncStructQueue->end()){
             if((*structIt)->callbackKey == callbackKey){
@@ -276,7 +278,6 @@ void TextureCache::addImageAsync(const std::string &path, const std::function<vo
             // add async struct into queue
             _asyncStructQueue->push_back(data);
         }
-        _asyncStructQueueMutex.unlock();
     }
     
     _sleepCondition.notify_one();
@@ -834,8 +835,10 @@ std::string TextureCache::getTextureFilePath(cocos2d::Texture2D* texture) const
 void TextureCache::waitForQuit()
 {
     // notify sub thread to quick
+    std::unique_lock<std::mutex> ul(_asyncStructQueueMutex);
     _needQuit = true;
     _sleepCondition.notify_one();
+    ul.unlock();
     if (_loadingThread) _loadingThread->join();
 }
 

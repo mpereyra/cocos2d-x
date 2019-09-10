@@ -1,6 +1,7 @@
 /****************************************************************************
 Copyright (c) 2010-2012 cocos2d-x.org
-Copyright (c) 2013-2017 Chukong Technologies Inc.
+Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -86,14 +87,13 @@ public class Cocos2dxHelper {
     // ===========================================================
 
     private static Cocos2dxMusic sCocos2dMusic;
-    private static Cocos2dxSound sCocos2dSound;
+    private static Cocos2dxSound sCocos2dSound = null;
     private static AssetManager sAssetManager;
-    private static Cocos2dxAccelerometer sCocos2dxAccelerometer;
+    private static Cocos2dxAccelerometer sCocos2dxAccelerometer = null;
     private static boolean sAccelerometerEnabled;
     private static boolean sCompassEnabled;
     private static boolean sActivityVisible;
     private static String sPackageName;
-    private static String sFileDirectory;
     private static Activity sActivity = null;
     private static Cocos2dxHelperListener sCocos2dxHelperListener;
     private static Set<OnActivityResultListener> onActivityResultListeners = new LinkedHashSet<OnActivityResultListener>();
@@ -160,13 +160,8 @@ public class Cocos2dxHelper {
             final ApplicationInfo applicationInfo = activity.getApplicationInfo();
             
             Cocos2dxHelper.sPackageName = applicationInfo.packageName;
-            Cocos2dxHelper.sFileDirectory = activity.getFilesDir().getAbsolutePath();
-            
-            Cocos2dxHelper.nativeSetApkPath(Cocos2dxHelper.getAssetsPath());
-    
-            Cocos2dxHelper.sCocos2dxAccelerometer = new Cocos2dxAccelerometer(activity);
+
             Cocos2dxHelper.sCocos2dMusic = new Cocos2dxMusic(activity);
-            Cocos2dxHelper.sCocos2dSound = new Cocos2dxSound(activity);
             Cocos2dxHelper.sAssetManager = activity.getAssets();
             Cocos2dxHelper.nativeSetContext((Context)activity, Cocos2dxHelper.sAssetManager);
     
@@ -181,18 +176,6 @@ public class Cocos2dxHelper {
             serviceIntent.setPackage("com.enhance.gameservice");
             boolean suc = activity.getApplicationContext().bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE);
             //Enhance API modification end
-            
-            int versionCode = 1;
-            try {
-                versionCode = Cocos2dxActivity.getContext().getPackageManager().getPackageInfo(Cocos2dxHelper.getCocos2dxPackageName(), 0).versionCode;
-            } catch (NameNotFoundException e) {
-                e.printStackTrace();
-            }
-            try {
-                Cocos2dxHelper.sOBBFile = APKExpansionSupport.getAPKExpansionZipFile(Cocos2dxActivity.getContext(), versionCode, 0);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
     
@@ -225,9 +208,23 @@ public class Cocos2dxHelper {
         return Cocos2dxHelper.sAssetsPath;
     }
     
-    public static ZipResourceFile getObbFile()
-    {
-        return Cocos2dxHelper.sOBBFile;
+    public static ZipResourceFile getObbFile() {
+        if (null == sOBBFile) {
+            int versionCode = 1;
+            try {
+                versionCode = Cocos2dxActivity.getContext().getPackageManager().getPackageInfo(Cocos2dxHelper.getCocos2dxPackageName(), 0).versionCode;
+            } catch (NameNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                sOBBFile = APKExpansionSupport.getAPKExpansionZipFile(Cocos2dxActivity.getContext(), versionCode, 0);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return sOBBFile;
     }
     
     //Enhance API modification begin
@@ -271,8 +268,6 @@ public class Cocos2dxHelper {
     // Methods
     // ===========================================================
 
-    private static native void nativeSetApkPath(final String pApkPath);
-
     private static native void nativeSetEditTextDialogResult(final byte[] pBytes);
 
     private static native void nativeSetContext(final Context pContext, final AssetManager pAssetManager);
@@ -283,7 +278,7 @@ public class Cocos2dxHelper {
         return Cocos2dxHelper.sPackageName;
     }
     public static String getCocos2dxWritablePath() {
-        return Cocos2dxHelper.sFileDirectory;
+        return sActivity.getFilesDir().getAbsolutePath();
     }
 
     public static String getCurrentLanguage() {
@@ -300,21 +295,21 @@ public class Cocos2dxHelper {
 
     public static void enableAccelerometer() {
         Cocos2dxHelper.sAccelerometerEnabled = true;
-        Cocos2dxHelper.sCocos2dxAccelerometer.enableAccel();
+        Cocos2dxHelper.getAccelerometer().enableAccel();
     }
 
     public static void enableCompass() {
         Cocos2dxHelper.sCompassEnabled = true;
-        Cocos2dxHelper.sCocos2dxAccelerometer.enableCompass();
+        Cocos2dxHelper.getAccelerometer().enableCompass();
     }
 
     public static void setAccelerometerInterval(float interval) {
-        Cocos2dxHelper.sCocos2dxAccelerometer.setInterval(interval);
+        Cocos2dxHelper.getAccelerometer().setInterval(interval);
     }
 
     public static void disableAccelerometer() {
         Cocos2dxHelper.sAccelerometerEnabled = false;
-        Cocos2dxHelper.sCocos2dxAccelerometer.disable();
+        Cocos2dxHelper.getAccelerometer().disable();
     }
 
     public static void setKeepScreenOn(boolean value) {
@@ -348,8 +343,8 @@ public class Cocos2dxHelper {
     
     public static long[] getObbAssetFileDescriptor(final String path) {
         long[] array = new long[3];
-        if (Cocos2dxHelper.sOBBFile != null) {
-            AssetFileDescriptor descriptor = Cocos2dxHelper.sOBBFile.getAssetFileDescriptor(path);
+        if (Cocos2dxHelper.getObbFile() != null) {
+            AssetFileDescriptor descriptor = Cocos2dxHelper.getObbFile().getAssetFileDescriptor(path);
             if (descriptor != null) {
                 try {
                     ParcelFileDescriptor parcel = descriptor.getParcelFileDescriptor();
@@ -463,7 +458,7 @@ public class Cocos2dxHelper {
 
     public static void preloadEffect(final String path) {
         try {
-            Cocos2dxHelper.sCocos2dSound.preloadEffect(path);
+            Cocos2dxHelper.getSound().preloadEffect(path);
         } catch (Exception e) {
             Log.e(TAG, "preloadEffect failed", e);
             return; //Add logic here if we ever end up caring if this fails
@@ -472,7 +467,7 @@ public class Cocos2dxHelper {
 
     public static int playEffect(final String path, final boolean isLoop, final float pitch, final float pan, final float gain) {
         try {
-            return Cocos2dxHelper.sCocos2dSound.playEffect(path, isLoop, pitch, pan, gain);
+            return Cocos2dxHelper.getSound().playEffect(path, isLoop, pitch, pan, gain);
         } catch (Exception e) {
             Log.e(TAG, "playEffect failed", e);
             return -1; //Add logic here if we ever end up caring if this fails
@@ -481,7 +476,7 @@ public class Cocos2dxHelper {
 
     public static void resumeEffect(final int soundId) {
         try {
-            Cocos2dxHelper.sCocos2dSound.resumeEffect(soundId);
+            Cocos2dxHelper.getSound().resumeEffect(soundId);
         } catch (Exception e) {
             Log.e(TAG, "resumeEffect failed", e);
             return; //Add logic here if we ever end up caring if this fails
@@ -490,7 +485,7 @@ public class Cocos2dxHelper {
 
     public static void pauseEffect(final int soundId) {
         try {
-            Cocos2dxHelper.sCocos2dSound.pauseEffect(soundId);
+            Cocos2dxHelper.getSound().pauseEffect(soundId);
         } catch (Exception e) {
             Log.e(TAG, "pauseEffect failed", e);
             return; //Add logic here if we ever end up caring if this fails
@@ -499,7 +494,7 @@ public class Cocos2dxHelper {
 
     public static void stopEffect(final int soundId) {
         try {
-            Cocos2dxHelper.sCocos2dSound.stopEffect(soundId);
+            Cocos2dxHelper.getSound().stopEffect(soundId);
         } catch (Exception e) {
             Log.e(TAG, "stopEffect failed", e);
             return; //Add logic here if we ever end up caring if this fails
@@ -508,7 +503,7 @@ public class Cocos2dxHelper {
 
     public static float getEffectsVolume() {
         try {
-            return Cocos2dxHelper.sCocos2dSound.getEffectsVolume();
+            return Cocos2dxHelper.getSound().getEffectsVolume();
         } catch (Exception e) {
             Log.e(TAG, "getEffectsVolume failed", e);
             return 0.0f; //Add logic here if we ever end up caring if this fails
@@ -517,7 +512,7 @@ public class Cocos2dxHelper {
 
     public static void setEffectsVolume(final float volume) {
         try {
-            Cocos2dxHelper.sCocos2dSound.setEffectsVolume(volume);
+            Cocos2dxHelper.getSound().setEffectsVolume(volume);
         } catch (Exception e) {
             Log.e(TAG, "setEffectsVolume failed", e);
             return; //Add logic here if we ever end up caring if this fails
@@ -526,7 +521,7 @@ public class Cocos2dxHelper {
 
     public static void unloadEffect(final String path) {
         try {
-            Cocos2dxHelper.sCocos2dSound.unloadEffect(path);
+            Cocos2dxHelper.getSound().unloadEffect(path);
         } catch (Exception e) {
             Log.e(TAG, "unloadEffect failed", e);
             return; //Add logic here if we ever end up caring if this fails
@@ -535,7 +530,7 @@ public class Cocos2dxHelper {
 
     public static void pauseAllEffects() {
         try {
-            Cocos2dxHelper.sCocos2dSound.pauseAllEffects();
+            Cocos2dxHelper.getSound().pauseAllEffects();
         } catch (Exception e) {
             Log.e(TAG, "pauseAllEffects failed", e);
             return; //Add logic here if we ever end up caring if this fails
@@ -544,7 +539,7 @@ public class Cocos2dxHelper {
 
     public static void resumeAllEffects() {
         try {
-            Cocos2dxHelper.sCocos2dSound.resumeAllEffects();
+            Cocos2dxHelper.getSound().resumeAllEffects();
         } catch (Exception e) {
             Log.e(TAG, "resumeAllEffects failed", e);
             return; //Add logic here if we ever end up caring if this fails
@@ -553,7 +548,7 @@ public class Cocos2dxHelper {
 
     public static void stopAllEffects() {
         try {
-            Cocos2dxHelper.sCocos2dSound.stopAllEffects();
+            Cocos2dxHelper.getSound().stopAllEffects();
         } catch (Exception e) {
             Log.e(TAG, "stopAllEffects failed", e);
             return; //Add logic here if we ever end up caring if this fails
@@ -562,38 +557,38 @@ public class Cocos2dxHelper {
 
     static void setAudioFocus(boolean isAudioFocus) {
         sCocos2dMusic.setAudioFocus(isAudioFocus);
-        sCocos2dSound.setAudioFocus(isAudioFocus);
+        getSound().setAudioFocus(isAudioFocus);
     }
 
     public static void end() {
         Cocos2dxHelper.sCocos2dMusic.end();
-        Cocos2dxHelper.sCocos2dSound.end();
+        Cocos2dxHelper.getSound().end();
     }
 
     public static void onResume() {
         sActivityVisible = true;
         if (Cocos2dxHelper.sAccelerometerEnabled) {
-            Cocos2dxHelper.sCocos2dxAccelerometer.enableAccel();
+            Cocos2dxHelper.getAccelerometer().enableAccel();
         }
         if (Cocos2dxHelper.sCompassEnabled) {
-            Cocos2dxHelper.sCocos2dxAccelerometer.enableCompass();
+            Cocos2dxHelper.getAccelerometer().enableCompass();
         }
     }
 
     public static void onPause() {
         sActivityVisible = false;
         if (Cocos2dxHelper.sAccelerometerEnabled) {
-            Cocos2dxHelper.sCocos2dxAccelerometer.disable();
+            Cocos2dxHelper.getAccelerometer().disable();
         }
     }
 
     public static void onEnterBackground() {
-        sCocos2dSound.onEnterBackground();
+        getSound().onEnterBackground();
         sCocos2dMusic.onEnterBackground();
     }
     
     public static void onEnterForeground() {
-        sCocos2dSound.onEnterForeground();
+        getSound().onEnterForeground();
         sCocos2dMusic.onEnterForeground();
     }
     
@@ -968,14 +963,28 @@ public class Cocos2dxHelper {
 
     //Enhance API modification end     
     public static float[] getAccelValue() {
-        return Cocos2dxHelper.sCocos2dxAccelerometer.accelerometerValues;
+        return Cocos2dxHelper.getAccelerometer().accelerometerValues;
     }
 
     public static float[] getCompassValue() {
-        return Cocos2dxHelper.sCocos2dxAccelerometer.compassFieldValues;
+        return Cocos2dxHelper.getAccelerometer().compassFieldValues;
     }
 
     public static int getSDKVersion() {
         return Build.VERSION.SDK_INT;
+    }
+
+    private static Cocos2dxAccelerometer getAccelerometer() {
+        if (null == sCocos2dxAccelerometer)
+            Cocos2dxHelper.sCocos2dxAccelerometer = new Cocos2dxAccelerometer(sActivity);
+
+        return sCocos2dxAccelerometer;
+    }
+
+    private static Cocos2dxSound getSound() {
+        if (null == sCocos2dSound)
+            sCocos2dSound = new Cocos2dxSound(sActivity);
+
+        return sCocos2dSound;
     }
 }

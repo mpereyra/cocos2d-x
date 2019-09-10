@@ -3,7 +3,8 @@ Copyright 2011 Jeff Lamarche
 Copyright 2012 Goffredo Marocchi
 Copyright 2012 Ricardo Quesada
 Copyright 2012 cocos2d-x.org
-Copyright (c) 2013-2017 Chukong Technologies Inc.
+Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
  
@@ -295,14 +296,17 @@ void UniformValue::setMat4v(ssize_t size, const Mat4* pointer)
 
 UniformValue& UniformValue::operator=(const UniformValue& o)
 {
-    _uniform = o._uniform;
-    _glprogram = o._glprogram;
-    _type = o._type;
-    _value = o._value;
-    
-    if (_uniform->type == GL_SAMPLER_2D)
+    if (this != &o)
     {
-        CC_SAFE_RETAIN(_value.tex.texture);
+        _uniform = o._uniform;
+        _glprogram = o._glprogram;
+        _type = o._type;
+        _value = o._value;
+
+        if (_uniform->type == GL_SAMPLER_2D)
+        {
+            CC_SAFE_RETAIN(_value.tex.texture);
+        }
     }
     return *this;
 }
@@ -441,8 +445,11 @@ GLProgramState::GLProgramState()
 , _vertexAttribsFlags(0)
 , _glprogram(nullptr)
 , _nodeBinding(nullptr)
+#if CC_ENABLE_CACHE_TEXTURE_DATA
+, _backToForegroundlistener(nullptr)
+#endif
 {
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_WINRT)
+#if CC_ENABLE_CACHE_TEXTURE_DATA
     /** listen the event that renderer was recreated on Android/WP8 */
     //CCLOG("create rendererRecreatedListener for GLProgramState");
     _backToForegroundlistener = EventListenerCustom::create(EVENT_RENDERER_RECREATED, 
@@ -457,7 +464,7 @@ GLProgramState::GLProgramState()
 
 GLProgramState::~GLProgramState()
 {
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_WINRT)
+#if CC_ENABLE_CACHE_TEXTURE_DATA
     Director::getInstance()->getEventDispatcher()->removeEventListener(_backToForegroundlistener);
 #endif
 
@@ -1063,7 +1070,7 @@ void GLProgramState::setNodeBinding(Node* target)
     // weak ref
     _nodeBinding = target;
 
-    for (const auto autobinding: _autoBindings)
+    for (const auto& autobinding: _autoBindings)
         applyAutoBinding(autobinding.first, autobinding.second);
 }
 
