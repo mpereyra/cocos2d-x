@@ -38,8 +38,8 @@ THE SOFTWARE.
 #include <stdlib.h>
 #include <sys/stat.h>
 
-#define  LOG_TAG    "CCFileUtils-android.cpp"
-#define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG,__VA_ARGS__)
+#define  CCLOG_TAG    "CCFileUtils-android.cpp"
+#define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,CCLOG_TAG,__VA_ARGS__)
 
 #define  ASSETS_FOLDER_NAME          "assets/"
 #define  ASSETS_FOLDER_NAME_LENGTH   7

@@ -394,12 +394,6 @@ private:
         return "J";
     }
 
-    /* TC patch start */
-    static std::string getJNISignature(jlong) {
-        return "J";
-    }
-    /* TC patch end*/
-
     static std::string getJNISignature(float) {
         return "F";
     }

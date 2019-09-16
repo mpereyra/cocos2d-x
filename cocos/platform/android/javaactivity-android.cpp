@@ -48,8 +48,8 @@ THE SOFTWARE.
 #include "renderer/CCTexture2D.h"
 /* END PATCH */
 
-#define  LOG_TAG    "main"
-#define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG,__VA_ARGS__)
+#define  CCLOG_TAG    "main"
+#define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,CCLOG_TAG,__VA_ARGS__)
 
 void cocos_android_app_init(JNIEnv* env, jobject thiz) __attribute__((weak));
 

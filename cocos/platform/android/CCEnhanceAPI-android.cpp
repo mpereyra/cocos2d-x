@@ -22,8 +22,8 @@
 #include <android/log.h>
 #include <jni.h>
 
-#define  LOG_TAG    "CCEnhanceAPI_android Debug"
-#define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG,__VA_ARGS__)
+#define  CCLOG_TAG    "CCEnhanceAPI_android Debug"
+#define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,CCLOG_TAG,__VA_ARGS__)
 
 #define CLASS_NAME "org.cocos2dx.lib.Cocos2dxHelper"
 

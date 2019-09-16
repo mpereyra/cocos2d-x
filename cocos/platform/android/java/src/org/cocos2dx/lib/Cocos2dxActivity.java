@@ -72,6 +72,7 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
     private Cocos2dxVideoHelper mVideoHelper = null;
     private Cocos2dxWebViewHelper mWebViewHelper = null;
     private Cocos2dxEditBoxHelper mEditBoxHelper = null;
+    private boolean hasFocus = false;
     private boolean showVirtualButton = false;
     private boolean gainAudioFocus = false;
     private boolean paused = true;
@@ -205,8 +206,8 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
         //It is possible for the app to receive the onWindowsFocusChanged(true) event
         //even though it is locked or asleep
         boolean readyToPlay = !isDeviceLocked() && !isDeviceAsleep();
-
-        if(hasFocus && readyToPlay) {
+        //BPC Patch:  hasFocus doesn't get set to true (for some reason), so ignore it.
+        if(/*hasFocus && */readyToPlay) {
             this.hideVirtualButton();
         	Cocos2dxHelper.onResume();
         	mGLSurfaceView.onResume();
