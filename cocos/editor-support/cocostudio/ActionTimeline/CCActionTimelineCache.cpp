@@ -1,5 +1,6 @@
 /****************************************************************************
 Copyright (c) 2013 cocos2d-x.org
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -504,7 +505,7 @@ ActionTimeline* ActionTimelineCache::createActionWithDataBuffer(const cocos2d::D
         Timeline* timeline = loadTimelineWithFlatBuffers(timelineFlatBuf);
         if (timeline)
         {
-            properTimelineMap.insert(std::make_pair(timelineFlatBuf->property()->c_str(), timeline));
+            properTimelineMap.emplace(timelineFlatBuf->property()->c_str(), timeline);
         }
     }
 
@@ -640,7 +641,7 @@ Frame* ActionTimelineCache::loadPositionFrameWithFlatBuffers(const flatbuffers::
 {
     PositionFrame* frame = PositionFrame::create();
     
-    auto f_position = flatbuffers->postion();
+    auto f_position = flatbuffers->position();
     Vec2 position(f_position->x(), f_position->y());
     frame->setPosition(position);
     
@@ -964,12 +965,10 @@ ActionTimeline* ActionTimelineCache::createActionWithFlatBuffersForSimulator(con
     fbs->_isSimulator = true;
     auto builder = fbs->createFlatBuffersWithXMLFileForSimulator(fileName);
     
-    ActionTimeline* action = ActionTimeline::create();
-    
     auto csparsebinary = GetCSParseBinary(builder->GetBufferPointer());
     auto nodeAction = csparsebinary->action();
     
-    action = ActionTimeline::create();
+    auto action = ActionTimeline::create();
     
     int duration = nodeAction->duration();
     action->setDuration(duration);
@@ -998,7 +997,7 @@ ActionTimeline* ActionTimelineCache::createActionWithFlatBuffersForSimulator(con
         Timeline* timeline = loadTimelineWithFlatBuffers(timelineFlatBuf);
         if (timeline)
         {
-            properTimelineMap.insert(std::make_pair(timelineFlatBuf->property()->c_str(), timeline));
+            properTimelineMap.emplace(timelineFlatBuf->property()->c_str(), timeline);
         }
     }
 

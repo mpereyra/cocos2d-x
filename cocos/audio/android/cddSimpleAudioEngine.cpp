@@ -1,6 +1,7 @@
 /****************************************************************************
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -81,7 +82,7 @@ namespace CocosDenshion {
     void SimpleAudioEngine::unloadEffect(const char* pszFilePath) { }
 
     /* BPC_PATCH start: https://github.com/brooklynpacket/cocos2d-x/commit/52d887f2f58009c4a24dfc4cd3072a0671b3db29 */
-    void SimpleAudioEngine::debugUsage() 
+    void SimpleAudioEngine::debugUsage()
     {
 
     }

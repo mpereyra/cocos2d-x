@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (c) 2010-2012 cocos2d-x.org
  Copyright (c) 2012 Jozef Pridavok
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -164,6 +165,11 @@ void EditBoxImplMac::setNativeInputFlag(EditBox::InputFlag inputFlag)
 void EditBoxImplMac::setNativeReturnType(EditBox::KeyboardReturnType returnType)
 {
     [_sysEdit setReturnType:returnType];
+}
+
+void EditBoxImplMac::setNativeTextHorizontalAlignment(cocos2d::TextHAlignment alignment)
+{
+    [_sysEdit setTextHorizontalAlignment:alignment];
 }
 
 bool EditBoxImplMac::isEditing()

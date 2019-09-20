@@ -1,5 +1,6 @@
 /****************************************************************************
- Copyright (c) 2015 Chukong Technologies Inc.
+ Copyright (c) 2015-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -211,7 +212,7 @@ var TestWriteValueMap = fileUtilsBase.extend({
         var booleanObject = true;
         valueMap["data3"] = booleanObject;
 
-        //add interger to the plist
+        //add integer to the plist
         var intObject = 1024;
         valueMap["data4"] = intObject;
 
@@ -305,7 +306,7 @@ var TestWriteValueVector = fileUtilsBase.extend({
         var booleanObject = true;
         array[array.length] = booleanObject;
 
-        //add interger to the plist
+        //add integer to the plist
         var intObject = 1024;
         array[array.length] = intObject;
 

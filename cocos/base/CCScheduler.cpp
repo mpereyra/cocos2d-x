@@ -3,6 +3,7 @@ Copyright (c) 2008-2010 Ricardo Quesada
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2011      Zynga Inc.
 Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -441,6 +442,7 @@ void Scheduler::priorityIn(tListEntry **list, const ccSchedulerFunc& callback, v
     hashElement->target = target;
     hashElement->list = list;
     hashElement->entry = listElement;
+    memset(&hashElement->hh, 0, sizeof(hashElement->hh));
     HASH_ADD_PTR(_hashForUpdates, target, hashElement);
 }
 
@@ -461,6 +463,7 @@ void Scheduler::appendIn(_listEntry **list, const ccSchedulerFunc& callback, voi
     hashElement->target = target;
     hashElement->list = list;
     hashElement->entry = listElement;
+    memset(&hashElement->hh, 0, sizeof(hashElement->hh));
     HASH_ADD_PTR(_hashForUpdates, target, hashElement);
 }
 
@@ -804,13 +807,10 @@ void Scheduler::resumeTargets(const std::set<void*>& targetsToResume)
     }
 }
 
-void Scheduler::performFunctionInCocosThread(const std::function<void ()> &function)
+void Scheduler::performFunctionInCocosThread(std::function<void ()> function)
 {
-
     std::lock_guard<std::mutex> lock(_performMutex);
-    
-    _functionsToPerform.push_back(function);
-    
+    _functionsToPerform.push_back(std::move(function));
 }
 
 void Scheduler::removeAllFunctionsToBePerformedInCocosThread()
@@ -939,7 +939,8 @@ void Scheduler::update(float dt)
     // Functions allocated from another thread
     //
 
-    
+    // Testing size is faster than locking / unlocking.
+    // And almost never there will be functions scheduled to be called.
     _performMutex.lock();
     if( !_functionsToPerform.empty() ) {
         // fixed #4123: Save the callback functions, they must be invoked after '_performMutex.unlock()', otherwise if new functions are added in callback, it will cause thread deadlock.

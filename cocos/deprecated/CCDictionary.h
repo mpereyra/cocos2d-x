@@ -1,6 +1,7 @@
 /****************************************************************************
 Copyright (c) 2012      cocos2d-x.org
 Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -97,7 +98,7 @@ public:
      *
      * @return  The string key of this element.
      */
-    inline const char* getStrKey() const
+    const char* getStrKey() const
     {
         CCASSERT(_strKey[0] != '\0', "Should not call this function for integer dictionary");
         return _strKey;
@@ -110,7 +111,7 @@ public:
      *
      * @return  The integer key of this element.
      */
-    inline intptr_t getIntKey() const
+    intptr_t getIntKey() const
     {
         CCASSERT(_strKey[0] == '\0', "Should not call this function for string dictionary");
         return _intKey;
@@ -121,7 +122,7 @@ public:
      *
      * @return  The object of this element.
      */
-    inline Ref* getObject() const { return _object; }
+    Ref* getObject() const { return _object; }
 
 private:
     // The max length of string key.

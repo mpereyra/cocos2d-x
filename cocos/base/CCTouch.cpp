@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (c) 2010-2012 cocos2d-x.org
  Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -29,44 +30,44 @@
 NS_CC_BEGIN
 
 // returns the current touch location in screen coordinates
-Vec2 Touch::getLocationInView() const
-{
-    return _point;
+Vec2 Touch::getLocationInView() const 
+{ 
+    return _point; 
 }
 
 // returns the previous touch location in screen coordinates
-Vec2 Touch::getPreviousLocationInView() const
-{
-    return _prevPoint;
+Vec2 Touch::getPreviousLocationInView() const 
+{ 
+    return _prevPoint; 
 }
 
 // returns the start touch location in screen coordinates
-Vec2 Touch::getStartLocationInView() const
-{
-    return _startPoint;
+Vec2 Touch::getStartLocationInView() const 
+{ 
+    return _startPoint; 
 }
 
 // returns the current touch location in OpenGL coordinates
 Vec2 Touch::getLocation() const
-{
-    return Director::getInstance()->convertToGL(_point);
+{ 
+    return Director::getInstance()->convertToGL(_point); 
 }
 
 // returns the previous touch location in OpenGL coordinates
 Vec2 Touch::getPreviousLocation() const
-{
-    return Director::getInstance()->convertToGL(_prevPoint);
+{ 
+    return Director::getInstance()->convertToGL(_prevPoint);  
 }
 
 // returns the start touch location in OpenGL coordinates
 Vec2 Touch::getStartLocation() const
-{
-    return Director::getInstance()->convertToGL(_startPoint);
+{ 
+    return Director::getInstance()->convertToGL(_startPoint);  
 }
 
 // returns the delta position between the current location and the previous location in OpenGL coordinates
 Vec2 Touch::getDelta() const
-{
+{     
     return getLocation() - getPreviousLocation();
 }
 

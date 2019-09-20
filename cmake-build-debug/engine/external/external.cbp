@@ -1,0 +1,1187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="external"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\cmake\;CMake Files\cmake\Modules\;CMake Files\cocos\;CMake Files\cocos\2d\;CMake Files\cocos\3d\;CMake Files\cocos\platform\;CMake Files\cocos\physics\;CMake Files\cocos\physics3d\;CMake Files\cocos\math\;CMake Files\cocos\navmesh\;CMake Files\cocos\renderer\;CMake Files\cocos\vr\;CMake Files\cocos\base\;CMake Files\cocos\deprecated\;CMake Files\cocos\ui\;CMake Files\cocos\network\;CMake Files\cocos\audio\;CMake Files\cocos\storage\;CMake Files\cocos\editor-support\;CMake Files\cocos\editor-support\cocosbuilder\;CMake Files\cocos\editor-support\cocostudio\;CMake Files\cocos\editor-support\spine\;CMake Files\cocos\scripting\;CMake Files\cocos\scripting\lua-bindings\;CMake Files\cocos\scripting\js-bindings\;CMake Files\extensions\;CMake Files\external\;CMake Files\external\Box2D\;CMake Files\external\cmake\;CMake Files\external\chipmunk\;CMake Files\external\freetype2\;CMake Files\external\recast\;CMake Files\external\bullet\;CMake Files\external\jpeg\;CMake Files\external\openssl\;CMake Files\external\tiff\;CMake Files\external\uv\;CMake Files\external\webp\;CMake Files\external\websockets\;CMake Files\external\tinyxml2\;CMake Files\external\xxhash\;CMake Files\external\xxtea\;CMake Files\external\clipper\;CMake Files\external\edtaa3func\;CMake Files\external\ConvertUTF\;CMake Files\external\poly2tri\;CMake Files\external\md5\;CMake Files\external\spidermonkey\;CMake Files\external\lua\;CMake Files\external\lua\luajit\;CMake Files\external\lua\tolua\;CMake Files\external\lua\luasocket\;CMake Files\external\curl\;CMake Files\external\png\;CMake Files\external\glfw3\;CMake Files\external\zlib\;CMake Files\external\unzip\;CMake Files\tests\;CMake Files\tests\cpp-empty-test\;CMake Files\tests\cpp-empty-test\proj.mac\;CMake Files\tests\cpp-tests\;CMake Files\tests\cpp-tests\proj.mac\;CMake Files\tests\js-tests\;CMake Files\tests\js-tests\project\;CMake Files\tests\js-tests\project\proj.mac\;CMake Files\tests\lua-empty-test\;CMake Files\tests\lua-empty-test\project\;CMake Files\tests\lua-empty-test\project\proj.mac\;CMake Files\tests\lua-tests\;CMake Files\tests\lua-tests\project\;CMake Files\tests\lua-tests\project\proj.ios_mac\;CMake Files\tests\lua-tests\project\proj.ios_mac\mac\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="external">
+				<Option output="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/lib/libexternal.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DLWS_WITH_LIBUV"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/editor-support"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/.."/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/tinyxml2/."/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/xxhash/."/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/xxtea/."/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/clipper/."/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/edtaa3func/."/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/ConvertUTF/."/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/poly2tri/.."/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/md5/.."/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/unzip/."/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/Box2D/include"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/chipmunk/include"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/freetype2/include/mac/freetype2"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/jpeg/include/mac"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/uv/include"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/webp/include/mac"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/bullet/include"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/bullet/include/bullet"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/openssl/include/mac"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/tiff/include/mac"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/websockets/include/mac"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/curl/include/mac"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/png/include/mac"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/glfw3/include/mac"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/zlib/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/Makefile&quot;  VERBOSE=1 external"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="external/fast">
+				<Option output="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/lib/libexternal.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DLWS_WITH_LIBUV"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/editor-support"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/.."/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/tinyxml2/."/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/xxhash/."/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/xxtea/."/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/clipper/."/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/edtaa3func/."/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/ConvertUTF/."/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/poly2tri/.."/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/md5/.."/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/unzip/."/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/Box2D/include"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/chipmunk/include"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/freetype2/include/mac/freetype2"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/jpeg/include/mac"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/uv/include"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/webp/include/mac"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/bullet/include"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/bullet/include/bullet"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/openssl/include/mac"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/tiff/include/mac"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/websockets/include/mac"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/curl/include/mac"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/png/include/mac"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/glfw3/include/mac"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/zlib/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/Makefile&quot;  VERBOSE=1 external/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ext_recast">
+				<Option output="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/lib/libext_recast.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/recast"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/editor-support"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/.."/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/recast/Makefile&quot;  VERBOSE=1 ext_recast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/recast/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/recast/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/recast/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ext_recast/fast">
+				<Option output="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/lib/libext_recast.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/recast"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/editor-support"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/.."/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/recast/Makefile&quot;  VERBOSE=1 ext_recast/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/recast/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/recast/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/recast/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ext_tinyxml2">
+				<Option output="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/lib/libext_tinyxml2.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/tinyxml2"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/editor-support"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/tinyxml2/."/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/tinyxml2/Makefile&quot;  VERBOSE=1 ext_tinyxml2"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/tinyxml2/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/tinyxml2/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/tinyxml2/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ext_tinyxml2/fast">
+				<Option output="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/lib/libext_tinyxml2.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/tinyxml2"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/editor-support"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/tinyxml2/."/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/tinyxml2/Makefile&quot;  VERBOSE=1 ext_tinyxml2/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/tinyxml2/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/tinyxml2/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/tinyxml2/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ext_xxhash">
+				<Option output="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/lib/libext_xxhash.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/xxhash"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/editor-support"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/xxhash/."/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/xxhash/Makefile&quot;  VERBOSE=1 ext_xxhash"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/xxhash/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/xxhash/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/xxhash/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ext_xxhash/fast">
+				<Option output="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/lib/libext_xxhash.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/xxhash"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/editor-support"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/xxhash/."/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/xxhash/Makefile&quot;  VERBOSE=1 ext_xxhash/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/xxhash/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/xxhash/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/xxhash/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ext_xxtea">
+				<Option output="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/lib/libext_xxtea.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/xxtea"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/editor-support"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/xxtea/."/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/xxtea/Makefile&quot;  VERBOSE=1 ext_xxtea"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/xxtea/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/xxtea/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/xxtea/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ext_xxtea/fast">
+				<Option output="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/lib/libext_xxtea.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/xxtea"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/editor-support"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/xxtea/."/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/xxtea/Makefile&quot;  VERBOSE=1 ext_xxtea/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/xxtea/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/xxtea/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/xxtea/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ext_clipper">
+				<Option output="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/lib/libext_clipper.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/clipper"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/editor-support"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/clipper/."/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/clipper/Makefile&quot;  VERBOSE=1 ext_clipper"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/clipper/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/clipper/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/clipper/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ext_clipper/fast">
+				<Option output="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/lib/libext_clipper.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/clipper"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/editor-support"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/clipper/."/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/clipper/Makefile&quot;  VERBOSE=1 ext_clipper/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/clipper/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/clipper/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/clipper/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ext_edtaa3func">
+				<Option output="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/lib/libext_edtaa3func.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/edtaa3func"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/editor-support"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/edtaa3func/."/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/edtaa3func/Makefile&quot;  VERBOSE=1 ext_edtaa3func"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/edtaa3func/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/edtaa3func/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/edtaa3func/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ext_edtaa3func/fast">
+				<Option output="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/lib/libext_edtaa3func.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/edtaa3func"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/editor-support"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/edtaa3func/."/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/edtaa3func/Makefile&quot;  VERBOSE=1 ext_edtaa3func/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/edtaa3func/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/edtaa3func/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/edtaa3func/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ext_convertUTF">
+				<Option output="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/lib/libext_convertUTF.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/ConvertUTF"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/editor-support"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/ConvertUTF/."/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/ConvertUTF/Makefile&quot;  VERBOSE=1 ext_convertUTF"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/ConvertUTF/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/ConvertUTF/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/ConvertUTF/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ext_convertUTF/fast">
+				<Option output="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/lib/libext_convertUTF.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/ConvertUTF"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/editor-support"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/ConvertUTF/."/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/ConvertUTF/Makefile&quot;  VERBOSE=1 ext_convertUTF/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/ConvertUTF/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/ConvertUTF/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/ConvertUTF/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ext_poly2tri">
+				<Option output="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/lib/libext_poly2tri.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/poly2tri"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/editor-support"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/poly2tri/.."/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/poly2tri/Makefile&quot;  VERBOSE=1 ext_poly2tri"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/poly2tri/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/poly2tri/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/poly2tri/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ext_poly2tri/fast">
+				<Option output="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/lib/libext_poly2tri.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/poly2tri"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/editor-support"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/poly2tri/.."/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/poly2tri/Makefile&quot;  VERBOSE=1 ext_poly2tri/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/poly2tri/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/poly2tri/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/poly2tri/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ext_md5">
+				<Option output="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/lib/libext_md5.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/md5"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/editor-support"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/md5/.."/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/md5/Makefile&quot;  VERBOSE=1 ext_md5"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/md5/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/md5/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/md5/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ext_md5/fast">
+				<Option output="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/lib/libext_md5.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/md5"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/editor-support"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/md5/.."/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/md5/Makefile&quot;  VERBOSE=1 ext_md5/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/md5/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/md5/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/md5/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ext_tolua">
+				<Option output="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/lib/libext_tolua.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/lua/tolua"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/editor-support"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/tolua/../luajit/include"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/tolua/."/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/lua/tolua/Makefile&quot;  VERBOSE=1 ext_tolua"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/lua/tolua/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/lua/tolua/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/lua/tolua/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ext_tolua/fast">
+				<Option output="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/lib/libext_tolua.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/lua/tolua"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/editor-support"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/tolua/../luajit/include"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/tolua/."/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/lua/tolua/Makefile&quot;  VERBOSE=1 ext_tolua/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/lua/tolua/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/lua/tolua/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/lua/tolua/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ext_luasocket">
+				<Option output="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/lib/libext_luasocket.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/lua/luasocket"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/editor-support"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/../luajit/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/lua/luasocket/Makefile&quot;  VERBOSE=1 ext_luasocket"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/lua/luasocket/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/lua/luasocket/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/lua/luasocket/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ext_luasocket/fast">
+				<Option output="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/lib/libext_luasocket.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/lua/luasocket"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/editor-support"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/../luajit/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/lua/luasocket/Makefile&quot;  VERBOSE=1 ext_luasocket/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/lua/luasocket/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/lua/luasocket/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/lua/luasocket/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ext_unzip">
+				<Option output="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/lib/libext_unzip.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/unzip"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/editor-support"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/unzip/."/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/zlib/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/unzip/Makefile&quot;  VERBOSE=1 ext_unzip"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/unzip/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/unzip/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/unzip/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ext_unzip/fast">
+				<Option output="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/lib/libext_unzip.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/unzip"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/editor-support"/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/unzip/."/>
+					<Add directory="/Projects/fg/lib/griffin/lib/cocos2d-x/external/zlib/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include/c++/v1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/lib/clang/10.0.1/include"/>
+					<Add directory="/Library/Developer/CommandLineTools/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/unzip/Makefile&quot;  VERBOSE=1 ext_unzip/fast"/>
+					<CompileFile command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/unzip/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/unzip/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j8 -f &quot;/Projects/fg/lib/griffin/lib/cocos2d-x/cmake-build-debug/engine/external/unzip/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/ConvertUTF/ConvertUTF.c">
+			<Option target="ext_convertUTF"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/ConvertUTF/ConvertUTF.h">
+			<Option target="ext_convertUTF"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/ConvertUTF/ConvertUTFWrapper.cpp">
+			<Option target="ext_convertUTF"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/clipper/clipper.cpp">
+			<Option target="ext_clipper"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/clipper/clipper.hpp">
+			<Option target="ext_clipper"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/edtaa3func/edtaa3func.cpp">
+			<Option target="ext_edtaa3func"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/edtaa3func/edtaa3func.h">
+			<Option target="ext_edtaa3func"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/empty.cpp">
+			<Option target="external"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/auxiliar.c">
+			<Option target="ext_luasocket"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/auxiliar.h">
+			<Option target="ext_luasocket"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/buffer.c">
+			<Option target="ext_luasocket"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/buffer.h">
+			<Option target="ext_luasocket"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/except.c">
+			<Option target="ext_luasocket"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/except.h">
+			<Option target="ext_luasocket"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/inet.c">
+			<Option target="ext_luasocket"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/inet.h">
+			<Option target="ext_luasocket"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/io.c">
+			<Option target="ext_luasocket"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/io.h">
+			<Option target="ext_luasocket"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/luasocket.c">
+			<Option target="ext_luasocket"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/luasocket.h">
+			<Option target="ext_luasocket"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/luasocket_scripts.c">
+			<Option target="ext_luasocket"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/luasocket_scripts.h">
+			<Option target="ext_luasocket"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/mime.c">
+			<Option target="ext_luasocket"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/mime.h">
+			<Option target="ext_luasocket"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/options.c">
+			<Option target="ext_luasocket"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/options.h">
+			<Option target="ext_luasocket"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/select.c">
+			<Option target="ext_luasocket"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/select.h">
+			<Option target="ext_luasocket"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/serial.c">
+			<Option target="ext_luasocket"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/tcp.c">
+			<Option target="ext_luasocket"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/tcp.h">
+			<Option target="ext_luasocket"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/timeout.c">
+			<Option target="ext_luasocket"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/timeout.h">
+			<Option target="ext_luasocket"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/udp.c">
+			<Option target="ext_luasocket"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/udp.h">
+			<Option target="ext_luasocket"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/unix.c">
+			<Option target="ext_luasocket"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/unix.h">
+			<Option target="ext_luasocket"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/usocket.c">
+			<Option target="ext_luasocket"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/usocket.h">
+			<Option target="ext_luasocket"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/tolua/tolua_event.c">
+			<Option target="ext_tolua"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/tolua/tolua_event.h">
+			<Option target="ext_tolua"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/tolua/tolua_is.c">
+			<Option target="ext_tolua"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/tolua/tolua_map.c">
+			<Option target="ext_tolua"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/tolua/tolua_push.c">
+			<Option target="ext_tolua"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/tolua/tolua_to.c">
+			<Option target="ext_tolua"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/md5/md5.c">
+			<Option target="ext_md5"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/md5/md5.h">
+			<Option target="ext_md5"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/poly2tri/common/shapes.cc">
+			<Option target="ext_poly2tri"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/poly2tri/common/shapes.h">
+			<Option target="ext_poly2tri"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/poly2tri/sweep/advancing_front.cc">
+			<Option target="ext_poly2tri"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/poly2tri/sweep/advancing_front.h">
+			<Option target="ext_poly2tri"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/poly2tri/sweep/cdt.cc">
+			<Option target="ext_poly2tri"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/poly2tri/sweep/cdt.h">
+			<Option target="ext_poly2tri"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/poly2tri/sweep/sweep.cc">
+			<Option target="ext_poly2tri"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/poly2tri/sweep/sweep.h">
+			<Option target="ext_poly2tri"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/poly2tri/sweep/sweep_context.cc">
+			<Option target="ext_poly2tri"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/poly2tri/sweep/sweep_context.h">
+			<Option target="ext_poly2tri"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/DebugUtils/DebugDraw.cpp">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/DebugUtils/DebugDraw.h">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/DebugUtils/DetourDebugDraw.cpp">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/DebugUtils/DetourDebugDraw.h">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/Detour/DetourAlloc.cpp">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/Detour/DetourAlloc.h">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/Detour/DetourCommon.cpp">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/Detour/DetourCommon.h">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/Detour/DetourNavMesh.cpp">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/Detour/DetourNavMesh.h">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/Detour/DetourNavMeshBuilder.cpp">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/Detour/DetourNavMeshBuilder.h">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/Detour/DetourNavMeshQuery.cpp">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/Detour/DetourNavMeshQuery.h">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/Detour/DetourNode.cpp">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/Detour/DetourNode.h">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/DetourCrowd/DetourCrowd.cpp">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/DetourCrowd/DetourCrowd.h">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/DetourCrowd/DetourLocalBoundary.cpp">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/DetourCrowd/DetourLocalBoundary.h">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/DetourCrowd/DetourObstacleAvoidance.cpp">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/DetourCrowd/DetourObstacleAvoidance.h">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/DetourCrowd/DetourPathCorridor.cpp">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/DetourCrowd/DetourPathCorridor.h">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/DetourCrowd/DetourPathQueue.cpp">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/DetourCrowd/DetourPathQueue.h">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/DetourCrowd/DetourProximityGrid.cpp">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/DetourCrowd/DetourProximityGrid.h">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/DetourTileCache/DetourTileCache.cpp">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/DetourTileCache/DetourTileCache.h">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/DetourTileCache/DetourTileCacheBuilder.cpp">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/DetourTileCache/DetourTileCacheBuilder.h">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/fastlz/fastlz.c">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/fastlz/fastlz.h">
+			<Option target="ext_recast"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/tinyxml2/tinyxml2.cpp">
+			<Option target="ext_tinyxml2"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/tinyxml2/tinyxml2.h">
+			<Option target="ext_tinyxml2"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/unzip/ioapi.cpp">
+			<Option target="ext_unzip"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/unzip/ioapi.h">
+			<Option target="ext_unzip"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/unzip/ioapi_mem.cpp">
+			<Option target="ext_unzip"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/unzip/ioapi_mem.h">
+			<Option target="ext_unzip"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/unzip/unzip.cpp">
+			<Option target="ext_unzip"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/unzip/unzip.h">
+			<Option target="ext_unzip"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/xxhash/xxhash.c">
+			<Option target="ext_xxhash"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/xxhash/xxhash.h">
+			<Option target="ext_xxhash"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/xxtea/xxtea.cpp">
+			<Option target="ext_xxtea"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/xxtea/xxtea.h">
+			<Option target="ext_xxtea"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake/Modules/CocosBuildHelpers.cmake">
+			<Option virtualFolder="CMake Files\cmake\Modules\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake/Modules/CocosBuildSet.cmake">
+			<Option virtualFolder="CMake Files\cmake\Modules\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake/Modules/CocosConfigDefine.cmake">
+			<Option virtualFolder="CMake Files\cmake\Modules\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake/Modules/CocosConfigDepend.cmake">
+			<Option virtualFolder="CMake Files\cmake\Modules\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/cmake/Modules/PreventInSourceBuilds.cmake">
+			<Option virtualFolder="CMake Files\cmake\Modules\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\cocos\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/2d/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\cocos\2d\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/3d/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\cocos\3d\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/platform/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\cocos\platform\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/physics/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\cocos\physics\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/physics3d/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\cocos\physics3d\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/math/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\cocos\math\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/navmesh/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\cocos\navmesh\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/renderer/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\cocos\renderer\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/vr/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\cocos\vr\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/base/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\cocos\base\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/deprecated/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\cocos\deprecated\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/ui/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\cocos\ui\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/network/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\cocos\network\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/audio/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\cocos\audio\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/storage/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\cocos\storage\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/editor-support/cocosbuilder/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\cocos\editor-support\cocosbuilder\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/editor-support/cocostudio/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\cocos\editor-support\cocostudio\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/editor-support/spine/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\cocos\editor-support\spine\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/scripting/lua-bindings/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\cocos\scripting\lua-bindings\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/cocos/scripting/js-bindings/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\cocos\scripting\js-bindings\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/extensions/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\extensions\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\external\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/Box2D/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\external\Box2D\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/cmake/CocosExternalConfig.cmake">
+			<Option virtualFolder="CMake Files\external\cmake\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/chipmunk/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\external\chipmunk\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/freetype2/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\external\freetype2\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/recast/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\external\recast\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/bullet/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\external\bullet\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/jpeg/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\external\jpeg\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/openssl/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\external\openssl\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/tiff/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\external\tiff\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/uv/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\external\uv\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/webp/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\external\webp\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/websockets/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\external\websockets\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/tinyxml2/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\external\tinyxml2\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/xxhash/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\external\xxhash\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/xxtea/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\external\xxtea\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/clipper/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\external\clipper\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/edtaa3func/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\external\edtaa3func\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/ConvertUTF/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\external\ConvertUTF\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/poly2tri/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\external\poly2tri\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/md5/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\external\md5\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/spidermonkey/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\external\spidermonkey\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luajit/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\external\lua\luajit\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/tolua/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\external\lua\tolua\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/lua/luasocket/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\external\lua\luasocket\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/curl/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\external\curl\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/png/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\external\png\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/glfw3/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\external\glfw3\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/zlib/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\external\zlib\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/external/unzip/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\external\unzip\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/tests/cpp-empty-test/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\tests\cpp-empty-test\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/tests/cpp-empty-test/proj.mac/Info.plist">
+			<Option virtualFolder="CMake Files\tests\cpp-empty-test\proj.mac\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/tests/cpp-tests/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\tests\cpp-tests\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/tests/cpp-tests/proj.mac/Info.plist">
+			<Option virtualFolder="CMake Files\tests\cpp-tests\proj.mac\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/tests/js-tests/project/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\tests\js-tests\project\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/tests/js-tests/project/proj.mac/Test_Info.plist">
+			<Option virtualFolder="CMake Files\tests\js-tests\project\proj.mac\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/tests/lua-empty-test/project/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\tests\lua-empty-test\project\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/tests/lua-empty-test/project/proj.mac/Info.plist">
+			<Option virtualFolder="CMake Files\tests\lua-empty-test\project\proj.mac\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/tests/lua-tests/project/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\tests\lua-tests\project\"/>
+		</Unit>
+		<Unit filename="/Projects/fg/lib/griffin/lib/cocos2d-x/tests/lua-tests/project/proj.ios_mac/mac/Info.plist">
+			<Option virtualFolder="CMake Files\tests\lua-tests\project\proj.ios_mac\mac\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

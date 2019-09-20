@@ -1,7 +1,8 @@
 /****************************************************************************
 Copyright (c) 2010      Lam Pham
 Copyright (c) 2010-2012 cocos2d-x.org
-Copyright (c) 2013-2016 Chukong Technologies Inc
+Copyright (c) 2013-2017 Chukong Technologies Inc
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -142,7 +143,7 @@ void ProgressTimer::setType(Type type)
     }
 }
 
-void ProgressTimer::setReverseProgress(bool reverse)
+void ProgressTimer::setReverseDirection(bool reverse)
 {
     if( _reverseDirection != reverse ) {
         _reverseDirection = reverse;
@@ -502,13 +503,13 @@ Vec2 ProgressTimer::boundaryTexCoord(char index)
     return Vec2::ZERO;
 }
 
-void ProgressTimer::onDraw(const Mat4 &transform, uint32_t flags)
+void ProgressTimer::onDraw(const Mat4 &transform, uint32_t /*flags*/)
 {
     /*BPC PATCH*/
     bool oldDepthTest = glIsEnabled(GL_DEPTH_TEST) != GL_FALSE;;
     glDisable(GL_DEPTH_TEST);
     /*END BPC PATCH*/
-
+    
     getGLProgram()->use();
     getGLProgram()->setUniformsForBuiltins(transform);
 
@@ -542,8 +543,7 @@ void ProgressTimer::onDraw(const Mat4 &transform, uint32_t flags)
             CC_INCREMENT_GL_DRAWN_BATCHES_AND_VERTICES(2,_vertexDataCount);
         }
     }
-    
-    
+
     /*BPC PATCH*/
     if(oldDepthTest){
         glEnable(GL_DEPTH_TEST);
@@ -555,7 +555,7 @@ void ProgressTimer::draw(Renderer *renderer, const Mat4 &transform, uint32_t fla
 {
     if( ! _vertexData || ! _sprite)
         return;
-    
+
     _customCommand.init(_globalZOrder, transform, flags);
     _customCommand.func = CC_CALLBACK_0(ProgressTimer::onDraw, this, transform, flags);
     renderer->addCommand(&_customCommand);

@@ -1,5 +1,6 @@
 /****************************************************************************
- Copyright (c) 2014 Chukong Technologies Inc.
+ Copyright (c) 2014-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -52,7 +53,6 @@ class Renderer;
 class Scene;
 class Pass;
 
-
 /*BPC PATCH*/
 enum class GLWriteMode{
     Default,  //based on transparency
@@ -60,7 +60,7 @@ enum class GLWriteMode{
     AlwaysOff,
 };
 /*END BPC PATCH*/
- 
+
 /** 
  * @brief Mesh: contains ref to index buffer, GLProgramState, texture, skin, blend function, aabb and so on
  */
@@ -72,7 +72,7 @@ public:
     /**create mesh from positions, normals, and so on, single SubMesh*/
     static Mesh* create(const std::vector<float>& positions, const std::vector<float>& normals, const std::vector<float>& texs, const IndexArray& indices);
     /**create mesh with vertex attributes*/
-    CC_DEPRECATED_ATTRIBUTE static Mesh* create(const std::vector<float>& vertices, int perVertexSizeInFloat, const IndexArray& indices, int numIndex, const std::vector<MeshVertexAttrib>& attribs, int attribCount){ return create(vertices, perVertexSizeInFloat, indices, attribs); }
+    CC_DEPRECATED_ATTRIBUTE static Mesh* create(const std::vector<float>& vertices, int perVertexSizeInFloat, const IndexArray& indices, int /*numIndex*/, const std::vector<MeshVertexAttrib>& attribs, int /*attribCount*/){ return create(vertices, perVertexSizeInFloat, indices, attribs); }
     
     /**
      * @lua NA
@@ -237,7 +237,6 @@ public:
 
     std::string getTextureFileName(){ return _texFile; }
 
-    
     /*BPC-PATCH, some of these might want to migrate down into CCTechnique*/
     float getGlobalZ() const {return m_globalZ;}
     void setGlobalZ(float zVal) {m_globalZ = zVal;}
@@ -261,7 +260,7 @@ public:
     void setUseMeshDepth(bool use) { m_useMeshDepth = use; }
     void setLocalSortOrder(int order) {m_localDepthSort = order;}
     int getLocalSortORder() const {return m_localDepthSort;}
-    
+
     bool boolFromWriteMode(GLWriteMode mode) const{
         switch(mode){
             case GLWriteMode::Default:
@@ -272,12 +271,12 @@ public:
                 return false;
         }
     }
-    
+
     void setMeshLightMask(unsigned int mask) { m_meshLightMask = mask; }
     unsigned int getMeshLightMask() const { return m_meshLightMask; }
-    
+
     void addCommandOverride(const std::string& techniqueName);
-    
+
     void setPointLightCount(int count);
     void setFxPointLightCount(int count);
     void setDirLightCount(int count);
@@ -291,8 +290,7 @@ public:
     int getSpotLightCount();
     int getFxSpotLightCount();
     /*END BPC-PATCH*/
-    
-    
+
 CC_CONSTRUCTOR_ACCESS:
 
     Mesh();
@@ -318,19 +316,17 @@ protected:
     Material*           _material;
     AABB                _aabb;
     std::function<void()> _visibleChanged;
-    
-    
+
     /*BPC-PATCH*/
     GLWriteMode m_depthWriteMode{GLWriteMode::Default};
     GLWriteMode m_cullFaceMode{GLWriteMode::Default};
     float m_globalZ{std::numeric_limits<float>::max()};
     AABB m_skinnedAABB;
     bool m_useMeshDepth{true};
-    
+
     //Sometimes we want to render a mesh with different techniques in a single render pass. Renderer has a pointer to the MeshCommand, so for these instances we need to specify a different command.
     std::map<std::string, MeshCommand> m_techniqueToCommandOverrides;
     /*END BPC-PATCH*/
-    
     
     ///light parameters
     /*BPC PATCH*/

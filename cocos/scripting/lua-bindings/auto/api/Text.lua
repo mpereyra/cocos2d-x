@@ -1,7 +1,7 @@
 
 --------------------------------
 -- @module Text
--- @extend Widget
+-- @extend Widget,BlendProtocol
 -- @parent_module ccui
 
 --------------------------------
@@ -47,6 +47,15 @@
 -- @function [parent=#Text] getTextColor 
 -- @param self
 -- @return color4b_table#color4b_table ret (return value: color4b_table)
+        
+--------------------------------
+-- Returns the blending function that is currently being used.<br>
+-- return A BlendFunc structure with source and destination factor which specified pixel arithmetic.<br>
+-- js NA<br>
+-- lua NA
+-- @function [parent=#Text] getBlendFunc 
+-- @param self
+-- @return BlendFunc#BlendFunc ret (return value: cc.BlendFunc)
         
 --------------------------------
 --  Sets text vertical alignment.<br>
@@ -149,7 +158,7 @@
 -- return  String length.
 -- @function [parent=#Text] getStringLength 
 -- @param self
--- @return long#long ret (return value: long)
+-- @return int#int ret (return value: int)
         
 --------------------------------
 --  Gets the render size in auto mode.<br>
@@ -223,6 +232,24 @@
 -- @function [parent=#Text] enableGlow 
 -- @param self
 -- @param #color4b_table glowColor
+-- @return Text#Text self (return value: ccui.Text)
+        
+--------------------------------
+-- Provides a way to treat each character like a Sprite.<br>
+-- warning No support system font.
+-- @function [parent=#Text] getLetter 
+-- @param self
+-- @param #int lettetIndex
+-- @return Sprite#Sprite ret (return value: cc.Sprite)
+        
+--------------------------------
+-- Sets the source blending function.<br>
+-- param blendFunc A structure with source and destination factor to specify pixel arithmetic. e.g. {GL_ONE, GL_ONE}, {GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA}.<br>
+-- js NA<br>
+-- lua NA
+-- @function [parent=#Text] setBlendFunc 
+-- @param self
+-- @param #cc.BlendFunc blendFunc
 -- @return Text#Text self (return value: ccui.Text)
         
 --------------------------------

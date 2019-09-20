@@ -1,5 +1,6 @@
 ﻿/****************************************************************************
  Copyright (c) 2014 cocos2d-x.org
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -37,9 +38,9 @@ namespace cocostudio {
         WidgetCallBackHandlerProtocol() {};
         virtual ~WidgetCallBackHandlerProtocol() {};
         
-        virtual cocos2d::ui::Widget::ccWidgetTouchCallback onLocateTouchCallback(const std::string &callBackName){ return nullptr; };
-        virtual cocos2d::ui::Widget::ccWidgetClickCallback onLocateClickCallback(const std::string &callBackName){ return nullptr; };
-        virtual cocos2d::ui::Widget::ccWidgetEventCallback onLocateEventCallback(const std::string &callBackName){ return nullptr; };
+        virtual cocos2d::ui::Widget::ccWidgetTouchCallback onLocateTouchCallback(const std::string& callBackName);
+        virtual cocos2d::ui::Widget::ccWidgetClickCallback onLocateClickCallback(const std::string& callBackName);
+        virtual cocos2d::ui::Widget::ccWidgetEventCallback onLocateEventCallback(const std::string& callBackName);
     };
 
 }

@@ -1,5 +1,6 @@
 /****************************************************************************
- Copyright (c) 2014 Chukong Technologies Inc.
+ Copyright (c) 2014-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -107,14 +108,14 @@ void Sprite3D::createAsync(const std::string& modelPath, const std::string& text
     
     sprite->_asyncLoadParam.afterLoadCallback = callback;
     sprite->_asyncLoadParam.texPath = texturePath;
-    sprite->_asyncLoadParam.modlePath = modelPath;
+    sprite->_asyncLoadParam.modelPath = modelPath;
     sprite->_asyncLoadParam.callbackParam = callbackparam;
     sprite->_asyncLoadParam.materialdatas = new (std::nothrow) MaterialDatas();
     sprite->_asyncLoadParam.meshdatas = new (std::nothrow) MeshDatas();
     sprite->_asyncLoadParam.nodeDatas = new (std::nothrow) NodeDatas();
     AsyncTaskPool::getInstance()->enqueue(AsyncTaskPool::TaskType::TASK_IO, CC_CALLBACK_1(Sprite3D::afterAsyncLoad, sprite), (void*)(&sprite->_asyncLoadParam), [sprite]()
     {
-        sprite->_asyncLoadParam.result = sprite->loadFromFile(sprite->_asyncLoadParam.modlePath, sprite->_asyncLoadParam.nodeDatas, sprite->_asyncLoadParam.meshdatas, sprite->_asyncLoadParam.materialdatas);
+        sprite->_asyncLoadParam.result = sprite->loadFromFile(sprite->_asyncLoadParam.modelPath, sprite->_asyncLoadParam.nodeDatas, sprite->_asyncLoadParam.meshdatas, sprite->_asyncLoadParam.materialdatas);
     });
     
 }
@@ -129,7 +130,6 @@ void Sprite3D::afterAsyncLoad(void* param)
         {
             _meshes.clear();
             _meshVertexDatas.clear();
-            
             removeAllAttachNode();
             
             //create in the main thread
@@ -138,7 +138,7 @@ void Sprite3D::afterAsyncLoad(void* param)
             auto&   nodeDatas = asyncParam->nodeDatas;
             if (initFrom(*nodeDatas, *meshdatas, *materialdatas))
             {
-                auto spritedata = Sprite3DCache::getInstance()->getSpriteData(asyncParam->modlePath);
+                auto spritedata = Sprite3DCache::getInstance()->getSpriteData(asyncParam->modelPath);
                 if (spritedata == nullptr)
                 {
                     //add to cache
@@ -150,7 +150,7 @@ void Sprite3D::afterAsyncLoad(void* param)
                         data->glProgramStates.pushBack(mesh->getGLProgramState());
                     }
                     
-                    Sprite3DCache::getInstance()->addSprite3DData(asyncParam->modlePath, data);
+                    Sprite3DCache::getInstance()->addSprite3DData(asyncParam->modelPath, data);
                     
                     CC_SAFE_DELETE(meshdatas);
                     materialdatas = nullptr;
@@ -168,7 +168,7 @@ void Sprite3D::afterAsyncLoad(void* param)
         }
         else
         {
-            CCLOG("file load failed: %s ", asyncParam->modlePath.c_str());
+            CCLOG("file load failed: %s ", asyncParam->modelPath.c_str());
         }
         asyncParam->afterLoadCallback(this, asyncParam->callbackParam);
     }
@@ -204,12 +204,13 @@ bool Sprite3D::loadFromCache(const std::string& path)
             CC_SAFE_RETAIN(_skeleton);
         }
         // BPC PATCH END
-        
+
+        const bool singleSprite = (spritedata->nodedatas->nodes.size() == 1);
         for(const auto& it : spritedata->nodedatas->nodes)
         {
             if(it)
             {
-                createNode(it, this, *(spritedata->materialdatas), spritedata->nodedatas->nodes.size() == 1);
+                createNode(it, this, *(spritedata->materialdatas), singleSprite);
             }
         }
         
@@ -220,8 +221,8 @@ bool Sprite3D::loadFromCache(const std::string& path)
                 createAttachSprite3DNode(it,*(spritedata->materialdatas));
             }
         }
-        
-        for (ssize_t i = 0; i < _meshes.size(); i++) {
+
+        for (ssize_t i = 0, size = _meshes.size(); i < size; ++i) {
             // cloning is needed in order to have one state per sprite
             auto glstate = spritedata->glProgramStates.at(i);
             _meshes.at(i)->setGLProgramState(glstate->clone());
@@ -294,7 +295,6 @@ bool Sprite3D::initWithFile(const std::string& path)
     _aabbDirty = true;
     _meshes.clear();
     _meshVertexDatas.clear();
-    
     removeAllAttachNode();
     
     if (loadFromCache(path))
@@ -315,7 +315,7 @@ bool Sprite3D::initWithFile(const std::string& path)
             for (const auto mesh : _meshes) {
                 data->glProgramStates.pushBack(mesh->getGLProgramState());
             }
-
+            
             Sprite3DCache::getInstance()->addSprite3DData(path, data);
             CC_SAFE_DELETE(meshdatas);
             _contentSize = getBoundingBox().size;
@@ -345,16 +345,17 @@ bool Sprite3D::initFrom(const NodeDatas& nodeDatas, const MeshDatas& meshdatas, 
     // BPC PATCH BEGIN
     if(_retainSkeleton == false) {
         CC_SAFE_RELEASE_NULL(_skeleton);
-         _skeleton = Skeleton3D::create(nodeDatas.skeleton);
+        _skeleton = Skeleton3D::create(nodeDatas.skeleton);
         CC_SAFE_RETAIN(_skeleton);
     }
     // BPC PATCH END
     
+    auto size = nodeDatas.nodes.size();
     for(const auto& it : nodeDatas.nodes)
     {
         if(it)
         {
-            createNode(it, this, materialdatas, nodeDatas.nodes.size() == 1);
+            createNode(it, this, materialdatas, size == 1);
         }
     }
     for(const auto& it : nodeDatas.skeleton)
@@ -368,6 +369,7 @@ bool Sprite3D::initFrom(const NodeDatas& nodeDatas, const MeshDatas& meshdatas, 
     
     return true;
 }
+
 Sprite3D* Sprite3D::createSprite3DNode(NodeData* nodedata,ModelData* modeldata,const MaterialDatas& materialdatas)
 {
     auto sprite = new (std::nothrow) Sprite3D();
@@ -382,14 +384,14 @@ Sprite3D* Sprite3D::createSprite3DNode(NodeData* nodedata,ModelData* modeldata,c
             mesh->setSkin(skin);
         }
         
-        if (modeldata->matrialId == "" && materialdatas.materials.size())
+        if (modeldata->materialId == "" && materialdatas.materials.size())
         {
             const NTextureData* textureData = materialdatas.materials[0].getTextureData(NTextureData::Usage::Diffuse);
             mesh->setTexture(textureData->filename);
         }
         else
         {
-            const NMaterialData*  materialData=materialdatas.getMaterialData(modeldata->matrialId);
+            const NMaterialData* materialData = materialdatas.getMaterialData(modeldata->materialId);
             if(materialData)
             {
                 const NTextureData* textureData = materialData->getTextureData(NTextureData::Usage::Diffuse);
@@ -475,7 +477,7 @@ void Sprite3D::setMaterial(Material *material, int meshIndex)
 
     if (meshIndex == -1)
     {
-        for (ssize_t i = 0; i < _meshes.size(); i++)
+        for (ssize_t i = 0, size = _meshes.size(); i < size; ++i)
         {
             _meshes.at(i)->setMaterial(i == 0 ? material : material->clone());
         }
@@ -546,14 +548,14 @@ void Sprite3D::createNode(NodeData* nodedata, Node* root, const MaterialDatas& m
                     }
                     mesh->_visibleChanged = std::bind(&Sprite3D::onAABBDirty, this);
 
-                    if (it->matrialId == "" && materialdatas.materials.size())
+                    if (it->materialId == "" && materialdatas.materials.size())
                     {
                         const NTextureData* textureData = materialdatas.materials[0].getTextureData(NTextureData::Usage::Diffuse);
                         mesh->setTexture(textureData->filename);
                     }
                     else
                     {
-                        const NMaterialData*  materialData=materialdatas.getMaterialData(it->matrialId);
+                        const NMaterialData* materialData = materialdatas.getMaterialData(it->materialId);
                         if(materialData)
                         {
                             const NTextureData* textureData = materialData->getTextureData(NTextureData::Usage::Diffuse);
@@ -641,9 +643,11 @@ void Sprite3D::createNode(NodeData* nodedata, Node* root, const MaterialDatas& m
             } 
         }
     }
+
+    auto size = nodedata->children.size();
     for(const auto& it : nodedata->children)
     {
-        createNode(it,node, materialdatas, nodedata->children.size() == 1);
+        createNode(it,node, materialdatas, size == 1);
     }
 }
 
@@ -731,13 +735,14 @@ void Sprite3D::visit(cocos2d::Renderer *renderer, const cocos2d::Mat4 &parentTra
     director->loadMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW, _modelViewTransform);
     
     bool visibleByCamera = isVisitableByVisitingCamera();
+    
     int i = 0;
     
     if(!_children.empty())
     {
         sortAllChildren();
         // draw children zOrder < 0
-        for( ; i < _children.size(); i++ )
+        for(auto size = _children.size() ; i < size; i++ )
         {
             auto node = _children.at(i);
             
@@ -750,7 +755,7 @@ void Sprite3D::visit(cocos2d::Renderer *renderer, const cocos2d::Mat4 &parentTra
         if (visibleByCamera)
             this->draw(renderer, _modelViewTransform, flags);
         
-        for(auto it=_children.cbegin()+i; it != _children.cend(); ++it)
+        for(auto it=_children.cbegin()+i, itCend = _children.cend(); it != itCend; ++it)
             (*it)->visit(renderer, _modelViewTransform, flags);
     }
     else if (visibleByCamera)
@@ -774,7 +779,7 @@ void Sprite3D::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
     if(m_forceCulling || (m_allowCulling && _children.size() == 0 && Camera::getVisitingCamera() && !Camera::getVisitingCamera()->isVisibleInFrustum(&this->getAABB())))
         return;
 #endif
-    
+
     if (_skeleton && (flags & FLAGS_UPDATE_SKELETON))
         _skeleton->updateBoneMatrix();
     
@@ -799,12 +804,11 @@ void Sprite3D::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
             genMaterial(usingLight);
         }
     }
-
     /*BPC PATCH*/
     cocos2d::Camera const * cam = cocos2d::Camera::getVisitingCamera();
     Mat4 worldViewTransform = cam->getViewMatrix() * transform;
     /*END BPC PATCH*/
-    
+
     for (auto mesh: _meshes)
     {
 #ifndef NDEBUG
@@ -871,31 +875,30 @@ const AABB& Sprite3D::getAABB() const
     Mat4 nodeToWorldTransform(getNodeToWorldTransform());
     
     // If nodeToWorldTransform matrix isn't changed, we don't need to transform aabb.
-    if (!_aabbDirty && memcmp(_nodeToWorldTransform.m, nodeToWorldTransform.m, sizeof(Mat4)) == 0)
+    if (!_aabbDirty && memcmp(_nodeToWorldTransform.m, nodeToWorldTransform.m, sizeof(Mat4)) == 0 && !_aabbDirty)
     {
         return _aabb;
     }
     else
     {
         _aabb.reset();
-        
         // Merge mesh and child aabb's in parent space
         for (const auto& mesh : _meshes) {
             if (mesh->isVisible())
                 _aabb.merge(mesh->getAABB());
         }
-        
+
         for (auto const & child : _children) {
             _aabb.merge(child->getNodeToParentAABB());
         }
-        
+
         /** BPC PATCH BEGIN **/
         // Don't want to keep an invalid boudning box just because we have no visible mesh!
         if(_aabb.isEmpty()) {
             _aabb.set({0,0,0}, {0,0,0});
         }
         /** BPC PATCH END **/
-        
+
         // convert to world space
         _aabb.transform(nodeToWorldTransform);
         _nodeToWorldTransform = nodeToWorldTransform;
@@ -912,45 +915,44 @@ AABB Sprite3D::skinAABB(Mesh const * mesh) const{
         // bone > 0 implies getMatrixPaletteSize() >= 3 ^
         Vec4 * mp = mesh->getSkin()->getMatrixPalette();
         Mat4 rootBoneTransform(
-                               1, 0, 0, mp[0].w,
-                               0, 1, 0, mp[0+1].w,
-                               0, 0, 1, mp[0+2].w,
-                               0, 0, 0, 1
-                               );
+                1, 0, 0, mp[0].w,
+                0, 1, 0, mp[0+1].w,
+                0, 0, 1, mp[0+2].w,
+                0, 0, 0, 1
+            );
         aabb.transform(rootBoneTransform);
     }
     return aabb;
 }
 
 const AABB& Sprite3D::getNodeToParentAABB(const std::vector<std::string>& excludeMeshes, bool force) const {
-    
+
     // If nodeToWorldTransform matrix isn't changed and we are querying the same set of meshes as before, we don't need to transform aabb.
     _nodeToParentAABBDirty = m_skinAABB ? true : _nodeToParentAABBDirty;
     if (!force && !_nodeToParentAABBDirty
-        && _nodeToParentExcludeMeshes.size() == excludeMeshes.size()
-        && std::is_permutation(_nodeToParentExcludeMeshes.begin(), _nodeToParentExcludeMeshes.end(), excludeMeshes.begin()))
+    && _nodeToParentExcludeMeshes.size() == excludeMeshes.size()
+    && std::is_permutation(_nodeToParentExcludeMeshes.begin(), _nodeToParentExcludeMeshes.end(), excludeMeshes.begin()))
     {
         return _nodeToParentAABB;
     }
-    else
-    {
+    else{
         _nodeToParentAABB.reset();
-        
+
         // Merge mesh and child aabb's in parent space
         for (const auto& mesh : _meshes) {
             if (mesh->isVisible()
-                && std::none_of(excludeMeshes.begin(), excludeMeshes.end(), [&mesh](const std::string& meshName){return meshName == mesh->getName();})){
+            && std::none_of(excludeMeshes.begin(), excludeMeshes.end(), [&mesh](const std::string& meshName){return meshName == mesh->getName();})){
                 auto mb = m_skinAABB ? skinAABB(mesh) : mesh->getAABB();
                 _nodeToParentAABB.merge(mb);
             }
         }
-        
+
         for(auto const & child : _children) {
             if(child->isVisible()) {
                 _nodeToParentAABB.merge(child->getNodeToParentAABB(excludeMeshes, force));
             }
         }
-        
+
         // convert to parent space
         if (!_nodeToParentAABB.isEmpty()) {
             _nodeToParentAABB.transform(getNodeToParentTransform());
@@ -958,7 +960,7 @@ const AABB& Sprite3D::getNodeToParentAABB(const std::vector<std::string>& exclud
             _nodeToParentExcludeMeshes = excludeMeshes;
         }
     }
-    
+
     return _nodeToParentAABB;
 }
 /** BPC PATCH END **/
@@ -983,7 +985,6 @@ void Sprite3D::setCullFace(GLenum cullFace)
 //        it->getMeshCommand().setCullFace(cullFace);
     }
 }
-
 
 void Sprite3D::setCullFaceEnabled(bool enabled){
     //no op use the other one
@@ -1021,6 +1022,15 @@ std::vector<Mesh*> Sprite3D::getMeshArrayByName(const std::string& name) const
     return meshes;
 }
 
+Mesh* Sprite3D::getMesh() const 
+{ 
+    if(_meshes.empty())
+    {
+        return nullptr;
+    }
+    return _meshes.at(0); 
+}
+
 MeshSkin* Sprite3D::getSkin() const
 {
     for (const auto& it : _meshes) {
@@ -1038,7 +1048,7 @@ void Sprite3D::getSprite3DRecursive(Node* parent, std::set<Sprite3D*>& sprites){
     if(s3d){
         sprites.insert(s3d);
     }
-    
+
     for(auto c : parent->getChildren()){
         getSprite3DRecursive(c, sprites);
     }
@@ -1069,19 +1079,19 @@ void Sprite3D::setDepthWriteEnabled(GLWriteMode mode, bool recursive) {
 
 void Sprite3D::setForceCullFace(bool enabled, bool recursive) {
     _forceCullFace = enabled;
-    
+
     if(!enabled){
         return; //no-op
     }
-    
+
     for(auto mesh : _meshes){
         mesh->setCullFaceMode(GLWriteMode::AlwaysOn);
     }
-    
+
     if(recursive) {
         std::set<Sprite3D*> sprites;
         getSprite3DRecursive(this, sprites);
-        
+
         for(auto sprite : sprites) {
             sprite->setForceCullFace(enabled, false);
         }
@@ -1167,11 +1177,11 @@ void Sprite3DCache::removeUnusedSprite3DData()
             ++it;
             continue;
         }
-        
+
         MeshVertexData* data= it->second->meshVertexDatas.at(0);
         if (data->getReferenceCount() == 1) {
             CCLOG("cocos2d: Sprite3DCache: removing unused Sprite3DData: %s", it->first.c_str());
-            
+
             delete it->second;
             _spriteDatas.erase(it++);
         } else {

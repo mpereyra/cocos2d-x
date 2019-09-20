@@ -1,3 +1,27 @@
+/****************************************************************************
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ 
+ http://www.cocos2d-x.org
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ ****************************************************************************/
+
 #include "DrawPrimitivesTest.h"
 #include "renderer/CCRenderer.h"
 #include "renderer/CCCustomCommand.h"
@@ -69,7 +93,7 @@ void DrawPrimitivesTest::onDraw(const Mat4 &transform, uint32_t flags)
     CHECK_GL_ERROR_DEBUG();
     
     // TIP:
-    // If you are going to use always thde same color or width, you don't
+    // If you are going to use always the same color or width, you don't
     // need to call it before every draw
     //
     // Remember: OpenGL is a state-machine.
@@ -286,7 +310,7 @@ DrawNodeTest::DrawNodeTest()
     
     draw->drawSegment(Vec2(10,s.height/2), Vec2(s.width/2, s.height/2), 40, Color4F(1, 0, 1, 0.5));
 
-	// Draw triangle
+    // Draw triangle
     draw->drawTriangle(Vec2(10, 10), Vec2(70, 30), Vec2(100, 140), Color4F(CCRANDOM_0_1(), CCRANDOM_0_1(), CCRANDOM_0_1(), 0.5));
     
     for (int i = 0; i < 100; i++) {
@@ -298,6 +322,9 @@ DrawNodeTest::DrawNodeTest()
     draw1->setLineWidth(4);
     draw1->drawLine(Vec2(0, s.height), Vec2(s.width, s.height - 20), Color4F::YELLOW);
     draw1->drawLine(Vec2(0, 0), Vec2(s.width, s.height - 20), Color4F::YELLOW);
+
+    draw->runAction(RepeatForever::create(Sequence::create(FadeIn::create(1.2),FadeOut::create(1.2), NULL)));
+    draw1->runAction(RepeatForever::create(Sequence::create(FadeIn::create(1.2),FadeOut::create(1.2), NULL)));
 }
 
 string DrawNodeTest::title() const
@@ -401,7 +428,7 @@ Issue11942Test::Issue11942Test()
 
 string Issue11942Test::title() const
 {
-    return "Gihub Issue #11942";
+    return "GitHub Issue #11942";
 }
 
 string Issue11942Test::subtitle() const

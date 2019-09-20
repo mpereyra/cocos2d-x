@@ -1,6 +1,7 @@
 /****************************************************************************
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -38,86 +39,15 @@ THE SOFTWARE.
 #include "base/ccUtils.h"
 #include "base/ccUTF8.h"
 #include "2d/CCCamera.h"
+#include "platform/CCImage.h"
 
 NS_CC_BEGIN
 
-// GLFWEventHandler
-
-class GLFWEventHandler
-{
-public:
-    static void onGLFWError(int errorID, const char* errorDesc)
-    {
-        if (_view)
-            _view->onGLFWError(errorID, errorDesc);
-    }
-
-    static void onGLFWMouseCallBack(GLFWwindow* window, int button, int action, int modify)
-    {
-        if (_view)
-            _view->onGLFWMouseCallBack(window, button, action, modify);
-    }
-
-    static void onGLFWMouseMoveCallBack(GLFWwindow* window, double x, double y)
-    {
-        if (_view)
-            _view->onGLFWMouseMoveCallBack(window, x, y);
-    }
-
-    static void onGLFWMouseScrollCallback(GLFWwindow* window, double x, double y)
-    {
-        if (_view)
-            _view->onGLFWMouseScrollCallback(window, x, y);
-    }
-
-    static void onGLFWKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
-    {
-        if (_view)
-            _view->onGLFWKeyCallback(window, key, scancode, action, mods);
-    }
-
-    static void onGLFWCharCallback(GLFWwindow* window, unsigned int character)
-    {
-        if (_view)
-            _view->onGLFWCharCallback(window, character);
-    }
-
-    static void onGLFWWindowPosCallback(GLFWwindow* windows, int x, int y)
-    {
-        if (_view)
-            _view->onGLFWWindowPosCallback(windows, x, y);
-    }
-
-    static void onGLFWframebuffersize(GLFWwindow* window, int w, int h)
-    {
-        if (_view)
-            _view->onGLFWframebuffersize(window, w, h);
-    }
-
-    static void onGLFWWindowSizeFunCallback(GLFWwindow *window, int width, int height)
-    {
-        if (_view)
-            _view->onGLFWWindowSizeFunCallback(window, width, height);
-    }
-
-    static void setGLViewImpl(GLViewImpl* view)
-    {
-        _view = view;
-    }
-
-    static void onGLFWWindowIconifyCallback(GLFWwindow* window, int iconified)
-    {
-        if (_view)
-        {
-            _view->onGLFWWindowIconifyCallback(window, iconified);
-        }
-    }
-
-private:
-    static GLViewImpl* _view;
-};
-
 GLViewImpl* GLFWEventHandler::_view = nullptr;
+
+const std::string GLViewImpl::EVENT_WINDOW_RESIZED = "glview_window_resized";
+const std::string GLViewImpl::EVENT_WINDOW_FOCUSED = "glview_window_focused";
+const std::string GLViewImpl::EVENT_WINDOW_UNFOCUSED = "glview_window_unfocused";
 
 ////////////////////////////////////////////////////
 
@@ -275,6 +205,7 @@ GLViewImpl::GLViewImpl(bool initglfw)
 , _monitor(nullptr)
 , _mouseX(0.0f)
 , _mouseY(0.0f)
+, _cursor(nullptr)
 {
     _viewName = "cocos2dx";
     g_keyCodeMap.clear();
@@ -360,6 +291,8 @@ bool GLViewImpl::initWithRect(const std::string& viewName, Rect rect, float fram
     glfwWindowHint(GLFW_ALPHA_BITS,_glContextAttrs.alphaBits);
     glfwWindowHint(GLFW_DEPTH_BITS,_glContextAttrs.depthBits);
     glfwWindowHint(GLFW_STENCIL_BITS,_glContextAttrs.stencilBits);
+    
+    glfwWindowHint(GLFW_SAMPLES, _glContextAttrs.multisamplingCount);
 
     int neededWidth = rect.size.width * _frameZoomFactor;
     int neededHeight = rect.size.height * _frameZoomFactor;
@@ -411,6 +344,7 @@ bool GLViewImpl::initWithRect(const std::string& viewName, Rect rect, float fram
     glfwSetFramebufferSizeCallback(_mainWindow, GLFWEventHandler::onGLFWframebuffersize);
     glfwSetWindowSizeCallback(_mainWindow, GLFWEventHandler::onGLFWWindowSizeFunCallback);
     glfwSetWindowIconifyCallback(_mainWindow, GLFWEventHandler::onGLFWWindowIconifyCallback);
+    glfwSetWindowFocusCallback(_mainWindow, GLFWEventHandler::onGLFWWindowFocusCallback);
 
     setFrameSize(rect.size.width, rect.size.height);
 
@@ -431,6 +365,9 @@ bool GLViewImpl::initWithRect(const std::string& viewName, Rect rect, float fram
 
     // Enable point size by default.
     glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+    
+    if(_glContextAttrs.multisamplingCount > 0)
+        glEnable(GL_MULTISAMPLE);
 
 //    // GLFW v3.2 no longer emits "onGLFWWindowSizeFunCallback" at creation time. Force default viewport:
 //    setViewPortInPoints(0, 0, neededWidth, neededHeight);
@@ -522,6 +459,81 @@ void GLViewImpl::setIMEKeyboardState(bool /*bOpen*/)
 
 }
 
+#if CC_ICON_SET_SUPPORT
+void GLViewImpl::setIcon(const std::string& filename) const {
+    std::vector<std::string> vec = {filename};
+    this->setIcon(vec);
+}
+
+void GLViewImpl::setIcon(const std::vector<std::string>& filelist) const {
+    if (filelist.empty()) return;
+    std::vector<Image*> icons;
+    for (auto const& filename: filelist) {
+        Image* icon = new (std::nothrow) Image();
+        if (icon && icon->initWithImageFile(filename)) {
+            icons.push_back(icon);
+        } else {
+            CC_SAFE_DELETE(icon);
+        }
+    }
+
+    if (icons.empty()) return; // No valid images
+    size_t iconsCount = icons.size();
+    auto images = new GLFWimage[iconsCount];
+    for (size_t i = 0; i < iconsCount; i++) {
+        auto& image = images[i];
+        auto& icon = icons[i];
+        image.width = icon->getWidth();
+        image.height = icon->getHeight();
+        image.pixels = icon->getData();
+    };
+
+    GLFWwindow* window = this->getWindow();
+    glfwSetWindowIcon(window, iconsCount, images);
+
+    CC_SAFE_DELETE_ARRAY(images);
+    for (auto& icon: icons) {
+        CC_SAFE_DELETE(icon);
+    }
+}
+
+void GLViewImpl::setDefaultIcon() const {
+    GLFWwindow* window = this->getWindow();
+    glfwSetWindowIcon(window, 0, nullptr);
+}
+#endif /* CC_ICON_SET_SUPPORT */
+
+void GLViewImpl::setCursor(const std::string& filename, Vec2 hotspot) {
+
+    if (_cursor) {
+        glfwDestroyCursor(_cursor);
+        _cursor = nullptr;
+    }
+
+    Image* ccImage = new (std::nothrow) Image();
+    if (ccImage && ccImage->initWithImageFile(filename)) {
+        GLFWimage image;
+        image.width = ccImage->getWidth();
+        image.height = ccImage->getHeight();
+        image.pixels = ccImage->getData();
+        _cursor = glfwCreateCursor(&image, (int)(hotspot.x * image.width), (int)((1.0f - hotspot.y) * image.height));
+        if (_cursor) {
+            glfwSetCursor(_mainWindow, _cursor);
+        }
+    }
+    CC_SAFE_DELETE(ccImage);
+}
+
+void GLViewImpl::setDefaultCursor() {
+
+    if (_cursor) {
+        glfwDestroyCursor(_cursor);
+        _cursor = nullptr;
+    }
+
+    glfwSetCursor(_mainWindow, NULL);
+}
+
 void GLViewImpl::setCursorVisible( bool isVisible )
 {
     if( _mainWindow == NULL )
@@ -549,6 +561,83 @@ void GLViewImpl::setFrameZoomFactor(float zoomFactor)
 float GLViewImpl::getFrameZoomFactor() const
 {
     return _frameZoomFactor;
+}
+
+bool GLViewImpl::isFullscreen() const {
+    return (_monitor != nullptr);
+}
+
+void GLViewImpl::setFullscreen() {
+    if (this->isFullscreen()) {
+        return;
+    }
+    _monitor = glfwGetPrimaryMonitor();
+    if (nullptr == _monitor) {
+        return;
+    }
+    const GLFWvidmode* videoMode = glfwGetVideoMode(_monitor);
+    this->setFullscreen(*videoMode, _monitor);
+}
+
+void GLViewImpl::setFullscreen(int monitorIndex) {
+    // set fullscreen on specific monitor
+    int count = 0;
+    GLFWmonitor** monitors = glfwGetMonitors(&count);
+    if (monitorIndex < 0 || monitorIndex >= count) {
+        return;
+    }
+    GLFWmonitor* monitor = monitors[monitorIndex];
+    if (nullptr == monitor) {
+        return;
+    }
+    const GLFWvidmode* videoMode = glfwGetVideoMode(monitor);
+    this->setFullscreen(*videoMode, monitor);
+}
+
+void GLViewImpl::setFullscreen(const GLFWvidmode &videoMode, GLFWmonitor *monitor) {
+    _monitor = monitor;
+    glfwSetWindowMonitor(_mainWindow, _monitor, 0, 0, videoMode.width, videoMode.height, videoMode.refreshRate);
+}
+
+void GLViewImpl::setWindowed(int width, int height) {
+    if (!this->isFullscreen()) {
+        this->setFrameSize(width, height);
+    } else {
+        const GLFWvidmode* videoMode = glfwGetVideoMode(_monitor);
+        int xpos = 0, ypos = 0;
+        glfwGetMonitorPos(_monitor, &xpos, &ypos);
+        xpos += (videoMode->width - width) * 0.5;
+        ypos += (videoMode->height - height) * 0.5;
+        _monitor = nullptr;
+        glfwSetWindowMonitor(_mainWindow, nullptr, xpos, ypos, width, height, GLFW_DONT_CARE);
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_MAC)
+        // on mac window will sometimes lose title when windowed
+        glfwSetWindowTitle(_mainWindow, _viewName.c_str());
+#endif
+    }
+}
+
+int GLViewImpl::getMonitorCount() const {
+    int count = 0;
+    glfwGetMonitors(&count);
+    return count;
+}
+
+Size GLViewImpl::getMonitorSize() const {
+    GLFWmonitor* monitor = _monitor;
+    if (nullptr == monitor) {
+        GLFWwindow* window = this->getWindow();
+        monitor = glfwGetWindowMonitor(window);
+    }
+    if (nullptr == monitor) {
+        monitor = glfwGetPrimaryMonitor();
+    }
+    if (nullptr != monitor) {
+        const GLFWvidmode* videoMode = glfwGetVideoMode(monitor);
+        Size size = Size(videoMode->width, videoMode->height);
+        return size;
+    }
+    return Size::ZERO;
 }
 
 void GLViewImpl::updateFrameSize()
@@ -635,7 +724,7 @@ void GLViewImpl::onGLFWError(int errorID, const char* errorDesc)
     CCLOGERROR("%s", _glfwError.c_str());
 }
 
-void GLViewImpl::onGLFWMouseCallBack(GLFWwindow* window, int button, int action, int modify)
+void GLViewImpl::onGLFWMouseCallBack(GLFWwindow* /*window*/, int button, int action, int /*modify*/)
 {
     if(GLFW_MOUSE_BUTTON_LEFT == button)
     {
@@ -667,14 +756,14 @@ void GLViewImpl::onGLFWMouseCallBack(GLFWwindow* window, int button, int action,
     {
         EventMouse event(EventMouse::MouseEventType::MOUSE_DOWN);
         event.setCursorPosition(cursorX, cursorY);
-        event.setMouseButton(button);
+        event.setMouseButton(static_cast<cocos2d::EventMouse::MouseButton>(button));
         Director::getInstance()->getEventDispatcher()->dispatchEvent(&event);
     }
     else if(GLFW_RELEASE == action)
     {
         EventMouse event(EventMouse::MouseEventType::MOUSE_UP);
         event.setCursorPosition(cursorX, cursorY);
-        event.setMouseButton(button);
+        event.setMouseButton(static_cast<cocos2d::EventMouse::MouseButton>(button));
         Director::getInstance()->getEventDispatcher()->dispatchEvent(&event);
     }
 }
@@ -710,21 +799,21 @@ void GLViewImpl::onGLFWMouseMoveCallBack(GLFWwindow* window, double x, double y)
     // Set current button
     if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
     {
-        event.setMouseButton(GLFW_MOUSE_BUTTON_LEFT);
+        event.setMouseButton(static_cast<cocos2d::EventMouse::MouseButton>(GLFW_MOUSE_BUTTON_LEFT));
     }
     else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
     {
-        event.setMouseButton(GLFW_MOUSE_BUTTON_RIGHT);
+        event.setMouseButton(static_cast<cocos2d::EventMouse::MouseButton>(GLFW_MOUSE_BUTTON_RIGHT));
     }
     else if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS)
     {
-        event.setMouseButton(GLFW_MOUSE_BUTTON_MIDDLE);
+        event.setMouseButton(static_cast<cocos2d::EventMouse::MouseButton>(GLFW_MOUSE_BUTTON_MIDDLE));
     }
     event.setCursorPosition(cursorX, cursorY);
     Director::getInstance()->getEventDispatcher()->dispatchEvent(&event);
 }
 
-void GLViewImpl::onGLFWMouseScrollCallback(GLFWwindow* window, double x, double y)
+void GLViewImpl::onGLFWMouseScrollCallback(GLFWwindow* /*window*/, double x, double y)
 {
     EventMouse event(EventMouse::MouseEventType::MOUSE_SCROLL);
     //Because OpenGL and cocos2d-x uses different Y axis, we need to convert the coordinate here
@@ -735,7 +824,7 @@ void GLViewImpl::onGLFWMouseScrollCallback(GLFWwindow* window, double x, double 
     Director::getInstance()->getEventDispatcher()->dispatchEvent(&event);
 }
 
-void GLViewImpl::onGLFWKeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
+void GLViewImpl::onGLFWKeyCallback(GLFWwindow* /*window*/, int key, int /*scancode*/, int action, int /*mods*/)
 {
     if (GLFW_REPEAT != action)
     {
@@ -767,7 +856,7 @@ void GLViewImpl::onGLFWKeyCallback(GLFWwindow *window, int key, int scancode, in
     }
 }
 
-void GLViewImpl::onGLFWCharCallback(GLFWwindow *window, unsigned int character)
+void GLViewImpl::onGLFWCharCallback(GLFWwindow* /*window*/, unsigned int character)
 {
     char16_t wcharString[2] = { (char16_t) character, 0 };
     std::string utf8String;
@@ -792,7 +881,7 @@ void GLViewImpl::onGLFWCharCallback(GLFWwindow *window, unsigned int character)
     }
 }
 
-void GLViewImpl::onGLFWWindowPosCallback(GLFWwindow *windows, int x, int y)
+void GLViewImpl::onGLFWWindowPosCallback(GLFWwindow* /*window*/, int /*x*/, int /*y*/)
 {
     Director::getInstance()->setViewport();
 }
@@ -826,7 +915,7 @@ void GLViewImpl::onGLFWframebuffersize(GLFWwindow* window, int w, int h)
     }
 }
 
-void GLViewImpl::onGLFWWindowSizeFunCallback(GLFWwindow *window, int width, int height)
+void GLViewImpl::onGLFWWindowSizeFunCallback(GLFWwindow* /*window*/, int width, int height)
 {
     if (width && height && _resolutionPolicy != ResolutionPolicy::UNKNOWN)
     {
@@ -838,10 +927,11 @@ void GLViewImpl::onGLFWWindowSizeFunCallback(GLFWwindow *window, int width, int 
         setFrameSize(frameWidth, frameHeight);
         setDesignResolutionSize(baseDesignSize.width, baseDesignSize.height, baseResolutionPolicy);
         Director::getInstance()->setViewport();
+        Director::getInstance()->getEventDispatcher()->dispatchCustomEvent(GLViewImpl::EVENT_WINDOW_RESIZED, nullptr);
     }
 }
 
-void GLViewImpl::onGLFWWindowIconifyCallback(GLFWwindow* window, int iconified)
+void GLViewImpl::onGLFWWindowIconifyCallback(GLFWwindow* /*window*/, int iconified)
 {
     if (iconified == GL_TRUE)
     {
@@ -850,6 +940,18 @@ void GLViewImpl::onGLFWWindowIconifyCallback(GLFWwindow* window, int iconified)
     else
     {
         Application::getInstance()->applicationWillEnterForeground();
+    }
+}
+
+void GLViewImpl::onGLFWWindowFocusCallback(GLFWwindow* /*window*/, int focused)
+{
+    if (focused == GL_TRUE)
+    {
+        Director::getInstance()->getEventDispatcher()->dispatchCustomEvent(GLViewImpl::EVENT_WINDOW_FOCUSED, nullptr);
+    }
+    else
+    {
+        Director::getInstance()->getEventDispatcher()->dispatchCustomEvent(GLViewImpl::EVENT_WINDOW_UNFOCUSED, nullptr);
     }
 }
 

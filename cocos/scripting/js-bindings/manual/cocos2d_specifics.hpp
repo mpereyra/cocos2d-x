@@ -1,6 +1,7 @@
 /*
  * Copyright (c) 2012 Zynga Inc.
- * Copyright (c) 2013-2014 Chukong Technologies Inc.
+ * Copyright (c) 2013-2016 Chukong Technologies Inc.
+ * Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -79,8 +80,10 @@ extern schedFunc_proxy_t *_schedFunc_target_ht;
 extern schedTarget_proxy_t *_schedObj_target_ht;
 extern callfuncTarget_proxy_t *_callfuncTarget_native_ht;
 
-extern JSClass  *jsb_FinalizeHook_class;
-extern JSObject *jsb_FinalizeHook_prototype;
+extern JSClass  *jsb_RefFinalizeHook_class;
+extern JSObject *jsb_RefFinalizeHook_prototype;
+extern JSClass  *jsb_ObjFinalizeHook_class;
+extern JSObject *jsb_ObjFinalizeHook_prototype;
 
 /**
  * You don't need to manage the returned pointer. They live for the whole life of
@@ -142,7 +145,7 @@ JSObject* js_get_or_create_jsobject(JSContext *cx, typename std::enable_if<std::
  * In the finalize function, it mainly remove native/js proxys, release/delete the native object.
  * IMPORTANT: For Ref objects, please remember to retain the native object to correctly manage its reference count.
  */
-void js_add_FinalizeHook(JSContext *cx, JS::HandleObject target);
+void js_add_FinalizeHook(JSContext *cx, JS::HandleObject target, bool isRef=true);
 
 void js_add_object_reference(JS::HandleValue owner, JS::HandleValue target);
 void js_remove_object_reference(JS::HandleValue owner, JS::HandleValue target);
@@ -156,8 +159,8 @@ void register_cocos2dx_js_core(JSContext* cx, JS::HandleObject obj);
 class JSCallbackWrapper: public cocos2d::Ref {
 public:
     JSCallbackWrapper();
-    JSCallbackWrapper(JS::HandleValue owner);
     virtual ~JSCallbackWrapper();
+
     void setJSCallbackFunc(JS::HandleValue callback);
     void setJSCallbackThis(JS::HandleValue thisObj);
     void setJSExtraData(JS::HandleValue data);
@@ -166,18 +169,17 @@ public:
     const jsval getJSCallbackThis() const;
     const jsval getJSExtraData() const;
 protected:
-    JS::Heap<JS::Value> _owner;
-    JS::Heap<JS::Value> _jsCallback;
-    JS::Heap<JS::Value> _jsThisObj;
-    JS::Heap<JS::Value> _extraData;
+    JS::PersistentRootedValue* _jsCallback;
+    JS::PersistentRootedValue* _jsThisObj;
+    JS::PersistentRootedValue* _extraData;
 };
 
 
-class JSScheduleWrapper: public JSCallbackWrapper {
-
+class JSScheduleWrapper: public JSCallbackWrapper
+{
 public:
     JSScheduleWrapper();
-    JSScheduleWrapper(JS::HandleValue owner);
+    virtual ~JSScheduleWrapper();
 
     static void setTargetForSchedule(JS::HandleValue sched, JSScheduleWrapper *target);
     static JSBinding::Array* getTargetForSchedule(JS::HandleValue sched);
@@ -213,7 +215,7 @@ public:
 
 protected:
     Ref* _pTarget;
-    JS::Heap<JSObject*> _pPureJSTarget;
+    JS::PersistentRootedObject* _pPureJSTarget;
     int _priority;
     bool _isUpdateSchedule;
 };
@@ -280,9 +282,9 @@ public:
     std::string parseText(const std::string& text);
 
     // implement pure virtual methods of SAXDelegator
-    void startElement(void *ctx, const char *name, const char **atts);
-    void endElement(void *ctx, const char *name);
-    void textHandler(void *ctx, const char *ch, int len);
+    void startElement(void *ctx, const char *name, const char **atts) override;
+    void endElement(void *ctx, const char *name) override;
+    void textHandler(void *ctx, const char *ch, size_t len) override;
 
 private:
     cocos2d::SAXParser _parser;

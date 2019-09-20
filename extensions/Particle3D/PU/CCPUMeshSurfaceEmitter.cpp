@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (C) 2013 Henry van Merode. All rights reserved.
- Copyright (c) 2015 Chukong Technologies Inc.
+ Copyright (c) 2015-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -172,10 +173,10 @@ const PUTriangle::PositionAndNormal PUTriangle::getRandomVertexAndNormal (void)
 //-----------------------------------------------------------------------
 //-----------------------------------------------------------------------
 //-----------------------------------------------------------------------
-MeshInfo::MeshInfo (const std::string& meshName, 
+MeshInfo::MeshInfo (const std::string& meshName,
     MeshSurfaceDistribution distribution,
     const Quaternion& orientation,
-    const Vec3& scale) : 
+    const Vec3& scale) :
     mDistribution(distribution)
 {
     std::string meshFile = ParticleAssetCreator::getInstance()->getSprite3DFilename(meshName);
@@ -186,14 +187,14 @@ MeshInfo::MeshInfo (const std::string& meshName,
         Bundle3D::destroyBundle(bundle);
         return;
     }
-    
+
     auto meshdatas = std::make_shared<MeshDatas>();
     if (!bundle->loadMeshDatas(*meshdatas)) {
         CCLOG("Failed to load mesh emitter '%s'", meshFile.c_str());
         Bundle3D::destroyBundle(bundle);
         return;
     }
-    
+
     getMeshInformation(*meshdatas, Vec3::ZERO, orientation, scale);
     Bundle3D::destroyBundle(bundle);
 }
@@ -281,49 +282,49 @@ const PUTriangle::PositionAndNormal MeshInfo::getRandomPositionAndNormal (const 
 
 //-----------------------------------------------------------------------
 void MeshInfo::getMeshInformation(	const MeshDatas& meshes,
-									const Vec3 &position,
-									const Quaternion &orient,
-									const Vec3 &scale)
+                                      const Vec3 &position,
+                                      const Quaternion &orient,
+                                      const Vec3 &scale)
 {
-	size_t vertexCount = 0;
-	size_t indexCount = 0;
-	Vec3* vertices = 0;
-	Vec3* normals = 0;
-	unsigned long* indices = 0;
+    size_t vertexCount = 0;
+    size_t indexCount = 0;
+    Vec3* vertices = 0;
+    Vec3* normals = 0;
+    unsigned long* indices = 0;
 
-	// Calculate how many vertices and indices we're going to need
-	for ( unsigned short i = 0; i < meshes.meshDatas.size(); ++i)
-	{
-		MeshData* submesh = meshes.meshDatas.at( i );
+    // Calculate how many vertices and indices we're going to need
+    for ( unsigned short i = 0; i < meshes.meshDatas.size(); ++i)
+    {
+        MeshData* submesh = meshes.meshDatas.at( i );
 
         int floatVertDataSize = submesh->vertex.size();
         int sizePerVert = submesh->getPerVertexSize();
         int numVertices = (floatVertDataSize * sizeof(float)) / sizePerVert;
         vertexCount += numVertices;
 
-		// Add the indices
+        // Add the indices
         for (const auto& indexBuffer : submesh->subMeshIndices)
         {
             indexCount += indexBuffer.size();
         }
-	}
+    }
 
-	// Allocate space for the vertices and indices
-	vertices = new (std::nothrow) Vec3[vertexCount];
-	normals = new (std::nothrow) Vec3[vertexCount];
-	indices = new (std::nothrow) unsigned long[indexCount];
+    // Allocate space for the vertices and indices
+    vertices = new (std::nothrow) Vec3[vertexCount];
+    normals = new (std::nothrow) Vec3[vertexCount];
+    indices = new (std::nothrow) unsigned long[indexCount];
     size_t vertIndexOffset = 0, indexIndex = 0;
-	// Run through the submeshes again, adding the data into the arrays
-	for ( unsigned short i = 0; i < meshes.meshDatas.size(); ++i)
-	{
-		MeshData* submesh = meshes.meshDatas.at( i );
+    // Run through the submeshes again, adding the data into the arrays
+    for ( unsigned short i = 0; i < meshes.meshDatas.size(); ++i)
+    {
+        MeshData* submesh = meshes.meshDatas.at( i );
         if (submesh->vertex.empty())
             continue;
-        
+
         int floatVertDataSize = submesh->vertex.size();
         int sizePerVert = submesh->getPerVertexSize();
         int numVertices = (floatVertDataSize * sizeof(float)) / sizePerVert;
-        
+
         //Figure out offsets into the vertex data for position/normal.
         int posFloatOffset = 0, normFloatOffset = 0;
         bool hitPos = false, hitNorm = false;
@@ -333,13 +334,13 @@ void MeshInfo::getMeshInformation(	const MeshDatas& meshes,
                 hitPos = true;
             if (attrib.vertexAttrib == GLProgram::VERTEX_ATTRIB_NORMAL)
                 hitNorm = true;
-            
+
             if (!hitPos)
                 posFloatOffset += attrib.attribSizeBytes / sizeof(float);
             if (!hitNorm)
                 normFloatOffset += attrib.attribSizeBytes / sizeof(float);
         }
-        
+
         float* curVert = &submesh->vertex[0];
         float* curPosition = nullptr, *curNormal = nullptr;
         int vertFloatStride = sizePerVert / sizeof(float);
@@ -362,43 +363,43 @@ void MeshInfo::getMeshInformation(	const MeshDatas& meshes,
                 indices[indexIndex++] = static_cast<unsigned long>(curIndex[k]) + static_cast<unsigned long>(vertIndexOffset);
             }
         }
-        
-        vertIndexOffset += numVertices;
-	}
 
-	// Create triangles from the retrieved data
+        vertIndexOffset += numVertices;
+    }
+
+    // Create triangles from the retrieved data
     _triangles.resize(indexCount / 3);
     size_t curTriangle = 0;
-	for (size_t k = 0; k < indexCount-1; k+=3)
-	{
-		PUTriangle& t = _triangles[curTriangle++];
-		t.v1 = vertices [indices[k]];
-		t.vn1 = normals [indices[k]];
+    for (size_t k = 0; k < indexCount-1; k+=3)
+    {
+        PUTriangle& t = _triangles[curTriangle++];
+        t.v1 = vertices [indices[k]];
+        t.vn1 = normals [indices[k]];
 
-		t.v2 = vertices [indices[k+1]];
-		t.vn2 = normals [indices[k+1]];
+        t.v2 = vertices [indices[k+1]];
+        t.vn2 = normals [indices[k+1]];
 
-		t.v3 = vertices [indices[k+2]];
-		t.vn3 = normals [indices[k+2]];
+        t.v3 = vertices [indices[k+2]];
+        t.vn3 = normals [indices[k+2]];
 
-		t.calculateSquareSurface();
-		t.calculateSurfaceNormal();
-		t.calculateEdgeNormals();
-		_triangles.push_back(t);
-	}
+        t.calculateSquareSurface();
+        t.calculateSurfaceNormal();
+        t.calculateEdgeNormals();
+        _triangles.push_back(t);
+    }
 
-	// Delete intermediate arrays
-	delete [] indices;
-	delete [] normals;
-	delete [] vertices;
+    // Delete intermediate arrays
+    delete [] indices;
+    delete [] normals;
+    delete [] vertices;
 
-	// Sort the triangle on their size, if needed (only if a gaussian random number generator
-	// function is used to perform a random lookup of a triangle)
-	if (mDistribution == MSD_HOMOGENEOUS)
-		sort(_triangles.begin(), _triangles.end(), PUSortDescending());
-	else
-		if (mDistribution == MSD_HETEROGENEOUS_1)
-			sort(_triangles.begin(), _triangles.end(), PUSortAscending());
+    // Sort the triangle on their size, if needed (only if a gaussian random number generator
+    // function is used to perform a random lookup of a triangle)
+    if (mDistribution == MSD_HOMOGENEOUS)
+        sort(_triangles.begin(), _triangles.end(), PUSortDescending());
+    else
+    if (mDistribution == MSD_HETEROGENEOUS_1)
+        sort(_triangles.begin(), _triangles.end(), PUSortAscending());
 }
 //-----------------------------------------------------------------------
 //-----------------------------------------------------------------------
@@ -461,12 +462,10 @@ void PUMeshSurfaceEmitter::initParticlePosition(PUParticle3D* particle)
                 {
                     Mat4 rotMat;
                     Mat4::createRotation(static_cast<PUParticleSystem3D *>(_particleSystem)->getDerivedOrientation(), &rotMat);
-                    
                     Vec3 basePos = getDerivedPosition();
                     basePos = basePos - (_latestPositionDiff * particle->m_spawnT);
-                    
-                    particle->position = basePos + rotMat * Vec3(_emitterScale.x * pAndN.position.x, _emitterScale.y * pAndN.position.y, _emitterScale.z * pAndN.position.z);
-                }
+
+                    particle->position = basePos + rotMat * Vec3(_emitterScale.x * pAndN.position.x, _emitterScale.y * pAndN.position.y, _emitterScale.z * pAndN.position.z);                }
                 //else
                 //{
                 //	particle->position = _derivedPosition + _emitterScale * pAndN.position;
@@ -495,10 +494,9 @@ void PUMeshSurfaceEmitter::initParticlePosition(PUParticle3D* particle)
             {
                 Mat4 rotMat;
                 Mat4::createRotation(static_cast<PUParticleSystem3D *>(_particleSystem)->getDerivedOrientation(), &rotMat);
-                
                 Vec3 basePos = getDerivedPosition();
                 basePos = basePos - (_latestPositionDiff * particle->m_spawnT);
-                
+
                 particle->position = basePos + rotMat * Vec3(_emitterScale.x * pAndN.position.x, _emitterScale.y * pAndN.position.y, _emitterScale.z * pAndN.position.z);
             }
             //else

@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (C) 2013 Henry van Merode. All rights reserved.
- Copyright (c) 2015 Chukong Technologies Inc.
+ Copyright (c) 2015-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -141,9 +142,9 @@ public:
 
     ///** Retrieve vertex info **/
     void getMeshInformation(const MeshDatas& meshDatas,
-    						const Vec3& position = Vec3::ZERO,
-    						const Quaternion& orient = Quaternion(),
-    						const Vec3& scale = Vec3::ONE);
+                            const Vec3& position = Vec3::ZERO,
+                            const Quaternion& orient = Quaternion(),
+                            const Vec3& scale = Vec3::ONE);
 
     /** Get a triangle based on the index. */
     const PUTriangle& getTriangle (size_t triangleIndex);

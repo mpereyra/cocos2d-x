@@ -1,5 +1,6 @@
 /****************************************************************************
- Copyright (c) 2015 Chukong Technologies Inc.
+ Copyright (c) 2015-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -117,11 +118,11 @@ public:
 
     /** Sets the current technique */
     void setTechnique(const std::string& techniqueName);
-    
+
     /*BPC PATCH*/
     void removeTechnique(const std::string& techniqueName);
     /*END BPC PATCH*/
-    
+
     /** returns a clone (deep-copy) of the material */
     virtual Material* clone() const;
 

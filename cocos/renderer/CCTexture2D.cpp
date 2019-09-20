@@ -2,6 +2,7 @@
 Copyright (c) 2008      Apple Inc. All Rights Reserved.
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -84,7 +85,7 @@ namespace {
 #ifdef GL_ETC1_RGB8_OES
         PixelFormatInfoMapValue(Texture2D::PixelFormat::ETC, Texture2D::PixelFormatInfo(GL_ETC1_RGB8_OES, 0xFFFFFFFF, 0xFFFFFFFF, 4, true, false)),
 #endif
-        
+
 #warning This is just plain stupid -- these should not be compile-time options.
 #ifdef GL_COMPRESSED_RGBA_S3TC_DXT1_EXT
 #ifndef GL_COMPRESSED_RGBA_S3TC_DXT3_EXT
@@ -116,8 +117,7 @@ namespace {
 #define GL_COMPRESSED_RGBA_ASTC_6x5_KHR 0x93B3
 #endif
         PixelFormatInfoMapValue(Texture2D::PixelFormat::ASTC_RGBA, Texture2D::PixelFormatInfo(GL_COMPRESSED_RGBA_ASTC_6x5_KHR,
-            0xFFFFFFFF, 0xFFFFFFFF, 4, true, false)),
-        
+                                                                                              0xFFFFFFFF, 0xFFFFFFFF, 4, true, false)),
         /*BPC PATCH*/
 // TODO - HP-1248, talk to Harry about this...
 #ifndef GL_RG_EXT
@@ -596,7 +596,7 @@ bool Texture2D::hasPremultipliedAlpha() const
     return _hasPremultipliedAlpha;
 }
 
-bool Texture2D::initWithData(const void *data, ssize_t dataLen, Texture2D::PixelFormat pixelFormat, int pixelsWide, int pixelsHigh, const Size& contentSize)
+bool Texture2D::initWithData(const void *data, ssize_t dataLen, Texture2D::PixelFormat pixelFormat, int pixelsWide, int pixelsHigh, const Size& /*contentSize*/)
 {
     CCASSERT(dataLen>0 && pixelsWide>0 && pixelsHigh>0, "Invalid size");
 
@@ -622,13 +622,14 @@ bool Texture2D::initWithMipmaps(MipmapInfo* mipmaps, int mipmapsNum, PixelFormat
     }
     
 
-    if(_pixelFormatInfoTables.find(pixelFormat) == _pixelFormatInfoTables.end())
+    auto formatItr = _pixelFormatInfoTables.find(pixelFormat);
+    if(formatItr == _pixelFormatInfoTables.end())
     {
         CCLOG("cocos2d: WARNING: unsupported pixelformat: %lx", (unsigned long)pixelFormat );
         return false;
     }
 
-    const PixelFormatInfo& info = _pixelFormatInfoTables.at(pixelFormat);
+    const PixelFormatInfo& info = formatItr->second;
 
     if (info.compressed && !Configuration::getInstance()->supportsPVRTC()
                         && !Configuration::getInstance()->supportsETC()
@@ -638,7 +639,7 @@ bool Texture2D::initWithMipmaps(MipmapInfo* mipmaps, int mipmapsNum, PixelFormat
         CCLOG("cocos2d: WARNING: PVRTC/ETC images are not supported");
         return false;
     }
-    
+
     // BPC PATCH 1x1 PVRs causin' GPU crash
     CCASSERT(!info.compressed || pixelsWide*pixelsHigh > 1, "cocos2d: Compressed image is invalid 1x1 size");
     if(info.compressed && pixelsWide*pixelsHigh == 1)
@@ -852,7 +853,6 @@ bool Texture2D::initWithImage(Image *image, PixelFormat format)
 
         if (outTempData != nullptr && outTempData != tempData)
         {
-
             free(outTempData);
         }
 
@@ -1190,6 +1190,7 @@ bool Texture2D::initWithString(const char *text, const FontDefinition& textDefin
     auto textDef = textDefinition;
     auto contentScaleFactor = CC_CONTENT_SCALE_FACTOR();
     textDef._fontSize *= contentScaleFactor;
+    textDef._lineSpacing *= contentScaleFactor;
     textDef._dimensions.width *= contentScaleFactor;
     textDef._dimensions.height *= contentScaleFactor;
     textDef._stroke._strokeSize *= contentScaleFactor;
@@ -1246,7 +1247,9 @@ void Texture2D::drawAtPoint(const Vec2& point)
         return;
     }
 /* END PATCH */
+    
     GL::bindTexture2D( _name );
+
 
     glVertexAttribPointer(GLProgram::VERTEX_ATTRIB_POSITION, 2, GL_FLOAT, GL_FALSE, 0, vertices);
     glVertexAttribPointer(GLProgram::VERTEX_ATTRIB_TEX_COORD, 2, GL_FLOAT, GL_FALSE, 0, coordinates);
@@ -1270,7 +1273,7 @@ void Texture2D::drawInRect(const Rect& rect)
     GL::enableVertexAttribs( GL::VERTEX_ATTRIB_FLAG_POSITION | GL::VERTEX_ATTRIB_FLAG_TEX_COORD );
     _shaderProgram->use();
     _shaderProgram->setUniformsForBuiltins();
-    
+
 /* BPC PATCH */
     if (!_name) {
         DLog("Texture2D::drawInRect with invalidated texture, bailing out");
@@ -1571,10 +1574,17 @@ void Texture2D::removeSpriteFrameCapInset(SpriteFrame* spriteFrame)
 /// halx99 spec, ANDROID ETC1 ALPHA supports.
 void Texture2D::setAlphaTexture(Texture2D* alphaTexture)
 {
-    if (alphaTexture != nullptr) {
-        this->_alphaTexture = alphaTexture;
-        this->_alphaTexture->retain();
-        this->_hasPremultipliedAlpha = true; // PremultipliedAlpha shoud be true.
+    if (alphaTexture != nullptr)
+    {
+        alphaTexture->retain();
+        CC_SAFE_RELEASE(_alphaTexture);
+        _alphaTexture = alphaTexture;
+        _hasPremultipliedAlpha = true; // PremultipliedAlpha should be true.
     }
+}
+
+Texture2D* Texture2D::getAlphaTexture() const
+{
+    return _alphaTexture;
 }
 NS_CC_END

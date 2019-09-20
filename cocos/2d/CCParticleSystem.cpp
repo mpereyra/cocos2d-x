@@ -3,6 +3,7 @@ Copyright (c) 2008-2010 Ricardo Quesada
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2011      Zynga Inc.
 Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -56,7 +57,6 @@ THE SOFTWARE.
 #include "renderer/CCTextureCache.h"
 #include "platform/CCFileUtils.h"
 
-
 using namespace std;
 
 NS_CC_BEGIN
@@ -79,7 +79,7 @@ NS_CC_BEGIN
 //
 
 
-inline void nomalize_point(float x, float y, particle_point* out)
+inline void normalize_point(float x, float y, particle_point* out)
 {
     float n = x * x + y * y;
     // Already normalized.
@@ -186,6 +186,9 @@ void ParticleData::release()
     CC_SAFE_FREE(modeB.radius);
 }
 
+Vector<ParticleSystem*> ParticleSystem::__allInstances;
+float ParticleSystem::__totalParticleCountFactor = 1.0f;
+
 ParticleSystem::ParticleSystem()
 : _isBlendAdditive(false)
 , _isAutoRemoveOnFinish(false)
@@ -221,6 +224,7 @@ ParticleSystem::ParticleSystem()
 , _yCoordFlipped(1)
 , _positionType(PositionType::FREE)
 , _paused(false)
+, _sourcePositionCompatible(true) // In the furture this member's default value maybe false or be removed.
 {
     modeA.gravity.setZero();
     modeA.speed = 0;
@@ -261,6 +265,17 @@ ParticleSystem* ParticleSystem::createWithTotalParticles(int numberOfParticles)
     }
     CC_SAFE_DELETE(ret);
     return ret;
+}
+
+// static
+Vector<ParticleSystem*>& ParticleSystem::getAllParticleSystems()
+{
+    return __allInstances;
+}
+
+void ParticleSystem::setTotalParticleCountFactor(float factor)
+{
+    __totalParticleCountFactor = factor;
 }
 
 bool ParticleSystem::init()
@@ -359,7 +374,12 @@ bool ParticleSystem::initWithDictionary(ValueMap& dictionary, const std::string&
             // position
             float x = dictionary["sourcePositionx"].asFloat();
             float y = dictionary["sourcePositiony"].asFloat();
-            this->setPosition(x,y);            
+	    if(!_sourcePositionCompatible) {
+                this->setSourcePosition(Vec2(x, y));
+	    }
+            else {
+		this->setPosition(Vec2(x, y));
+	    }
             _posVar.x = dictionary["sourcePositionVariancex"].asFloat();
             _posVar.y = dictionary["sourcePositionVariancey"].asFloat();
 
@@ -480,7 +500,6 @@ bool ParticleSystem::initWithDictionary(ValueMap& dictionary, const std::string&
                     // set not pop-up message box when load image failed
                     bool notify = FileUtils::getInstance()->isPopupNotify();
                     FileUtils::getInstance()->setPopupNotify(false);
-                    
                     tex = Director::getInstance()->getTextureCache()->addImage(textureName);
                     // reset the value of UIImage notify
                     FileUtils::getInstance()->setPopupNotify(notify);
@@ -795,6 +814,8 @@ void ParticleSystem::onEnter()
     
     // update after action in run!
     this->scheduleUpdateWithPriority(1);
+
+    __allInstances.pushBack(this);
 }
 
 void ParticleSystem::onExit()
@@ -809,6 +830,12 @@ void ParticleSystem::onExit()
     
     this->unscheduleUpdate();
     Node::onExit();
+
+    auto iter = std::find(std::begin(__allInstances), std::end(__allInstances), this);
+    if (iter != std::end(__allInstances))
+    {
+        __allInstances.erase(iter);
+    }
 }
 
 void ParticleSystem::stopSystem()
@@ -841,15 +868,17 @@ void ParticleSystem::update(float dt)
     if (_isActive && _emissionRate)
     {
         float rate = 1.0f / _emissionRate;
+        int totalParticles = static_cast<int>(_totalParticles * __totalParticleCountFactor);
+        
         //issue #1201, prevent bursts of particles, due to too high emitCounter
-        if (_particleCount < _totalParticles)
+        if (_particleCount < totalParticles)
         {
             _emitCounter += dt;
             if (_emitCounter < 0.f)
                 _emitCounter = 0.f;
         }
         
-        int emitCount = MIN(_totalParticles - _particleCount, _emitCounter / rate);
+        int emitCount = MIN(totalParticles - _particleCount, _emitCounter / rate);
         addParticles(emitCount);
         _emitCounter -= rate * emitCount;
         
@@ -888,7 +917,7 @@ void ParticleSystem::update(float dt)
                     _particleData.atlasIndex[_particleCount - 1] = currentIndex;
                 }
                 --_particleCount;
-                if( _particleCount == 0 )
+                if( _particleCount == 0 && _isAutoRemoveOnFinish )
                 {
                     //it is reasonable for the doneCallback to destroy the ParticleSystem.  So we assume it will, and skip trying to autoRemove if the user has passed us a callback.
                     if(_doneCallback) {
@@ -897,7 +926,6 @@ void ParticleSystem::update(float dt)
                         this->release();
                         return;
                     }
-                    
                     if(_isAutoRemoveOnFinish) {
                         this->unscheduleUpdate();
                         _parent->removeChild(this, true);
@@ -916,7 +944,7 @@ void ParticleSystem::update(float dt)
                 // radial acceleration
                 if (_particleData.posx[i] || _particleData.posy[i])
                 {
-                    nomalize_point(_particleData.posx[i], _particleData.posy[i], &radial);
+                    normalize_point(_particleData.posx[i], _particleData.posy[i], &radial);
                 }
                 tangential = radial;
                 radial.x *= _particleData.modeA.radialAccel[i];
@@ -1306,14 +1334,13 @@ void ParticleSystem::setAutoRemoveOnFinish(bool var)
         DFail("Having a done callback will disable autoRemoveOnFinish.  They cannot be active at the same time.");
         return;
     }
-    
     _isAutoRemoveOnFinish = var;
 }
 
 void ParticleSystem::setDoneCallback(std::function<void(ParticleSystem*)> cb)
 {
     _doneCallback = cb;
-    
+
     if(_isAutoRemoveOnFinish) {
         DFail("Having a done callback will disable autoRemoveOnFinish.  They cannot be active at the same time.");
         _isAutoRemoveOnFinish = false;
@@ -1398,6 +1425,5 @@ bool ParticleSystem::reinitWithDictionary(cocos2d::ValueMap &dictionary) {
     return initWithDictionary(dictionary);
 }
 /* BPC_PATCH end */
-
 
 NS_CC_END

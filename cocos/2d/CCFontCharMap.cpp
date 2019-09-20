@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (c) 2013      Zynga Inc.
  Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
 
@@ -34,7 +35,7 @@ NS_CC_BEGIN
 FontCharMap * FontCharMap::create(const std::string& plistFile)
 {
     std::string pathStr = FileUtils::getInstance()->fullPathForFilename(plistFile);
-    std::string relPathStr = pathStr.substr(0, pathStr.find_last_of("/"))+"/";
+    std::string relPathStr = pathStr.substr(0, pathStr.find_last_of('/'))+"/";
 
     ValueMap dict = FileUtils::getInstance()->getValueMapFromFile(pathStr);
 
@@ -98,7 +99,7 @@ FontCharMap::~FontCharMap()
 
 }
 
-int* FontCharMap::getHorizontalKerningForTextUTF16(const std::u16string& text, int &outNumLetters) const
+int* FontCharMap::getHorizontalKerningForTextUTF32(const std::u32string& /*text*/, int & /*outNumLetters*/) const
 {
     return nullptr;
 }

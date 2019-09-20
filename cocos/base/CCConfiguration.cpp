@@ -2,6 +2,7 @@
 Copyright (c) 2010      Ricardo Quesada
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -50,9 +51,9 @@ Configuration::Configuration()
 , _supportsBGRA8888(false)
 , _supportsDiscardFramebuffer(false)
 , _supportsShareableVAO(false)
+, _supportsOESMapBuffer(false)
 , _supportsOESDepth24(false)
 , _supportsOESPackedDepthStencil(false)
-, _supportsOESMapBuffer(false)
 , _maxSamplesAllowed(0)
 , _maxTextureUnits(0)
 , _glExtensions(nullptr)
@@ -148,13 +149,17 @@ void Configuration::gatherGPUInfo()
     _supportsNPOT = true;
 	_valueDict["gl.supports_NPOT"] = Value(_supportsNPOT);
 	
-    _supportsBGRA8888 = checkForGLExtension("GL_IMG_texture_format_BGRA888");
+    _supportsBGRA8888 = checkForGLExtension("GL_IMG_texture_format_BGRA8888");
 	_valueDict["gl.supports_BGRA8888"] = Value(_supportsBGRA8888);
 
     _supportsDiscardFramebuffer = checkForGLExtension("GL_EXT_discard_framebuffer");
 	_valueDict["gl.supports_discard_framebuffer"] = Value(_supportsDiscardFramebuffer);
 
+#ifdef CC_PLATFORM_PC
     _supportsShareableVAO = checkForGLExtension("vertex_array_object");
+#else
+    _supportsShareableVAO = checkForGLExtension("GL_OES_vertex_array_object");
+#endif
     _valueDict["gl.supports_vertex_array_object"] = Value(_supportsShareableVAO);
 
     _supportsOESMapBuffer = checkForGLExtension("GL_OES_mapbuffer");
@@ -246,7 +251,7 @@ bool Configuration::supportsETC() const
 
 bool Configuration::supportsS3TC() const
 {
-    // BPC_PATCH removing ifdef; WTH cocos
+// BPC_PATCH removing ifdef; WTH cocos
 //#ifdef GL_EXT_texture_compression_s3tc
     return _supportsS3TC;
 //#else
@@ -339,8 +344,9 @@ const Value& Configuration::getValue(const std::string& key, const Value& defaul
 {
     auto iter = _valueDict.find(key);
     if (iter != _valueDict.cend())
-        return _valueDict.at(key);
-	return defaultValue;
+        return iter->second;
+
+    return defaultValue;
 }
 
 void Configuration::setValue(const std::string& key, const Value& value)
@@ -394,12 +400,12 @@ void Configuration::loadConfigFile(const std::string& filename)
 	// Add all keys in the existing dictionary
     
 	const auto& dataMap = dataIter->second.asValueMap();
-    for (auto dataMapIter = dataMap.cbegin(); dataMapIter != dataMap.cend(); ++dataMapIter)
+    for (const auto& dataMapIter : dataMap)
     {
-        if (_valueDict.find(dataMapIter->first) == _valueDict.cend())
-            _valueDict[dataMapIter->first] = dataMapIter->second;
+        if (_valueDict.find(dataMapIter.first) == _valueDict.cend())
+            _valueDict[dataMapIter.first] = dataMapIter.second;
         else
-            CCLOG("Key already present. Ignoring '%s'",dataMapIter->first.c_str());
+            CCLOG("Key already present. Ignoring '%s'",dataMapIter.first.c_str());
     }
     
     //light info

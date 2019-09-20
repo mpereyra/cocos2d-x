@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (c) 2010-2012 cocos2d-x.org
  Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -56,6 +57,7 @@ public:
     static void convertAttrs();
     static void* _pixelFormat;
     static int _depthFormat;
+    static int _multisamplingCount;
 
     /** sets the content scale factor */
     virtual bool setContentScaleFactor(float contentScaleFactor) override;
@@ -77,8 +79,8 @@ public:
     virtual void setIMEKeyboardType(TextFieldTTF::KeyboardType type) override;
     virtual void setSecureTextEntry(bool secure) override;
 
-    Rect getSafeAreaRect() const override;
-    
+    virtual Rect getSafeAreaRect() const override;
+
 protected:
     GLViewImpl();
     virtual ~GLViewImpl();

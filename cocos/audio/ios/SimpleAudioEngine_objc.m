@@ -109,9 +109,9 @@ static CDBufferManager *bufferManager = nil;
     /* BPC_PATCH start: https://github.com/brooklynpacket/cocos2d-x/commit/23ace40b7356a8139f5ec14e481f57ebed523e30 */
     [am setMode:kAMM_FxOnly];
     /* BPC_PATCH end */
-    
+
     [am pauseBackgroundMusic];
-    
+
     /* BPC_PATCH start: https://github.com/brooklynpacket/cocos2d-x/commit/4e708f6d74204d50da076eb7d2e302575226fc67 */
     [am beginInterruption];
     /* BPC_PATCH end */
@@ -121,13 +121,13 @@ static CDBufferManager *bufferManager = nil;
     /* BPC_PATCH start: https://github.com/brooklynpacket/cocos2d-x/commit/98a53aae6a482022e9884970ec2df95d5470ef2f */
     [am setMode:kAMM_FxPlusMusicIfNoOtherAudio];
     /* BPC_PATCH end */
-    
+
     [am resumeBackgroundMusic];
-    
+
     /* BPC_PATCH start: https://github.com/brooklynpacket/cocos2d-x/commit/4e708f6d74204d50da076eb7d2e302575226fc67 */
     [am endInterruption];
     /* BPC_PATCH end */
-}    
+}
 
 -(void) rewindBackgroundMusic {
     [am rewindBackgroundMusic];

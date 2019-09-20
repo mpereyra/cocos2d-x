@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (C) 2013 Henry van Merode. All rights reserved.
- Copyright (c) 2015 Chukong Technologies Inc.
+ Copyright (c) 2015-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -112,7 +113,7 @@ void PUMaterialCache::addMaterial( PUMaterial *material )
 }
 
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS || CC_TARGET_PLATFORM == CC_PLATFORM_MAC)
-int iterPath(const char *fpath, const struct stat *sb, int typeflag)
+int iterPath(const char *fpath, const struct stat* /*sb*/, int typeflag)
 {
     if(typeflag == FTW_F)
     {

@@ -1,5 +1,6 @@
 /****************************************************************************
- Copyright (c) 2015 Chukong Technologies Inc.
+ Copyright (c) 2015-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -203,12 +204,13 @@ bool TextureCube::init(const std::string& positive_x, const std::string& negativ
     for (int i = 0; i < 6; i++)
     {
         Image* img = images[i];
+
         Size imgSize(img->getWidth(), img->getHeight());
         if (enforcedSize.width == 0.f)
             enforcedSize = imgSize;
-        
+
         Assert(imgSize.equals(enforcedSize), "Cubemap textures must use the same texture size for each face (%s)", _imgPath[i].c_str());
-        
+
         Texture2D::PixelFormat ePixelFmt = img->getRenderFormat();
         unsigned char* data = img->getData();
         GLsizei datalen = img->getDataLen();
@@ -218,7 +220,6 @@ bool TextureCube::init(const std::string& positive_x, const std::string& negativ
             CCLOG("cocos2d: WARNING: unsupported pixelformat: %lx", (unsigned long)ePixelFmt );
             return false;
         }
-        
         const PixelFormatInfo& info = _pixelFormatInfoTables.at(ePixelFmt);
         if (info.compressed && !Configuration::getInstance()->supportsPVRTC()
             && !Configuration::getInstance()->supportsETC()
@@ -228,15 +229,15 @@ bool TextureCube::init(const std::string& positive_x, const std::string& negativ
             CCLOG("cocos2d: WARNING: PVRTC/ETC images are not supported");
             return false;
         }
-        
+
         if (enforcedFormat == 0)
             enforcedFormat = info.internalFormat;
         Assert(enforcedFormat == info.internalFormat, "Cubemap textures must have the same internal pixel format for each face (%s)", _imgPath[i].c_str());
-        
+
         if (!info.compressed)
         {
             unsigned int bytesPerRow = imgSize.width * info.bpp / 8;
-            
+
             if(bytesPerRow % 8 == 0)
             {
                 glPixelStorei(GL_UNPACK_ALIGNMENT, 8);
@@ -258,14 +259,14 @@ bool TextureCube::init(const std::string& positive_x, const std::string& negativ
         {
             glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         }
-        
+
         // steal one mipMap
         if(img->getNumberOfMipmaps() > 1) {
             // handle mipmaps for dxt.dds files / nexus 7 device
             data = img->getMipmaps()[0].address;
             datalen = img->getMipmaps()[0].len;
         }
-        
+
         if (info.compressed)
         {
             glCompressedTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, info.internalFormat, img->getWidth(), img->getHeight(), 0, datalen, data);

@@ -1,5 +1,6 @@
 /****************************************************************************
 Copyright (c) 2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -60,7 +61,7 @@ UrlAudioPlayer::UrlAudioPlayer(SLEngineItf engineItf, SLObjectItf outputMixObjec
         : _engineItf(engineItf), _outputMixObj(outputMixObject),
           _callerThreadUtils(callerThreadUtils), _id(-1), _assetFd(nullptr),
           _playObj(nullptr), _playItf(nullptr), _seekItf(nullptr), _volumeItf(nullptr),
-          _volume(0.0f), _duration(0.0f), _isLoop(false), _state(State::INVALID),
+          _volume(0.0f), _duration(0.0f), _isLoop(false), _isAudioFocus(true), _state(State::INVALID),
           _playEventCallback(nullptr), _isDestroyed(std::make_shared<bool>(false))
 {
     std::call_once(__onceFlag, [](){
@@ -69,7 +70,7 @@ UrlAudioPlayer::UrlAudioPlayer(SLEngineItf engineItf, SLObjectItf outputMixObjec
 
     __playerContainerMutex.lock();
     __playerContainer.push_back(this);
-    ALOGV("Current UrlAudioPlayer instance count: %d", __playerContainer.size());
+    ALOGV("Current UrlAudioPlayer instance count: %d", (int)__playerContainer.size());
     __playerContainerMutex.unlock();
 
     _callerThreadId = callerThreadUtils->getCallerThreadId();
@@ -169,7 +170,7 @@ void UrlAudioPlayer::stop()
     }
     else
     {
-        ALOGW("UrlAudioPlayer (%p, state:%d) isn't playing or paused, could not invoke stop!", this, _state);
+        ALOGW("UrlAudioPlayer (%p, state:%d) isn't playing or paused, could not invoke stop!", this, static_cast<int>(_state));
     }
 }
 
@@ -183,7 +184,7 @@ void UrlAudioPlayer::pause()
     }
     else
     {
-        ALOGW("UrlAudioPlayer (%p, state:%d) isn't playing, could not invoke pause!", this, _state);
+        ALOGW("UrlAudioPlayer (%p, state:%d) isn't playing, could not invoke pause!", this, static_cast<int>(_state));
     }
 }
 
@@ -197,7 +198,7 @@ void UrlAudioPlayer::resume()
     }
     else
     {
-        ALOGW("UrlAudioPlayer (%p, state:%d) isn't paused, could not invoke resume!", this, _state);
+        ALOGW("UrlAudioPlayer (%p, state:%d) isn't paused, could not invoke resume!", this, static_cast<int>(_state));
     }
 }
 
@@ -211,20 +212,40 @@ void UrlAudioPlayer::play()
     }
     else
     {
-        ALOGW("UrlAudioPlayer (%p, state:%d) isn't paused or initialized, could not invoke play!", this, _state);
+        ALOGW("UrlAudioPlayer (%p, state:%d) isn't paused or initialized, could not invoke play!", this, static_cast<int>(_state));
     }
 }
 
-void UrlAudioPlayer::setVolume(float volume)
+void UrlAudioPlayer::setVolumeToSLPlayer(float volume)
 {
-    _volume = volume;
     int dbVolume = 2000 * log10(volume);
     if (dbVolume < SL_MILLIBEL_MIN)
     {
         dbVolume = SL_MILLIBEL_MIN;
     }
     SLresult r = (*_volumeItf)->SetVolumeLevel(_volumeItf, dbVolume);
-    SL_RETURN_IF_FAILED(r, "UrlAudioPlayer::setVolume %d failed", dbVolume);
+    SL_RETURN_IF_FAILED(r, "UrlAudioPlayer::setVolumeToSLPlayer %d failed", dbVolume);
+}
+
+void UrlAudioPlayer::setVolume(float volume)
+{
+    _volume = volume;
+    if (_isAudioFocus)
+    {
+        setVolumeToSLPlayer(_volume);
+    }
+}
+
+float UrlAudioPlayer::getVolume() const
+{
+    return _volume;
+}
+
+void UrlAudioPlayer::setAudioFocus(bool isFocus)
+{
+    _isAudioFocus = isFocus;
+    float volume = _isAudioFocus ? _volume : 0.0f;
+    setVolumeToSLPlayer(volume);
 }
 
 float UrlAudioPlayer::getDuration() const
@@ -360,11 +381,6 @@ bool UrlAudioPlayer::prepare(const std::string &url, SLuint32 locatorType, std::
 void UrlAudioPlayer::rewind()
 {
 // Not supported currently. since cocos audio engine will new -> prepare -> play again.
-}
-
-float UrlAudioPlayer::getVolume() const
-{
-    return _volume;
 }
 
 void UrlAudioPlayer::setLoop(bool isLoop)

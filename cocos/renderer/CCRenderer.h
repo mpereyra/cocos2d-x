@@ -1,5 +1,6 @@
 /****************************************************************************
  Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -103,9 +104,9 @@ public:
     /**Realloc command queues and reserve with given size. Note: this clears any existing commands.*/
     void realloc(size_t reserveSize);
     /**Get a sub group of the render queue.*/
-    inline std::vector<RenderCommand*>& getSubQueue(QUEUE_GROUP group) { return _commands[group]; }
+    std::vector<RenderCommand*>& getSubQueue(QUEUE_GROUP group) { return _commands[group]; }
     /**Get the number of render commands contained in a subqueue.*/
-    inline ssize_t getSubQueueSize(QUEUE_GROUP group) const { return _commands[group].size();}
+    ssize_t getSubQueueSize(QUEUE_GROUP group) const { return _commands[group].size(); }
 
     /**Save the current DepthState, CullState, DepthWriteState render state.*/
     void saveRenderState();
@@ -160,7 +161,7 @@ public:
     void addCommand(RenderCommand* command);
 
     /** Adds a `RenderComamnd` into the renderer specifying a particular render queue ID */
-    void addCommand(RenderCommand* command, int renderQueue);
+    void addCommand(RenderCommand* command, int renderQueueID);
 
     /** Pushes a group into the render queue */
     void pushGroup(int renderQueueID);
@@ -182,6 +183,8 @@ public:
 
     /** set color for clear screen */
     void setClearColor(const Color4F& clearColor);
+    /** get color for clear screen */
+    const Color4F& getClearColor() const { return _clearColor; };
     /* returns the number of drawn batches in the last frame */
     ssize_t getDrawnBatches() const { return _drawnBatches; }
     /* RenderCommands (except) TrianglesCommand should update this value */
@@ -201,7 +204,7 @@ public:
     void setDepthTest(bool enable);
     
     //This will not be used outside.
-    inline GroupCommandManager* getGroupCommandManager() const { return _groupCommandManager; };
+    GroupCommandManager* getGroupCommandManager() const { return _groupCommandManager; }
 
     /** returns whether or not a rectangle is visible or not */
     bool checkVisibility(const Mat4& transform, const Size& size);

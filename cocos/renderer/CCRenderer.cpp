@@ -1,5 +1,6 @@
 /****************************************************************************
  Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -198,13 +199,13 @@ static const int DEFAULT_RENDER_QUEUE = 0;
 //
 Renderer::Renderer()
 :_lastBatchedMeshCommand(nullptr)
+,_triBatchesToDrawCapacity(-1)
+,_triBatchesToDraw(nullptr)
 ,_filledVertex(0)
 ,_filledIndex(0)
 ,_glViewAssigned(false)
 ,_isRendering(false)
 ,_isDepthTestFor2D(false)
-,_triBatchesToDraw(nullptr)
-,_triBatchesToDrawCapacity(-1)
 #if CC_ENABLE_CACHE_TEXTURE_DATA
 ,_cacheTextureListener(nullptr)
 #endif
@@ -281,7 +282,14 @@ void Renderer::setupVBOAndVAO()
     glGenBuffers(2, &_buffersVBO[0]);
 
     glBindBuffer(GL_ARRAY_BUFFER, _buffersVBO[0]);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(_verts[0]) * VBO_SIZE, _verts, GL_DYNAMIC_DRAW);
+    // Issue #15652
+    // Should not initialize VBO with a large size (VBO_SIZE=65536),
+    // it may cause low FPS on some Android devices like LG G4 & Nexus 5X.
+    // It's probably because some implementations of OpenGLES driver will
+    // copy the whole memory of VBO which initialized at the first time
+    // once glBufferData/glBufferSubData is invoked.
+    // For more discussion, please refer to https://github.com/cocos2d/cocos2d-x/issues/15652
+    //glBufferData(GL_ARRAY_BUFFER, sizeof(_verts[0]) * VBO_SIZE, _verts, GL_DYNAMIC_DRAW);
 
     // vertices
     glEnableVertexAttribArray(GLProgram::VERTEX_ATTRIB_POSITION);
@@ -310,10 +318,10 @@ void Renderer::setupVBO()
 {
     glGenBuffers(2, &_buffersVBO[0]);
     // Issue #15652
-    // Should not initialzie VBO with a large size (VBO_SIZE=65536),
+    // Should not initialize VBO with a large size (VBO_SIZE=65536),
     // it may cause low FPS on some Android devices like LG G4 & Nexus 5X.
     // It's probably because some implementations of OpenGLES driver will
-    // copy the whole memory of VBO which initialzied at the first time
+    // copy the whole memory of VBO which initialized at the first time
     // once glBufferData/glBufferSubData is invoked.
     // For more discussion, please refer to https://github.com/cocos2d/cocos2d-x/issues/15652
 //    mapBuffers();
@@ -340,17 +348,17 @@ void Renderer::mapBuffers()
 
 void Renderer::addCommand(RenderCommand* command)
 {
-    int renderQueue =_commandGroupStack.top();
-    addCommand(command, renderQueue);
+    int renderQueueID =_commandGroupStack.top();
+    addCommand(command, renderQueueID);
 }
 
-void Renderer::addCommand(RenderCommand* command, int renderQueue)
+void Renderer::addCommand(RenderCommand* command, int renderQueueID)
 {
     CCASSERT(!_isRendering, "Cannot add command while rendering");
-    CCASSERT(renderQueue >=0, "Invalid render queue");
+    CCASSERT(renderQueueID >=0, "Invalid render queue");
     CCASSERT(command->getType() != RenderCommand::Type::UNKNOWN_COMMAND, "Invalid Command Type");
 
-    _renderGroups[renderQueue].push_back(command);
+    _renderGroups[renderQueueID].push_back(command);
 }
 
 void Renderer::pushGroup(int renderQueueID)
@@ -490,13 +498,11 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
             RenderState::StateBlock::_defaultState->setBlend(true);
         }
         glDisable(GL_CULL_FACE);
-        glDisable(GL_STENCIL_TEST);
         RenderState::StateBlock::_defaultState->setCullFace(false);
-        RenderState::StateBlock::_defaultState->setStencilTest(false);
         
-        for (auto it = zNegQueue.cbegin(); it != zNegQueue.cend(); ++it)
+        for (const auto& zNegNext : zNegQueue)
         {
-            processRenderCommand(*it);
+            processRenderCommand(zNegNext);
         }
         flush();
     }
@@ -512,21 +518,18 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
         glDepthMask(true);
         glDisable(GL_BLEND);
         glEnable(GL_CULL_FACE);
-        glDisable(GL_STENCIL_TEST);
         RenderState::StateBlock::_defaultState->setDepthTest(true);
         RenderState::StateBlock::_defaultState->setDepthWrite(true);
         RenderState::StateBlock::_defaultState->setBlend(false);
         RenderState::StateBlock::_defaultState->setCullFace(true);
-        RenderState::StateBlock::_defaultState->setStencilTest(false);
 
-
-        for (auto it = opaqueQueue.cbegin(); it != opaqueQueue.cend(); ++it)
+        for (const auto& opaqueNext : opaqueQueue)
         {
-            processRenderCommand(*it);
+            processRenderCommand(opaqueNext);
         }
         flush();
     }
-   
+    
     //
     //Process 3D Transparent object
     //
@@ -537,18 +540,16 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
         glDepthMask(false);
         glEnable(GL_BLEND);
         glEnable(GL_CULL_FACE);
-        glDisable(GL_STENCIL_TEST);
 
         RenderState::StateBlock::_defaultState->setDepthTest(true);
         RenderState::StateBlock::_defaultState->setDepthWrite(false);
         RenderState::StateBlock::_defaultState->setBlend(true);
         RenderState::StateBlock::_defaultState->setCullFace(true);
-        RenderState::StateBlock::_defaultState->setStencilTest(false);
 
 
-        for (auto it = transQueue.cbegin(); it != transQueue.cend(); ++it)
+        for (const auto& transNext : transQueue)
         {
-            processRenderCommand(*it);
+            processRenderCommand(transNext);
         }
         flush();
     }
@@ -580,13 +581,11 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
             RenderState::StateBlock::_defaultState->setBlend(true);
         }
         glDisable(GL_CULL_FACE);
-        glDisable(GL_STENCIL_TEST);
         RenderState::StateBlock::_defaultState->setCullFace(false);
-        RenderState::StateBlock::_defaultState->setStencilTest(false);
         
-        for (auto it = zZeroQueue.cbegin(); it != zZeroQueue.cend(); ++it)
+        for (const auto& zZeroNext : zZeroQueue)
         {
-            processRenderCommand(*it);
+            processRenderCommand(zZeroNext);
         }
         flush();
     }
@@ -618,13 +617,11 @@ void Renderer::visitRenderQueue(RenderQueue& queue)
             RenderState::StateBlock::_defaultState->setBlend(true);
         }
         glDisable(GL_CULL_FACE);
-        glDisable(GL_STENCIL_TEST);
         RenderState::StateBlock::_defaultState->setCullFace(false);
-        RenderState::StateBlock::_defaultState->setStencilTest(false);
         
-        for (auto it = zPosQueue.cbegin(); it != zPosQueue.cend(); ++it)
+        for (const auto& zPosNext : zPosQueue)
         {
-            processRenderCommand(*it);
+            processRenderCommand(zPosNext);
         }
         flush();
     }
@@ -657,7 +654,7 @@ void Renderer::render()
 void Renderer::clean()
 {
     // Clear render group
-    for (size_t j = 0 ; j < _renderGroups.size(); j++)
+    for (size_t j = 0, size = _renderGroups.size() ; j < size; j++)
     {
         //commands are owned by nodes
         // for (const auto &cmd : _renderGroups[j])
@@ -751,9 +748,8 @@ void Renderer::drawBatchedTriangles()
     int prevMaterialID = -1;
     bool firstCommand = true;
 
-    for(auto it = std::begin(_queuedTriangleCommands); it != std::end(_queuedTriangleCommands); ++it)
+    for(const auto& cmd : _queuedTriangleCommands)
     {
-        const auto& cmd = *it;
         auto currentMaterialID = cmd->getMaterialID();
         const bool batchable = !cmd->isSkipBatching();
 
@@ -762,7 +758,7 @@ void Renderer::drawBatchedTriangles()
         // in the same batch ?
         if (batchable && (prevMaterialID == currentMaterialID || firstCommand))
         {
-            CC_ASSERT(firstCommand || _triBatchesToDraw[batchesTotal].cmd->getMaterialID() == cmd->getMaterialID() && "argh... error in logic");
+            CC_ASSERT((firstCommand || _triBatchesToDraw[batchesTotal].cmd->getMaterialID() == cmd->getMaterialID()) && "argh... error in logic");
             _triBatchesToDraw[batchesTotal].indicesToDraw += cmd->getIndexCount();
             _triBatchesToDraw[batchesTotal].cmd = cmd;
         }
@@ -856,7 +852,7 @@ void Renderer::drawBatchedTriangles()
     }
 
     /************** 4: Cleanup *************/
-    if (Configuration::getInstance()->supportsShareableVAO())
+    if (conf->supportsShareableVAO() && conf->supportsMapBuffer())
     {
         //Unbind VAO
         GL::bindVAO(0);
@@ -902,15 +898,15 @@ void Renderer::flushTriangles()
 // helpers
 bool Renderer::checkVisibility(const Mat4 &transform, const Size &size)
 {
-    auto scene = Director::getInstance()->getRunningScene();
+    auto director = Director::getInstance();
+    auto scene = director->getRunningScene();
     
     //If draw to Rendertexture, return true directly.
     // only cull the default camera. The culling algorithm is valid for default camera.
     if (!scene || (scene && scene->_defaultCamera != Camera::getVisitingCamera()))
         return true;
 
-    auto director = Director::getInstance();
-    Rect visiableRect(director->getVisibleOrigin(), director->getVisibleSize());
+    Rect visibleRect(director->getVisibleOrigin(), director->getVisibleSize());
     
     // transform center point to screen space
     float hSizeX = size.width/2;
@@ -924,11 +920,11 @@ bool Renderer::checkVisibility(const Mat4 &transform, const Size &size)
     float wshh = std::max(fabsf(hSizeX * transform.m[1] + hSizeY * transform.m[5]), fabsf(hSizeX * transform.m[1] - hSizeY * transform.m[5]));
     
     // enlarge visible rect half size in screen coord
-    visiableRect.origin.x -= wshw;
-    visiableRect.origin.y -= wshh;
-    visiableRect.size.width += wshw * 2;
-    visiableRect.size.height += wshh * 2;
-    bool ret = visiableRect.containsPoint(v2p);
+    visibleRect.origin.x -= wshw;
+    visibleRect.origin.y -= wshh;
+    visibleRect.size.width += wshw * 2;
+    visibleRect.size.height += wshh * 2;
+    bool ret = visibleRect.containsPoint(v2p);
     return ret;
 }
 

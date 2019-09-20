@@ -1,5 +1,6 @@
 /****************************************************************************
  Copyright (c) 2010 cocos2d-x.org
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -53,8 +54,8 @@ static AppDelegate s_sharedApplication;
                                          depthFormat: cocos2d::GLViewImpl::_depthFormat
                                   preserveBackbuffer: NO
                                           sharegroup: nil
-                                       multiSampling: NO
-                                     numberOfSamples: 0 ];
+                                       multiSampling: cocos2d::GLViewImpl::_multisamplingCount > 0 ? YES : NO
+                                     numberOfSamples: cocos2d::GLViewImpl::_multisamplingCount ];
     
     // Enable or disable multiple touches
     [eaglView setMultipleTouchEnabled:NO];
@@ -95,7 +96,7 @@ static AppDelegate s_sharedApplication;
      Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
      Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
      */
-     //We don't need to call this method any more. It will interupt user defined game pause&resume logic
+     //We don't need to call this method any more. It will interrupt user defined game pause&resume logic
     /* cocos2d::Director::getInstance()->pause(); */
 }
 
@@ -103,7 +104,7 @@ static AppDelegate s_sharedApplication;
     /*
      Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
      */
-     //We don't need to call this method any more. It will interupt user defined game pause&resume logic
+     //We don't need to call this method any more. It will interrupt user defined game pause&resume logic
     /* cocos2d::Director::getInstance()->resume(); */
 }
 

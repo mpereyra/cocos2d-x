@@ -1,5 +1,6 @@
 /****************************************************************************
- Copyright (c) 2014 Chukong Technologies Inc.
+ Copyright (c) 2014-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -107,16 +108,8 @@ const Camera* Camera::getVisitingCamera()
 // end static methods
 
 Camera::Camera()
-: _scene(nullptr)
-, _viewProjectionDirty(true)
-, _cameraFlag(1)
-, _frustumDirty(true)
-, _depth(-1)
-, _fbo(nullptr)
 {
     _frustum.setClipZ(true);
-    _clearBrush = CameraBackgroundBrush::createDepthBrush(1.f);
-    _clearBrush->retain();
 }
 
 Camera::~Camera()
@@ -132,7 +125,8 @@ const Mat4& Camera::getProjectionMatrix() const
 const Mat4& Camera::getViewMatrix() const
 {
     Mat4 viewInv(getNodeToWorldTransform());
-    if (memcmp(viewInv.m, _viewInv.m, sizeof(viewInv.m)) != 0)
+    static int count = sizeof(float) * 16;
+    if (memcmp(viewInv.m, _viewInv.m, count) != 0)
     {
         _viewProjectionDirty = true;
         _frustumDirty = true;
@@ -234,6 +228,7 @@ bool Camera::initPerspective(float fieldOfView, float aspectRatio, float nearPla
     Mat4::createPerspective(_fieldOfView, _aspectRatio, _nearPlane, _farPlane, &_projection);
     _viewProjectionDirty = true;
     _frustumDirty = true;
+    _type = Type::PERSPECTIVE;
     
     return true;
 }
@@ -247,6 +242,7 @@ bool Camera::initOrthographic(float zoomX, float zoomY, float nearPlane, float f
     Mat4::createOrthographicOffCenter(0, _zoom[0], 0, _zoom[1], _nearPlane, _farPlane, &_projection);
     _viewProjectionDirty = true;
     _frustumDirty = true;
+    _type = Type::ORTHOGRAPHIC;
     
     return true;
 }
@@ -353,15 +349,11 @@ float Camera::getDepthInView(const Mat4& transform) const
 {
     // BPC PATCH mat4 inverse-dot is now now a transpose-dot + dot
     // NOTE! this assumes the view matrix is orthogonal so SKEW views WILL BREAK
-    const Mat4 viewMat = getNodeToWorldTransform();
-
-    // view-transpose.z dot transform.z
-    const float distAlongView = viewMat.m[8] * transform.m[12] + viewMat.m[9] * transform.m[13] + viewMat.m[10] * transform.m[14];
-
-    // view.z dot view.position
-    const float cameraDepthOffset = viewMat.m[12] * viewMat.m[8] + viewMat.m[13] * viewMat.m[9] + viewMat.m[14] * viewMat.m[10];
-    
-    const float depth = -(distAlongView - cameraDepthOffset);
+    const Mat4 camWorldMat = getNodeToWorldTransform();
+    const float distAlongView = camWorldMat.m[8] * transform.m[12] + camWorldMat.m[9] * transform.m[13] + camWorldMat.m[10] * transform.m[14];
+    const Mat4 &viewMat = camWorldMat.getInversed();
+    const float cameraDepthOffset = viewMat.m[2] * transform.m[12] + viewMat.m[6] * transform.m[13] + viewMat.m[10] * transform.m[14] + viewMat.m[14];
+    const float depth = -(distAlongView - cameraDepthOffset);    
     return depth;
 }
 
@@ -448,6 +440,7 @@ void Camera::setFrameBufferObject(experimental::FrameBuffer *fbo)
 
 void Camera::apply()
 {
+    _viewProjectionUpdated = _transformUpdated;
     applyFrameBufferObject();
     applyViewport();
 }

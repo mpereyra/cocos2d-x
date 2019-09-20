@@ -1,5 +1,6 @@
 /****************************************************************************
- Copyright (c) 2014 Chukong Technologies Inc.
+ Copyright (c) 2014-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -92,7 +93,7 @@ bool Frustum::isOutOfFrustum(const Vec3& pt) const {
     }
     return false;
 }
-
+    
 void createFrustumPlanes(const Mat4& mat, Plane* _plane)
 {
     //ref http://www.lighthouse3d.com/tutorials/view-frustum-culling/clip-space-approach-extracting-the-planes/

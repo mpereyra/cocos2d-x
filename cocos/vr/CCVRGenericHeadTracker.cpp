@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (c) 2016 Google Inc.
  Copyright (c) 2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -25,7 +26,7 @@
 
 // IMPORTANT
 // For iOS/Mac, this file is treated as an "Objective-C++" file.
-// To change this behvior, use the File Inspector from Xcode
+// To change this behaviour, use the File Inspector from Xcode
 
 #include "vr/CCVRGenericHeadTracker.h"
 
@@ -33,7 +34,7 @@
 #include "platform/CCPlatformMacros.h"
 #include "platform/CCDevice.h"
 
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS) && !defined(CC_TARGET_OS_TVOS)
 #import <CoreMotion/CoreMotion.h>
 #elif (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
 #include <jni.h>
@@ -44,7 +45,7 @@ NS_CC_BEGIN
 
 //////
 
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS) && !defined(CC_TARGET_OS_TVOS)
 static Mat4 matrixFromRotationMatrix(const CMRotationMatrix& rotationMatrix)
 {
     return Mat4(rotationMatrix.m11,
@@ -127,6 +128,8 @@ Vec3 lowPass(const Vec3& input, const Vec3& prev)
 
 #endif // (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
 
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS) && !defined(CC_TARGET_OS_TVOS) || (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+
 static Mat4 getRotateEulerMatrix(float x, float y, float z)
 {
     x *= static_cast<float>(M_PI) / 180.0f;
@@ -160,32 +163,34 @@ static Mat4 getRotateEulerMatrix(float x, float y, float z)
     return matrix;
 }
 
+#endif
+
 VRGenericHeadTracker::VRGenericHeadTracker()
 : _localPosition(Vec3::ZERO)
 {
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS) && !defined(CC_TARGET_OS_TVOS)
     _motionMgr = [[CMMotionManager alloc] init];
 #endif
 
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS) || (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS) && !defined(CC_TARGET_OS_TVOS) || (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
     startTracking();
 #endif
 }
 
 VRGenericHeadTracker::~VRGenericHeadTracker()
 {
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS) || (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS) && !defined(CC_TARGET_OS_TVOS) || (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
     stopTracking();
 #endif
 
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS) && !defined(CC_TARGET_OS_TVOS)
     [(CMMotionManager*)_motionMgr release];
 #endif
 }
 
 void VRGenericHeadTracker::startTracking()
 {
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS) && !defined(CC_TARGET_OS_TVOS)
     CMMotionManager* motionMgr = (CMMotionManager*)_motionMgr;
     if (motionMgr.isDeviceMotionAvailable && !motionMgr.isDeviceMotionActive)
     {
@@ -207,14 +212,14 @@ void VRGenericHeadTracker::startTracking()
 #elif (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
     _deviceToDisplay = getRotateEulerMatrix(0.f, 0.f, -90.f);
     _worldToInertialReferenceFrame = getRotateEulerMatrix(-90.f, 0.f, 90.f);
-    JniHelper::callStaticVoidMethod("org/cocos2dx/lib/Cocos2dxHelper", "enableAccelerometer");
-    JniHelper::callStaticVoidMethod("org/cocos2dx/lib/Cocos2dxHelper", "enableCompass");
+    JniHelper::callStaticVoidMethod("org.cocos2dx.lib.Cocos2dxHelper", "enableAccelerometer");
+    JniHelper::callStaticVoidMethod("org.cocos2dx.lib.Cocos2dxHelper", "enableCompass");
 #endif
 }
 
 void VRGenericHeadTracker::stopTracking()
 {
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS) && !defined(CC_TARGET_OS_TVOS)
     [(CMMotionManager*)_motionMgr stopDeviceMotionUpdates];
 #elif (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
     Device::setAccelerometerEnabled(false);
@@ -228,7 +233,7 @@ Vec3 VRGenericHeadTracker::getLocalPosition()
 
 Mat4 VRGenericHeadTracker::getLocalRotation()
 {
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS) && !defined(CC_TARGET_OS_TVOS)
     CMMotionManager* motionMgr = (CMMotionManager*)_motionMgr;
     CMDeviceMotion* motion = motionMgr.deviceMotion;
 
@@ -246,8 +251,8 @@ Mat4 VRGenericHeadTracker::getLocalRotation()
     static Vec3 prevAccel = Vec3(0,0,0);
     static Vec3 prevCompass = Vec3(0,0,0);
 
-    Vec3 accel = JniHelper::callStaticVec3Method("org/cocos2dx/lib/Cocos2dxHelper", "getAccelValue");
-    Vec3 compass = JniHelper::callStaticVec3Method("org/cocos2dx/lib/Cocos2dxHelper", "getCompassValue");
+    Vec3 accel = JniHelper::callStaticVec3Method("org.cocos2dx.lib.Cocos2dxHelper", "getAccelValue");
+    Vec3 compass = JniHelper::callStaticVec3Method("org.cocos2dx.lib.Cocos2dxHelper", "getCompassValue");
 
 //    CCLOG("accel: %f, %f, %f.... compass: %f, %f, %f", accel.x, accel.y, accel.z, compass.x, compass.y, compass.z);
     prevAccel = lowPass(accel, prevAccel);

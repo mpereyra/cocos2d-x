@@ -1,3 +1,27 @@
+/****************************************************************************
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ 
+ http://www.cocos2d-x.org
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ ****************************************************************************/
+
 
 #include "scripting/lua-bindings/manual/platform/android/CCLuaJavaBridge.h"
 #include "platform/android/jni/JniHelper.h"
@@ -42,8 +66,9 @@ bool LuaJavaBridge::CallInfo::execute(void)
         case TypeString:
         {
             m_retjs = (jstring)m_env->CallStaticObjectMethod(m_classID, m_methodID);
-            std::string strValue = cocos2d::StringUtils::getStringUTFCharsJNI(m_env, m_retjs);
-            m_ret.stringValue = new string(strValue);
+            bool bValidStr = true;
+            std::string strValue = cocos2d::StringUtils::getStringUTFCharsJNI(m_env, m_retjs, &bValidStr);
+            m_ret.stringValue = (false == bValidStr) ? nullptr : new string(strValue);
            break;
         }
 
@@ -87,9 +112,10 @@ bool LuaJavaBridge::CallInfo::executeWithArgs(jvalue *args)
 
          case TypeString:
         {
-        	 m_retjs = (jstring)m_env->CallStaticObjectMethodA(m_classID, m_methodID, args);
-            std::string strValue = cocos2d::StringUtils::getStringUTFCharsJNI(m_env, m_retjs);
-            m_ret.stringValue = new string(strValue);
+       		m_retjs = (jstring)m_env->CallStaticObjectMethodA(m_classID, m_methodID, args);
+        	bool bValidStr = true;
+            	std::string strValue = cocos2d::StringUtils::getStringUTFCharsJNI(m_env, m_retjs, &bValidStr);
+            	m_ret.stringValue = (false == bValidStr) ? nullptr : new string(strValue);
             break;
         }
 
@@ -130,7 +156,11 @@ int LuaJavaBridge::CallInfo::pushReturnValue(lua_State *L)
 			lua_pushboolean(L, m_ret.boolValue);
 			return 1;
 		case TypeString:
-			lua_pushstring(L, m_ret.stringValue->c_str());
+			if(m_ret.stringValue == nullptr){
+				lua_pushnil(L);
+			}else{
+				lua_pushstring(L, m_ret.stringValue->c_str());
+			}
 			return 1;
         default:
             break;

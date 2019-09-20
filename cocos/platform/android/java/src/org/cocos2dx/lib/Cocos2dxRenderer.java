@@ -1,5 +1,6 @@
 /****************************************************************************
 Copyright (c) 2010-2011 cocos2d-x.org
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -34,9 +35,10 @@ public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
     // ===========================================================
 
     private final static long NANOSECONDSPERSECOND = 1000000000L;
-    private final static long NANOSECONDSPERMICROSECOND = 1000000;
+    private final static long NANOSECONDSPERMICROSECOND = 1000000L;
 
-    private static long sAnimationInterval = (long) (1.0 / 60 * Cocos2dxRenderer.NANOSECONDSPERSECOND);
+    // The final animation interval which is used in 'onDrawFrame'
+    private static long sAnimationInterval = (long) (1.0f / 60f * Cocos2dxRenderer.NANOSECONDSPERSECOND);
 
     // ===========================================================
     // Fields
@@ -55,8 +57,8 @@ public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
     // Getter & Setter
     // ===========================================================
 
-    public static void setAnimationInterval(final float animationInterval) {
-        Cocos2dxRenderer.sAnimationInterval = (long) (animationInterval * Cocos2dxRenderer.NANOSECONDSPERSECOND);
+    public static void setAnimationInterval(float interval) {
+        sAnimationInterval = (long) (interval * Cocos2dxRenderer.NANOSECONDSPERSECOND);
     }
 
     public void setScreenWidthAndHeight(final int surfaceWidth, final int surfaceHeight) {
@@ -68,7 +70,7 @@ public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
             this.mScreenWidth = surfaceWidth;
             this.mScreenHeight = surfaceHeight;
         }
-        /* END BPC PATCH */
+         /* END BPC PATCH */
     }
 
     // ===========================================================
@@ -90,11 +92,10 @@ public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
         /* BPC_PATCH */
         // no-op dead end? Removed.
         // Cocos2dxRenderer.nativeOnSurfaceChanged(width, height);
-        
+                
         /* BPC_PATCH */
         // fix squished view on return from background with new context
-        GL10.glViewport(0, 0, this.mScreenWidth, this.mScreenHeight);
-        
+        GL10.glViewport(0, 0, this.mScreenWidth, this.mScreenHeight);    
         Cocos2dxRenderer.nativeBPCResume(); // leads to EngineController::resume();
     }
 
@@ -104,7 +105,8 @@ public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
          * No need to use algorithm in default(60 FPS) situation,
          * since onDrawFrame() was called by system 60 times per second by default.
          */
-        if (sAnimationInterval <= 1.0 / 60 * Cocos2dxRenderer.NANOSECONDSPERSECOND) {
+
+        if (Cocos2dxRenderer.sAnimationInterval <= 1.0f / 60f * Cocos2dxRenderer.NANOSECONDSPERSECOND) {
             Cocos2dxRenderer.nativeRender();
         } else {
             final long now = System.nanoTime();

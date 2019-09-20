@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (C) 2013 Henry van Merode. All rights reserved.
- Copyright (c) 2015 Chukong Technologies Inc.
+ Copyright (c) 2015-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -147,24 +148,24 @@ struct CC_DLL PUParticle3D : public Particle3D
 
         /** Sets the event flags.
     */
-    inline void setEventFlags(unsigned int flags) {eventFlags = flags;}
+    void setEventFlags(unsigned int flags) { eventFlags = flags; }
 
     /** As setEventFlags, except the flags passed as parameters are appended to the
         existing flags on this object.
     */
-    inline void addEventFlags(unsigned int flags) {eventFlags |= flags;}
+    void addEventFlags(unsigned int flags) { eventFlags |= flags; }
             
     /** The flags passed as parameters are removed from the existing flags.
     */
-    inline void removeEventFlags(unsigned int flags) {eventFlags &= ~flags;}
+    void removeEventFlags(unsigned int flags) { eventFlags &= ~flags; }
         
     /** Return the event flags.
     */
-    inline unsigned int getEventFlags() const {return eventFlags;}
+    unsigned int getEventFlags() const { return eventFlags; }
 
     /** Determines whether it has certain flags set.
     */
-    inline bool hasEventFlags(unsigned int flags) const {return (eventFlags & flags) != 0;}
+    bool hasEventFlags(unsigned int flags) const { return (eventFlags & flags) != 0; }
 
     unsigned int eventFlags;
 
@@ -208,7 +209,7 @@ struct CC_DLL PUParticle3D : public Particle3D
     //float widthInWorld;
     //float heightInWorld;
     //float depthInWorld;
-    
+
     /*BPC PATCH*/
     float m_spawnT; //[0-1] t value, indicating spawn order. Used for interpolation.
     /*END BPC PATCH*/
@@ -218,7 +219,7 @@ class CC_DLL PUParticleSystem3D : public ParticleSystem3D
 {
 public:
 
-    typedef std::map<std::string, ParticlePool> ParticlePoolMap;
+    typedef std::unordered_map<std::string, ParticlePool> ParticlePoolMap;
 
     static const float DEFAULT_WIDTH;
     static const float DEFAULT_HEIGHT;
@@ -231,7 +232,7 @@ public:
     static PUParticleSystem3D* create();
     static PUParticleSystem3D* create(const std::string &filePath);
     static PUParticleSystem3D* create(const std::string &filePath, const std::string &materialPath);
-    
+
     void visit(Renderer *renderer, const Mat4 &transform, uint32_t flags) override;
     virtual void draw(Renderer *renderer, const Mat4 &transform, uint32_t flags) override;
 
@@ -273,7 +274,7 @@ public:
      */
     void rotationOffset(Vec3& pos);
 
-    inline float getTimeElapsedSinceStart(void) const {return _timeElapsedSinceStart;};
+    float getTimeElapsedSinceStart() const { return _timeElapsedSinceStart; }
 
     /**
      * default particle width
@@ -352,7 +353,7 @@ public:
 
     const ParticlePoolMap& getEmittedEmitterParticlePool() const { return _emittedEmitterParticlePool; };
     const ParticlePoolMap& getEmittedSystemParticlePool() const { return _emittedSystemParticlePool; };
-    
+
     void setMaxStepSize(float stepSize) { m_maxStepSize = stepSize; }
 
     bool makeParticleLocal(PUParticle3D* particle);
@@ -435,7 +436,7 @@ protected:
     Quaternion                          _latestOrientation;
 
     PUParticleSystem3D *                _parentParticleSystem;
-    
+
     /*BPC PATCH - Particles can get out of sync if they are attached to bones, due to the order things are updated by the scheduler. So, we update in ::visit instead of ::update, using the frameDT we get in ::update. */
     float m_frameDt = 0.f;
     float m_maxStepSize = 1.f; //The max amount of time we pass to updateSystem. If frameDt is above this amount, we need to do multiple updates until we've passed all the time.

@@ -1,5 +1,6 @@
 /****************************************************************************
- Copyright (c) 2014 Chukong Technologies Inc.
+ Copyright (c) 2014-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -55,7 +56,7 @@ public:
      * init frustum from camera.
      */
     bool initFrustum(const Camera* camera);
-    
+
     /*BPC PATCH*/
     bool initFrustum(const Mat4& viewProjection);
     /*#BPC PATCH END*/
@@ -68,7 +69,7 @@ public:
      * is obb out of frustum
      */
     bool isOutOfFrustum(const OBB& obb) const;
-    
+
     //BPC PATCH
     bool isOutOfFrustum(const Vec3& pt) const;
 

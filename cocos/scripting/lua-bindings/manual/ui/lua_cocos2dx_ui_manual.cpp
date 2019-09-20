@@ -1,5 +1,6 @@
 /****************************************************************************
  Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -1174,7 +1175,7 @@ static void extendEventListenerFocusEvent(lua_State* L)
     lua_pop(L, 1);
 }
 
-int register_ui_moudle(lua_State* L)
+int register_ui_module(lua_State* L)
 {
     lua_getglobal(L, "_G");
     if (lua_istable(L,-1))//stack:...,_G,

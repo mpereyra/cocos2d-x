@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (C) 2013 Henry van Merode. All rights reserved.
- Copyright (c) 2015 Chukong Technologies Inc.
+ Copyright (c) 2015-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -417,7 +418,7 @@ void PURibbonTrail::resetTrail(size_t index, const Node* node)
         _parentNode->getWorldToNodeTransform().transformPoint(position, &position);
     }
     Element e(position,
-        _initialWidth[index], 0.0f, m_systemInitialColor, node->getRotationQuat());
+              _initialWidth[index], 0.0f, m_systemInitialColor, node->getRotationQuat());
     // Add the start position
     addChainElement(index, e);
     // Add another on the same spot, this will extend

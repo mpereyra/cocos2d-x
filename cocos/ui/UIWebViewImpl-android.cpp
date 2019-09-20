@@ -1,5 +1,6 @@
 /****************************************************************************
- Copyright (c) 2014 Chukong Technologies Inc.
+ Copyright (c) 2014-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -37,7 +38,7 @@
 #include "platform/CCFileUtils.h"
 #include "ui/UIHelper.h"
 
-static const std::string className = "org/cocos2dx/lib/Cocos2dxWebViewHelper";
+static const std::string className = "org.cocos2dx.lib.Cocos2dxWebViewHelper";
 
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,"",__VA_ARGS__)
 
@@ -179,11 +180,15 @@ namespace cocos2d {
             }
 
             void WebViewImpl::loadHTMLString(const std::string &string, const std::string &baseURL) {
-                JniHelper::callStaticVoidMethod(className, "loadHTMLString", _viewTag, string, baseURL);
+                JniHelper::callStaticVoidMethod(className, "loadHTMLString", _viewTag, string, getFixedBaseUrl(baseURL));
             }
 
             void WebViewImpl::loadURL(const std::string &url) {
-                JniHelper::callStaticVoidMethod(className, "loadUrl", _viewTag, url);
+                this->loadURL(url, false);
+            }
+
+            void WebViewImpl::loadURL(const std::string &url, bool cleanCachedData) {
+                JniHelper::callStaticVoidMethod(className, "loadUrl", _viewTag, url, cleanCachedData);
             }
 
             void WebViewImpl::loadFile(const std::string &fileName) {
@@ -281,6 +286,19 @@ namespace cocos2d {
             void WebViewImpl::setVisible(bool visible) {
                 JniHelper::callStaticVoidMethod(className, "setVisible", _viewTag, visible);
             }
+            
+            void WebViewImpl::setOpacityWebView(const float opacity){
+                JniHelper::callStaticVoidMethod(className, "setOpacityWebView", _viewTag, opacity);
+            };
+            
+            
+            float WebViewImpl::getOpacityWebView()const{
+                return JniHelper::callStaticFloatMethod(className, "getOpacityWebView", _viewTag);
+            };
+            
+            void WebViewImpl::setBackgroundTransparent(){
+                JniHelper::callStaticVoidMethod(className, "setBackgroundTransparent", _viewTag);
+            };
 
             void WebViewImpl::setBounces(bool bounces) {
                 // empty function as this was mainly a fix for iOS

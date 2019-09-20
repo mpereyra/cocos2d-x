@@ -1,5 +1,6 @@
 /****************************************************************************
  Copyright (c) 2013 cocos2d-x.org
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -31,7 +32,7 @@
 
 DEFINE_TEST_SUITE(NavMeshTests);
 
-#if CC_USE_NAVMESH == 0
+#if ( CC_USE_NAVMESH == 0 ) || ( CC_USE_PHYSICS == 0 )
 class NavMeshDisabled : public TestCase
 {
 public:

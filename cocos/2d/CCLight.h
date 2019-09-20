@@ -1,5 +1,6 @@
 /****************************************************************************
- Copyright (c) 2014 Chukong Technologies Inc.
+ Copyright (c) 2014-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -88,13 +89,14 @@ public:
     //override
     virtual void onEnter() override;
     virtual void onExit() override;
-    
+
     /*BPC PATCH*/
     const Mat4& getNodeToParentTransform() const override;
     virtual void setViewSpaceDataForCamera(const cocos2d::Camera* cam) {}
     bool isBoundingVolumeDirty() const { return m_boundingVolumeDirty || _transformDirty; }
     void clearBoundingVolumeFlag() { m_boundingVolumeDirty = false; }
     /*END BPC PATCH*/
+    
 CC_CONSTRUCTOR_ACCESS:
     BaseLight();
     virtual ~BaseLight();
@@ -106,7 +108,7 @@ protected:
     float       _intensity;
     LightFlag   _lightFlag;
     bool        _enabled;
-    
+
     /*BPC PATCH*/
     mutable bool m_boundingVolumeDirty = false; //Represents if we've checked what objects this light is hitting yet. We mark it dirty if the position or range changes, and clear it when we check for what models are hit by this light. Only relevent for point/spot lights.
     /*END BPC PATCH*/
@@ -146,7 +148,7 @@ public:
      * Returns direction in world.
      */
     Vec3 getDirectionInWorld() const;
-    
+
     /*BPC PATCH*/
     void setViewSpaceDataForCamera(const cocos2d::Camera* cam) override;
     const cocos2d::Vec3& getViewSpaceDirection() const;
@@ -155,7 +157,7 @@ public:
 CC_CONSTRUCTOR_ACCESS:
     DirectionLight();
     virtual ~DirectionLight();
-    
+
     /*BPC PATCH*/
     cocos2d::Vec3 m_viewSpaceDirection;
     /*END BPC PATCH*/
@@ -182,9 +184,9 @@ public:
     virtual LightType getLightType() const override { return LightType::POINT; }
     
     /** get or set range */
-    float getRange() const { return _range; }
     void setRange(float range);
-    
+    float getRange() const { return _range; }
+
     /*BPC PATCH*/
     void setViewSpaceDataForCamera(const cocos2d::Camera* cam) override;
     const cocos2d::Vec3& getViewSpacePosition() const;
@@ -196,7 +198,7 @@ CC_CONSTRUCTOR_ACCESS:
     
 protected:
     float _range;
-    
+
     /*BPC PATCH*/
     cocos2d::Vec3 m_viewSpacePosition;
     /*END BPC PATCH*/
@@ -240,12 +242,7 @@ public:
      * Returns direction in world.
      */
     Vec3 getDirectionInWorld() const;
-    
-    /**
-     * Sets the range of point or spot light.
-     *
-     * @param range The range of point or spot light.
-     */
+
     void setRange(float range);
     
     /**
@@ -283,7 +280,7 @@ public:
     
     /** get cos outAngle */
     float getCosOuterAngle() const { return _cosOuterAngle; }
-    
+
     /*BPC PATCH*/
     void setViewSpaceDataForCamera(const cocos2d::Camera* cam) override;
     const cocos2d::Vec3& getViewSpacePosition() const;
@@ -302,7 +299,7 @@ protected:
     float _cosInnerAngle;
     float _outerAngle;
     float _cosOuterAngle;
-    
+
     /*BPC PATCH*/
     cocos2d::Vec3 m_viewSpacePosition;
     cocos2d::Vec3 m_viewSpaceDirection;

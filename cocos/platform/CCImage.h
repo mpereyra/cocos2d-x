@@ -1,6 +1,7 @@
 /****************************************************************************
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -34,7 +35,7 @@ THE SOFTWARE.
 #include "platform/winrt/WICImageLoader-winrt.h"
 #endif
 
-// premultiply alpha, or the effect will wrong when want to use other pixel format in Texture2D,
+// premultiply alpha, or the effect will be wrong when using other pixel formats in Texture2D,
 // such as RGB888, RGB5A1
 #define CC_RGB_PREMULTIPLY_ALPHA(vr, vg, vb, va) \
     (unsigned)(((unsigned)((unsigned char)(vr) * ((unsigned char)(va) + 1)) >> 8) | \
@@ -138,16 +139,16 @@ public:
     bool initWithRawData(const unsigned char * data, ssize_t dataLen, int width, int height, int bitsPerComponent, bool preMulti = false);
 
     // Getters
-    inline unsigned char *   getData()               { return _data; }
-    inline ssize_t           getDataLen()            { return _dataLen; }
-    inline Format            getFileType()           {return _fileType; }
-    inline Texture2D::PixelFormat getRenderFormat()  { return _renderFormat; }
-    inline int               getWidth()              { return _width; }
-    inline int               getHeight()             { return _height; }
-    inline int               getNumberOfMipmaps()    { return _numberOfMipmaps; }
-    inline MipmapInfo*       getMipmaps()            { return _mipmaps; }
-    inline bool              hasPremultipliedAlpha() { return _hasPremultipliedAlpha; }
-    CC_DEPRECATED_ATTRIBUTE inline bool isPremultipliedAlpha()  { return _hasPremultipliedAlpha;   }
+    unsigned char *   getData()               { return _data; }
+    ssize_t           getDataLen()            { return _dataLen; }
+    Format            getFileType()           { return _fileType; }
+    Texture2D::PixelFormat getRenderFormat()  { return _renderFormat; }
+    int               getWidth()              { return _width; }
+    int               getHeight()             { return _height; }
+    int               getNumberOfMipmaps()    { return _numberOfMipmaps; }
+    MipmapInfo*       getMipmaps()            { return _mipmaps; }
+    bool              hasPremultipliedAlpha() { return _hasPremultipliedAlpha; }
+    CC_DEPRECATED_ATTRIBUTE bool isPremultipliedAlpha() { return _hasPremultipliedAlpha; }
     inline const std::string& getFilePath() const { return _filePath; }
 
     int                      getBitPerPixel();
@@ -176,13 +177,11 @@ protected:
     bool initWithPVRv3Data(const unsigned char * data, ssize_t dataLen);
     bool initWithETCData(const unsigned char * data, ssize_t dataLen);
     bool initWithS3TCData(const unsigned char * data, ssize_t dataLen);
-
     bool initWithATITCData(const unsigned char *data, ssize_t dataLen);
     bool initWithATCInsideDDS(const unsigned char *data, ssize_t dataLen);
     bool initWithATCInsideKTX(const unsigned char *data, ssize_t dataLen);
 
     bool initWithASTCData(const unsigned char * data, ssize_t dataLen);
-
     typedef struct sImageTGA tImageTGA;
     bool initWithTGAData(tImageTGA* tgaData);
 
@@ -236,7 +235,6 @@ protected:
     bool isWebp(const unsigned char * data, ssize_t dataLen);
     bool isPvr(const unsigned char * data, ssize_t dataLen);
     bool isEtc(const unsigned char * data, ssize_t dataLen);
-
     bool isS3TC(const unsigned char * data,ssize_t dataLen);
     bool isDXT(const unsigned char * data,ssize_t dataLen);
     bool isDDSContainer(const unsigned char * data,ssize_t dataLen);

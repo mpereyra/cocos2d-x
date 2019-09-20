@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2013-2016 Chukong Technologies Inc.
+ * Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -60,6 +61,9 @@ JavascriptJavaBridge::CallInfo::~CallInfo(void)
     {
         delete m_ret.stringValue;
     }
+
+    if (m_classID)
+        m_env->DeleteLocalRef(m_classID);
 }
 
 bool JavascriptJavaBridge::CallInfo::execute(void)
@@ -84,8 +88,9 @@ bool JavascriptJavaBridge::CallInfo::execute(void)
 
         case TypeString:
         {
-            m_retjstring = (jstring)m_env->CallStaticObjectMethod(m_classID, m_methodID);
-            std::string strValue = cocos2d::StringUtils::getStringUTFCharsJNI(m_env, m_retjstring);
+            jstring retjstring = (jstring)m_env->CallStaticObjectMethod(m_classID, m_methodID);
+            std::string strValue = cocos2d::StringUtils::getStringUTFCharsJNI(m_env, retjstring);
+            m_env->DeleteLocalRef(retjstring);
             
             m_ret.stringValue = new string(strValue);
             break;
@@ -131,8 +136,9 @@ bool JavascriptJavaBridge::CallInfo::executeWithArgs(jvalue *args)
 
          case TypeString:
         {
-             m_retjstring = (jstring)m_env->CallStaticObjectMethodA(m_classID, m_methodID, args);
-             std::string strValue = cocos2d::StringUtils::getStringUTFCharsJNI(m_env, m_retjstring);
+             jstring retjstring = (jstring)m_env->CallStaticObjectMethodA(m_classID, m_methodID, args);
+             std::string strValue = cocos2d::StringUtils::getStringUTFCharsJNI(m_env, retjstring);
+             m_env->DeleteLocalRef(retjstring);
              m_ret.stringValue = new string(strValue);
              break;
         }

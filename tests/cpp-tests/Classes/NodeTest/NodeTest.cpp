@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (c) 2012 cocos2d-x.org
  Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -72,6 +73,7 @@ CocosNodeTests::CocosNodeTests()
     ADD_TEST_CASE(NodeNormalizedPositionBugTest);
     ADD_TEST_CASE(NodeNameTest);
     ADD_TEST_CASE(Issue16100Test);
+    ADD_TEST_CASE(Issue16735Test);
 }
 
 TestCocosNodeDemo::TestCocosNodeDemo(void)
@@ -372,7 +374,7 @@ StressTest2::StressTest2()
     fire->setPosition( Vec2(80, s.height/2-50) );
     
     auto copy_seq3 = seq3->clone();
-    
+
     fire->runAction( RepeatForever::create(copy_seq3) );
     sublayer->addChild(fire, 2);
             
@@ -408,7 +410,7 @@ SchedulerTest1::SchedulerTest1()
     //CCLOG("retain count after addChild is %d", layer->getReferenceCount());      // 2
     
     layer->schedule(CC_CALLBACK_1(SchedulerTest1::doSomething, this), "do_something_key");
-    //CCLOG("retain count after schedule is %d", layer->getReferenceCount());      // 3 : (object-c viersion), but win32 version is still 2, because Timer class don't save target.
+    //CCLOG("retain count after schedule is %d", layer->getReferenceCount());      // 3 : (objective-c version), but win32 version is still 2, because Timer class don't save target.
     
     layer->unschedule("do_something_key");
     //CCLOG("retain count after unschedule is %d", layer->getReferenceCount());        // STILL 3!  (win32 is '2')
@@ -1003,7 +1005,7 @@ void MySprite::onDraw(const Mat4 &transform, uint32_t flags)
     int diff = offsetof( V3F_C4B_T2F, vertices);
     glVertexAttribPointer(GLProgram::VERTEX_ATTRIB_POSITION, 3, GL_FLOAT, GL_FALSE, kQuadSize, (void*) (offset + diff));
 
-    // texCoods
+    // texCoords
     diff = offsetof( V3F_C4B_T2F, texCoords);
     glVertexAttribPointer(GLProgram::VERTEX_ATTRIB_TEX_COORD, 2, GL_FLOAT, GL_FALSE, kQuadSize, (void*)(offset + diff));
 
@@ -1139,7 +1141,7 @@ NodeNormalizedPositionTest1::NodeNormalizedPositionTest1()
 
     for(int i=0; i<5; i++) {
         sprites[i] = Sprite::create("Images/grossini.png");
-        sprites[i]->setNormalizedPosition(positions[i]);
+        sprites[i]->setPositionNormalized(positions[i]);
         addChild(sprites[i]);
     }
 }
@@ -1172,7 +1174,7 @@ NodeNormalizedPositionTest2::NodeNormalizedPositionTest2()
 
     for(int i=0; i<5; i++) {
         sprites[i] = Sprite::create("Images/grossini.png");
-        sprites[i]->setNormalizedPosition(positions[i]);
+        sprites[i]->setPositionNormalized(positions[i]);
         addChild(sprites[i]);
     }
     scheduleUpdate();
@@ -1181,7 +1183,7 @@ NodeNormalizedPositionTest2::NodeNormalizedPositionTest2()
     _copyContentSize = getContentSize();
 
 //    setAnchorPoint(Vec2(0.5,0.5));
-//    setNormalizedPosition(Vec2(0.5,0.5));
+//    setPositionNormalized(Vec2(0.5,0.5));
 }
 
 std::string NodeNormalizedPositionTest2::title() const
@@ -1221,7 +1223,7 @@ NodeNormalizedPositionBugTest::NodeNormalizedPositionBugTest()
 
     
     sprite = Sprite::create("Images/grossini.png");
-    sprite->setNormalizedPosition(position);
+    sprite->setPositionNormalized(position);
     addChild(sprite);
     
     scheduleUpdate();
@@ -1243,7 +1245,7 @@ void NodeNormalizedPositionBugTest::update(float dt)
     
     // for 5 seconds
     float norm = clampf(sinf(_accum), 0, 1.0);
-    sprite->setNormalizedPosition(Vec2(norm,norm));
+    sprite->setPositionNormalized(Vec2(norm,norm));
 }
 
 std::string NodeNameTest::title() const
@@ -1512,3 +1514,47 @@ std::string Issue16100Test::subtitle() const
     return "Sprite should appear on the screen";
 }
 
+//------------------------------------------------------------------
+//
+// Issue16735Test
+//
+//------------------------------------------------------------------
+void Issue16735Test::onEnter()
+{
+    TestCocosNodeDemo::onEnter();
+
+    auto visibleSize = Director::getInstance()->getVisibleSize();
+    auto origin = Director::getInstance()->getVisibleOrigin();
+
+    auto sprite1 = Sprite::create("Images/grossini.png");
+    sprite1->setPosition(Vec2(visibleSize / 2) + origin);
+    addChild(sprite1);
+
+    auto sprite2 = Sprite::create("Images/grossini.png");
+    sprite2->setPosition(Vec2(visibleSize / 2) + origin);
+    sprite2->setSkewX(30);
+    sprite2->setScale(2);
+    sprite2->setRotation(30);
+    addChild(sprite2);
+
+    auto d = DrawNode::create();
+    d->drawLine(Vec2(origin.x, origin.y + visibleSize.height/2), Vec2(origin.x + visibleSize.width, origin.y + visibleSize.height/2), Color4F::RED);
+    d->drawLine(Vec2(origin.x + visibleSize.width/2, origin.y), Vec2(origin.x + visibleSize.width/2, origin.y + visibleSize.height), Color4F::RED);
+    
+    addChild(d);
+}
+
+void Issue16735Test::onExit()
+{
+    TestCocosNodeDemo::onExit();
+}
+
+std::string Issue16735Test::title() const
+{
+    return "Issue 16735";
+}
+
+std::string Issue16735Test::subtitle() const
+{
+    return "Sprite should appear on the center of screen";
+}

@@ -4,6 +4,7 @@
  Copyright (c) 2010-2012 cocos2d-x.org
  Copyright (c) 2011      Zynga Inc.
  Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -46,17 +47,18 @@
 
 /* BPC_PATCH start */
 #ifndef BPC_ENABLE_MEMORY_USAGE_DEBUG
-    #if ((defined(COCOS2D_DEBUG) && (COCOS2D_DEBUG > 0)) || DEBUG)
-        #define BPC_ENABLE_MEMORY_USAGE_DEBUG 1
-    #else
-        #define BPC_ENABLE_MEMORY_USAGE_DEBUG 0
-    #endif
+#if ((defined(COCOS2D_DEBUG) && (COCOS2D_DEBUG > 0)) || DEBUG)
+#define BPC_ENABLE_MEMORY_USAGE_DEBUG 1
+#else
+#define BPC_ENABLE_MEMORY_USAGE_DEBUG 0
+#endif
 #endif  // BPC_ENABLE_MEMORY_USAGE_DEBUG
 
 #if (BPC_ENABLE_MEMORY_USAGE_DEBUG)
-    #include <set>
+#include <set>
 #endif
 /* BPC_PATCH end */
+
 NS_CC_BEGIN
 
 class GridBase;
@@ -131,7 +133,7 @@ public:
         std::set<Ref const*> shared_resources;
     };
     using DebugData = std::map<std::string, TagUsage>;
-    
+
     CC_SYNTHESIZE(std::string, m_bpcTag, BpcTag);
     virtual size_t nodeSize();
     virtual std::vector<const Ref*> getSharedResources();
@@ -141,7 +143,7 @@ public:
     #define SET_BPC_TAG(name)   REQUIRE_SEMICOLON
 #endif
     // BPC PATCH END
-    
+        
     /** Default tag used for all the nodes */
     static const int INVALID_TAG = -1;
 
@@ -162,6 +164,12 @@ public:
      */
     static Node * create();
 
+    /**
+     * Gets count of nodes those are attached to scene graph.
+     */
+    static int getAttachedNodeCount();
+public:
+    
     /**
      * Gets the description string. It makes debugging easier.
      * @return A string
@@ -192,15 +200,15 @@ public:
      *
      * @param localZOrder The local Z order value.
      */
-    virtual void setLocalZOrder(int localZOrder);
+    virtual void setLocalZOrder(std::int32_t localZOrder);
 
-    CC_DEPRECATED_ATTRIBUTE virtual void setZOrder(int localZOrder) { setLocalZOrder(localZOrder); }
+    CC_DEPRECATED_ATTRIBUTE virtual void setZOrder(std::int32_t localZOrder) { setLocalZOrder(localZOrder); }
     
     /* 
      Helper function used by `setLocalZOrder`. Don't use it unless you know what you are doing.
      @js NA
      */
-    CC_DEPRECATED_ATTRIBUTE virtual void _setLocalZOrder(int z);
+    virtual void _setLocalZOrder(std::int32_t z);
 
     /** !!! ONLY FOR INTERNAL USE
     * Sets the arrival order when this node has a same ZOrder with other children.
@@ -222,9 +230,9 @@ public:
      * @return The local (relative to its siblings) Z order.
      */
 
-    virtual int getLocalZOrder() const { return _localZOrder; }
+    virtual std::int32_t getLocalZOrder() const { return _localZOrder; }
 
-    CC_DEPRECATED_ATTRIBUTE virtual int getZOrder() const { return getLocalZOrder(); }
+    CC_DEPRECATED_ATTRIBUTE virtual std::int32_t getZOrder() const { return getLocalZOrder(); }
 
     /**
      Defines the order in which the nodes are renderer.
@@ -374,7 +382,9 @@ public:
      *
      * @param position The normalized position (x,y) of the node, using value between 0 and 1.
      */
-    virtual void setNormalizedPosition(const Vec2 &position);
+    virtual void setPositionNormalized(const Vec2 &position);
+    // FIXME: should get deprecated in v4.0
+    virtual void setNormalizedPosition(const Vec2 &position) { setPositionNormalized(position); }
 
     /**
      * Gets the position (x,y) of the node in its parent's coordinate system.
@@ -392,7 +402,9 @@ public:
      * 
      * @return The normalized position.
      */
-    virtual const Vec2& getNormalizedPosition() const;
+    virtual const Vec2& getPositionNormalized() const;
+    // FIXME: should get deprecated in v4.0
+    virtual const Vec2& getNormalizedPosition() const { return getPositionNormalized(); }
 
     /**
      * Sets the position (x,y) of the node in its parent's coordinate system.
@@ -460,8 +472,7 @@ public:
      * @js NA
      */
     virtual Vec3 getPosition3D() const;
-    
-    
+
     /*BPC PATCH*/
     Vec3 getAdditionalPosition() const;
     Vec3 getRealPosition() const;
@@ -551,7 +562,7 @@ public:
      * It's like a pin in the node where it is "attached" to its parent.
      * The anchorPoint is normalized, like a percentage. (0,0) means the bottom-left corner and (1,1) means the top-right corner.
      * But you can use values higher than (1,1) and lower than (0,0) too.
-     * The default anchorPoint is (0.5,0.5), so it starts in the center of the node.
+     * The default anchorPoint is (0,0), so it starts in the lower left corner of the node.
      * @note If node has a physics body, the anchor must be in the middle, you can't change this to other value.
      *
      * @param anchorPoint   The anchor point of node.
@@ -725,7 +736,7 @@ public:
     /** @deprecated No longer needed
     * @lua NA
     */
-    CC_DEPRECATED_ATTRIBUTE void setGLServerState(int serverState) { /* ignore */ };
+    CC_DEPRECATED_ATTRIBUTE void setGLServerState(int /*serverState*/) {}
     /** @deprecated No longer needed
     * @lua NA
     */
@@ -816,7 +827,7 @@ public:
      * @return a Node with the given tag that can be cast to Type T.
     */
     template <typename T>
-    inline T getChildByTag(int tag) const { return static_cast<T>(getChildByTag(tag)); }
+    T getChildByTag(int tag) const { return static_cast<T>(getChildByTag(tag)); }
     
     /**
      * Gets a child from the container with its name.
@@ -836,7 +847,7 @@ public:
      * @return a Node with the given name that can be cast to Type T.
     */
     template <typename T>
-    inline T getChildByName(const std::string& name) const { return static_cast<T>(getChildByName(name)); }
+    T getChildByName(const std::string& name) const { return static_cast<T>(getChildByName(name)); }
     /** Search the children of the receiving node to perform processing for nodes which share a name.
      *
      * @param name The name to search for, supports c++11 regular expression.
@@ -864,7 +875,7 @@ public:
      *
      * @since v3.2
      */
-    virtual void enumerateChildren(const std::string &name, std::function<bool(Node* node)> callback) const;   
+    virtual void enumerateChildren(const std::string &name, std::function<bool(Node* node)> callback) const;
     /**
      * Returns the array of the node's children.
      *
@@ -963,7 +974,7 @@ public:
 
     /**
      * Sorts the children array once before drawing, instead of every time when a child is added or reordered.
-     * This approach can improves the performance massively.
+     * This approach can improve the performance massively.
      * @note Don't call this manually unless a child added needs to be removed in the same frame.
      */
     virtual void sortAllChildren();
@@ -978,11 +989,11 @@ public:
         static_assert(std::is_base_of<Node, _T>::value, "Node::sortNodes: Only accept derived of Node!");
 #if CC_64BITS
         std::sort(std::begin(nodes), std::end(nodes), [](_T* n1, _T* n2) {
-            return (n1->_localZOrderAndArrival < n2->_localZOrderAndArrival);
+            return (n1->_localZOrder$Arrival < n2->_localZOrder$Arrival);
         });
 #else
-        std::stable_sort(std::begin(nodes), std::end(nodes), [](_T* n1, _T* n2) {
-            return n1->_localZOrder < n2->_localZOrder;
+        std::sort(std::begin(nodes), std::end(nodes), [](_T* n1, _T* n2) {
+            return (n1->_localZOrder == n2->_localZOrder && n1->_orderOfArrival < n2->_orderOfArrival) || n1->_localZOrder < n2->_localZOrder;
         });
 #endif
     }
@@ -1095,7 +1106,7 @@ public:
      * Since v2.0, each rendering node must set its shader program.
      * It should be set in initialize phase.
      @code
-     node->setGLrProgram(GLProgramCache::getInstance()->getProgram(GLProgram::SHADER_NAME_POSITION_TEXTURE_COLOR));
+     node->setGLProgram(GLProgramCache::getInstance()->getProgram(GLProgram::SHADER_NAME_POSITION_TEXTURE_COLOR));
      @endcode
      *
      * @param glprogram The shader program.
@@ -1231,7 +1242,7 @@ public:
     /** BPC PATCH END **/
 
     /** @deprecated Use getBoundingBox instead */
-    CC_DEPRECATED_ATTRIBUTE inline virtual Rect boundingBox() const { return getBoundingBox(); }
+    CC_DEPRECATED_ATTRIBUTE virtual Rect boundingBox() const { return getBoundingBox(); }
 
     /** Set event dispatcher for scene.
      *
@@ -1325,6 +1336,23 @@ public:
      * @return The number of actions that are running plus the ones that are schedule to run.
      */
     ssize_t getNumberOfRunningActions() const;
+
+    /**
+     * Returns the numbers of actions that are running plus the ones that are
+     * schedule to run (actions in actionsToAdd and actions arrays) with a
+     * specific tag.
+     *
+     * Composable actions are counted as 1 action. Example:
+     *    If you are running 1 Sequence of 7 actions, it will return 1.
+     *    If you are running 7 Sequences of 2 actions, it will return 7.
+     *
+     * @param  tag The tag that will be searched.
+     *
+     * @return The number of actions that are running plus the
+     *         ones that are schedule to run with specific tag.
+     */
+    ssize_t getNumberOfRunningActionsByTag(int tag) const;
+
 
     /** @deprecated Use getNumberOfRunningActions() instead */
     CC_DEPRECATED_ATTRIBUTE ssize_t numberOfRunningActions() const { return getNumberOfRunningActions(); };
@@ -1597,7 +1625,7 @@ public:
     virtual void setNodeToParentTransform(const Mat4& transform);
 
     /** @deprecated use getNodeToParentTransform() instead */
-    CC_DEPRECATED_ATTRIBUTE inline virtual AffineTransform nodeToParentTransform() const { return getNodeToParentAffineTransform(); }
+    CC_DEPRECATED_ATTRIBUTE virtual AffineTransform nodeToParentTransform() const { return getNodeToParentAffineTransform(); }
 
     /**
      * Returns the matrix that transform parent's space coordinates to the node's (local) space coordinates.
@@ -1609,7 +1637,7 @@ public:
     virtual AffineTransform getParentToNodeAffineTransform() const;
 
     /** @deprecated Use getParentToNodeTransform() instead */
-    CC_DEPRECATED_ATTRIBUTE inline virtual AffineTransform parentToNodeTransform() const { return getParentToNodeAffineTransform(); }
+    CC_DEPRECATED_ATTRIBUTE virtual AffineTransform parentToNodeTransform() const { return getParentToNodeAffineTransform(); }
 
     /**
      * Returns the world affine transform matrix. The matrix is in Pixels.
@@ -1620,7 +1648,7 @@ public:
     virtual AffineTransform getNodeToWorldAffineTransform() const;
 
     /** @deprecated Use getNodeToWorldTransform() instead */
-    CC_DEPRECATED_ATTRIBUTE inline virtual AffineTransform nodeToWorldTransform() const { return getNodeToWorldAffineTransform(); }
+    CC_DEPRECATED_ATTRIBUTE virtual AffineTransform nodeToWorldTransform() const { return getNodeToWorldAffineTransform(); }
 
     /**
      * Returns the inverse world affine transform matrix. The matrix is in Pixels.
@@ -1631,7 +1659,7 @@ public:
     virtual AffineTransform getWorldToNodeAffineTransform() const;
 
     /** @deprecated Use getWorldToNodeTransform() instead */
-    CC_DEPRECATED_ATTRIBUTE inline virtual AffineTransform worldToNodeTransform() const { return getWorldToNodeAffineTransform(); }
+    CC_DEPRECATED_ATTRIBUTE virtual AffineTransform worldToNodeTransform() const { return getWorldToNodeAffineTransform(); }
 
     /// @} end of Transformations
 
@@ -1688,21 +1716,21 @@ public:
      * @return A point in world space coordinates, anchor relative.
      */
     Vec2 convertTouchToNodeSpaceAR(Touch * touch) const;
-    
+
     // BPC PATCH -- BEGIN
     /**
-     * Converts a Vec3 to node (local) space coordinates. The result is in Points.
-     */
+    * Converts a Vec3 to node (local) space coordinates. The result is in Points.
+    */
     Vec3 convertToNodeSpace(const Vec3& worldPoint) const;
-    
+
     /**
-     * Converts a Vec3 to world space coordinates. The result is in Points.
-     */
+    * Converts a Vec3 to world space coordinates. The result is in Points.
+    */
     Vec3 convertToWorldSpace(const Vec3& nodePoint) const;
 
     // BPC PATCH -- END
 
-	/**
+    /**
      *  Sets an additional transform matrix to the node.
      *
      *  In order to remove it, call it again with the argument `nullptr`.
@@ -1827,12 +1855,12 @@ public:
      *  If you want the opacity affect the color property, then set to true.
      * @param value A boolean value.
      */
-    virtual void setOpacityModifyRGB(bool value) {CC_UNUSED_PARAM(value);}
+    virtual void setOpacityModifyRGB(bool value);
     /**
      * If node opacity will modify the RGB color value, then you should override this method and return true.
      * @return A boolean value, true indicates that opacity will modify color; false otherwise.
      */
-    virtual bool isOpacityModifyRGB() const { return false; };
+    virtual bool isOpacityModifyRGB() const;
 
     /**
      * Set the callback of event onEnter.
@@ -1886,13 +1914,13 @@ public:
      * @param applyChildren A boolean value to determine whether the mask bit should apply to its children or not.
      */
     virtual void setCameraMask(unsigned short mask, bool applyChildren = true);
-    
+
     // BPC PATCH - isSprite... should probably be turned into a generic getNodeType() id
     virtual bool isSprite() const { return false; }
     /*BPC PATCH*/
     virtual void setTraversalCameraMask(unsigned short mask, bool applyChildren = true);
     /*END BPC PATCH*/
-
+    
 CC_CONSTRUCTOR_ACCESS:
     // Nodes should be created using create();
     Node();
@@ -1927,6 +1955,7 @@ protected:
     
     //check whether this camera mask is visible by the current visiting camera
     bool isVisitableByVisitingCamera() const;
+    
     /*BPC PATCH BEGIN*/
     bool isTraversableByVisitingCamera() const;
     /*BPC PATCH END*/
@@ -1980,12 +2009,27 @@ protected:
     mutable bool _additionalTransformDirty; ///< transform dirty ?
     bool _transformUpdated;         ///< Whether or not the Transform object was updated since the last frame
 
-    std::int64_t _localZOrderAndArrival; /// cache, for 64bits compress optimize.
-    int _localZOrder; /// < Local order (relative to its siblings) used to sort the node
+#if CC_LITTLE_ENDIAN
+    union {
+        struct {
+            std::uint32_t _orderOfArrival;
+            std::int32_t _localZOrder;
+        };
+        std::int64_t _localZOrder$Arrival;
+    };
+#else
+    union {
+        struct {
+            std::int32_t _localZOrder;
+            std::uint32_t _orderOfArrival;
+        };
+        std::int64_t _localZOrder$Arrival;
+    };
+#endif
 
     float _globalZOrder;            ///< Global order used to sort the node
 
-    static unsigned int s_globalOrderOfArrival;
+    static std::uint32_t s_globalOrderOfArrival;
 
     Vector<Node*> _children;        ///< array of children nodes
     Node *_parent;                  ///< weak reference to parent node
@@ -2039,13 +2083,13 @@ protected:
     std::function<void()> _onExitCallback;
     std::function<void()> _onEnterTransitionDidFinishCallback;
     std::function<void()> _onExitTransitionDidStartCallback;
-    
+
     /** BPC PATCH BEGIN **/
     mutable AABB _nodeToParentAABB;
     //we need to clear the cached AABB if the caller specifies different exclude meshes
     mutable std::vector<std::string> _nodeToParentExcludeMeshes;
     mutable bool _nodeToParentAABBDirty {true};
-    
+
     //_traversalCameraMask is used to determine if we should continue traversing the scene graph, when visited with the current camera camera.
     unsigned short _traversalCameraMask;
     /** BPC PATCH END **/
@@ -2068,6 +2112,8 @@ public:
     friend class PhysicsBody;
 #endif
 
+    static int __attachedNodeCount;
+    
 private:
     CC_DISALLOW_COPY_AND_ASSIGN(Node);
 };

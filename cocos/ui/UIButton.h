@@ -1,5 +1,6 @@
 /****************************************************************************
 Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -263,6 +264,13 @@ public:
      */
     void setTitleAlignment(TextHAlignment hAlignment, TextVAlignment vAlignment);
 
+    /** replaces the current Label node with a new one */
+    void setTitleLabel(Label* label);
+
+    /** returns the current Label being used */
+    Label* getTitleLabel() const;
+
+
     /** @brief When user pressed the button, the button will zoom to a scale.
      * The final scale of the button  equals (button original scale + _zoomScale)
      * @since v3.3
@@ -333,9 +341,10 @@ protected:
     void disabledTextureScaleChangedWithSize();
 
     virtual void adaptRenderers() override;
-    void updateTitleLocation();
+    virtual void updateTitleLocation();
     void updateContentSize();
-    void createTitleRenderer();
+    virtual void createTitleRenderer();
+    bool createTitleRendererIfNull();
 
     virtual Widget* createCloneInstance() override;
     virtual void copySpecialProperties(Widget* model) override;
@@ -375,15 +384,6 @@ protected:
     TextureResType _disabledTexType;
 
 private:
-    enum class FontType
-    {
-        SYSTEM,
-        TTF,
-        BMFONT
-    };
-
-    int _fontSize;
-    FontType _type;
     std::string _fontName;
 };
 

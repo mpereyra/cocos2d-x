@@ -1,5 +1,6 @@
 /****************************************************************************
- Copyright (c) 2014 Chukong Technologies Inc.
+ Copyright (c) 2014-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -328,13 +329,13 @@ void Animate3D::update(float t)
         }
         float lastTime = _lastTime;
         _lastTime = t;
-        
+
         /*BPC-PATCH*/
         if(_isOffScreen) {
             return;
         }
         /*END BPC-PATCH*/
-
+        
         if (_quality != Animate3DQuality::QUALITY_NONE)
         {
             if (_weight > 0.0f)
@@ -397,7 +398,7 @@ void Animate3D::update(float t)
                     float prekeyTime = lastTime * getDuration() * _frameRate;
                     float keyTime = t * getDuration() * _frameRate;
                     std::vector<Animate3DDisplayedEventInfo*> eventInfos;
-                    for (auto keyFrame : _keyFrameUserInfos)
+                    for (const auto& keyFrame : _keyFrameUserInfos)
                     {
                         if ((!_playReverse && keyFrame.first >= prekeyTime && keyFrame.first < keyTime)
                             || (_playReverse && keyFrame.first >= keyTime && keyFrame.first < prekeyTime))
@@ -501,7 +502,6 @@ Animate3D::Animate3D()
 , _accTransTime(0.0f)
 , _lastTime(0.0f)
 , _originInterval(0.0f)
-, _isOffScreen(false)
 , _frameRate(30.0f)
 {
     setQuality(Animate3DQuality::QUALITY_HIGH);

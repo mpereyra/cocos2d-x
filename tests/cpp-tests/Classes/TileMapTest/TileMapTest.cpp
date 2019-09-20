@@ -1,3 +1,27 @@
+/****************************************************************************
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ 
+ http://www.cocos2d-x.org
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ ****************************************************************************/
+
 #include "TileMapTest.h"
 #include "../testResource.h"
 
@@ -55,6 +79,7 @@ TileMapTests::TileMapTests()
     ADD_TEST_CASE(TMXHexEvenYTest);
     ADD_TEST_CASE(TMXHexAxisXTest);
     ADD_TEST_CASE(Issue16105Test);
+    ADD_TEST_CASE(Issue16512Test);
 }
 
 TileDemo::TileDemo()
@@ -886,9 +911,11 @@ TMXIsoZorder::TMXIsoZorder()
     
     _tamara = Sprite::create(s_pathSister1);
     map->addChild(_tamara, (int)map->getChildren().size() );
+    
     _tamara->retain();
     int mapWidth = map->getMapSize().width * map->getTileSize().width;
     _tamara->setPosition(CC_POINT_PIXELS_TO_POINTS(Vec2( mapWidth/2,0)));
+    _tamara->setScale(0.5);
     _tamara->setAnchorPoint(Vec2(0.5f,0));
 
     
@@ -918,11 +945,11 @@ void TMXIsoZorder::repositionSprite(float dt)
     auto map = getChildByTag(kTagTileMap);
     
     // there are only 4 layers. (grass and 3 trees layers)
-    // if tamara < 48, z=4
-    // if tamara < 96, z=3
-    // if tamara < 144,z=2
+    // if tamara < 30, z=4
+    // if tamara < 60, z=3
+    // if tamara < 90,z=2
     
-    int newZ = 4 - (p.y / 48);
+    int newZ = 4 - (static_cast<int>(p.y) / 30);
     newZ = std::max(newZ,0);
     
     map->reorderChild(_tamara, newZ);    
@@ -1465,7 +1492,7 @@ TMXGIDObjectsTest::TMXGIDObjectsTest()
     Size CC_UNUSED s = map->getContentSize();
     CCLOG("Contentsize: %f, %f", s.width, s.height);
 
-    CCLOG("----> Iterating over all the group objets");
+    CCLOG("----> Iterating over all the group objects");
     
     auto drawNode = DrawNode::create();
     Color4F color(1.0, 1.0, 1.0, 1.0);
@@ -1513,6 +1540,15 @@ TMXHexOddXTest::TMXHexOddXTest()
 
     Size CC_UNUSED s = map->getContentSize();
     CCLOG("ContentSize: %f, %f", s.width,s.height);
+
+    // Testing issue 16512 as well. Should not crash
+    auto floor = map->getLayer("Ground");
+    for (auto x = 0; x < map->getMapSize().width; x++) {
+        for (auto y = 0; y < map->getMapSize().height; y++) {
+            Vec2 p(x, y);
+            floor->getTileAt(p);
+        }
+    }
 }
 
 std::string TMXHexOddXTest::title() const
@@ -1535,6 +1571,15 @@ TMXHexOddYTest::TMXHexOddYTest()
 
     Size CC_UNUSED s = map->getContentSize();
     CCLOG("ContentSize: %f, %f", s.width,s.height);
+
+    // Testing issue 16512 as well. Should not crash
+    auto floor = map->getLayer("Ground");
+    for (auto x = 0; x < map->getMapSize().width; x++) {
+        for (auto y = 0; y < map->getMapSize().height; y++) {
+            Vec2 p(x, y);
+            floor->getTileAt(p);
+        }
+    }
 }
 
 std::string TMXHexOddYTest::title() const
@@ -1557,6 +1602,15 @@ TMXHexEvenXTest::TMXHexEvenXTest()
 
     Size CC_UNUSED s = map->getContentSize();
     CCLOG("ContentSize: %f, %f", s.width,s.height);
+
+    // Testing issue 16512 as well. Should not crash
+    auto floor = map->getLayer("Ground");
+    for (auto x = 0; x < map->getMapSize().width; x++) {
+        for (auto y = 0; y < map->getMapSize().height; y++) {
+            Vec2 p(x, y);
+            floor->getTileAt(p);
+        }
+    }
 }
 
 std::string TMXHexEvenXTest::title() const
@@ -1579,6 +1633,15 @@ TMXHexEvenYTest::TMXHexEvenYTest()
 
     Size CC_UNUSED s = map->getContentSize();
     CCLOG("ContentSize: %f, %f", s.width,s.height);
+
+    // Testing issue 16512 as well. Should not crash
+    auto floor = map->getLayer("Ground");
+    for (auto x = 0; x < map->getMapSize().width; x++) {
+        for (auto y = 0; y < map->getMapSize().height; y++) {
+            Vec2 p(x, y);
+            floor->getTileAt(p);
+        }
+    }
 }
 
 std::string TMXHexEvenYTest::title() const
@@ -1628,4 +1691,34 @@ Issue16105Test::Issue16105Test()
 std::string Issue16105Test::title() const
 {
     return "Github Issue #16105";
+}
+
+//------------------------------------------------------------------
+//
+// Issue16512Test
+//
+//------------------------------------------------------------------
+Issue16512Test::Issue16512Test()
+{
+    auto color = LayerColor::create( Color4B(64,64,64,255) );
+    addChild(color, -1);
+
+    auto map = TMXTiledMap::create("TileMaps/issue_16512.tmx");
+    addChild(map, 0, kTagTileMap);
+
+    Size CC_UNUSED s = map->getContentSize();
+    CCLOG("ContentSize: %f, %f", s.width,s.height);
+
+    auto floor = map->getLayer("Floor");
+    for (auto x = 0; x < map->getMapSize().width; x++) {
+        for (auto y = 0; y < map->getMapSize().height; y++) {
+            Vec2 p(x, y);
+            floor->getTileAt(p);
+        }
+    }
+}
+
+std::string Issue16512Test::title() const
+{
+    return "Github Issue #16512. Should not crash";
 }

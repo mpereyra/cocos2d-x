@@ -1,6 +1,7 @@
 /*
  * Created by Chris Hannon 2014 http://www.channon.us
- * Copyright (c) 2014 Chukong Technologies Inc.
+ * Copyright (c) 2014-2016 Chukong Technologies Inc.
+ * Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -143,20 +144,45 @@ bool js_cocos2dx_SocketIO_connect(JSContext* cx, uint32_t argc, jsval* vp)
     CCLOG("JSB SocketIO.connect method called");
 
     JS::CallArgs args = JS::CallArgsFromVp(argc, vp);
-    if (argc == 1 || argc == 2)
+    if (argc >= 1 && argc <= 3)
     {
         std::string url;
+        std::string caFilePath;
+        bool ok = false;
         
-        do
+        ok = jsval_to_std_string(cx, args[0], &url);
+        JSB_PRECONDITION2( ok, cx, false, "Error processing arguments");
+
+        if (argc == 2)
         {
-            bool ok = jsval_to_std_string(cx, args.get(0), &url);
-            JSB_PRECONDITION2( ok, cx, false, "Error processing arguments");
-        } while (0);
+            if (args[1].isObject())
+            {
+                // Just ignore the option argument
+            }
+            else if (args[1].isString())
+            {
+                // Assume it's CA root file path
+                ok = jsval_to_std_string(cx, args[1], &caFilePath);
+                JSB_PRECONDITION2( ok, cx, false, "Error processing arguments");
+            }
+        }
+
+        if (argc == 3)
+        {
+            // Just ignore the option argument
+
+            if (args[2].isString())
+            {
+                // Assume it's CA root file path
+                ok = jsval_to_std_string(cx, args[2], &caFilePath);
+                JSB_PRECONDITION2( ok, cx, false, "Error processing arguments");
+            }
+        }
         
         JSB_SocketIODelegate* siodelegate = new (std::nothrow) JSB_SocketIODelegate();
         
         CCLOG("Calling native SocketIO.connect method");
-        SIOClient* ret = SocketIO::connect(url, *siodelegate);
+        SIOClient* ret = SocketIO::connect(url, *siodelegate, caFilePath);
         
         jsval jsret;
         do
@@ -199,19 +225,21 @@ bool js_cocos2dx_SocketIO_send(JSContext* cx, uint32_t argc, jsval* vp)
     SIOClient* cobj = (SIOClient *)(proxy ? proxy->ptr : NULL);
     JSB_PRECONDITION2( cobj, cx, false, "Invalid Native Object");
 
-    if (argc == 1)
+    if (argc >= 1)
     {
+        std::vector<std::string> eventArgs;
         std::string payload;
         
-        do
+        for(int idx = 0; idx < argc; idx++)
         {
-            bool ok = jsval_to_std_string(cx, args.get(0), &payload);
+            bool ok = jsval_to_std_string(cx, args.get(idx), &payload);
             JSB_PRECONDITION2( ok, cx, false, "Error processing arguments");
-        } while (0);
+            eventArgs.push_back(payload);
+        }
 
         CCLOG("JSB SocketIO send mesage: %s", payload.c_str());
 
-        cobj->send(payload);
+        cobj->send(eventArgs);
         return true;
 
     }
@@ -229,24 +257,27 @@ bool js_cocos2dx_SocketIO_emit(JSContext* cx, uint32_t argc, jsval* vp)
     SIOClient* cobj = (SIOClient *)(proxy ? proxy->ptr : NULL);
     JSB_PRECONDITION2( cobj, cx, false, "Invalid Native Object");
 
-    if (argc == 2)
+    if (argc >= 2)
     {
         std::string eventName;
+
         do
         {
             bool ok = jsval_to_std_string(cx, args.get(0), &eventName);
             JSB_PRECONDITION2( ok, cx, false, "Error processing arguments");
         } while (0);
         
+        std::vector<std::string> eventArgs;
         std::string payload;
-        do {
-            bool ok = jsval_to_std_string(cx, args.get(1), &payload);
+        for(int idx = 1; idx < argc; idx ++) {
+            bool ok = jsval_to_std_string(cx, args.get(idx), &payload);
             JSB_PRECONDITION2( ok, cx, false, "Error processing arguments");
-        } while (0);
+            eventArgs.push_back(payload);
+        }
 
         CCLOG("JSB SocketIO emit event '%s' with payload: %s", eventName.c_str(), payload.c_str());
 
-        cobj->emit(eventName, payload);
+        cobj->emit(eventName, eventArgs);
         return true;
     }
     JS_ReportError(cx, "JSB SocketIO.emit: Wrong number of arguments");

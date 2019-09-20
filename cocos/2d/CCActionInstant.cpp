@@ -3,6 +3,7 @@
  Copyright (c) 2010-2012 cocos2d-x.org
  Copyright (c) 2011      Zynga Inc.
  Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
 
@@ -40,14 +41,19 @@ NS_CC_BEGIN
 //
 // InstantAction
 //
-bool ActionInstant::isDone() const
+void ActionInstant::startWithTarget(Node *target)
 {
-    return true;
+    FiniteTimeAction::startWithTarget(target);
+    _done = false;
 }
 
-void ActionInstant::step(float dt)
+bool ActionInstant::isDone() const
 {
-    CC_UNUSED_PARAM(dt);
+    return _done;
+}
+
+void ActionInstant::step(float /*dt*/)
+{
     float updateDt = 1;
 #if CC_ENABLE_SCRIPT_BINDING
     if (_scriptType == kScriptTypeJavascript)
@@ -59,10 +65,9 @@ void ActionInstant::step(float dt)
     update(updateDt);
 }
 
-void ActionInstant::update(float time)
+void ActionInstant::update(float /*time*/)
 {
-    CC_UNUSED_PARAM(time);
-    // nothing
+    _done = true;
 }
 
 //
@@ -83,7 +88,7 @@ Show* Show::create()
 
 void Show::update(float time)
 {
-    CC_UNUSED_PARAM(time);
+    ActionInstant::update(time);
     _target->setVisible(true);
 }
 
@@ -115,7 +120,7 @@ Hide * Hide::create()
 
 void Hide::update(float time)
 {
-    CC_UNUSED_PARAM(time);
+    ActionInstant::update(time);
     _target->setVisible(false);
 }
 
@@ -145,9 +150,9 @@ ToggleVisibility * ToggleVisibility::create()
     return ret;
 }
 
-void ToggleVisibility::update(float time) 
+void ToggleVisibility::update(float time)
 {
-    CC_UNUSED_PARAM(time);
+    ActionInstant::update(time);
     _target->setVisible(!_target->isVisible());
 }
 
@@ -185,7 +190,7 @@ bool RemoveSelf::init(bool isNeedCleanUp)
 
 void RemoveSelf::update(float time)
 {
-    CC_UNUSED_PARAM(time);
+    ActionInstant::update(time);
     _target->removeFromParentAndCleanup(_isNeedCleanUp);
 }
 
@@ -226,7 +231,7 @@ bool FlipX::initWithFlipX(bool x)
 
 void FlipX::update(float time)
 {
-    CC_UNUSED_PARAM(time);
+    ActionInstant::update(time);
     static_cast<Sprite*>(_target)->setFlippedX(_flipX);
 }
 
@@ -266,7 +271,7 @@ bool FlipY::initWithFlipY(bool y)
 
 void FlipY::update(float time)
 {
-    CC_UNUSED_PARAM(time);
+    ActionInstant::update(time);
     static_cast<Sprite*>(_target)->setFlippedY(_flipY);
 }
 
@@ -319,7 +324,7 @@ Place * Place::reverse() const
 
 void Place::update(float time)
 {
-    CC_UNUSED_PARAM(time);
+    ActionInstant::update(time);
     _target->setPosition(_position);
 }
 
@@ -409,7 +414,7 @@ CallFunc * CallFunc::reverse() const
 
 void CallFunc::update(float time)
 {
-    CC_UNUSED_PARAM(time);
+    ActionInstant::update(time);
     this->execute();
 }
 

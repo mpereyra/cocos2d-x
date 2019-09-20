@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (C) 2013 Henry van Merode. All rights reserved.
- Copyright (c) 2015 Chukong Technologies Inc.
+ Copyright (c) 2015-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -139,7 +140,6 @@ void PUCircleEmitter::initParticlePosition(PUParticle3D* particle)
     {
         // Take both orientation of the node and its own orientation, based on the normal, into account
         Mat4 rotMat;
-        Mat4::createRotation(static_cast<PUParticleSystem3D *>(_particleSystem)->getDerivedOrientation() * _orientation, &rotMat);
         Vec3 basePos = getDerivedPosition();
         basePos = basePos - (_latestPositionDiff * particle->m_spawnT);
         particle->position = basePos +

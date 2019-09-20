@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (C) 2013 Henry van Merode. All rights reserved.
- Copyright (c) 2015 Chukong Technologies Inc.
+ Copyright (c) 2015-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -276,11 +277,11 @@ bool PUParticleSystem3D::initWithFilePath( const std::string &filePath )
 {
     std::string fullPath = FileUtils::getInstance()->fullPathForFilename(filePath);
     convertToUnixStylePath(fullPath);
-    std::string::size_type pos = fullPath.find_last_of("/");
+    std::string::size_type pos = fullPath.find_last_of('/');
     std::string materialFolder = "materials";
     if (pos != std::string::npos){
         std::string temp = fullPath.substr(0, pos);
-        pos = temp.find_last_of("/");
+        pos = temp.find_last_of('/');
         if (pos != std::string::npos){
             materialFolder = temp.substr(0, pos + 1) + materialFolder;
         }
@@ -436,7 +437,7 @@ void PUParticleSystem3D::update(float delta)
 void PUParticleSystem3D::updateSystem()
 {
     if (m_frameDt <= 0.f) return;
-    
+
     while (m_frameDt > 0.f) {
         if (!_isEnabled || _isMarkedForEmission) break;
         if (_state != State::RUNNING){
@@ -447,12 +448,12 @@ void PUParticleSystem3D::updateSystem()
                 break;
             }
         }
-        
+
         float dt = std::min(m_frameDt, m_maxStepSize);
         forceUpdate(dt);
         m_frameDt -= dt;
     }
-    
+
     m_frameDt = 0.f;
 }
 
@@ -685,9 +686,8 @@ void PUParticleSystem3D::updator( float elapsedTime )
     
     bool firstActiveParticle = true;
     bool firstParticle = true;
-    for (auto &iter : _emittedEmitterParticlePool){
-        processParticle(iter.second, firstActiveParticle, firstParticle, elapsedTime);
-    }
+    processParticle(_particlePool, firstActiveParticle, firstParticle, elapsedTime);
+
     for (auto &iter : _emittedEmitterParticlePool){
         PUParticle3D *particle = static_cast<PUParticle3D *>(iter.second.getFirst());
         while (particle)
@@ -697,7 +697,7 @@ void PUParticleSystem3D::updator( float elapsedTime )
         }
     }
     /*BPC PATCH END*/
-    
+
     processParticle(_particlePool, firstActiveParticle, firstParticle, elapsedTime);
 
     for (auto &iter : _emittedSystemParticlePool){
@@ -1072,6 +1072,8 @@ void PUParticleSystem3D::convertToUnixStylePath( std::string &path )
     for (auto &iter : path){
         if (iter == '\\') iter = '/';
     }
+#else
+    CC_UNUSED_PARAM(path);
 #endif
 }
 
@@ -1243,13 +1245,13 @@ void PUParticleSystem3D::processParticle( ParticlePool &pool, bool &firstActiveP
                 }
             }
 
+            if (_render)
+                static_cast<PURender *>(_render)->updateRender(particle, elapsedTime, firstActiveParticle);
+
             if (_isEnabled && particle->particleType != PUParticle3D::PT_VISUAL){
                 if (particle->particleType == PUParticle3D::PT_EMITTER){
                     auto emitter = static_cast<PUEmitter *>(particle->particleEntityPtr);
                     emitter->setLocalPosition(particle->position);
-                    if (particle->timeFraction == 0.f) {
-                        emitter->setLatestLocalPosition(particle->position);
-                    }
                     executeEmitParticles(emitter, emitter->calculateRequestedParticles(elapsedTime), elapsedTime);
                 }else if (particle->particleType == PUParticle3D::PT_TECHNIQUE){
                     auto system = static_cast<PUParticleSystem3D *>(particle->particleEntityPtr);
@@ -1317,7 +1319,7 @@ void PUParticleSystem3D::processParticle( ParticlePool &pool, bool &firstActiveP
         firstParticle = false;
         particle = static_cast<PUParticle3D *>(pool.getNext());
     }
-    
+
     if (_render)
         static_cast<PURender *>(_render)->updateRender(nullptr, elapsedTime, true);
 }
@@ -1334,7 +1336,7 @@ bool PUParticleSystem3D::makeParticleLocal( PUParticle3D* particle )
     return true;
 }
 
-void PUParticleSystem3D::processMotion( PUParticle3D* particle, float timeElapsed, const Vec3 &scl, bool firstParticle )
+void PUParticleSystem3D::processMotion( PUParticle3D* particle, float timeElapsed, const Vec3 &scl, bool /*firstParticle*/ )
 {
     if (particle->isFreezed())
     return;

@@ -3,6 +3,7 @@ Copyright (c) 2011      Ricardo Quesada
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2011      Zynga Inc.
 Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -86,7 +87,7 @@ public:
     GLProgram * getGLProgram(const std::string &key);
     CC_DEPRECATED_ATTRIBUTE GLProgram * getProgram(const std::string &key) { return getGLProgram(key); }
     CC_DEPRECATED_ATTRIBUTE GLProgram * programForKey(const std::string &key){ return getGLProgram(key); }
-    
+
     /*BPC PATCH*/
     void purgeGLProgram(const std::string &key);
     /*END BPC PATCH*/
@@ -99,7 +100,7 @@ public:
     void reloadDefaultGLProgramsRelativeToLights();
 
     void removeUnusedShaders();
-    
+
 private:
     /**
     @{

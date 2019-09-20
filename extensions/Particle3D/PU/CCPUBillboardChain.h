@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (C) 2013 Henry van Merode. All rights reserved.
- Copyright (c) 2015 Chukong Technologies Inc.
+ Copyright (c) 2015-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -225,7 +226,7 @@ public:
     void setDepthWrite(bool isDepthWrite);
     void setBlendFunc(const BlendFunc& blendFunc);
     void setAttachedNode(Node *parent) { _parentNode = parent; }
-    
+
     void render(Renderer* renderer, const Mat4& transform, ParticleSystem3D* particleSystem);
 
     // Overridden members follow

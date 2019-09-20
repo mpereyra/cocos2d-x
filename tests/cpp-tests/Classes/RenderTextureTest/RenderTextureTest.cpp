@@ -1,3 +1,27 @@
+/****************************************************************************
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ 
+ http://www.cocos2d-x.org
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ ****************************************************************************/
+
 #include "RenderTextureTest.h"
 
 USING_NS_CC;
@@ -13,10 +37,11 @@ RenderTextureTests::RenderTextureTests()
     ADD_TEST_CASE(SpriteRenderTextureBug);
     ADD_TEST_CASE(RenderTexturePartTest);
     ADD_TEST_CASE(Issue16113Test);
+    ADD_TEST_CASE(RenderTextureWithSprite3DIssue16894);
 };
 
 /**
-* Impelmentation of RenderTextureSave
+* Implementation of RenderTextureSave
 */
 RenderTextureSave::RenderTextureSave()
 {
@@ -27,7 +52,7 @@ RenderTextureSave::RenderTextureSave()
     _target->retain();
     _target->setPosition(Vec2(s.width / 2, s.height / 2));
 
-    // note that the render texture is a Node, and contains a sprite of its texture for convience,
+    // note that the render texture is a Node, and contains a sprite of its texture for convenience,
     // so we can just parent it to the scene like any other Node
     this->addChild(_target, -1);
     
@@ -135,7 +160,7 @@ void RenderTextureSave::onTouchesMoved(const std::vector<Touch*>& touches, Event
 }
 
 /**
- * Impelmentation of RenderTextureIssue937
+ * Implementation of RenderTextureIssue937
  */
 
 RenderTextureIssue937::RenderTextureIssue937()
@@ -200,7 +225,7 @@ std::string RenderTextureIssue937::subtitle() const
 }
 
 /**
-* Impelmentation of RenderTextureZbuffer
+* Implementation of RenderTextureZbuffer
 */
 
 RenderTextureZbuffer::RenderTextureZbuffer()
@@ -448,7 +473,7 @@ void RenderTextureTestDepthStencil::draw(Renderer *renderer, const Mat4 &transfo
     _spriteDS->visit();
     
     _renderCmds[2].init(_globalZOrder, transform, flags);
-    _renderCmds[2].func = CC_CALLBACK_0(RenderTextureTestDepthStencil::onBeforDraw, this);
+    _renderCmds[2].func = CC_CALLBACK_0(RenderTextureTestDepthStencil::onBeforeDraw, this);
     renderer->addCommand(&_renderCmds[2]);
 
     _spriteDraw->visit();
@@ -483,7 +508,7 @@ void RenderTextureTestDepthStencil::onBeforeStencil()
 //    RenderState::StateBlock::_defaultState->setStencilOperation(RenderState::STENCIL_OP_REPLACE, RenderState::STENCIL_OP_REPLACE, RenderState::STENCIL_OP_REPLACE);
 }
 
-void RenderTextureTestDepthStencil::onBeforDraw()
+void RenderTextureTestDepthStencil::onBeforeDraw()
 {
     glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 
@@ -734,4 +759,94 @@ std::string Issue16113Test::title() const
 std::string Issue16113Test::subtitle() const
 {
     return "aaa.png file without white border on iOS";
+}
+
+//
+// RenderTextureWithSprite3DIssue16894
+//
+RenderTextureWithSprite3DIssue16894::RenderTextureWithSprite3DIssue16894()
+{
+    auto visibleSize = Director::getInstance()->getVisibleSize();
+    Vec2 origin = Director::getInstance()->getVisibleOrigin();
+
+    for (int i = 0; i < 3; ++i)
+    {
+        // Ship - Model is from cocos2d-x test project
+        auto ship = Sprite3D::create("Sprite3DTest/boss.c3b");
+        ship->setScale(6);
+        ship->setRotation3D(Vec3(180,45,0));
+        ship->setPosition(Vec2(visibleSize.width/4 + origin.x, visibleSize.height/2 + origin.y));
+        ship->setForce2DQueue(true);
+        ship->retain();
+
+        if (i == 0)
+        {
+            addChild(ship, 1);
+            // Rotate Ship
+            auto spin = RotateBy::create(4, Vec3(0,180,0));
+            auto repeatspin = RepeatForever::create(spin);
+            ship->runAction(repeatspin);
+        }
+        _ship[i] = ship;
+    }
+
+    // RenderTextures
+    _renderTexDefault = RenderTexture::create(visibleSize.width, visibleSize.height, Texture2D::PixelFormat::RGBA8888);
+    _renderTexDefault->setKeepMatrix(true);
+    addChild(_renderTexDefault);
+    _renderTexDefault->setPosition(visibleSize.width/4 * 3, visibleSize.height/2);
+
+    _renderTexWithBuffer = RenderTexture::create(visibleSize.width, visibleSize.height, Texture2D::PixelFormat::RGBA8888, GL_DEPTH24_STENCIL8);
+    _renderTexWithBuffer->setKeepMatrix(true);
+    addChild(_renderTexWithBuffer);
+    _renderTexWithBuffer->setPosition(visibleSize.width/4 * 4, visibleSize.height/2);
+
+    // Update
+    scheduleUpdate();
+
+    auto label1 = Label::createWithTTF("Normal Sprite3D\n", "fonts/arial.ttf", 10);
+    label1->setPosition(Vec2(visibleSize.width/4 * 1, 60));
+    this->addChild(label1, 1);
+
+    auto label2 = Label::createWithTTF("RenderTexture\nDefault - No depth buffer", "fonts/arial.ttf", 10);
+    label2->setPosition(Vec2(visibleSize.width/4 * 2, 60));
+    this->addChild(label2, 1);
+
+    auto label3 = Label::createWithTTF("RenderTexture\nGL_DEPTH24_STENCIL8", "fonts/arial.ttf", 10);
+    label3->setPosition(Vec2(visibleSize.width/4 * 3, 60));
+    this->addChild(label3, 1);
+}
+
+RenderTextureWithSprite3DIssue16894::~RenderTextureWithSprite3DIssue16894()
+{
+    for (int i = 0; i < 3; ++i)
+    {
+        _ship[i]->release();
+    }
+}
+
+void RenderTextureWithSprite3DIssue16894::visit(Renderer *renderer, const Mat4& parentTransform, uint32_t parentFlags)
+{
+    RenderTextureTest::visit(renderer, parentTransform, parentFlags);
+
+    _ship[1]->setRotation3D(_ship[0]->getRotation3D());
+    _ship[2]->setRotation3D(_ship[0]->getRotation3D());
+
+    _renderTexDefault->beginWithClear(0, 0, 0, 0, 0, 0);
+    _ship[1]->visit(Director::getInstance()->getRenderer(), Mat4::IDENTITY, 0);
+    _renderTexDefault->end();
+
+    _renderTexWithBuffer->beginWithClear(0, 0, 0, 0, 1, 0);
+    _ship[2]->visit(Director::getInstance()->getRenderer(), Mat4::IDENTITY, 0);
+    _renderTexWithBuffer->end();
+}
+
+std::string RenderTextureWithSprite3DIssue16894::title() const
+{
+    return "Issue16894: Render Sprite3D to texture";
+}
+
+std::string RenderTextureWithSprite3DIssue16894::subtitle() const
+{
+    return "3 ships, 1st & 3rd are the same";
 }

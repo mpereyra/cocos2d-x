@@ -1,5 +1,6 @@
 /****************************************************************************
 Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -32,6 +33,16 @@ NS_CC_BEGIN
 
 namespace ui {
 
+UICCTextField * UICCTextField::create()
+{
+    UICCTextField *ret = new (std::nothrow) UICCTextField();
+
+    if(ret)
+        ret->autorelease();
+
+    return ret;
+}
+    
 UICCTextField::UICCTextField()
 : _maxLengthEnabled(false)
 , _maxLength(0)
@@ -71,13 +82,13 @@ void UICCTextField::onEnter()
 }
 
 
-bool UICCTextField::onTextFieldAttachWithIME(TextFieldTTF *pSender)
+bool UICCTextField::onTextFieldAttachWithIME(TextFieldTTF* /*pSender*/)
 {
     setAttachWithIME(true);
     return false;
 }
 
-bool UICCTextField::onTextFieldInsertText(TextFieldTTF *pSender, const char *text, size_t nLen)
+bool UICCTextField::onTextFieldInsertText(TextFieldTTF* /*pSender*/, const char *text, size_t nLen)
 {
     if (nLen == 1 && strcmp(text, "\n") == 0)
     {
@@ -95,13 +106,13 @@ bool UICCTextField::onTextFieldInsertText(TextFieldTTF *pSender, const char *tex
     return false;
 }
 
-bool UICCTextField::onTextFieldDeleteBackward(TextFieldTTF *pSender, const char *delText, size_t nLen)
+bool UICCTextField::onTextFieldDeleteBackward(TextFieldTTF* /*pSender*/, const char* /*delText*/, size_t /*nLen*/)
 {
     setDeleteBackward(true);
     return false;
 }
 
-bool UICCTextField::onTextFieldDetachWithIME(TextFieldTTF *pSender)
+bool UICCTextField::onTextFieldDetachWithIME(TextFieldTTF* /*pSender*/)
 {
     setDetachWithIME(true);
     return false;
@@ -139,29 +150,6 @@ void UICCTextField::insertText(const char*  text, size_t len)
         }
     }
     TextFieldTTF::insertText(input_text.c_str(), len);
-    
-    // password
-    if (this->isSecureTextEntry())
-    {
-        if (TextFieldTTF::getCharCount() > 0)
-        {
-            setPasswordText(getString());
-        }
-    }
-}
-
-void UICCTextField::deleteBackward()
-{
-    TextFieldTTF::deleteBackward();
-    
-    if (TextFieldTTF::getCharCount() > 0)
-    {
-        // password
-        if (this->isSecureTextEntry())
-        {
-            setPasswordText(_inputText);
-        }
-    }
 }
 
 void UICCTextField::openIME()
@@ -355,7 +343,7 @@ void TextField::onEnter()
 
 void TextField::initRenderer()
 {
-    _textFieldRenderer = UICCTextField::create("input words here", "Thonburi", 20);
+    _textFieldRenderer = UICCTextField::create();
     addProtectedChild(_textFieldRenderer, TEXTFIELD_RENDERER_Z, -1);
 }
 
@@ -370,7 +358,7 @@ void TextField::setTouchAreaEnabled(bool enable)
     _useTouchArea = enable;
 }
     
-bool TextField::hitTest(const Vec2 &pt, const Camera* camera, Vec3 *p) const
+bool TextField::hitTest(const Vec2 &pt, const Camera* camera, Vec3* /*p*/) const
 {
     if (false == _useTouchArea)
     {
@@ -459,6 +447,9 @@ void TextField::setFontSize(int size)
     {
         _textFieldRenderer->setSystemFontSize(size);
     }
+    else if (_fontType == FontType::BMFONT) {
+        _textFieldRenderer->setBMFontSize(size);
+    }
     else
     {
         TTFConfig config = _textFieldRenderer->getTTFConfig();
@@ -479,11 +470,19 @@ void TextField::setFontName(const std::string& name)
 {
     if(FileUtils::getInstance()->isFileExist(name))
     {
-        TTFConfig config = _textFieldRenderer->getTTFConfig();
-        config.fontFilePath = name;
-        config.fontSize = _fontSize;
-        _textFieldRenderer->setTTFConfig(config);
-        _fontType = FontType::TTF;
+        std::string lcName = name;
+        std::transform(lcName.begin(), lcName.end(), lcName.begin(), ::tolower);
+        if(lcName.substr(lcName.length() - 4) == ".fnt") {
+            _textFieldRenderer->setBMFontFilePath(name);
+            _fontType = FontType::BMFONT;
+        }
+        else {
+            TTFConfig config = _textFieldRenderer->getTTFConfig();
+            config.fontFilePath = name;
+            config.fontSize = _fontSize;
+            _textFieldRenderer->setTTFConfig(config);
+            _fontType = FontType::TTF;
+        }
     }
     else
     {
@@ -582,7 +581,7 @@ const char* TextField::getPasswordStyleText()const
     return _textFieldRenderer->getPasswordTextStyle().c_str();
 }
 
-void TextField::update(float dt)
+void TextField::update(float /*dt*/)
 {
     if (getDetachWithIME())
     {

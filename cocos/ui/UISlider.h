@@ -1,5 +1,6 @@
 /****************************************************************************
 Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -204,6 +205,11 @@ public:
     void setPercent(int percent);
     
     /**
+     * Updates the visual elements of the slider.
+     */
+    void updateVisualSlider();
+    
+    /**
      * Gets the progress direction of slider.
      *
      * @return percent Percent value from 1 to 100.
@@ -265,6 +271,11 @@ public:
      */
     float getZoomScale()const;
 
+    Sprite* getSlidBallNormalRenderer() const;
+    Sprite* getSlidBallPressedRenderer() const;
+    Sprite* getSlidBallDisabledRenderer() const;
+    Node* getSlidBallRenderer() const;
+
     ResourceData getBackFile();
     ResourceData getProgressBarFile();
     ResourceData getBallNormalFile();
@@ -300,7 +311,9 @@ protected:
     Scale9Sprite*  _barRenderer;
     Scale9Sprite* _progressBarRenderer;
     Size _barTextureSize;
+    Rect _originalBarRect;
     Size _progressBarTextureSize;
+    Rect _originalProgressBarRect;
     
     Sprite* _slidBallNormalRenderer;
     Sprite* _slidBallPressedRenderer;

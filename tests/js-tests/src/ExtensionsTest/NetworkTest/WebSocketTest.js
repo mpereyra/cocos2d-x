@@ -1,7 +1,8 @@
 /****************************************************************************
  Copyright (c) 2008-2010 Ricardo Quesada
  Copyright (c) 2011-2012 cocos2d-x.org
- Copyright (c) 2013-2014 Chukong Technologies Inc.
+ Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  Copyright (c) 2013 James Chen
 
  http://www.cocos2d-x.org
@@ -107,9 +108,9 @@ var WebSocketTestLayer = cc.Layer.extend({
 
         var self = this;
 
-        this._wsiSendText = new WebSocket("ws://echo.websocket.org");
+        this._wsiSendText = new WebSocket("wss://echo.websocket.org", "", "cacert.pem");
         this._wsiSendText.onopen = function(evt) {
-            self._sendTextStatus.setString("Send Text WS was opened.");
+             self._sendTextStatus.setString("Opened, url: " + self._wsiSendText.url + ", protocol: " + self._wsiSendText.protocol);
         };
 
         this._wsiSendText.onmessage = function(evt) {
@@ -138,7 +139,7 @@ var WebSocketTestLayer = cc.Layer.extend({
        this._wsiSendBinary = new WebSocket("ws://echo.websocket.org");
        this._wsiSendBinary.binaryType = "arraybuffer";
        this._wsiSendBinary.onopen = function(evt) {
-           self._sendBinaryStatus.setString("Send Binary WS was opened.");
+           self._sendBinaryStatus.setString("Opened, url: " + self._wsiSendBinary.url + ", protocol: " + self._wsiSendBinary.protocol);
        };
 
        this._wsiSendBinary.onmessage = function(evt) {

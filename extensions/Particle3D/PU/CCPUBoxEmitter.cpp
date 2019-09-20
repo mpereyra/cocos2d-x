@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (C) 2013 Henry van Merode. All rights reserved.
- Copyright (c) 2015 Chukong Technologies Inc.
+ Copyright (c) 2015-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -85,7 +86,6 @@ void CCPUBoxEmitter::initParticlePosition(PUParticle3D* particle)
     //if (sys)
     {
         Mat4 rotMat;
-        Mat4::createRotation(static_cast<PUParticleSystem3D *>(_particleSystem)->getDerivedOrientation(), &rotMat);
         Vec3 basePos = getDerivedPosition();
         basePos = basePos - (_latestPositionDiff * particle->m_spawnT);
         particle->position = basePos +

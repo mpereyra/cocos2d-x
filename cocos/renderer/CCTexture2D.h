@@ -2,6 +2,7 @@
 Copyright (c) 2008      Apple Inc. All Rights Reserved.
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -116,13 +117,11 @@ public:
         ATC_INTERPOLATED_ALPHA,
         //! ASTC-compressed texture: ASTC_RGBA
         ASTC_RGBA,
-        
         /*BPC PATCH*/
         DEPTH_TEXTURE, //Depth format for offscreen rendering
         DEPTH_STENCIL_TEXTURE, // Depth-stencil for offscreen rendering
         RG16F,    //RG channels, each with 16-bit HalfFloat format.
         /*END BPC PATCH*/
-        
         //! Default texture format: AUTO
         DEFAULT = AUTO,
         
@@ -420,16 +419,17 @@ public:
     std::string getPath()const { return _filePath; }
 
     void setAlphaTexture(Texture2D* alphaTexture);
+    Texture2D* getAlphaTexture() const;
 
     GLuint getAlphaTextureName() const;
 public:
     /** Get pixel info map, the key-value pairs is PixelFormat and PixelFormatInfo.*/
     static const PixelFormatInfoMap& getPixelFormatInfoMap();
-    
+
 /* BPC PATCH */
     static void invalidateOldContextNames();
     GLuint getTexId() const { return _name; }
-/* END PATCH */
+/* END PATCH */    
 private:
     /**
     * A struct for storing 9-patch image capInsets.

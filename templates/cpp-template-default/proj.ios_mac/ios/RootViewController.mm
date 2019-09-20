@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (c) 2013      cocos2d-x.org
  Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -42,34 +43,20 @@
 
 // Implement loadView to create a view hierarchy programmatically, without using a nib.
 - (void)loadView {
-    cocos2d::Application *app = cocos2d::Application::getInstance();
-    
-    // Initialize the GLView attributes
-    app->initGLContextAttrs();
-    cocos2d::GLViewImpl::convertAttrs();
-    
     // Initialize the CCEAGLView
     CCEAGLView *eaglView = [CCEAGLView viewWithFrame: [UIScreen mainScreen].bounds
                                          pixelFormat: (__bridge NSString *)cocos2d::GLViewImpl::_pixelFormat
                                          depthFormat: cocos2d::GLViewImpl::_depthFormat
                                   preserveBackbuffer: NO
                                           sharegroup: nil
-                                       multiSampling: NO
-                                     numberOfSamples: 0 ];
+                                       multiSampling: cocos2d::GLViewImpl::_multisamplingCount > 0 ? YES : NO
+                                     numberOfSamples: cocos2d::GLViewImpl::_multisamplingCount ];
     
     // Enable or disable multiple touches
     [eaglView setMultipleTouchEnabled:NO];
     
     // Set EAGLView as view of RootViewController
     self.view = eaglView;
-    
-    cocos2d::GLView *glview = cocos2d::GLViewImpl::createWithEAGLView((__bridge void *)self.view);
-    
-    //set the GLView as OpenGLView of the Director
-    cocos2d::Director::getInstance()->setOpenGLView(glview);
-    
-    //run the cocos2d-x game scene
-    app->run();
 }
 
 // Implement viewDidLoad to do additional setup after loading the view, typically from a nib.
@@ -117,6 +104,18 @@
 //fix not hide status on ios7
 - (BOOL)prefersStatusBarHidden {
     return YES;
+}
+
+// Controls the application's preferred home indicator auto-hiding when this view controller is shown.
+// (better use preferredScreenEdgesDeferringSystemGestures for controlling the home indicator)
+- (BOOL)prefersHomeIndicatorAutoHidden {
+    return NO;
+}
+
+// HOME Indicator need to be tapped twice 
+-(UIRectEdge)preferredScreenEdgesDeferringSystemGestures
+{
+    return UIRectEdgeBottom; 
 }
 
 - (void)didReceiveMemoryWarning {

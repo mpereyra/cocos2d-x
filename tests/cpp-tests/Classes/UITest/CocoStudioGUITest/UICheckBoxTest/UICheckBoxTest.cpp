@@ -1,3 +1,27 @@
+/****************************************************************************
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ 
+ http://www.cocos2d-x.org
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ ****************************************************************************/
+
 #include "UICheckBoxTest.h"
 
 USING_NS_CC;
@@ -25,7 +49,7 @@ bool UICheckBoxTest::init()
 {
     if (UIScene::init())
     {
-        Size widgetSize = _widget->getContentSize();;
+        Size widgetSize = _widget->getContentSize();
         
         // Add a label in which the checkbox events will be displayed
         _displayValueLabel = Text::create("No Event", "fonts/Marker Felt.ttf", 32);
@@ -111,7 +135,7 @@ bool UICheckBoxDefaultBehaviorTest::init()
 {
     if (UIScene::init())
     {
-        Size widgetSize = _widget->getContentSize();;
+        Size widgetSize = _widget->getContentSize();
         
         // Add a label in which the checkbox events will be displayed
         _displayValueLabel = Text::create("No Event", "fonts/Marker Felt.ttf", 32);
@@ -120,7 +144,7 @@ bool UICheckBoxDefaultBehaviorTest::init()
         _uiLayer->addChild(_displayValueLabel);
         
         // Add the alert
-        Text* alert = Text::create("Only left two and the last checkbox can be cliked!","fonts/Marker Felt.ttf",20 );
+        Text* alert = Text::create("Only left two and the last checkbox can be clicked!","fonts/Marker Felt.ttf",20 );
         alert->setColor(Color3B(159, 168, 176));
         alert->setPosition(Vec2(widgetSize.width / 2.0f,
                                 widgetSize.height / 2.0f - alert->getContentSize().height * 1.75f));
@@ -180,7 +204,7 @@ bool UICheckBoxCopyTest::init()
 {
     if (UIScene::init())
     {
-        Size widgetSize = _widget->getContentSize();;
+        Size widgetSize = _widget->getContentSize();
 
         // Add a label in which the checkbox events will be displayed
         _displayValueLabel = Text::create("No Event", "fonts/Marker Felt.ttf", 32);

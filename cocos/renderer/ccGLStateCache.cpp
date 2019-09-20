@@ -2,7 +2,8 @@
 Copyright (c) 2011      Ricardo Quesada
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2011      Zynga Inc.
-Copyright (C) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -163,14 +164,12 @@ void bindTexture2D(Texture2D* texture)
 
 void bindTexture2DN(GLuint textureUnit, GLuint textureId)
 {
-    
     if(textureId==0){
         // Commenting this out is totes going to bite us in the ass later
         // but during dev this is the most useless and obnoxious log of all time
 //        CCLOG("Trying to bind texture 0");
         return;
     }
-    
 #if CC_ENABLE_GL_STATE_CACHE
 	CCASSERT(textureUnit < MAX_ACTIVE_TEXTURE, "textureUnit is too big");
 	if (s_currentBoundTexture[textureUnit] != textureId)
@@ -217,7 +216,7 @@ void deleteTexture(GLuint textureId)
 	glDeleteTextures(1, &textureId);
 }
 
-void deleteTextureN(GLuint textureUnit, GLuint textureId)
+void deleteTextureN(GLuint /*textureUnit*/, GLuint textureId)
 {
     deleteTexture(textureId);
 }

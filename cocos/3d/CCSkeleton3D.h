@@ -1,5 +1,6 @@
 /****************************************************************************
- Copyright (c) 2014 Chukong Technologies Inc.
+ Copyright (c) 2014-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -30,7 +31,6 @@
 #include "base/CCVector.h"
 #include <unordered_map>
 
-
 NS_CC_BEGIN
 
 /**
@@ -60,7 +60,7 @@ public:
     
     /**get world matrix*/
     const Mat4& getWorldMat();
-    
+
     /** BPC PATCH BEGIN   **/
     const Mat4& getOffset() const;
     void setOffset(const Mat4& offset);
@@ -101,7 +101,7 @@ public:
      * @param m Mat4 representing the original pose for this Bone.
      */
     void setOriPose(const Mat4& m);
-    
+
     const Mat4& getOriPose() const { return _oriPose; }
     
     /**
@@ -187,7 +187,7 @@ protected:
     bool          _worldDirty;
     Mat4          _world;
     Mat4          _local;
-    
+
     /** BPC PATCH BEGIN   **
      ** get original mat4 **/
     Mat4 _offset{};
@@ -247,7 +247,7 @@ protected:
     Vector<Bone3D*> _bones; // bones
 
     Vector<Bone3D*> _rootBones;
-    
+
     // BPC PATCH BEGIN
     // fast lookup into _bones
     std::unordered_map<std::string, Bone3D*> _nameToBoneMap;

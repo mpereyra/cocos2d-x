@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (c) 2010-2012 cocos2d-x.org
  Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -121,7 +122,7 @@ public:
      *
      * @param type the request type.
      */
-    inline void setRequestType(Type type)
+    void setRequestType(Type type)
     {
         _requestType = type;
     }
@@ -131,7 +132,7 @@ public:
      *
      * @return HttpRequest::Type.
      */
-    inline Type getRequestType() const
+    Type getRequestType() const
     {
         return _requestType;
     }
@@ -142,7 +143,7 @@ public:
      *
      * @param url the string object.
      */
-    inline void setUrl(const std::string& url)
+    void setUrl(const std::string& url)
     {
         _url = url;
     }
@@ -152,7 +153,7 @@ public:
      *
      * @return const char* the pointer of _url.
      */
-    inline const char* getUrl() const
+    const char* getUrl() const
     {
         return _url.c_str();
     }
@@ -163,7 +164,7 @@ public:
      * @param buffer the buffer of request data, it support binary data.
      * @param len    the size of request data.
      */
-    inline void setRequestData(const char* buffer, size_t len)
+    void setRequestData(const char* buffer, size_t len)
     {
         _requestData.assign(buffer, buffer + len);
     }
@@ -173,7 +174,7 @@ public:
      *
      * @return char* the request data pointer.
      */
-    inline char* getRequestData()
+    char* getRequestData()
     {
         if(!_requestData.empty())
             return _requestData.data();
@@ -186,7 +187,7 @@ public:
      *
      * @return ssize_t the size of request data
      */
-    inline ssize_t getRequestDataSize() const
+    ssize_t getRequestDataSize() const
     {
         return _requestData.size();
     }
@@ -197,7 +198,7 @@ public:
      *
      * @param tag the string object.
      */
-    inline void setTag(const std::string& tag)
+    void setTag(const std::string& tag)
     {
         _tag = tag;
     }
@@ -208,7 +209,7 @@ public:
      *
      * @return const char* the pointer of _tag
      */
-    inline const char* getTag() const
+    const char* getTag() const
     {
         return _tag.c_str();
     }
@@ -220,7 +221,7 @@ public:
      *
      * @param pUserData the string pointer
      */
-    inline void setUserData(void* pUserData)
+    void setUserData(void* pUserData)
     {
         _pUserData = pUserData;
     }
@@ -231,10 +232,10 @@ public:
      *
      * @return void* the pointer of user-customed data.
      */
-    inline void* getUserData() const
+    void* getUserData() const
     {
         return _pUserData;
-    };
+    }
     
     /**
      * Set the target and related callback selector.
@@ -243,7 +244,7 @@ public:
      * @param pTarget the target object pointer.
      * @param pSelector the callback function.
      */
-    CC_DEPRECATED_ATTRIBUTE inline void setResponseCallback(Ref* pTarget, SEL_CallFuncND pSelector)
+    CC_DEPRECATED_ATTRIBUTE void setResponseCallback(Ref* pTarget, SEL_CallFuncND pSelector)
     {
         doSetResponseCallback(pTarget, (SEL_HttpResponse)pSelector);
     }
@@ -255,7 +256,7 @@ public:
      * @param pTarget the target object pointer.
      * @param pSelector the SEL_HttpResponse function.
      */
-    inline void setResponseCallback(Ref* pTarget, SEL_HttpResponse pSelector)
+    void setResponseCallback(Ref* pTarget, SEL_HttpResponse pSelector)
     {
         doSetResponseCallback(pTarget, pSelector);
     }
@@ -265,7 +266,7 @@ public:
      *
      * @param callback the ccHttpRequestCallback function.
      */
-    inline void setResponseCallback(const ccHttpRequestCallback& callback)
+    void setResponseCallback(const ccHttpRequestCallback& callback)
     {
         _pCallback = callback;
     }
@@ -275,7 +276,7 @@ public:
      *
      * @return Ref* the target of callback selector function
      */
-    inline Ref* getTarget() const
+    Ref* getTarget() const
     {
         return _pTarget;
     }
@@ -292,7 +293,6 @@ public:
         _prxy( SEL_HttpResponse cb ) :_cb(cb) {}
         /** Destructor. */
         ~_prxy(){};
-        /** Destructor. */
         operator SEL_HttpResponse() const { return _cb; }
         CC_DEPRECATED_ATTRIBUTE operator SEL_CallFuncND()   const { return (SEL_CallFuncND) _cb; }
     protected:
@@ -304,7 +304,7 @@ public:
      *
      * @return _prxy the _prxy object
      */
-    inline _prxy getSelector() const
+    _prxy getSelector() const
     {
         return _prxy(_pSelector);
     }
@@ -314,7 +314,7 @@ public:
      *
      * @return const ccHttpRequestCallback& ccHttpRequestCallback callback function.
      */
-    inline const ccHttpRequestCallback& getCallback() const
+    const ccHttpRequestCallback& getCallback() const
     {
         return _pCallback;
     }
@@ -324,23 +324,23 @@ public:
      *
      * @param headers The string vector of custom-defined headers.
      */
-    inline void setHeaders(const std::vector<std::string>& headers)
-       {
-           _headers = headers;
-       }
+    void setHeaders(const std::vector<std::string>& headers)
+    {
+        _headers = headers;
+    }
 
     /**
      * Get custom headers.
      *
      * @return std::vector<std::string> the string vector of custom-defined headers.
      */
-    inline std::vector<std::string> getHeaders() const
+    std::vector<std::string> getHeaders() const
     {
         return _headers;
     }
 
 private:
-    inline void doSetResponseCallback(Ref* pTarget, SEL_HttpResponse pSelector)
+    void doSetResponseCallback(Ref* pTarget, SEL_HttpResponse pSelector)
     {
         if (_pTarget)
         {
@@ -365,7 +365,7 @@ protected:
     SEL_HttpResponse            _pSelector;      /// callback function, e.g. MyLayer::onHttpResponse(HttpClient *sender, HttpResponse * response)
     ccHttpRequestCallback       _pCallback;      /// C++11 style callbacks
     void*                       _pUserData;      /// You can add your customed data here
-    std::vector<std::string>    _headers;              /// custom http headers
+    std::vector<std::string>    _headers;        /// custom http headers
 };
 
 }

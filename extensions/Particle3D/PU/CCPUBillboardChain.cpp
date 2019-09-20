@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (C) 2013 Henry van Merode. All rights reserved.
- Copyright (c) 2015 Chukong Technologies Inc.
+ Copyright (c) 2015-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -58,7 +59,7 @@ orientation(ori)
 {
 }
 //-----------------------------------------------------------------------
-PUBillboardChain::PUBillboardChain(const std::string& name, const std::string &texFile, size_t maxElements,
+PUBillboardChain::PUBillboardChain(const std::string& /*name*/, const std::string &texFile, size_t maxElements,
                                size_t numberOfChains, bool useTextureCoords, bool useColours, bool dynamic)
                                :_maxElementsPerChain(maxElements),
                                _chainCount(numberOfChains),
@@ -478,7 +479,7 @@ void PUBillboardChain::updateVertexBuffer(const Mat4 &camMat)
                     chainTangent = _chainElementList[nexte + seg.start].position - _chainElementList[laste + seg.start].position;
 
                 }
-                
+
                 /*BPC PATCH convert to world space if we have a parent*/
                 Vec3 elementPos = elem.position;
                 if (_parentNode) {
@@ -486,7 +487,7 @@ void PUBillboardChain::updateVertexBuffer(const Mat4 &camMat)
                     _parentNode->getNodeToWorldTransform().transformVector(&chainTangent);
                 }
                 /*BPC PATCH END*/
-                
+
                 Vec3 vP1ToEye;
 
                 //if( _faceCamera )
@@ -588,7 +589,7 @@ void PUBillboardChain::updateVertexBuffer(const Mat4 &camMat)
     } // each segment
 
 
-    _vertexBuffer->updateVertices(&_vertices[0], (int)_vertices.size(), 0);;
+    _vertexBuffer->updateVertices(&_vertices[0], (int)_vertices.size(), 0);
     //pBuffer->unlock();
     //_vertexCameraUsed = cam;
     _vertexContentDirty = false;
@@ -654,6 +655,7 @@ void PUBillboardChain::updateIndexBuffer(void)
             }
 
         }
+
         _indexCount = index;
         _indexBuffer->updateIndices(&_indices[0], _indexCount, 0);
         //_indexData->indexBuffer->unlock();
@@ -729,7 +731,7 @@ void PUBillboardChain::render( Renderer* renderer, const Mat4 &transform, Partic
                                transform,
                                Node::FLAGS_RENDER_AS_3D);
             _meshCommand->setSkipBatching(true);
-            _meshCommand->setTransparent(true);            
+            _meshCommand->setTransparent(true);
             _glProgramState->setUniformVec4("u_color", color);
             renderer->addCommand(_meshCommand);
         }
@@ -755,7 +757,7 @@ GLuint PUBillboardChain::getTextureName()
 {
     if (_texture)
         return _texture->getName();
-    
+
     return 0;
 }
 

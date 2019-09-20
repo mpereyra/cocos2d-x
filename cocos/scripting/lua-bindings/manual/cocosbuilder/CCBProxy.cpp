@@ -1,5 +1,6 @@
 /****************************************************************************
  Copyright (c) 2013 cocos2d-x.org
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -79,7 +80,7 @@ const char* CCBProxy::getNodeTypeName(Node* pNode)
     }
     
     if (NULL != dynamic_cast<ui::Scale9Sprite*>(pNode)) {
-        return "cc.LayerGradient";
+        return "ccui.Scale9Sprite";
     }
     
     if (NULL != dynamic_cast<Menu*>(pNode)) {

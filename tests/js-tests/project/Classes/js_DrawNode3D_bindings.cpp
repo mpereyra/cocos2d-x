@@ -1,5 +1,6 @@
 /****************************************************************************
- Copyright (c) 2014 Chukong Technologies Inc.
+ Copyright (c) 2014-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -449,7 +450,7 @@ bool js_cocos2dx_DrawNode3D_drawCube(JSContext *cx, uint32_t argc, jsval *vp)
         cocos2d::Color4F arg1;
   
         JS::RootedObject jsVec3Array(cx, args.get(0).toObjectOrNull());
-        JSB_PRECONDITION3( jsVec3Array && JS_IsArrayObject( cx, jsVec3Array),  cx, false, "augument must be an array");
+        JSB_PRECONDITION3( jsVec3Array && JS_IsArrayObject( cx, jsVec3Array),  cx, false, "argument must be an array");
         uint32_t len = 0;
         JS_GetArrayLength(cx, jsVec3Array, &len);
     

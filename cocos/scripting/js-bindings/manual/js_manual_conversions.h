@@ -2,6 +2,7 @@
  * Created by Rohan Kuruvilla
  * Copyright (c) 2012 Zynga Inc.
  * Copyright (c) 2013-2016 Chukong Technologies Inc.
+ * Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -49,6 +50,9 @@
 
 NS_CC_BEGIN
 struct CC_DLL ResourceData;
+namespace extension {
+    struct ManifestAsset;
+}
 NS_CC_END
 
 // just a simple utility to avoid mem leaking when using JSString
@@ -80,11 +84,11 @@ public:
     ~JSFunctionWrapper();
 
     bool invoke(unsigned int argc, jsval *argv, JS::MutableHandleValue rval);
+    bool invoke(JS::HandleValueArray args, JS::MutableHandleValue rval);
 private:
     JSContext *_cx;
-    JS::Heap<JSObject*> _jsthis;
-    JS::Heap<JS::Value> _fval;
-    JS::Heap<JS::Value> _owner;
+    JS::PersistentRootedObject* _jsthis;
+    JS::PersistentRootedValue* _fval;
 private:
     CC_DISALLOW_COPY_AND_ASSIGN(JSFunctionWrapper);
 };
@@ -112,6 +116,7 @@ bool jsval_to_uint32( JSContext *cx, JS::HandleValue vp, uint32_t *ret );
 bool jsval_to_uint16( JSContext *cx, JS::HandleValue vp, uint16_t *ret );
 bool jsval_to_long( JSContext *cx, JS::HandleValue vp, long *out);
 bool jsval_to_ulong( JSContext *cx, JS::HandleValue vp, unsigned long *out);
+bool jsval_to_size( JSContext *cx, JS::HandleValue vp, size_t *out);
 bool jsval_to_long_long(JSContext *cx, JS::HandleValue v, long long* ret);
 CC_JS_DLL bool jsval_to_std_string(JSContext *cx, JS::HandleValue v, std::string* ret);
 bool jsval_to_ccpoint(JSContext *cx, JS::HandleValue v, cocos2d::Point* ret);
@@ -274,6 +279,7 @@ jsval uint32_to_jsval( JSContext *cx, uint32_t number );
 jsval ushort_to_jsval( JSContext *cx, unsigned short number );
 jsval long_to_jsval( JSContext *cx, long number );
 jsval ulong_to_jsval(JSContext* cx, unsigned long v);
+jsval size_to_jsval(JSContext* cx, size_t v);
 jsval long_long_to_jsval(JSContext* cx, long long v);
 CC_JS_DLL jsval std_string_to_jsval(JSContext* cx, const std::string& v);
 jsval c_string_to_jsval(JSContext* cx, const char* v, size_t length = -1);
@@ -292,7 +298,7 @@ jsval quaternion_to_jsval(JSContext* cx, const cocos2d::Quaternion& q);
 jsval meshVertexAttrib_to_jsval(JSContext* cx, const cocos2d::MeshVertexAttrib& q);
 jsval uniform_to_jsval(JSContext* cx, const cocos2d::Uniform* uniform);
 jsval resourcedata_to_jsval(JSContext* cx, const cocos2d::ResourceData& v);
-
+jsval asset_to_jsval(JSContext* cx, const cocos2d::extension::ManifestAsset& v);
 
 // forward declaration
 template <class T>

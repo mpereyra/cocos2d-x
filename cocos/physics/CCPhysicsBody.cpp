@@ -1,5 +1,6 @@
 /****************************************************************************
- Copyright (c) 2013 Chukong Technologies Inc.
+ Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -96,11 +97,11 @@ PhysicsBody::PhysicsBody()
 , _linearDamping(0.0f)
 , _angularDamping(0.0f)
 , _tag(0)
+, _massSetByUser(false)
+, _momentSetByUser(false)
 , _rotationOffset(0)
 , _recordedRotation(0.0f)
 , _recordedAngle(0.0)
-, _massSetByUser(false)
-, _momentSetByUser(false)
 , _recordScaleX(1.f)
 , _recordScaleY(1.f)
 {
@@ -109,10 +110,8 @@ PhysicsBody::PhysicsBody()
 
 PhysicsBody::~PhysicsBody()
 {
-    for (auto it = _joints.begin(); it != _joints.end(); ++it)
+    for (auto& joint : _joints)
     {
-        PhysicsJoint* joint = *it;
-        
         PhysicsBody* other = joint->getBodyA() == this ? joint->getBodyB() : joint->getBodyA();
         other->removeJoint(joint);
         delete joint;
@@ -349,7 +348,7 @@ void PhysicsBody::setRotation(float rotation)
 
 void PhysicsBody::setScale(float scaleX, float scaleY)
 {
-    for (auto shape : _shapes)
+    for (auto& shape : _shapes)
     {
         _area -= shape->getArea();
         if (!_massSetByUser)
@@ -577,12 +576,12 @@ void PhysicsBody::addMoment(float moment)
 
 void PhysicsBody::setVelocity(const Vec2& velocity)
 {
-    if (!_dynamic)
+    if (cpBodyGetType(_cpBody) == CP_BODY_TYPE_STATIC)
     {
-        CCLOG("physics warning: your can't set velocity for a static body.");
+        CCLOG("physics warning: you can't set velocity for a static body.");
         return;
     }
-    
+
     cpBodySetVelocity(_cpBody, PhysicsHelper::point2cpv(velocity));
 }
 
@@ -603,12 +602,12 @@ Vec2 PhysicsBody::getVelocityAtWorldPoint(const Vec2& point)
 
 void PhysicsBody::setAngularVelocity(float velocity)
 {
-    if (!_dynamic)
+    if (cpBodyGetType(_cpBody) == CP_BODY_TYPE_STATIC)
     {
-        CCLOG("physics warning: your can't set angular velocity for a static body.");
+        CCLOG("physics warning: you can't set angular velocity for a static body.");
         return;
     }
-    
+
     cpBodySetAngularVelocity(_cpBody, velocity);
 }
 

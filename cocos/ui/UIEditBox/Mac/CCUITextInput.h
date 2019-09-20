@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (c) 2010-2012 cocos2d-x.org
  Copyright (c) 2013-2016 zilongshanren
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -38,6 +39,7 @@
 @property (nonatomic, retain, setter=ccui_setPlaceholder:) NSString *ccui_placeholder;
 @property (nonatomic, retain, setter=ccui_setPlaceholderColor:) NSColor *ccui_placeholderColor;
 @property (nonatomic, retain, setter=ccui_setPlaceholderFont:) NSFont *ccui_placeholderFont;
+@property (nonatomic, assign, setter=ccui_setTextHorizontalAlignment:) NSTextAlignment ccui_alignment;
 
 /* can only set. and not get, since the getter will only return one delegate implementation */
 - (void)ccui_setDelegate:(id<NSTextFieldDelegate, NSTextViewDelegate>)delegate;

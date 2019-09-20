@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (c) 2010-2012 cocos2d-x.org
  Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -31,14 +32,15 @@
 #include "platform/ios/CCEAGLView-ios.h"
 #include "platform/ios/CCDirectorCaller-ios.h"
 #include "platform/ios/CCGLViewImpl-ios.h"
-#include "deprecated/CCSet.h"
 #include "base/CCTouch.h"
+#include "base/CCDirector.h"
 #include "base/CCDirector.h"
 
 NS_CC_BEGIN
 
 void* GLViewImpl::_pixelFormat = kEAGLColorFormatRGB565;
 int GLViewImpl::_depthFormat = GL_DEPTH24_STENCIL8_OES;
+int GLViewImpl::_multisamplingCount = 0;
 
 GLViewImpl* GLViewImpl::createWithEAGLView(void *eaglview)
 {
@@ -107,6 +109,8 @@ void GLViewImpl::convertAttrs()
     {
         CCASSERT(0, "Unsupported format for depth and stencil buffers. Using default");
     }
+    
+    _multisamplingCount = _glContextAttrs.multisamplingCount;
 }
 
 GLViewImpl::GLViewImpl()
@@ -232,7 +236,7 @@ void GLViewImpl::setIMEKeyboardState(bool open)
 void GLViewImpl::setIMEKeyboardType(TextFieldTTF::KeyboardType type)
 {
     UIKeyboardType uikType;
-    
+
     switch (type)
     {
         case TextFieldTTF::kKTEmail:
@@ -254,7 +258,7 @@ void GLViewImpl::setIMEKeyboardType(TextFieldTTF::KeyboardType type)
             uikType = UIKeyboardTypeDefault;
             break;
     }
-    
+
     CCEAGLView *eaglview = (CCEAGLView*) _eaglview;
     [eaglview setKeyboardFormat:uikType];
 }
@@ -309,11 +313,11 @@ Rect GLViewImpl::getSafeAreaRect() const
             return Rect(leftBottom.x, leftBottom.y, rightTop.x - leftBottom.x, rightTop.y - leftBottom.y);
         }
 #endif
-    
+
     // If running on iOS devices lower than 11.0, return visiable rect instead.
     return GLView::getSafeAreaRect();
 }
 
 NS_CC_END
 
-#endif // CC_PLATFOR_IOS
+#endif // CC_PLATFORM_IOS

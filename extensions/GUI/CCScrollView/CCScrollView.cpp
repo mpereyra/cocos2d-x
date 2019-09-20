@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (c) 2012 cocos2d-x.org
  Copyright (c) 2010 Sangwoo Im
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -157,7 +158,7 @@ bool ScrollView::isNodeVisible(Node* node)
     return viewRect.intersectsRect(node->getBoundingBox());
 }
 
-void ScrollView::pause(Ref* sender)
+void ScrollView::pause(Ref* /*sender*/)
 {
     _container->pause();
 
@@ -167,7 +168,7 @@ void ScrollView::pause(Ref* sender)
     }
 }
 
-void ScrollView::resume(Ref* sender)
+void ScrollView::resume(Ref* /*sender*/)
 {
     auto& children = _container->getChildren();
     for(const auto &child : children) {
@@ -203,6 +204,14 @@ void ScrollView::setTouchEnabled(bool enabled)
         _dragging = false;
         _touchMoved = false;
         _touches.clear();
+    }
+}
+
+void ScrollView::setSwallowTouches(bool needSwallow)
+{
+    if (_touchListener != nullptr)
+    {
+        _touchListener->setSwallowTouches(needSwallow);
     }
 }
 
@@ -242,11 +251,13 @@ void ScrollView::setContentOffsetInDuration(Vec2 offset, float dt)
     scroll = MoveTo::create(dt, offset);
     expire = CallFuncN::create(CC_CALLBACK_1(ScrollView::stoppedAnimatedScroll,this));
     _animatedScrollAction = _container->runAction(Sequence::create(scroll, expire, nullptr));
+    _animatedScrollAction->retain();
     this->schedule(CC_SCHEDULE_SELECTOR(ScrollView::performedAnimatedScroll));
 }
 
 void ScrollView::stopAnimatedContentOffset() {
     stopAction(_animatedScrollAction);
+    _animatedScrollAction->release();
     _animatedScrollAction = nullptr;
     stoppedAnimatedScroll(this);
 }
@@ -320,7 +331,7 @@ void ScrollView::setZoomScaleInDuration(float s, float dt)
     }
 }
 
-void ScrollView::updateTweenAction(float value, const std::string& key)
+void ScrollView::updateTweenAction(float value, const std::string& /*key*/)
 {
     this->setZoomScale(value);
 }
@@ -415,7 +426,7 @@ Vec2 ScrollView::minContainerOffset()
     return Vec2(_viewSize.width - (1 - anchorPoint.x) * contW, _viewSize.height - (1 - anchorPoint.y) * contH);
 }
 
-void ScrollView::deaccelerateScrolling(float dt)
+void ScrollView::deaccelerateScrolling(float /*dt*/)
 {
     if (_dragging)
     {
@@ -455,7 +466,7 @@ void ScrollView::deaccelerateScrolling(float dt)
     }
 }
 
-void ScrollView::stoppedAnimatedScroll(Node * node)
+void ScrollView::stoppedAnimatedScroll(Node * /*node*/)
 {
     this->unschedule(CC_SCHEDULE_SELECTOR(ScrollView::performedAnimatedScroll));
     // After the animation stopped, "scrollViewDidScroll" should be invoked, this could fix the bug of lack of tableview cells.
@@ -465,7 +476,7 @@ void ScrollView::stoppedAnimatedScroll(Node * node)
     }
 }
 
-void ScrollView::performedAnimatedScroll(float dt)
+void ScrollView::performedAnimatedScroll(float /*dt*/)
 {
     if (_dragging)
     {
@@ -681,7 +692,7 @@ void ScrollView::visit(Renderer *renderer, const Mat4 &parentTransform, uint32_t
     director->popMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_MODELVIEW);
 }
 
-bool ScrollView::onTouchBegan(Touch* touch, Event* event)
+bool ScrollView::onTouchBegan(Touch* touch, Event* /*event*/)
 {
     if (!this->isVisible() || !this->hasVisibleParents())
     {
@@ -724,7 +735,7 @@ bool ScrollView::onTouchBegan(Touch* touch, Event* event)
     return true;
 }
 
-void ScrollView::onTouchMoved(Touch* touch, Event* event)
+void ScrollView::onTouchMoved(Touch* touch, Event* /*event*/)
 {
     if (!this->isVisible())
     {
@@ -820,7 +831,7 @@ void ScrollView::onTouchMoved(Touch* touch, Event* event)
     }
 }
 
-void ScrollView::onTouchEnded(Touch* touch, Event* event)
+void ScrollView::onTouchEnded(Touch* touch, Event* /*event*/)
 {
     if (!this->isVisible())
     {
@@ -845,7 +856,7 @@ void ScrollView::onTouchEnded(Touch* touch, Event* event)
     }
 }
 
-void ScrollView::onTouchCancelled(Touch* touch, Event* event)
+void ScrollView::onTouchCancelled(Touch* touch, Event* /*event*/)
 {
     if (!this->isVisible())
     {
@@ -853,6 +864,10 @@ void ScrollView::onTouchCancelled(Touch* touch, Event* event)
     }
     
     auto touchIter = std::find(_touches.begin(), _touches.end(), touch);
+
+    if ( touchIter == _touches.end() )
+        return;
+    
     _touches.erase(touchIter);
     
     if (_touches.size() == 0)

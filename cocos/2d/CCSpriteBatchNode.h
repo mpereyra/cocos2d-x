@@ -4,6 +4,7 @@ Copyright (c) 2009      Matt Oswald
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2011      Zynga Inc.
 Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -97,13 +98,13 @@ public:
      *
      * @return The TextureAtlas object.
      */
-    inline TextureAtlas* getTextureAtlas() { return _textureAtlas; }
+    TextureAtlas* getTextureAtlas() { return _textureAtlas; }
 
     /** Sets the TextureAtlas object. 
      *
      * @param textureAtlas The TextureAtlas object.
      */
-    inline void setTextureAtlas(TextureAtlas* textureAtlas)
+    void setTextureAtlas(TextureAtlas* textureAtlas)
     { 
         if (textureAtlas != _textureAtlas)
         {
@@ -118,7 +119,7 @@ public:
      * 
      * @return An array with the descendants (children, gran children, etc.).
      */
-    inline const std::vector<Sprite*>& getDescendants() const { return _descendants; }
+    const std::vector<Sprite*>& getDescendants() const { return _descendants; }
 
     /** Increase the Atlas Capacity. */
     void increaseAtlasCapacity();
@@ -228,7 +229,11 @@ public:
      * It add the sprite to the children and descendants array, but it doesn't update add it to the texture atlas
      */
     SpriteBatchNode * addSpriteWithoutQuad(Sprite *child, int z, int aTag);
-    
+
+    /** reserves capacity for the batch node.
+     If the current capacity is bigger, nothing happens.
+     otherwise, a new capacity is allocated */
+    void reserveCapacity(ssize_t newCapacity);
 CC_CONSTRUCTOR_ACCESS:
     /**
      * @js ctor

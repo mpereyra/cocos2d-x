@@ -3,7 +3,8 @@ Copyright (c) 2008-2010 Ricardo Quesada
 Copyright (c) 2009      Valentin Milea
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2011      Zynga Inc.
-CopyRight (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
 http://www.cocos2d-x.org
 
@@ -90,7 +91,7 @@ void ActionManager::actionAllocWithHashElement(tHashElement *element)
 
 void ActionManager::removeActionAtIndex(ssize_t index, tHashElement *element)
 {
-    Action *action = (Action*)element->actions->arr[index];
+    Action *action = static_cast<Action*>(element->actions->arr[index]);
 
     if (action == element->currentAction && (! element->currentActionSalvaged))
     {
@@ -275,7 +276,7 @@ void ActionManager::removeActionByTag(int tag, Node *target)
         auto limit = element->actions->num;
         for (int i = 0; i < limit; ++i)
         {
-            Action *action = (Action*)element->actions->arr[i];
+            Action *action = static_cast<Action*>(element->actions->arr[i]);
 
             if (action->getTag() == (int)tag && action->getOriginalTarget() == target)
             {
@@ -303,8 +304,8 @@ void ActionManager::removeAllActionsByTag(int tag, Node *target)
         auto limit = element->actions->num;
         for (int i = 0; i < limit;)
         {
-            Action *action = (Action*)element->actions->arr[i];
-            
+            Action *action = static_cast<Action*>(element->actions->arr[i]);
+
             if (action->getTag() == (int)tag && action->getOriginalTarget() == target)
             {
                 removeActionAtIndex(i, element);
@@ -319,17 +320,17 @@ void ActionManager::removeAllActionsByTag(int tag, Node *target)
 }
 
 /* BPC-PATCH */
-struct _ccArray* ActionManager::getAllActions(const Node* target) const {
-    tHashElement *element = nullptr;
-    HASH_FIND_PTR(_targets, &target, element);
-    
-    if (element)
-    {
-        return element->actions;
+    struct _ccArray* ActionManager::getAllActions(const Node* target) const {
+        tHashElement *element = nullptr;
+        HASH_FIND_PTR(_targets, &target, element);
+
+        if (element)
+        {
+            return element->actions;
+        }
+
+        return nullptr;
     }
-    
-    return nullptr;
-}
 /* END BPC-PATCH */
 
 void ActionManager::removeActionsByFlags(unsigned int flags, Node *target)
@@ -352,7 +353,7 @@ void ActionManager::removeActionsByFlags(unsigned int flags, Node *target)
         auto limit = element->actions->num;
         for (int i = 0; i < limit;)
         {
-            Action *action = (Action*)element->actions->arr[i];
+            Action *action = static_cast<Action*>(element->actions->arr[i]);
 
             if ((action->getFlags() & flags) != 0 && action->getOriginalTarget() == target)
             {
@@ -385,7 +386,7 @@ Action* ActionManager::getActionByTag(int tag, const Node *target) const
             auto limit = element->actions->num;
             for (int i = 0; i < limit; ++i)
             {
-                Action *action = (Action*)element->actions->arr[i];
+                Action *action = static_cast<Action*>(element->actions->arr[i]);
 
                 if (action->getTag() == (int)tag)
                 {
@@ -412,6 +413,43 @@ ssize_t ActionManager::getNumberOfRunningActionsInTarget(const Node *target) con
     return 0;
 }
 
+// FIXME: Passing "const O *" instead of "const O&" because HASH_FIND_IT requires the address of a pointer
+// and, it is not possible to get the address of a reference
+size_t ActionManager::getNumberOfRunningActionsInTargetByTag(const Node *target,
+                                                             int tag)
+{
+    CCASSERT(tag != Action::INVALID_TAG, "Invalid tag value!");
+
+    tHashElement *element = nullptr;
+    HASH_FIND_PTR(_targets, &target, element);
+
+    if(!element || !element->actions)
+        return 0;
+
+    int count = 0;
+    auto limit = element->actions->num;
+    for(int i = 0; i < limit; ++i)
+    {
+        auto action = static_cast<Action*>(element->actions->arr[i]);
+        if(action->getTag() == tag)
+            ++count;
+    }
+
+    return count;
+}
+
+ssize_t ActionManager::getNumberOfRunningActions() const
+{
+    ssize_t count = 0;
+    struct _hashElement* element = nullptr;
+    struct _hashElement* tmp = nullptr;
+    HASH_ITER(hh, _targets, element, tmp)
+    {
+        count += (element->actions ? element->actions->num : 0);
+    }
+    return count;
+}
+
 // main loop
 void ActionManager::update(float dt)
 {
@@ -426,7 +464,7 @@ void ActionManager::update(float dt)
             for (_currentTarget->actionIndex = 0; _currentTarget->actionIndex < _currentTarget->actions->num;
                 _currentTarget->actionIndex++)
             {
-                _currentTarget->currentAction = (Action*)_currentTarget->actions->arr[_currentTarget->actionIndex];
+                _currentTarget->currentAction = static_cast<Action*>(_currentTarget->actions->arr[_currentTarget->actionIndex]);
                 if (_currentTarget->currentAction == nullptr)
                 {
                     continue;

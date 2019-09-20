@@ -1,5 +1,6 @@
 /****************************************************************************
- Copyright (c) 2015 Chukong Technologies Inc.
+ Copyright (c) 2015-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -55,7 +56,7 @@ public:
 
     /** Returns the GLProgramState */
     GLProgramState* getGLProgramState() const;
-    
+
     void setGLProgramState(GLProgramState* glProgramState);
 
     /** Binds the GLProgramState and the RenderState.

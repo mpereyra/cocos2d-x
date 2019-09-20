@@ -3,7 +3,8 @@ Copyright 2011 Jeff Lamarche
 Copyright 2012 Goffredo Marocchi
 Copyright 2012 Ricardo Quesada
 Copyright 2012 cocos2d-x.org
-Copyright 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 
 http://www.cocos2d-x.org
@@ -128,10 +129,14 @@ public:
         UNIFORM_AMBIENT_COLOR,
         /**Projection matrix.*/
         UNIFORM_P_MATRIX,
+        /**MultiView Projection matrix.*/
+        UNIFORM_MULTIVIEW_P_MATRIX,
         /**Model view matrix.*/
         UNIFORM_MV_MATRIX,
         /**Model view projection matrix.*/
         UNIFORM_MVP_MATRIX,
+        /**MultiView Model view projection matrix.*/
+        UNIFORM_MULTIVIEW_MVP_MATRIX,
         /**Normal matrix.*/
         UNIFORM_NORMAL_MATRIX,
         /**Time.*/
@@ -149,13 +154,13 @@ public:
         UNIFORM_SAMPLER1,
         UNIFORM_SAMPLER2,
         UNIFORM_SAMPLER3,
-        
+
         UNIFORM_BPC_COLOR, // "u_color"
         UNIFORM_BPC_ALPHA, // "alpha"
         UNIFORM_BPC_MATRIX_PALETTE, // "u_matrixPalette"
         UNIFORM_BPC_WORLD_VIEW, // "worldViewMat"
         UNIFORM_BPC_CAMERA_POSITION, //"u_cameraPosition"
-        
+        /**@}*/
         UNIFORM_MAX,
     };
 
@@ -164,14 +169,15 @@ public:
         unsigned int usesTime:1;
         unsigned int usesNormal:1;
         unsigned int usesMVP:1;
+        unsigned int usesMultiViewMVP:1;
         unsigned int usesMV:1;
         unsigned int usesP:1;
+        unsigned int usesMultiViewP:1;
         unsigned int usesRandom:1;
         // handy way to initialize the bitfield
         UniformFlags() { memset(this, 0, sizeof(*this)); }
     };
-    
-    
+
     /** BPC PATCH **/
     struct CompileResult {
         bool success{true};
@@ -179,7 +185,7 @@ public:
         std::string errorMsg{};
     };
     /** END PATCH **/
-
+    
     /**
     @name Built Shader types
     @{
@@ -277,6 +283,11 @@ public:
     static const char* SHADER_3D_TERRAIN;
     
     /**
+     Built in shader for LayerRadialGradient
+     */
+    static const char* SHADER_LAYER_RADIAL_GRADIENT;
+    
+    /**
      Built in shader for camera clear
      */
     static const char* SHADER_CAMERA_CLEAR;
@@ -293,10 +304,14 @@ public:
     static const char* UNIFORM_NAME_AMBIENT_COLOR;
     /**Projection Matrix uniform.*/
     static const char* UNIFORM_NAME_P_MATRIX;
+    /**MultiView Projection Matrix uniform.*/
+    static const char* UNIFORM_NAME_MULTIVIEW_P_MATRIX;
     /**Model view matrix uniform.*/
     static const char* UNIFORM_NAME_MV_MATRIX;
     /**Model view projection uniform.*/
     static const char* UNIFORM_NAME_MVP_MATRIX;
+    /**MultiView Model view projection uniform.*/
+    static const char* UNIFORM_NAME_MULTIVIEW_MVP_MATRIX;
     /**Normal matrix uniform.*/
     static const char* UNIFORM_NAME_NORMAL_MATRIX;
     /**Time uniform.*/
@@ -317,7 +332,7 @@ public:
     /**
     @}
     */
-    
+
     static const char* UNIFORM_NAME_BPC_COLOR; // "u_color"
     static const char* UNIFORM_NAME_BPC_ALPHA; // "alpha"
     static const char* UNIFORM_NAME_BPC_MATRIX_PALETTE; // "u_matrixPalette"
@@ -378,10 +393,21 @@ public:
     /** BPC PATCH **/
     bool initWithByteArrays(const GLchar* vShaderByteArray, const GLchar* fShaderByteArray, const std::string& compileTimeDefines, CompileResult& result);
     /** END PATCH **/
-
     /**
     @}
     */
+    
+    /** @{
+     Create or Initializes the GLProgram with a vertex and fragment with bytes array, with shader headers definition(eg. #version ... or #extension ...), with compileTimeDefines(eg. #define ...).
+     * @js initWithString.
+     * @lua initWithString.
+     */
+    static GLProgram* createWithByteArrays(const GLchar* vShaderByteArray, const GLchar* fShaderByteArray, const std::string& compileTimeHeaders, const std::string& compileTimeDefines);
+    bool initWithByteArrays(const GLchar* vShaderByteArray, const GLchar* fShaderByteArray, const std::string& compileTimeHeaders, const std::string& compileTimeDefines);
+    /**
+     @}
+     */
+
     /** @{
     Create or Initializes the GLProgram with a vertex and fragment with contents of filenames.
      * @js init
@@ -396,6 +422,17 @@ public:
     @}
     */
 
+    /** @{
+     Create or Initializes the GLProgram with a vertex and fragment with contents of filenames, with shader headers definition(eg. #version ... or #extension ...), with compileTimeDefines(eg. #define ...).
+     * @js init
+     * @lua init
+     */
+    static GLProgram* createWithFilenames(const std::string& vShaderFilename, const std::string& fShaderFilename, const std::string& compileTimeHeaders, const std::string& compileTimeDefines);
+    bool initWithFilenames(const std::string& vShaderFilename, const std::string& fShaderFilename, const std::string& compileTimeHeaders, const std::string& compileTimeDefines);
+    /**
+     @}
+     */
+
     /**@{ Get the uniform or vertex attribute by string name in shader, return null if it does not exist.*/
     Uniform* getUniform(const std::string& name);
     VertexAttrib* getVertexAttrib(const std::string& name);
@@ -409,7 +446,7 @@ public:
 
     /** Calls glGetUniformLocation(). */
     GLint getUniformLocation(const std::string& attributeName) const;
-    
+
     /** BPC PATCH expanded _builtInUniforms */
     GLint getBuiltInUniformLocation(size_t index) const { return _builtInUniforms[index]; }
 
@@ -526,10 +563,10 @@ public:
     */
     virtual void reset();
     /** returns the OpenGL Program object */
-    inline GLuint getProgram() const { return _program; }
+    GLuint getProgram() const { return _program; }
 
     /** returns the Uniform flags */
-    inline const UniformFlags& getUniformFlags() const { return _flags; }
+    const UniformFlags& getUniformFlags() const { return _flags; }
 
     //DEPRECATED
     CC_DEPRECATED_ATTRIBUTE bool initWithVertexShaderByteArray(const GLchar* vertexByteArray, const GLchar* fragByteArray)
@@ -537,7 +574,7 @@ public:
     CC_DEPRECATED_ATTRIBUTE bool initWithVertexShaderFilename(const std::string &vertexFilename, const std::string& fragFilename)
     { return initWithFilenames(vertexFilename, fragFilename); }
     CC_DEPRECATED_ATTRIBUTE void addAttribute(const std::string &attributeName, GLuint index) const { return bindAttribLocation(attributeName, index); }
-
+    
     /*BPC PATCH*/
     void setExtensionsString(const std::string& extensions);
     void setupForProgramBinary();
@@ -564,12 +601,12 @@ protected:
     /**Parse user defined uniform automatically.*/
     void parseUniforms();
     /**Compile the shader sources.*/
-    /** BPC PATCH **/
-    bool compileShader(GLuint * shader, GLenum type, const GLchar* source, const std::string& convertedDefines, CompileResult& result);
-    /** END PATCH **/
+    bool compileShader(GLuint * shader, GLenum type, const GLchar* source, const std::string& compileTimeHeaders, const std::string& convertedDefines);
     bool compileShader(GLuint * shader, GLenum type, const GLchar* source, const std::string& convertedDefines);
     bool compileShader(GLuint * shader, GLenum type, const GLchar* source);
     void clearShader();
+
+    void clearHashUniforms();
 
     /**OpenGL handle for program.*/
     GLuint            _program;
@@ -594,7 +631,7 @@ protected:
 
     /*needed uniforms*/
     UniformFlags _flags;
-    
+
     /*BPC PATCH*/
     std::string _extensionsString;
     /*END BPC PATCH*/

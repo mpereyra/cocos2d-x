@@ -1,5 +1,6 @@
 /****************************************************************************
- Copyright (c) 2014 Chukong Technologies Inc.
+ Copyright (c) 2014-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -41,6 +42,9 @@ public:
     
     virtual std::string title() const override;
     virtual void onExit() override;
+
+    virtual void onBackCallback(cocos2d::Ref* sender) override;
+
 protected:
     std::shared_ptr<bool> _isDestroyed;
 };
@@ -157,6 +161,19 @@ public:
     virtual std::string title() const override;
 };
 
+class AudioIssue18597Test : public AudioEngineTestDemo
+{
+public:
+    CREATE_FUNC(AudioIssue18597Test);
+
+    float _time;
+
+    virtual bool init() override;
+
+    virtual std::string title() const override;
+    virtual std::string subtitle() const override;
+};
+
 class AudioIssue11143Test : public AudioEngineTestDemo
 {
 public:
@@ -201,12 +218,56 @@ public:
     virtual std::string subtitle() const override;
 };
 
+class AudioSmallFile2Test : public AudioEngineTestDemo
+{
+public:
+    CREATE_FUNC(AudioSmallFile2Test);
+
+    virtual void onEnter() override;
+
+    virtual std::string title() const override;
+    virtual std::string subtitle() const override;
+};
+
+class AudioSmallFile3Test : public AudioEngineTestDemo
+{
+public:
+    CREATE_FUNC(AudioSmallFile3Test);
+
+    virtual void onEnter() override;
+
+    virtual std::string title() const override;
+    virtual std::string subtitle() const override;
+};
+
 class AudioPauseResumeAfterPlay : public AudioEngineTestDemo
 {
 public:
     CREATE_FUNC(AudioPauseResumeAfterPlay);
     
-    virtual bool init() override;
+    virtual void onEnter() override;
+    
+    virtual std::string title() const override;
+    virtual std::string subtitle() const override;
+};
+
+class AudioIssue16938Test : public AudioEngineTestDemo
+{
+public:
+    CREATE_FUNC(AudioIssue16938Test);
+
+    virtual void onEnter() override;
+
+    virtual std::string title() const override;
+    virtual std::string subtitle() const override;
+};
+
+class AudioPreloadSameFileMultipleTimes : public AudioEngineTestDemo
+{
+public:
+    CREATE_FUNC(AudioPreloadSameFileMultipleTimes);
+    
+    virtual void onEnter() override;
     
     virtual std::string title() const override;
     virtual std::string subtitle() const override;
@@ -225,6 +286,37 @@ public:
     
 private:
     std::vector<std::string> _oldSearchPaths;
+};
+
+class AudioPlayInFinishedCB : public AudioEngineTestDemo
+{
+public:
+    CREATE_FUNC(AudioPlayInFinishedCB);
+
+    virtual void onEnter() override;
+    virtual void onExit() override;
+
+    virtual std::string title() const override;
+    virtual std::string subtitle() const override;
+
+private:
+    void doPlay(const std::string& filename);
+    void playMusic(const std::string& filename);
+    std::list<std::string> _playList;
+};
+
+class AudioUncacheInFinishedCB : public AudioEngineTestDemo
+{
+public:
+    CREATE_FUNC(AudioUncacheInFinishedCB);
+
+    virtual void onEnter() override;
+    virtual void onExit() override;
+
+    virtual std::string title() const override;
+    virtual std::string subtitle() const override;
+
+private:
 };
 
 #endif /* defined(__NEWAUDIOENGINE_TEST_H_) */

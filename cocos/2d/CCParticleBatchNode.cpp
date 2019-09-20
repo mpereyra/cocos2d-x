@@ -5,6 +5,7 @@
  * Copyright (c) 2011      Zynga Inc.
  * Copyright (c) 2011      Marco Tillemans
  * Copyright (c) 2013-2016 Chukong Technologies Inc.
+ * Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  *
  * http://www.cocos2d-x.org
  *
@@ -271,9 +272,9 @@ void ParticleBatchNode::reorderChild(Node * aChild, int zOrder)
 
             // Find new AtlasIndex
             int newAtlasIndex = 0;
-            for( int i=0;i < _children.size();i++)
+            for (const auto& iter : _children)
             {
-                ParticleSystem* node = static_cast<ParticleSystem*>(_children.at(i));
+                auto node = static_cast<ParticleSystem*>(iter);
                 if( node == child )
                 {
                     newAtlasIndex = child->getAtlasIndex();
@@ -397,7 +398,7 @@ void ParticleBatchNode::removeAllChildrenWithCleanup(bool doCleanup)
     _textureAtlas->removeAllQuads();
 }
 
-void ParticleBatchNode::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
+void ParticleBatchNode::draw(Renderer* renderer, const Mat4 & /*transform*/, uint32_t flags)
 {
     CC_PROFILER_START("CCParticleBatchNode - draw");
 

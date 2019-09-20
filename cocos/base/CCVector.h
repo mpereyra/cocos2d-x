@@ -1,7 +1,8 @@
 /****************************************************************************
 Copyright (c) 2010 ForzeField Studios S.L. http://forzefield.com
 Copyright (c) 2010-2012 cocos2d-x.org
-Copyright (c) 2013-2014 Chukong Technologies
+Copyright (c) 2013-2017 Chukong Technologies
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -448,8 +449,8 @@ public:
      */
     void clear()
     {
-        for( auto it = std::begin(_data); it != std::end(_data); ++it ) {
-            (*it)->release();
+        for( auto& it : _data) {
+            it->release();
         }
         _data.clear();
     }

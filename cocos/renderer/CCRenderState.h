@@ -1,5 +1,6 @@
 /****************************************************************************
- Copyright (c) 2015 Chukong Technologies Inc.
+ Copyright (c) 2015-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  Copyright (c) 2014 GamePlay3D team
  
  http://www.cocos2d-x.org
@@ -49,7 +50,7 @@ struct PolygonOffset {
     }
     double m_factor {0};
     double m_units {0};
-    
+
     bool operator==(const PolygonOffset& rhs) const
     {
         return (m_factor == rhs.m_factor && m_units == rhs.m_units);
@@ -364,7 +365,6 @@ public:
          */
         void setStencilOperation(StencilOperation sfail, StencilOperation dpfail, StencilOperation dppass);
 
-        
         /** BPC PATCH BEGIN **/
         void setShouldUsePolygonOffset(bool enabled);
         void setOffset(PolygonOffset const & offset);
@@ -374,7 +374,6 @@ public:
         void setShouldClip(bool shouldClip);
         void setGlBounds(Rect glBounds);
         /** BPC PATCH END **/
-        
         
         /**
          * Sets a render state from the given name and value strings.
@@ -406,7 +405,7 @@ public:
             RS_STENCIL_FUNC = (1 << 9),
             RS_STENCIL_OP = (1 << 10),
             RS_FRONT_FACE = (1 << 11),
-            
+
             /*BPC PATCH*/
             RS_CLIP_BOUNDS = (1 << 12),
             RS_POLYGON_OFFSET = (1 << 13),
@@ -475,7 +474,6 @@ public:
         bool m_polygonOffsetEnabled{false};
         PolygonOffset m_offset {0, 0};
         /** BPC-PATCH END **/
-
         
         long _bits;
 

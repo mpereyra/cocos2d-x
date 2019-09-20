@@ -433,7 +433,7 @@ int lua_cocos2dx_studio_ActionFrame_setEasingParameter(lua_State* tolua_S)
     argc = lua_gettop(tolua_S)-1;
     if (argc == 1) 
     {
-        std::vector<float, std::allocator<float> > arg0;
+        std::vector<float> arg0;
 
         ok &= luaval_to_std_vector_float(tolua_S, 2, &arg0, "ccs.ActionFrame:setEasingParameter");
         if(!ok)
@@ -3240,7 +3240,7 @@ int lua_cocos2dx_studio_DisplayData_changeDisplayToTexture(lua_State* tolua_S)
             return 0;
         }
         std::string ret = cocostudio::DisplayData::changeDisplayToTexture(arg0);
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d\n ", "ccs.DisplayData:changeDisplayToTexture",argc, 1);
@@ -9410,7 +9410,7 @@ int lua_cocos2dx_studio_ArmatureAnimation_getCurrentMovementID(lua_State* tolua_
             return 0;
         }
         std::string ret = cobj->getCurrentMovementID();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "ccs.ArmatureAnimation:getCurrentMovementID",argc, 0);
@@ -11936,7 +11936,7 @@ int lua_cocos2dx_studio_Skin_getDisplayName(lua_State* tolua_S)
             return 0;
         }
         const std::string& ret = cobj->getDisplayName();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "ccs.Skin:getDisplayName",argc, 0);
@@ -12295,7 +12295,7 @@ int lua_cocos2dx_studio_ComAttribute_getString(lua_State* tolua_S)
             return 0;
         }
         std::string ret = cobj->getString(arg0);
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     if (argc == 2) 
@@ -12312,7 +12312,7 @@ int lua_cocos2dx_studio_ComAttribute_getString(lua_State* tolua_S)
             return 0;
         }
         std::string ret = cobj->getString(arg0, arg1);
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "ccs.ComAttribute:getString",argc, 1);
@@ -14789,7 +14789,7 @@ int lua_cocos2dx_studio_GUIReader_getFilePath(lua_State* tolua_S)
             return 0;
         }
         const std::string& ret = cobj->getFilePath();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "ccs.GUIReader:getFilePath",argc, 0);
@@ -16267,7 +16267,7 @@ int lua_cocos2dx_studio_Frame_getEasingParams(lua_State* tolua_S)
             tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_studio_Frame_getEasingParams'", nullptr);
             return 0;
         }
-        const std::vector<float, std::allocator<float> >& ret = cobj->getEasingParams();
+        const std::vector<float>& ret = cobj->getEasingParams();
         ccvector_float_to_luaval(tolua_S, ret);
         return 1;
     }
@@ -16309,7 +16309,7 @@ int lua_cocos2dx_studio_Frame_setEasingParams(lua_State* tolua_S)
     argc = lua_gettop(tolua_S)-1;
     if (argc == 1) 
     {
-        std::vector<float, std::allocator<float> > arg0;
+        std::vector<float> arg0;
 
         ok &= luaval_to_std_vector_float(tolua_S, 2, &arg0, "ccs.Frame:setEasingParams");
         if(!ok)
@@ -16928,7 +16928,7 @@ int lua_cocos2dx_studio_TextureFrame_getTextureName(lua_State* tolua_S)
             return 0;
         }
         std::string ret = cobj->getTextureName();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "ccs.TextureFrame:getTextureName",argc, 0);
@@ -19682,7 +19682,7 @@ int lua_cocos2dx_studio_EventFrame_getEvent(lua_State* tolua_S)
             return 0;
         }
         std::string ret = cobj->getEvent();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "ccs.EventFrame:getEvent",argc, 0);
@@ -20256,7 +20256,7 @@ int lua_cocos2dx_studio_PlayableFrame_getPlayableAct(lua_State* tolua_S)
             return 0;
         }
         std::string ret = cobj->getPlayableAct();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "ccs.PlayableFrame:getPlayableAct",argc, 0);
@@ -24860,7 +24860,7 @@ int lua_cocos2dx_studio_ComExtensionData_getCustomProperty(lua_State* tolua_S)
             return 0;
         }
         std::string ret = cobj->getCustomProperty();
-        tolua_pushcppstring(tolua_S,ret);
+        lua_pushlstring(tolua_S,ret.c_str(),ret.length());
         return 1;
     }
     luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "ccs.ComExtensionData:getCustomProperty",argc, 0);

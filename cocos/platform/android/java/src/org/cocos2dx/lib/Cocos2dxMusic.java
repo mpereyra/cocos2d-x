@@ -1,6 +1,7 @@
 /****************************************************************************
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -51,6 +52,7 @@ public class Cocos2dxMusic {
     private boolean mPaused; // whether music is paused state.
     private boolean mIsLoop = false;
     private boolean mManualPaused = false; // whether music is paused manually before the program is switched to the background.
+    private boolean mIsAudioFocus = true;
     private String mCurrentPath;
 
     // ===========================================================
@@ -273,12 +275,12 @@ public class Cocos2dxMusic {
         MediaPlayer mediaPlayer = new MediaPlayer();
 
         mediaPlayer.setOnErrorListener(
-            new MediaPlayer.OnErrorListener() {
-                public boolean onError(MediaPlayer mp, int what, int extra) {
-                    Log.e(Cocos2dxMusic.TAG, "Error in MediaPlayer: (" + what +") with extra (" +extra +")" );
-                    return false; 
-                } 
-            }); 
+                    new MediaPlayer.OnErrorListener() {
+                        public boolean onError(MediaPlayer mp, int what, int extra) {
+                            Log.e(Cocos2dxMusic.TAG, "Error in MediaPlayer: (" + what +") with extra (" +extra +")" );
+                            return false; 
+                        } 
+                    }); 
 
         try {
             if (path.startsWith("/")) {
@@ -291,8 +293,8 @@ public class Cocos2dxMusic {
                     mediaPlayer.setDataSource(assetFileDescriptor.getFileDescriptor(), assetFileDescriptor.getStartOffset(), assetFileDescriptor.getLength());
                 } else {
                     final AssetFileDescriptor assetFileDescriptor = this.mContext.getAssets().openFd(path);
-                    mediaPlayer.setDataSource(assetFileDescriptor.getFileDescriptor(), assetFileDescriptor.getStartOffset(), assetFileDescriptor.getLength());
-					assetFileDescriptor.close();
+                                        mediaPlayer.setDataSource(assetFileDescriptor.getFileDescriptor(), assetFileDescriptor.getStartOffset(), assetFileDescriptor.getLength());
+                    					assetFileDescriptor.close();
                 }
             }
 
@@ -305,6 +307,16 @@ public class Cocos2dxMusic {
         }
 
         return mediaPlayer;
+    }
+
+    void setAudioFocus(boolean isFocus) {
+        mIsAudioFocus = isFocus;
+
+        if (mBackgroundMediaPlayer != null) {
+            float lVolume = mIsAudioFocus ? mLeftVolume : 0.0f;
+            float rVolume = mIsAudioFocus ? mRightVolume : 0.0f;
+            mBackgroundMediaPlayer.setVolume(lVolume, rVolume);
+        }
     }
 
     // ===========================================================

@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (C) 2013 Henry van Merode. All rights reserved.
- Copyright (c) 2015 Chukong Technologies Inc.
+ Copyright (c) 2015-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -41,6 +42,9 @@
 #include "2d/CCCamera.h"
 
 NS_CC_BEGIN
+
+void PURender::updateRender(PUParticle3D* /*particle*/, float /*deltaTime*/, bool /*firstParticle*/)
+{}
 
 void PURender::copyAttributesTo( PURender *render )
 {
@@ -263,7 +267,7 @@ void PUParticle3DQuadRender::render(Renderer* renderer, const Mat4 &transform, P
         //_indexData[index + 3] = vertexindex;
         //_indexData[index + 4] = vertexindex + 3;
         //_indexData[index + 5] = vertexindex + 2;
-        
+
         index += 6;
         vertexindex += 4;
 
@@ -280,7 +284,7 @@ void PUParticle3DQuadRender::render(Renderer* renderer, const Mat4 &transform, P
         float opacityMod = particleSystem->getOpacityModifier();
         Vec4 color;
         color.set(opacityMod, opacityMod, opacityMod, opacityMod);
-        
+
         _stateBlock->setBlendFunc(blend);
         GLuint texId = (_texture ? _texture->getName() : 0);
         _meshCommand->init(particleSystem->getGlobalZOrder() > 0 ? particleSystem->getGlobalZOrder() : 0,
@@ -299,7 +303,7 @@ void PUParticle3DQuadRender::render(Renderer* renderer, const Mat4 &transform, P
         if (particleSystem->useDepthOverride()) {
             _meshCommand->setDepth(particleSystem->getDepthOverride());
         }
-        
+
         _glProgramState->setUniformVec4("u_color", color);
         renderer->addCommand(_meshCommand);
     }
@@ -616,7 +620,7 @@ PUParticle3DEntityRender::~PUParticle3DEntityRender()
 {
     CC_SAFE_DELETE(_meshCommand);
     CC_SAFE_RELEASE(_stateBlock);
-    CC_SAFE_RELEASE(_texture);
+    //CC_SAFE_RELEASE(_texture);
     CC_SAFE_RELEASE(_glProgramState);
     CC_SAFE_RELEASE(_vertexBuffer);
     CC_SAFE_RELEASE(_indexBuffer);
@@ -783,7 +787,7 @@ void PUParticle3DBoxRender::render( Renderer* renderer, const Mat4 &transform, P
         float opacityMod = particleSystem->getOpacityModifier();
         Vec4 color;
         color.set(opacityMod, opacityMod, opacityMod, opacityMod);
-        
+
         _stateBlock->setBlendFunc(blend);
         _meshCommand->init(particleSystem->getGlobalZOrder() > 0 ? particleSystem->getGlobalZOrder() : 0,
                            texId,
@@ -955,7 +959,7 @@ void PUSphereRender::render( Renderer* renderer, const Mat4 &transform, Particle
         float opacityMod = particleSystem->getOpacityModifier();
         Vec4 color;
         color.set(opacityMod, opacityMod, opacityMod, opacityMod);
-        
+
         _stateBlock->setBlendFunc(blend);
         _meshCommand->init(particleSystem->getGlobalZOrder() > 0 ? particleSystem->getGlobalZOrder() : 0,
                            texId,

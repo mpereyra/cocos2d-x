@@ -1,5 +1,6 @@
 /****************************************************************************
- Copyright (c) 2015 Chukong Technologies Inc.
+ Copyright (c) 2015-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -56,7 +57,7 @@ struct CC_DLL Particle3D
     float depth;//Own depth
     
     //user defined property
-    std::map<std::string, void*> userDefs;
+    std::unordered_map<std::string, void*> userDefs;
 };
 
 template<typename T>
@@ -113,21 +114,21 @@ public:
         _releasedIter = _released.begin();
         if (_releasedIter == _released.end()) return nullptr;
         return *_releasedIter;
-    };
+    }
 
     T* getNext(){
         if (_releasedIter == _released.end()) return nullptr;
         ++_releasedIter;
         if (_releasedIter == _released.end()) return nullptr;
         return *_releasedIter;
-    };
+    }
 
     const PoolList& getActiveDataList() const { return _released; };
     const PoolList& getUnActiveDataList() const { return _locked; };
 
     void addData(T* data){
         _locked.push_back(data); 
-    };
+    }
 
     bool empty() const { return _released.empty(); };
 
@@ -137,7 +138,7 @@ public:
             delete iter;
         }
         _locked.clear();
-    };
+    }
 
 private:
 
@@ -273,13 +274,14 @@ public:
      * is enabled
      */
     bool isEnabled(void) const { return _isEnabled; }
-    
+
     bool useDepthOverride() const { return _useDepthOverride; }
     float getDepthOverride() const { return _depthOverride; }
     void setUseDepthOverride(bool use) { _useDepthOverride = use; }
     void setDepthOverride(float depth) { _depthOverride = depth; }
     void setOpacityModifier(float opacity) { _opacityModifier = opacity; }
     float getOpacityModifier() const { return _opacityModifier; }
+
 
 CC_CONSTRUCTOR_ACCESS:
     ParticleSystem3D();
@@ -301,7 +303,7 @@ protected:
 
     bool _keepLocal;
     bool _isEnabled;
-    
+
     /*BPC PATCH BEGIN*/
     bool _useDepthOverride = false;
     float _depthOverride = 0.f;

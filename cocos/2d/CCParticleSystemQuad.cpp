@@ -4,6 +4,7 @@ Copyright (c) 2009      Leonardo Kasperavičius
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2011      Zynga Inc.
 Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
  
@@ -239,11 +240,7 @@ void ParticleSystemQuad::setDisplayFrame(SpriteFrame *spriteFrame)
     CCASSERT(spriteFrame->getOffsetInPixels().isZero(), 
              "QuadParticle only supports SpriteFrames with no offsets");
 
-    // update texture before updating texture rect
-    if ( !_texture || spriteFrame->getTexture()->getName() != _texture->getName())
-    {
-        this->setTexture(spriteFrame->getTexture());
-    }
+    this->setTextureWithRect(spriteFrame->getTexture(), spriteFrame->getRect());
 }
 
 void ParticleSystemQuad::initIndices()
@@ -408,7 +405,6 @@ void ParticleSystemQuad::updateParticleQuads()
             GLubyte colorG = *g * *a * 255;
             GLubyte colorB = *b * *a * 255;
             GLubyte colorA = (*a * _displayedOpacity/255.f) * 255;
-            
             quad->bl.colors.set(colorR, colorG, colorB, colorA);
             quad->br.colors.set(colorR, colorG, colorB, colorA);
             quad->tl.colors.set(colorR, colorG, colorB, colorA);
@@ -429,7 +425,6 @@ void ParticleSystemQuad::updateParticleQuads()
             GLubyte colorG = *g * 255;
             GLubyte colorB = *b * 255;
             GLubyte colorA = (*a * _displayedOpacity/255.f) * 255;
-            
             quad->bl.colors.set(colorR, colorG, colorB, colorA);
             quad->br.colors.set(colorR, colorG, colorB, colorA);
             quad->tl.colors.set(colorR, colorG, colorB, colorA);
@@ -605,7 +600,7 @@ void ParticleSystemQuad::setupVBO()
     CHECK_GL_ERROR_DEBUG();
 }
 
-void ParticleSystemQuad::listenRendererRecreated(EventCustom* event)
+void ParticleSystemQuad::listenRendererRecreated(EventCustom* /*event*/)
 {
     //when comes to foreground in android, _buffersVBO and _VAOname is a wild handle
     //before recreating, we need to reset them to 0

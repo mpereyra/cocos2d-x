@@ -4191,6 +4191,53 @@ int lua_cocos2dx_physics_PhysicsBody_setDynamic(lua_State* tolua_S)
 
     return 0;
 }
+int lua_cocos2dx_physics_PhysicsBody_getFirstShape(lua_State* tolua_S)
+{
+    int argc = 0;
+    cocos2d::PhysicsBody* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"cc.PhysicsBody",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (cocos2d::PhysicsBody*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_cocos2dx_physics_PhysicsBody_getFirstShape'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 0) 
+    {
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_physics_PhysicsBody_getFirstShape'", nullptr);
+            return 0;
+        }
+        cocos2d::PhysicsShape* ret = cobj->getFirstShape();
+        object_to_luaval<cocos2d::PhysicsShape>(tolua_S, "cc.PhysicsShape",(cocos2d::PhysicsShape*)ret);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.PhysicsBody:getFirstShape",argc, 0);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_cocos2dx_physics_PhysicsBody_getFirstShape'.",&tolua_err);
+#endif
+
+    return 0;
+}
 int lua_cocos2dx_physics_PhysicsBody_getShapes(lua_State* tolua_S)
 {
     int argc = 0;
@@ -5855,6 +5902,7 @@ int lua_register_cocos2dx_physics_PhysicsBody(lua_State* tolua_S)
         tolua_function(tolua_S,"local2World",lua_cocos2dx_physics_PhysicsBody_local2World);
         tolua_function(tolua_S,"getCategoryBitmask",lua_cocos2dx_physics_PhysicsBody_getCategoryBitmask);
         tolua_function(tolua_S,"setDynamic",lua_cocos2dx_physics_PhysicsBody_setDynamic);
+        tolua_function(tolua_S,"getFirstShape",lua_cocos2dx_physics_PhysicsBody_getFirstShape);
         tolua_function(tolua_S,"getShapes",lua_cocos2dx_physics_PhysicsBody_getShapes);
         tolua_function(tolua_S,"getContactTestBitmask",lua_cocos2dx_physics_PhysicsBody_getContactTestBitmask);
         tolua_function(tolua_S,"setAngularVelocity",lua_cocos2dx_physics_PhysicsBody_setAngularVelocity);
@@ -11735,6 +11783,60 @@ int lua_cocos2dx_physics_PhysicsWorld_getDebugDrawMask(lua_State* tolua_S)
 
     return 0;
 }
+int lua_cocos2dx_physics_PhysicsWorld_setPreUpdateCallback(lua_State* tolua_S)
+{
+    int argc = 0;
+    cocos2d::PhysicsWorld* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"cc.PhysicsWorld",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (cocos2d::PhysicsWorld*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_cocos2dx_physics_PhysicsWorld_setPreUpdateCallback'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 1) 
+    {
+        std::function<void ()> arg0;
+
+        do {
+			// Lambda binding for lua is not supported.
+			assert(false);
+		} while(0)
+		;
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_physics_PhysicsWorld_setPreUpdateCallback'", nullptr);
+            return 0;
+        }
+        cobj->setPreUpdateCallback(arg0);
+        lua_settop(tolua_S, 1);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.PhysicsWorld:setPreUpdateCallback",argc, 1);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_cocos2dx_physics_PhysicsWorld_setPreUpdateCallback'.",&tolua_err);
+#endif
+
+    return 0;
+}
 int lua_cocos2dx_physics_PhysicsWorld_isAutoStep(lua_State* tolua_S)
 {
     int argc = 0;
@@ -11778,6 +11880,60 @@ int lua_cocos2dx_physics_PhysicsWorld_isAutoStep(lua_State* tolua_S)
 #if COCOS2D_DEBUG >= 1
     tolua_lerror:
     tolua_error(tolua_S,"#ferror in function 'lua_cocos2dx_physics_PhysicsWorld_isAutoStep'.",&tolua_err);
+#endif
+
+    return 0;
+}
+int lua_cocos2dx_physics_PhysicsWorld_setPostUpdateCallback(lua_State* tolua_S)
+{
+    int argc = 0;
+    cocos2d::PhysicsWorld* cobj = nullptr;
+    bool ok  = true;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_Error tolua_err;
+#endif
+
+
+#if COCOS2D_DEBUG >= 1
+    if (!tolua_isusertype(tolua_S,1,"cc.PhysicsWorld",0,&tolua_err)) goto tolua_lerror;
+#endif
+
+    cobj = (cocos2d::PhysicsWorld*)tolua_tousertype(tolua_S,1,0);
+
+#if COCOS2D_DEBUG >= 1
+    if (!cobj) 
+    {
+        tolua_error(tolua_S,"invalid 'cobj' in function 'lua_cocos2dx_physics_PhysicsWorld_setPostUpdateCallback'", nullptr);
+        return 0;
+    }
+#endif
+
+    argc = lua_gettop(tolua_S)-1;
+    if (argc == 1) 
+    {
+        std::function<void ()> arg0;
+
+        do {
+			// Lambda binding for lua is not supported.
+			assert(false);
+		} while(0)
+		;
+        if(!ok)
+        {
+            tolua_error(tolua_S,"invalid arguments in function 'lua_cocos2dx_physics_PhysicsWorld_setPostUpdateCallback'", nullptr);
+            return 0;
+        }
+        cobj->setPostUpdateCallback(arg0);
+        lua_settop(tolua_S, 1);
+        return 1;
+    }
+    luaL_error(tolua_S, "%s has wrong number of arguments: %d, was expecting %d \n", "cc.PhysicsWorld:setPostUpdateCallback",argc, 1);
+    return 0;
+
+#if COCOS2D_DEBUG >= 1
+    tolua_lerror:
+    tolua_error(tolua_S,"#ferror in function 'lua_cocos2dx_physics_PhysicsWorld_setPostUpdateCallback'.",&tolua_err);
 #endif
 
     return 0;
@@ -12556,7 +12712,9 @@ int lua_register_cocos2dx_physics_PhysicsWorld(lua_State* tolua_S)
         tolua_function(tolua_S,"addJoint",lua_cocos2dx_physics_PhysicsWorld_addJoint);
         tolua_function(tolua_S,"removeAllJoints",lua_cocos2dx_physics_PhysicsWorld_removeAllJoints);
         tolua_function(tolua_S,"getDebugDrawMask",lua_cocos2dx_physics_PhysicsWorld_getDebugDrawMask);
+        tolua_function(tolua_S,"setPreUpdateCallback",lua_cocos2dx_physics_PhysicsWorld_setPreUpdateCallback);
         tolua_function(tolua_S,"isAutoStep",lua_cocos2dx_physics_PhysicsWorld_isAutoStep);
+        tolua_function(tolua_S,"setPostUpdateCallback",lua_cocos2dx_physics_PhysicsWorld_setPostUpdateCallback);
         tolua_function(tolua_S,"removeBody",lua_cocos2dx_physics_PhysicsWorld_removeBody);
         tolua_function(tolua_S,"removeJoint",lua_cocos2dx_physics_PhysicsWorld_removeJoint);
         tolua_function(tolua_S,"getShapes",lua_cocos2dx_physics_PhysicsWorld_getShapes);

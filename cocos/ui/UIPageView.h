@@ -1,5 +1,6 @@
 /****************************************************************************
 Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -166,6 +167,14 @@ public:
      * @param idx   A given index in the PageView. Index start from 0 to pageCount -1.
      */
     void scrollToPage(ssize_t idx);
+    
+    /**
+     * Scroll to a page with a given index and with a given scroll time.
+     *
+     * @param idx   A given index in the PageView. Index start from 0 to pageCount -1.
+     * @param time  Scroll time must be >= 0. Otherwise last set scroll time will be used.
+     */
+    void scrollToPage(ssize_t idx, float time);
 
     /**
      * Scroll to a page with a given index.
@@ -173,6 +182,14 @@ public:
      * @param itemIndex   A given index in the PageView. Index start from 0 to pageCount -1.
      */
     void scrollToItem(ssize_t itemIndex);
+    
+    /**
+     * Scroll to a item with a given index and with a given scroll time.
+     *
+     * @param idx   A given index in the PageView. Index start from 0 to pageCount -1.
+     * @param time  Scroll time must be >= 0. Otherwise last set scrolltime will be used.
+     */
+    void scrollToItem(ssize_t idx, float time);
 
     /**
      * Gets current displayed page index.
@@ -186,7 +203,7 @@ public:
      * Gets current displayed page index.
      * @return current page index.
      */
-    ssize_t getCurrentPageIndex() const { return _currentPageIndex; }
+    ssize_t getCurrentPageIndex();
 
     /**
      * Jump to a page with a given index without scrolling.
@@ -301,7 +318,7 @@ public:
     /**
      * @brief Set color of page indicator's selected index.
      *
-     * @param color Space between nodes in pixel.
+     * @param color New color for selected (current) index.
      */
     void setIndicatorSelectedIndexColor(const Color3B& color);
 
@@ -315,7 +332,7 @@ public:
     /**
      * @brief Set color of page indicator's index nodes.
      *
-     * @param color Space between nodes in pixel.
+     * @param color New indicator node color.
      */
     void setIndicatorIndexNodesColor(const Color3B& color);
     
@@ -325,6 +342,34 @@ public:
      * @return color
      */
     const Color3B& getIndicatorIndexNodesColor() const;
+    
+    /**
+     * @brief Set opacity of page indicator's selected index.
+     *
+     * @param color New opacity for selected (current) index.
+     */
+    void setIndicatorSelectedIndexOpacity(GLubyte opacity);
+    
+    /**
+     * @brief Get the opacity of page indicator's selected index.
+     *
+     * @return opacity
+     */
+    GLubyte getIndicatorSelectedIndexOpacity() const;
+    
+    /**
+     * @brief Set opacity of page indicator's index nodes.
+     *
+     * @param opacity New indicator node opacity.
+     */
+    void setIndicatorIndexNodesOpacity(GLubyte opacity);
+    
+    /**
+     * @brief Get the opacity of page indicator's index nodes.
+     *
+     * @return opacity
+     */
+    GLubyte getIndicatorIndexNodesOpacity() const;
     
     /**
      * @brief Set scale of page indicator's index nodes.

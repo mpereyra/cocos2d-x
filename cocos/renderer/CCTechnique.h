@@ -1,5 +1,6 @@
 /****************************************************************************
- Copyright (c) 2015 Chukong Technologies Inc.
+ Copyright (c) 2015-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -66,11 +67,11 @@ public:
 
     /** Returns the name of the Technique */
     std::string getName() const;
-    
+
     /*BPC PATCH*/
     void setName(const std::string& name);
     /*END BPC PATCH*/
-    
+
     /** Returns the Pass at given index */
     Pass* getPassByIndex(ssize_t index) const;
 

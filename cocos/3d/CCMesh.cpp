@@ -1,5 +1,6 @@
 /****************************************************************************
- Copyright (c) 2014 Chukong Technologies Inc.
+ Copyright (c) 2014-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -129,13 +130,12 @@ Mesh::Mesh()
 : _skin(nullptr)
 , _visible(true)
 , _isTransparent(false)
+, _force2DQueue(false)
 , _meshIndexData(nullptr)
-, _material(nullptr)
 , _glProgramState(nullptr)
 , _blend(BlendFunc::ALPHA_NON_PREMULTIPLIED)
-, _visibleChanged(nullptr)
 , _blendDirty(true)
-, _force2DQueue(false)
+, _material(nullptr)
 , _texFile("")
 {
     
@@ -233,7 +233,7 @@ Mesh* Mesh::create(const std::vector<float>& positions, const std::vector<float>
     return create(vertices, perVertexSizeInFloat, indices, attribs);
 }
 
-Mesh* Mesh::create(const std::vector<float>& vertices, int perVertexSizeInFloat, const IndexArray& indices, const std::vector<MeshVertexAttrib>& attribs)
+Mesh* Mesh::create(const std::vector<float>& vertices, int /*perVertexSizeInFloat*/, const IndexArray& indices, const std::vector<MeshVertexAttrib>& attribs)
 {
     MeshData meshdata;
     meshdata.attribs = attribs;
@@ -361,7 +361,7 @@ void Mesh::setMaterial(Material* material)
             }
         }
     }
-    // Was the texture set before teh GLProgramState ? Set it
+    // Was the texture set before the GLProgramState ? Set it
     for(auto& tex : _textures)
         setTexture(tex.second, tex.first);
         
@@ -382,7 +382,7 @@ void Mesh::draw(Renderer* renderer, float globalZOrder, const Mat4& transform, u
     /*BPC PATCH*/
     if (! isVisible() || m_skipRender)
         return;
-    
+
     if (m_globalZ != std::numeric_limits<float>::max())
         globalZOrder = m_globalZ;
     /*END BPC PATCH*/
@@ -408,11 +408,12 @@ void Mesh::draw(Renderer* renderer, float globalZOrder, const Mat4& transform, u
 
 
     /*BPC PATCH*/
-//    if (isTransparent && !forceDepthWrite)
-//        _material->getStateBlock()->setDepthWrite(false);
-//    else
-//        _material->getStateBlock()->setDepthWrite(true);
     
+//   if (isTransparent && !forceDepthWrite)
+//       _material->getStateBlock()->setDepthWrite(false);
+//   else
+//        _material->getStateBlock()->setDepthWrite(true);
+
     bool shouldWriteDepth = boolFromWriteMode(m_depthWriteMode);
     if (Camera::getVisitingCamera()->getCameraFlag() == CameraFlag::USER8) {
         shouldWriteDepth = true;
@@ -421,8 +422,7 @@ void Mesh::draw(Renderer* renderer, float globalZOrder, const Mat4& transform, u
     bool shouldCull = boolFromWriteMode(m_cullFaceMode);
     _material->getStateBlock()->setCullFace(shouldCull);
     /*BPC PATCH*/
-    
-    
+
     commandToUse.setSkipBatching(isTransparent);
     commandToUse.setTransparent(isTransparent);
     commandToUse.set3D(!_force2DQueue);
@@ -443,7 +443,7 @@ void Mesh::draw(Renderer* renderer, float globalZOrder, const Mat4& transform, u
         if (scene && scene->getLights().size() > 0)
             setLightUniforms(pass, scene, color, m_meshLightMask);
     }
-    
+
     //BPC PATCH BEGIN Update depth for transparent objects
     if (commandToUse.isTransparent() && commandToUse.is3D() && m_useMeshDepth)
     {
@@ -537,6 +537,7 @@ void Mesh::calculateAABB()
                 root = _skin->getBoneByName(ROOT_BONE_HINT);
                 if (!root)
                     root = _skin->_skinBones.at(0);
+                
                 while (root) {
                     auto parent = root->getParentBone();
                     bool parentInSkinBone = false;
@@ -588,8 +589,8 @@ void Mesh::setLightUniforms(Pass* pass, Scene* scene, const Vec4& color, unsigne
     int maxDirLight = getDirLightCount();
     int maxPointLight = getPointLightCount();
     int maxSpotLight = getSpotLightCount();
-    
     auto &lights = scene->getLights();
+
     auto glProgramState = pass->getGLProgramState();
     auto attributes = pass->getVertexAttributeBinding()->getVertexAttribsFlags();
 
@@ -771,12 +772,12 @@ MeshCommand& Mesh::getMeshCommand()
 {
     if (!_material)
         return _meshCommand;
-    
+
     auto technique = _material->getTechnique();
     auto it = m_techniqueToCommandOverrides.find(technique->getName());
     if (it != m_techniqueToCommandOverrides.end())
         return it->second;
-    
+
     return _meshCommand;
 }
 
@@ -784,11 +785,11 @@ void Mesh::addCommandOverride(const std::string& techniqueName)
 {
     if (!_material)
         return;
-    
+
     auto technique = _material->getTechniqueByName(techniqueName);
     if (!technique)
         return;
-    
+
     auto it = m_techniqueToCommandOverrides.find(techniqueName);
     if (it == m_techniqueToCommandOverrides.end()) {
         auto& command = m_techniqueToCommandOverrides[techniqueName];
@@ -804,7 +805,7 @@ void Mesh::setPointLightCount(int count)
 {
     if (count < 0)
         return;
-    
+
     m_pointLightCount = count;
     _pointLightUniformColorValues.resize(count);
     _pointLightUniformPositionValues.resize(count);
@@ -820,7 +821,7 @@ void Mesh::setDirLightCount(int count)
 {
     if (count < 0)
         return;
-    
+
     m_dirLightCount = count;
     _dirLightUniformColorValues.resize(count);
     _dirLightUniformDirValues.resize(count);
@@ -830,7 +831,7 @@ void Mesh::setSpotLightCount(int count)
 {
     if (count < 0)
         return;
-    
+
     m_spotLightCount = count;
     _spotLightUniformColorValues.resize(count);
     _spotLightUniformDirValues.resize(count);
@@ -850,7 +851,7 @@ int Mesh::getPointLightCount()
 {
     if (m_pointLightCount >= 0)
         return m_pointLightCount;
-    
+
     const auto& conf = Configuration::getInstance();
     return conf->getMaxSupportPointLightInShader();
 }
@@ -864,7 +865,7 @@ int Mesh::getDirLightCount()
 {
     if (m_dirLightCount >= 0)
         return m_dirLightCount;
-    
+
     const auto& conf = Configuration::getInstance();
     return conf->getMaxSupportDirLightInShader();
 }
@@ -873,7 +874,7 @@ int Mesh::getSpotLightCount()
 {
     if (m_spotLightCount >= 0)
         return m_spotLightCount;
-    
+
     const auto& conf = Configuration::getInstance();
     return conf->getMaxSupportSpotLightInShader();
 }

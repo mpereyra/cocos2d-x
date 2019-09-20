@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (C) 2013 Henry van Merode. All rights reserved.
- Copyright (c) 2015 Chukong Technologies Inc.
+ Copyright (c) 2015-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -72,7 +73,7 @@ void PURibbonTrailRender::render( Renderer* renderer, const Mat4 &transform, Par
 
     const PUParticleSystem3D::ParticlePoolMap &emitterPool = static_cast<PUParticleSystem3D *>(particleSystem)->getEmittedEmitterParticlePool();
     if (!emitterPool.empty()){
-        for (auto iter : emitterPool){
+        for (const auto& iter : emitterPool){
             updateParticles(iter.second);
             needDraw = true;
         }
@@ -80,7 +81,7 @@ void PURibbonTrailRender::render( Renderer* renderer, const Mat4 &transform, Par
 
     const PUParticleSystem3D::ParticlePoolMap &systemPool = static_cast<PUParticleSystem3D *>(particleSystem)->getEmittedSystemParticlePool();
     if (!systemPool.empty()){
-        for (auto iter : systemPool){
+        for (const auto& iter : systemPool){
             updateParticles(iter.second);
             needDraw = true;
         }
@@ -118,12 +119,12 @@ PURibbonTrailRender::~PURibbonTrailRender()
     destroyAll();
 }
 
-void PURibbonTrailRender::particleEmitted( PUParticleSystem3D* particleSystem, PUParticle3D* particle )
+void PURibbonTrailRender::particleEmitted( PUParticleSystem3D* /*particleSystem*/, PUParticle3D* /*particle*/ )
 {
     // Assigning visual data already done in _updateRenderQueue()
 }
 
-void PURibbonTrailRender::particleExpired( PUParticleSystem3D* particleSystem, PUParticle3D* particle )
+void PURibbonTrailRender::particleExpired( PUParticleSystem3D* /*particleSystem*/, PUParticle3D* particle )
 {
     if (particle->visualData)
     {
@@ -302,7 +303,7 @@ void PURibbonTrailRender::unPrepare()
     destroyAll();
 }
 
-void PURibbonTrailRender::updateRender( PUParticle3D *particle, float deltaTime, bool firstParticle )
+void PURibbonTrailRender::updateRender( PUParticle3D* /*particle*/, float deltaTime, bool firstParticle )
 {
     if (firstParticle && _trail)
         _trail->update(deltaTime);
@@ -404,7 +405,7 @@ void PURibbonTrailRender::updateParticles( const ParticlePool &pool )
 
             visualData->setVisible(true);
             visualData->index = _trail->getChainIndexForNode(node);
-            
+
             // Set the width of the trail if required
             if (particle->particleType == PUParticle3D::PT_VISUAL)
             {

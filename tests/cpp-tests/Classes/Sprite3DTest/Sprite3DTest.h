@@ -1,5 +1,6 @@
 /****************************************************************************
  Copyright (c) 2013 cocos2d-x.org
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -92,7 +93,7 @@ protected:
     void cylinderUpdate(float dt);
     
     float _cylinder_texture_offset;
-    float _shining_duraion;
+    float _shining_duration;
     cocos2d::GLProgramState * _state;
     
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID || CC_TARGET_PLATFORM == CC_PLATFORM_WINRT)
@@ -526,6 +527,7 @@ public:
     
 protected:
     cocos2d::Sprite3D* _sprite3d;
+    cocos2d::EventListenerCustom *_customEventListener = nullptr;
 };
 
 class Sprite3DTestMeshLight : public Sprite3DTestDemo
@@ -591,6 +593,7 @@ public:
     Sprite3DNormalMappingTest();
     virtual std::string title() const override;
     virtual std::string subtitle() const override;
+    virtual void update(float dt) override;
 
     virtual ~Sprite3DNormalMappingTest();
 };
@@ -613,6 +616,15 @@ protected:
     cocos2d::Sprite3D* _sprite;
     cocos2d::Texture2D* _meshTex;
     std::string _texFile;
+};
+
+class Issue16155Test : public Sprite3DTestDemo
+{
+public:
+    CREATE_FUNC(Issue16155Test);
+    Issue16155Test();
+    virtual std::string title() const override;
+    virtual std::string subtitle() const override;
 };
 
 #endif

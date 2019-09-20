@@ -1,5 +1,6 @@
 /****************************************************************************
- Copyright (c) 2014 Chukong Technologies Inc.
+ Copyright (c) 2014-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -83,11 +84,9 @@ public:
     Curve* getBoneCurveByName(const std::string& name) const;
     std::unordered_map<std::string, Curve*> const & getBoneCurves() const { return _boneCurves;}
     
-
 CC_CONSTRUCTOR_ACCESS:
     Animation3D();
     virtual ~Animation3D();  
-    /**init Animation3D from bundle data*/
     bool init(const Animation3DData& data);
     
     /**init Animation3D with file name and animation name*/

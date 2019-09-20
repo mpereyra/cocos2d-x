@@ -3,6 +3,7 @@ Copyright (c) 2008-2010 Ricardo Quesada
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2011      Zynga Inc.
 Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -55,7 +56,7 @@ NS_CC_BEGIN
  * @{
  */
 /*
-* From version 3.0, TextureCache will never to treated as a singleton, it will be owned by director.
+* From version 3.0, TextureCache will never be treated as a singleton, it will be owned by director.
 * All call by TextureCache::getInstance() should be replaced by Director::getInstance()->getTextureCache().
 */
 
@@ -88,6 +89,7 @@ public:
 
     // ETC1 ALPHA supports.
     static void setETC1AlphaFileSuffix(const std::string& suffix);
+    static std::string getETC1AlphaFileSuffix();
 
 public:
     /**
@@ -112,7 +114,7 @@ public:
     * Object and it will return it. It will use the filename as a key.
     * Otherwise it will return a reference of a previously loaded image.
     * Supported image extensions: .png, .bmp, .tiff, .jpeg, .pvr.
-     @param filepath A null terminated string.
+     @param filepath The file path.
     */
     Texture2D* addImage(const std::string &filepath);
 
@@ -121,12 +123,14 @@ public:
     * Otherwise it will load a texture in a new thread, and when the image is loaded, the callback will be called with the Texture2D as a parameter.
     * The callback will be called from the main thread, so it is safe to create any cocos2d object from the callback.
     * Supported image extensions: .png, .jpg
-     @param filepath A null terminated string.
+     @param filepath The file path.
      @param callback A callback function would be invoked after the image is loaded.
      @since v0.8
     */
     virtual void addImageAsync(const std::string &filepath, const std::function<void(Texture2D*)>& callback, Ref * const targ=nullptr);
     
+    void addImageAsync(const std::string &path, const std::function<void(Texture2D*)>& callback, const std::string& callbackKey );
+
     /** Unbind a specified bound image asynchronous callback.
      * In the case an object who was bound to an image asynchronous callback was destroyed before the callback is invoked,
      * the object always need to unbind this callback manually.
@@ -195,7 +199,7 @@ public:
     * @since v1.0
     */
     std::string getCachedTextureInfo() const;
-    
+
     /* BPC_PATCH */
     std::unordered_map<std::string, Texture2D*> getCachedTextures() const;
 
@@ -237,35 +241,35 @@ public:
                       Texture2D * const tex, std::string const &filename);
         AsyncCallback(AsyncCallback const &ac);
         ~AsyncCallback();
-        
+
         void operator ()();
-        
+
         Ref * getTarget() const
         { return target; }
-        
+
     private:
         AsyncCallback& operator =(AsyncCallback const &) /* = delete */;
-        
+
         Ref * const target;
         Func const selector;
         Texture2D * const texture;
         std::string const filename;
     };
-    
+
     struct AsyncStruct
     {
     public:
         using loadedCallback = std::function< void (Texture2D*)>;
         std::string filename;
         std::vector<std::pair<Ref * , loadedCallback>> requestorToCallbacks;
-        
+
         AsyncStruct(const std::string& fn, std::function<void(Texture2D*)> f, Ref * const targ) : filename(fn){
             if(targ){
                 targ->retain();
             }
             requestorToCallbacks.push_back({targ,f});
         }
-        
+
         ~AsyncStruct() {
             for(auto pair : requestorToCallbacks){
                 if(pair.first){
@@ -274,7 +278,7 @@ public:
             }
         }
 
-        
+
         void addRequestor(Ref * requestor, loadedCallback f){
             requestor->retain();
             requestorToCallbacks.push_back({requestor, f});
@@ -287,20 +291,18 @@ public:
         //std::function<void(Texture2D*)> callback;
         //Ref * const target {nullptr};
     };
-    
+
     /*** BPC Patch ***
      * Removes an asynchronous request for an image, should the target no longer care about it. */
     void removeAsyncImage(Ref * const target, std::string const & filename);
-    
+
     void pauseAsync();
     void resumeAsync();
-
 protected:
-    
     // BPC PATCH
     std::set<std::string> m_failedTextures;
     // END BPC PATCH
-    
+
     typedef struct _ImageInfo
     {
         AsyncStruct *asyncStruct;
@@ -309,7 +311,7 @@ protected:
         // BPC PATCH
         // need to keep texture alive if already in cache
         Texture2D   *foundTex = nullptr;
-        
+
         void setTexture(Texture2D   *foundTexIn){
             if (foundTexIn){
                 foundTex  = foundTexIn;
@@ -319,7 +321,7 @@ protected:
         ~_ImageInfo() {  CC_SAFE_RELEASE(foundTex); }
         // END BPC PATCH
     } ImageInfo;
-    
+
     std::thread* _loadingThread;
 
     std::deque<AsyncStruct*>* _asyncStructQueue = nullptr;
@@ -404,6 +406,7 @@ private:
     // find VolatileTexture by Texture2D*
     // if not found, create a new one
     static VolatileTexture* findVolotileTexture(Texture2D *tt);
+    static void reloadTexture(Texture2D* texture, const std::string& filename, Texture2D::PixelFormat pixelFormat);
 };
 
 #endif

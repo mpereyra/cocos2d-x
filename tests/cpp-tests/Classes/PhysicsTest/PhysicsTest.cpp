@@ -1,3 +1,27 @@
+/****************************************************************************
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ 
+ http://www.cocos2d-x.org
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ ****************************************************************************/
+
 #include "PhysicsTest.h"
 
 #if CC_USE_PHYSICS
@@ -104,7 +128,7 @@ Sprite* PhysicsDemo::addGrossiniAtPosition(Vec2 p, float scale/* = 1.0*/)
     return sp;
 }
 
-void PhysicsDemo::toggleDebugCallback(Ref* sender)
+void PhysicsDemo::toggleDebugCallback(Ref* /*sender*/)
 {
     toggleDebug();
 }
@@ -114,7 +138,7 @@ namespace
     const int LOGO_WIDTH = 188;
     const int LOGO_HEIGHT = 35;
     const int LOGO_RAW_LENGTH = 24;
-    const char LOGO_IMAGE[] =
+    const int LOGO_IMAGE[] =
     {
         15, -16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, -64, 15, 63, -32, -2, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 31, -64, 15, 127, -125, -1, -128, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -267,7 +291,7 @@ bool PhysicsDemo::onTouchBegan(Touch* touch, Event* event)
     return false;
 }
 
-void PhysicsDemo::onTouchMoved(Touch* touch, Event* event)
+void PhysicsDemo::onTouchMoved(Touch* touch, Event* /*event*/)
 {
     auto it = _mouses.find(touch->getID());
     
@@ -277,7 +301,7 @@ void PhysicsDemo::onTouchMoved(Touch* touch, Event* event)
     }
 }
 
-void PhysicsDemo::onTouchEnded(Touch* touch, Event* event)
+void PhysicsDemo::onTouchEnded(Touch* touch, Event* /*event*/)
 {
     auto it = _mouses.find(touch->getID());
     
@@ -367,7 +391,7 @@ std::string PhysicsDemoClickAdd::subtitle() const
     return "multi touch to add grossini";
 }
 
-void PhysicsDemoClickAdd::onTouchesEnded(const std::vector<Touch*>& touches, Event* event)
+void PhysicsDemoClickAdd::onTouchesEnded(const std::vector<Touch*>& touches, Event* /*event*/)
 {
     //Add a new body/atlas sprite at the touched location
     
@@ -379,7 +403,7 @@ void PhysicsDemoClickAdd::onTouchesEnded(const std::vector<Touch*>& touches, Eve
     }
 }
 
-void PhysicsDemoClickAdd::onAcceleration(Acceleration* acc, Event* event)
+void PhysicsDemoClickAdd::onAcceleration(Acceleration* acc, Event* /*event*/)
 {
     static float prevX=0, prevY=0;
     
@@ -433,7 +457,7 @@ void PhysicsDemoPyramidStack::onEnter()
     }
 }
 
-void PhysicsDemoPyramidStack::updateOnce(float delta)
+void PhysicsDemoPyramidStack::updateOnce(float /*delta*/)
 {
     auto ball = getChildByTag(100);
     if (ball)
@@ -497,13 +521,13 @@ void PhysicsDemoRayCast::changeModeCallback(Ref* sender)
     }
 }
 
-bool PhysicsDemoRayCast::anyRay(PhysicsWorld& world, const PhysicsRayCastInfo& info, void* data)
+bool PhysicsDemoRayCast::anyRay(PhysicsWorld& /*world*/, const PhysicsRayCastInfo& info, void* data)
 {
     *((Vec2*)data) = info.contact;
     return false;
 }
 
-void PhysicsDemoRayCast::update(float delta)
+void PhysicsDemoRayCast::update(float /*delta*/)
 {
     float L = 150.0f;
     Vec2 point1 = VisibleRect::center();
@@ -534,7 +558,7 @@ void PhysicsDemoRayCast::update(float delta)
         {
             Vec2 point3 = point2;
             float friction = 1.0f;
-            PhysicsRayCastCallbackFunc func = [&point3, &friction](PhysicsWorld& world, const PhysicsRayCastInfo& info, void* data)->bool
+            PhysicsRayCastCallbackFunc func = [&point3, &friction](PhysicsWorld& /*world*/, const PhysicsRayCastInfo& info, void* /*data*/)->bool
             {
                 if (friction > info.fraction)
                 {
@@ -562,7 +586,7 @@ void PhysicsDemoRayCast::update(float delta)
             Vec2 points[MAX_MULTI_RAYCAST_NUM];
             int num = 0;
             
-            PhysicsRayCastCallbackFunc func = [&points, &num](PhysicsWorld& world, const PhysicsRayCastInfo& info, void* data)->bool
+            PhysicsRayCastCallbackFunc func = [&points, &num](PhysicsWorld& /*world*/, const PhysicsRayCastInfo& info, void* /*data*/)->bool
             {
                 if (num < MAX_MULTI_RAYCAST_NUM)
                 {
@@ -593,7 +617,7 @@ void PhysicsDemoRayCast::update(float delta)
     _angle += 0.25f * (float)M_PI / 180.0f;
 }
 
-void PhysicsDemoRayCast::onTouchesEnded(const std::vector<Touch*>& touches, Event* event)
+void PhysicsDemoRayCast::onTouchesEnded(const std::vector<Touch*>& touches, Event* /*event*/)
 {
     //Add a new body/atlas sprite at the touched location
     
@@ -1132,7 +1156,7 @@ void PhysicsDemoSlice::onEnter()
     _sliceTag = 1;
     
     auto touchListener = EventListenerTouchOneByOne::create();
-    touchListener->onTouchBegan = [](Touch* touch, Event* event)->bool{ return true; };
+    touchListener->onTouchBegan = [](Touch* /*touch*/, Event* /*event*/)->bool{ return true; };
     touchListener->onTouchEnded = CC_CALLBACK_2(PhysicsDemoSlice::onTouchEnded, this);
     _eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
     
@@ -1148,7 +1172,7 @@ void PhysicsDemoSlice::onEnter()
     addChild(box);
 }
 
-bool PhysicsDemoSlice::slice(PhysicsWorld &world, const PhysicsRayCastInfo& info, void *data)
+bool PhysicsDemoSlice::slice(PhysicsWorld &/*world*/, const PhysicsRayCastInfo& info, void* /*data*/)
 {
     if (info.shape->getBody()->getTag() != _sliceTag)
     {
@@ -1201,18 +1225,18 @@ void PhysicsDemoSlice::clipPoly(PhysicsShapePolygon* shape, Vec2 normal, float d
     
     Vec2 center = PhysicsShape::getPolygonCenter(points, pointsCount);
     Node* node = Node::create();
-    PhysicsBody* polyon = PhysicsBody::createPolygon(points, pointsCount, PHYSICSBODY_MATERIAL_DEFAULT, -center);
+    PhysicsBody* polygon = PhysicsBody::createPolygon(points, pointsCount, PHYSICSBODY_MATERIAL_DEFAULT, -center);
     node->setPosition(center);
-    node->addComponent(polyon);
-    polyon->setVelocity(body->getVelocityAtWorldPoint(center));
-    polyon->setAngularVelocity(body->getAngularVelocity());
-    polyon->setTag(_sliceTag);
+    node->addComponent(polygon);
+    polygon->setVelocity(body->getVelocityAtWorldPoint(center));
+    polygon->setAngularVelocity(body->getAngularVelocity());
+    polygon->setTag(_sliceTag);
     addChild(node);
     
     delete[] points;
 }
 
-void PhysicsDemoSlice::onTouchEnded(Touch *touch, Event *event)
+void PhysicsDemoSlice::onTouchEnded(Touch *touch, Event* /*event*/)
 {
     auto func = CC_CALLBACK_3(PhysicsDemoSlice::slice, this);
     getPhysicsWorld()->rayCast(func, touch->getStartLocation(), touch->getLocation(), nullptr);
@@ -1504,7 +1528,6 @@ bool PhysicsContactTest::onContactBegin(PhysicsContact& contact)
     PhysicsBody* a = contact.getShapeA()->getBody();
     PhysicsBody* b = contact.getShapeB()->getBody();
     PhysicsBody* body = (a->getCategoryBitmask() == 0x04 || a->getCategoryBitmask() == 0x08) ? a : b;
-    CC_UNUSED_PARAM(body);
     CC_ASSERT(body->getCategoryBitmask() == 0x04 || body->getCategoryBitmask() == 0x08);
     
     return true;
@@ -1598,6 +1621,7 @@ void PhysicsSetGravityEnableTest::onEnter()
     // common box
     auto commonBox = makeBox(Vec2(100, 100), Size(50, 50), 1);
     commonBox->getPhysicsBody()->setTag(DRAG_BODYS_TAG);
+    commonBox->getPhysicsBody()->setGravityEnable(true);
     addChild(commonBox);
     
     auto box = makeBox(Vec2(200, 100), Size(50, 50), 2);
@@ -1618,12 +1642,12 @@ void PhysicsSetGravityEnableTest::onEnter()
     scheduleOnce(CC_SCHEDULE_SELECTOR(PhysicsSetGravityEnableTest::onScheduleOnce), 1.0);
 }
 
-void PhysicsSetGravityEnableTest::onScheduleOnce(float delta)
+void PhysicsSetGravityEnableTest::onScheduleOnce(float /*delta*/)
 {
     auto ball = getChildByTag(2);
     ball->getPhysicsBody()->setMass(200);
     
-    _physicsWorld->setGravity(Vec2(0, 98));
+    _physicsWorld->setGravity(Vec2(0, -98));
 }
 
 std::string PhysicsSetGravityEnableTest::title() const
@@ -1682,9 +1706,18 @@ void PhysicsDemoBug5482::onExit()
     _body->release();
 }
 
-void PhysicsDemoBug5482::changeBodyCallback(Ref* sender)
+void PhysicsDemoBug5482::changeBodyCallback(Ref* /*sender*/)
 {
     Sprite* node = _bodyInA ? _nodeB : _nodeA;
+    if (_bodyInA)
+    {
+        _button->setString("Set Body To A");
+    }
+    else
+    {
+        _button->setString("Set Body To B");
+    }
+
     if (_body->getOwner())
     {
         _body->getOwner()->removeComponent(_body);
@@ -1707,7 +1740,7 @@ void PhysicsFixedUpdate::onEnter()
 {
     PhysicsDemo::onEnter();
     
-    _physicsWorld->setDebugDrawMask(PhysicsWorld::DEBUGDRAW_ALL);
+    toggleDebug();
     _physicsWorld->setGravity(Point::ZERO);
     
     // wall
@@ -1732,14 +1765,14 @@ void PhysicsFixedUpdate::addBall()
     this->addChild(ball);
 }
 
-void PhysicsFixedUpdate::updateStart(float delta)
+void PhysicsFixedUpdate::updateStart(float /*delta*/)
 {
     addBall();
     
     _physicsWorld->setFixedUpdateRate(180);
 }
 
-void PhysicsFixedUpdate::update(float delta)
+void PhysicsFixedUpdate::update(float /*delta*/)
 {
     
     // use fixed time and calculate 3 times per frame makes physics simulate more precisely.
@@ -1756,10 +1789,10 @@ std::string PhysicsFixedUpdate::title() const
 
 std::string PhysicsFixedUpdate::subtitle() const
 {
-    return "The secend ball should not run across the wall";
+    return "The second ball should not run across the wall";
 }
 
-bool PhysicsTransformTest::onTouchBegan(Touch *touch, Event *event)
+bool PhysicsTransformTest::onTouchBegan(Touch *touch, Event* /*event*/)
 {
     _parentSprite->setPosition(_rootLayer->convertTouchToNodeSpace(touch));
     return false;
