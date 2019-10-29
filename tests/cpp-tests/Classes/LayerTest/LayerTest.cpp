@@ -132,7 +132,7 @@ void LayerTestCascadingOpacityB::onEnter()
     auto layer1 = LayerColor::create(Color4B(192, 0, 0, 255), s.width, s.height/2);
     layer1->setCascadeColorEnabled(false);
     
-    layer1->setPosition( Vec2(0, s.height/2));
+    layer1->setPosition( Vec2(0.0f, s.height/2));
     
     auto sister1 = Sprite::create("Images/grossinis_sister1.png");
     auto sister2 = Sprite::create("Images/grossinis_sister2.png");
@@ -143,9 +143,9 @@ void LayerTestCascadingOpacityB::onEnter()
     layer1->addChild(label);
     this->addChild( layer1, 0, kTagLayer);
     
-    sister1->setPosition( Vec2( s.width*1/3, 0));
-    sister2->setPosition( Vec2( s.width*2/3, 0));
-    label->setPosition( Vec2( s.width/2, 0));
+    sister1->setPosition( Vec2( s.width*1/3, 0.0f));
+    sister2->setPosition( Vec2( s.width*2/3, 0.0f));
+    label->setPosition( Vec2( s.width/2, 0.0f));
     
     layer1->runAction(
      RepeatForever::create(
@@ -185,7 +185,7 @@ void LayerTestCascadingOpacityC::onEnter()
     layer1->setCascadeColorEnabled(false);
     layer1->setCascadeOpacityEnabled(false);
     
-    layer1->setPosition( Vec2(0, s.height/2));
+    layer1->setPosition( Vec2(0.0f, s.height/2));
     
     auto sister1 = Sprite::create("Images/grossinis_sister1.png");
     auto sister2 = Sprite::create("Images/grossinis_sister2.png");
@@ -196,9 +196,9 @@ void LayerTestCascadingOpacityC::onEnter()
     layer1->addChild(label);
     this->addChild( layer1, 0, kTagLayer);
     
-    sister1->setPosition( Vec2( s.width*1/3, 0));
-    sister2->setPosition( Vec2( s.width*2/3, 0));
-    label->setPosition( Vec2( s.width/2, 0));
+    sister1->setPosition( Vec2( s.width*1/3, 0.0f));
+    sister2->setPosition( Vec2( s.width*2/3, 0.0f));
+    label->setPosition( Vec2( s.width/2, 0.0f));
     
     layer1->runAction(
      RepeatForever::create(
@@ -286,7 +286,7 @@ void LayerTestCascadingColorB::onEnter()
     auto s = Director::getInstance()->getWinSize();
     auto layer1 = LayerColor::create(Color4B(255, 255, 255, 255), s.width, s.height/2);
     
-    layer1->setPosition( Vec2(0, s.height/2));
+    layer1->setPosition( Vec2(0.0f, s.height/2));
     
     auto sister1 = Sprite::create("Images/grossinis_sister1.png");
     auto sister2 = Sprite::create("Images/grossinis_sister2.png");
@@ -297,9 +297,9 @@ void LayerTestCascadingColorB::onEnter()
     layer1->addChild(label);
     this->addChild( layer1, 0, kTagLayer);
     
-    sister1->setPosition( Vec2( s.width*1/3, 0));
-    sister2->setPosition( Vec2( s.width*2/3, 0));
-    label->setPosition( Vec2( s.width/2, 0));
+    sister1->setPosition( Vec2( s.width*1/3, 0.0f));
+    sister2->setPosition( Vec2( s.width*2/3, 0.0f));
+    label->setPosition( Vec2( s.width/2, 0.0f));
     
     layer1->runAction(
      RepeatForever::create(
@@ -338,7 +338,7 @@ void LayerTestCascadingColorC::onEnter()
     auto s = Director::getInstance()->getWinSize();
     auto layer1 = LayerColor::create(Color4B(255, 255, 255, 255), s.width, s.height/2);
     layer1->setCascadeColorEnabled(false);
-    layer1->setPosition( Vec2(0, s.height/2));
+    layer1->setPosition( Vec2(0.0f, s.height/2));
     
     auto sister1 = Sprite::create("Images/grossinis_sister1.png");
     auto sister2 = Sprite::create("Images/grossinis_sister2.png");
@@ -349,9 +349,9 @@ void LayerTestCascadingColorC::onEnter()
     layer1->addChild(label);
     this->addChild( layer1, 0, kTagLayer);
     
-    sister1->setPosition( Vec2( s.width*1/3, 0));
-    sister2->setPosition( Vec2( s.width*2/3, 0));
-    label->setPosition( Vec2( s.width/2, 0));
+    sister1->setPosition( Vec2( s.width*1/3, 0.0f));
+    sister2->setPosition( Vec2( s.width*2/3, 0.0f));
+    label->setPosition( Vec2( s.width/2, 0.0f));
     
     layer1->runAction(
      RepeatForever::create(
@@ -500,18 +500,18 @@ void LayerTestBlend::newBlend(float dt)
 {
      auto layer = (LayerColor*)getChildByTag(kTagLayer);
 
-    GLenum src;
-    GLenum dst;
+     backend::BlendFactor src;
+     backend::BlendFactor dst;
 
-    if( layer->getBlendFunc().dst == GL_ZERO )
+    if( layer->getBlendFunc().dst == backend::BlendFactor::ZERO )
     {
-        src = GL_SRC_ALPHA;
-        dst = GL_ONE_MINUS_SRC_ALPHA;
+        src = backend::BlendFactor::SRC_ALPHA;
+        dst = backend::BlendFactor::ONE_MINUS_SRC_ALPHA;
     }
     else
     {
-        src = GL_ONE_MINUS_DST_COLOR;
-        dst = GL_ZERO;
+        src = backend::BlendFactor::ONE_MINUS_DST_COLOR;
+        dst = backend::BlendFactor::ZERO;
     }
 
     BlendFunc bf = {src, dst};
@@ -547,7 +547,7 @@ LayerGradientTest::LayerGradientTest()
     auto menu = Menu::create(item, nullptr);
     addChild(menu);
     auto s = Director::getInstance()->getWinSize();
-    menu->setPosition(Vec2(s.width / 2, 100));
+    menu->setPosition(Vec2(s.width / 2, 100.0f));
 }
 
 void LayerGradientTest::toggleItem(Ref *sender)
@@ -754,18 +754,18 @@ std::string LayerIgnoreAnchorPointScale::subtitle() const
 LayerExtendedBlendOpacityTest::LayerExtendedBlendOpacityTest()
 {
     auto layer1 = LayerGradient::create(Color4B(255, 0, 0, 255), Color4B(255, 0, 255, 255));
-    layer1->setContentSize(Size(80, 80));
-    layer1->setPosition(Vec2(50,50));
+    layer1->setContentSize(Size(80.0f, 80.0f));
+    layer1->setPosition(Vec2(50.0f,50.0f));
     addChild(layer1);
     
     auto layer2 = LayerGradient::create(Color4B(0, 0, 0, 127), Color4B(255, 255, 255, 127));
-    layer2->setContentSize(Size(80, 80));
-    layer2->setPosition(Vec2(100,90));
+    layer2->setContentSize(Size(80.0f, 80.0f));
+    layer2->setPosition(Vec2(100.0f,90.0f));
     addChild(layer2);
     
     auto layer3 = LayerGradient::create();
-    layer3->setContentSize(Size(80, 80));
-    layer3->setPosition(Vec2(150,140));
+    layer3->setContentSize(Size(80.0f, 80.0f));
+    layer3->setPosition(Vec2(150.0f,140.0f));
     layer3->setStartColor(Color3B(255, 0, 0));
     layer3->setEndColor(Color3B(255, 0, 255));
     layer3->setStartOpacity(255);
@@ -798,7 +798,7 @@ void LayerBug3162A::onEnter()
     {
         _layer[i] = LayerColor::create(color[i]);
         _layer[i]->setContentSize(size);
-        _layer[i]->setPosition(Vec2(size.width/2, size.height/2) - Vec2(20, 20));
+        _layer[i]->setPosition(Vec2(size.width/2, size.height/2) - Vec2(20.0f, 20.0f));
         _layer[i]->setOpacity(150);
         _layer[i]->setCascadeOpacityEnabled(true);
         if (i > 0)
@@ -841,7 +841,7 @@ void LayerBug3162B::onEnter()
     {
         _layer[i] = LayerColor::create(color[i]);
         _layer[i]->setContentSize(size);
-        _layer[i]->setPosition(Vec2(size.width/2, size.height/2) - Vec2(20, 20));
+        _layer[i]->setPosition(Vec2(size.width/2, size.height/2) - Vec2(20.0f, 20.0f));
         //_layer[i]->setOpacity(150);
         if (i > 0)
         {
@@ -886,7 +886,7 @@ std::string LayerColorOccludeBug::subtitle() const
 void LayerColorOccludeBug::onEnter()
 {
     LayerTest::onEnter();
-    Director::getInstance()->setDepthTest(true);
+    Director::getInstance()->getRenderer()->setDepthTest(true);
     _layer = LayerColor::create(Color4B(0, 80, 95, 255));
     addChild(_layer);
 }
@@ -894,7 +894,168 @@ void LayerColorOccludeBug::onEnter()
 void LayerColorOccludeBug::onExit()
 {
     LayerTest::onExit();
-    Director::getInstance()->setDepthTest(false);
+    Director::getInstance()->getRenderer()->setDepthTest(false);
+}
+
+// LayerRadialGradient
+
+std::string LayerRadialGradientTest::title() const
+{
+    return "LayerRadialGradient test";
+}
+
+void LayerRadialGradientTest::onEnter()
+{
+    LayerTest::onEnter();
+    
+    _currentSeletedItemIndex = 0;
+    
+    auto director = Director::getInstance();
+    director->setClearColor(Color4F(0, 0, 0, 0));
+    auto origin = director->getVisibleOrigin();
+    auto size = director->getVisibleSize();
+    Vec2 center(origin.x + size.width/2 + 50, origin.y + size.height/2);
+    float radius = (size.height - 50) / 2;
+    _layer = LayerRadialGradient::create(Color4B(145, 106, 209, 140), Color4B(0, 0, 0, 0), radius, center, 1.0f);
+    addChild(_layer);
+    
+    auto scaleSlider = LayerRadialGradientTest::createSlider();
+    scaleSlider->setPosition(Vec2(50.0f, 130.0f));
+    addChild(scaleSlider);
+    
+    auto listview = createListView();
+    listview->setPosition(Vec2(100.0f, 150.0f));
+    addChild(listview);
+}
+
+cocos2d::ui::Slider* LayerRadialGradientTest::createSlider()
+{
+    auto slider = ui::Slider::create();
+    slider->setTouchEnabled(true);
+    slider->loadBarTexture("cocosui/sliderTrack.png");
+    slider->loadSlidBallTextures("cocosui/sliderThumb.png", "cocosui/sliderThumb.png", "");
+    slider->loadProgressBarTexture("cocosui/sliderProgress.png");
+    slider->addEventListener(CC_CALLBACK_2(LayerRadialGradientTest::sliderCallback, this));
+    slider->setRotation(90);
+    slider->setTag(101);
+    slider->setPercent(50);
+    
+    return slider;
+}
+
+void LayerRadialGradientTest::listviewCallback(cocos2d::Ref* sender, cocos2d::ui::ListView::EventType type)
+{
+    // clear all text to white
+    auto listview = static_cast<cocos2d::ui::ListView*>(sender);
+    for (auto &item : listview->getItems())
+        static_cast<cocos2d::ui::Text*>(item)->setColor(cocos2d::Color3B::WHITE);
+    
+    _currentSeletedItemIndex = (int)listview->getCurSelectedIndex();
+    listview->getItem(_currentSeletedItemIndex)->setColor(cocos2d::Color3B::RED);
+    
+    int percent = 100;
+    auto slider = static_cast<cocos2d::ui::Slider*>(getChildByTag(101));
+    switch (_currentSeletedItemIndex)
+    {
+        case 0:
+            // scale
+             slider->setPercent(_layer->getScaleX() / 2 * percent);
+            break;
+        case 1:
+            // skewx
+            slider->setPercent(_layer->getSkewX() / 90 * percent);
+            break;
+        case 2:
+            // skewy
+            slider->setPercent(_layer->getSkewY() / 90 * percent);
+            break;
+        case 3:
+            // expand
+            slider->setPercent(_layer->getExpand() * percent);
+            break;
+        case 4:
+            // radius
+            slider->setPercent(_layer->getRadius() / 300 * percent);
+            break;
+            
+        default:
+            break;
+    }
+}
+
+void LayerRadialGradientTest::sliderCallback(cocos2d::Ref* sender, cocos2d::ui::Slider::EventType type)
+{
+    auto slider = static_cast<cocos2d::ui::Slider*>(sender);
+    float percent = slider->getPercent() / 100.f;
+    switch (_currentSeletedItemIndex)
+    {
+        case 0:
+            // scale
+            _layer->setScale(percent * 2);
+            CCLOG("scale is %f", percent * 2);
+            break;
+        case 1:
+            // skewx
+            _layer->setSkewX(90 * percent);
+            CCLOG("SkewX is %f", 90 * percent);
+            break;
+        case 2:
+            // skewy
+            _layer->setSkewY(90 * percent);
+            CCLOG("SkewY is %f", 90 * percent);
+            break;
+        case 3:
+            // expand
+            _layer->setExpand(percent);
+            CCLOG("expand is %f", percent);
+            break;
+        case 4:
+            // radius
+            _layer->setRadius(300 * percent);
+            CCLOG("radius is %f", 300 * percent);
+            break;
+        default:
+            break;
+    }
+}
+
+cocos2d::ui::ListView* LayerRadialGradientTest::createListView()
+{
+    auto listview = cocos2d::ui::ListView::create();
+    
+    auto scale = cocos2d::ui::Text::create();
+    scale->setString("scale[0-2]");
+    scale->setColor(cocos2d::Color3B::RED); // default seleted item
+    scale->setTouchEnabled(true);
+    listview->pushBackCustomItem(scale);
+    
+    auto skewx = cocos2d::ui::Text::create();
+    skewx->setString("skewx[0-90]");
+    skewx->setTouchEnabled(true);
+    listview->pushBackCustomItem(skewx);
+    
+    auto skewy = cocos2d::ui::Text::create();
+    skewy->setString("skewy[0-90]");
+    skewy->setTouchEnabled(true);
+    listview->pushBackCustomItem(skewy);
+    
+    auto expand = cocos2d::ui::Text::create();
+    expand->setString("expand[0-1]");
+    expand->setTouchEnabled(true);
+    listview->pushBackCustomItem(expand);
+    
+    auto radius = cocos2d::ui::Text::create();
+    radius->setString("radius[0-300]");
+    radius->setTouchEnabled(true);
+    listview->pushBackCustomItem(radius);
+    
+    listview->setContentSize(scale->getContentSize() * 5);
+    listview->setCurSelectedIndex(0);
+    listview->setTouchEnabled(true);
+    listview->addEventListener((ui::ListView::ccListViewCallback)CC_CALLBACK_2(LayerRadialGradientTest::listviewCallback, this));
+    listview->setTag(100);
+    
+    return listview;
 }
 
 // LayerRadialGradient

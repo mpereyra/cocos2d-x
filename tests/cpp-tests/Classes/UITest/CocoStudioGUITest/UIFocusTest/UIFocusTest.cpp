@@ -94,7 +94,7 @@ bool UIFocusTestBase::init()
         
         _toggleButton = Button::create("cocosui/switch-mask.png");
         _toggleButton->setTitleText("Toggle Loop");
-        _toggleButton->setPosition(VisibleRect::leftTop() + Vec2(60, -50));
+        _toggleButton->setPosition(Vec2(60.0f, winSize.height - 50));
         _toggleButton->setTitleColor(Color3B::RED);
         _toggleButton->setFocusEnabled(false);
         this->addChild(_toggleButton);
@@ -181,7 +181,7 @@ bool UIFocusTestHorizontal::init()
     if (UIFocusTestBase::init()) {
 
         _horizontalLayout = HBox::create();
-        _horizontalLayout->setPosition(VisibleRect::left() + Vec2(20, 40));
+        _horizontalLayout->setPosition(Vec2(20.0f, winSize.height/2 + 40));
         _uiLayer->addChild(_horizontalLayout);
 
         _horizontalLayout->setFocused(true);
@@ -489,8 +489,7 @@ bool UIFocusTestNestedLayout3::init()
     if (UIFocusTestBase::init()) {
 
         _verticalLayout = VBox::create();
-        _verticalLayout->setPosition(VisibleRect::leftTop() + Vec2(40, -70));
-
+        _verticalLayout->setPosition(Vec2(40.0f, winSize.height - 70));
         _uiLayer->addChild(_verticalLayout);
         _verticalLayout->setScale(0.8f);
 
@@ -505,10 +504,10 @@ bool UIFocusTestNestedLayout3::init()
         _verticalLayout->addChild(upperHBox);
 
         LinearLayoutParameter *params = LinearLayoutParameter::create();
-        params->setMargin(Margin(0,0,50,0));
+        params->setMargin(Margin(0.0f,0.0f,50.0f,0.0f));
 
         LinearLayoutParameter *vparams = LinearLayoutParameter::create();
-        vparams->setMargin(Margin(10, 0, 0, 140));
+        vparams->setMargin(Margin(10.0f, 0.0f, 0.0f, 140.0f));
         upperHBox->setLayoutParameter(vparams);
 
         int count = 3;
@@ -538,7 +537,7 @@ bool UIFocusTestNestedLayout3::init()
         bottomHBox->setLayoutParameter(vparams);
         count = 3;
         LinearLayoutParameter *bottomParams = LinearLayoutParameter::create();
-        bottomParams->setMargin(Margin(0, 0, 8, 0));
+        bottomParams->setMargin(Margin(0.0f, 0.0f, 8.0f, 0.0f));
         for (int i=0; i < count; ++i) {
             ImageView *w = ImageView::create("cocosui/scrollviewbg.png");
             w->setLayoutParameter(bottomParams);

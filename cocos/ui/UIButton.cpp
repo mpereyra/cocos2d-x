@@ -180,6 +180,25 @@ Label* Button::getTitleLabel() const
     return _titleRenderer;
 }
 
+/** replaces the current Label node with a new one */
+void Button::setTitleLabel(Label* label)
+{
+    if (_titleRenderer != label) {
+        CC_SAFE_RELEASE(_titleRenderer);
+        _titleRenderer = label;
+        CC_SAFE_RETAIN(_titleRenderer);
+
+        addProtectedChild(_titleRenderer, TITLE_RENDERER_Z, -1);
+        updateTitleLocation();
+    }
+}
+
+/** returns the current Label being used */
+Label* Button::getTitleLabel() const
+{
+    return _titleRenderer;
+}
+
 void Button::setScale9Enabled(bool able)
 {
     if (_scale9Enabled == able)

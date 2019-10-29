@@ -2,8 +2,6 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion PROP_COMPILE_SDK_VERSION.toInteger()
-    compileSdkVersion 28
-    buildToolsVersion '28.0.3'
 
     defaultConfig {
         minSdkVersion PROP_MIN_SDK_VERSION

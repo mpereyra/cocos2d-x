@@ -81,6 +81,8 @@ public:
 
     virtual Rect getSafeAreaRect() const override;
 
+    virtual Rect getSafeAreaRect() const override;
+
 protected:
     GLViewImpl();
     virtual ~GLViewImpl();

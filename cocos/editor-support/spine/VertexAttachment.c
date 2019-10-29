@@ -38,6 +38,13 @@ void _spVertexAttachment_init (spVertexAttachment* attachment) {
 	attachment->id = (nextID++ & 65535) << 11;
 }
 
+/* FIXME this is not thread-safe */
+static int nextID = 0;
+
+void _spVertexAttachment_init (spVertexAttachment* attachment) {
+	attachment->id = (nextID++ & 65535) << 11;
+}
+
 void _spVertexAttachment_deinit (spVertexAttachment* attachment) {
 	_spAttachment_deinit(SUPER(attachment));
 	FREE(attachment->bones);

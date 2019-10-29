@@ -44,7 +44,10 @@ public:
     virtual std::string subtitle() const override;
     void onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event* event);
     void clearImage(cocos2d::Ref* pSender);
-    void saveImage(cocos2d::Ref* pSender);
+    void clearImageTransparent(cocos2d::Ref* sender);
+    void saveImageWithPremultipliedAlpha(cocos2d::Ref* pSender);
+    void saveImageWithNonPremultipliedAlpha(cocos2d::Ref* pSender);
+    void addImage(cocos2d::Ref* sender);
 
 private:
     cocos2d::RenderTexture* _target;
@@ -98,7 +101,7 @@ public:
     virtual std::string subtitle() const override;
     virtual void draw(cocos2d::Renderer* renderer, const cocos2d::Mat4& transform, uint32_t flags) override;
 private:
-    cocos2d::CustomCommand _renderCmds[4];
+    cocos2d::CallbackCommand _renderCmds[4];
     void onBeforeClear();
     void onBeforeStencil();
     void onBeforeDraw();
@@ -173,10 +176,25 @@ public:
     Issue16113Test();
     virtual std::string title() const override;
     virtual std::string subtitle() const override;
+};
+
+class RenderTextureWithSprite3DIssue16894 : public RenderTextureTest
+{
+public:
+    CREATE_FUNC(RenderTextureWithSprite3DIssue16894);
+    RenderTextureWithSprite3DIssue16894();
+    virtual ~RenderTextureWithSprite3DIssue16894();
+
+    virtual void visit(cocos2d::Renderer *renderer, const cocos2d::Mat4& parentTransform, uint32_t parentFlags) override;
+
+    virtual std::string title() const override;
+    virtual std::string subtitle() const override;
 
 private:
-    cocos2d::RenderTexture* _rend;
-    cocos2d::Sprite* _spriteDraw;
+    cocos2d::Sprite3D* _ship[3];
+
+    cocos2d::RenderTexture* _renderTexDefault;
+    cocos2d::RenderTexture* _renderTexWithBuffer;
 };
 
 class RenderTextureWithSprite3DIssue16894 : public RenderTextureTest

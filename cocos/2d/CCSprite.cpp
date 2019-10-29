@@ -25,7 +25,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-
 #include "2d/CCSprite.h"
 
 #include <algorithm>
@@ -40,6 +39,10 @@ THE SOFTWARE.
 #include "base/CCDirector.h"
 #include "base/ccUTF8.h"
 #include "2d/CCCamera.h"
+#include "platform/CCFileUtils.h"
+#include "renderer/ccShaders.h"
+#include "renderer/backend/ProgramState.h"
+#include "renderer/backend/Device.h"
 
 NS_CC_BEGIN
 
@@ -144,7 +147,10 @@ Sprite* Sprite::create()
 bool Sprite::init()
 {
     initWithTexture(nullptr, Rect::ZERO);
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4
     return true;
 }
 
@@ -153,9 +159,8 @@ bool Sprite::initWithTexture(Texture2D *texture)
     CCASSERT(texture != nullptr, "Invalid texture for sprite");
 
     Rect rect = Rect::ZERO;
-    if (texture) {
+    if (texture)
         rect.size = texture->getContentSize();
-    }
 
     return initWithTexture(texture, rect, false);
 }
@@ -174,7 +179,6 @@ bool Sprite::initWithFile(const std::string& filename)
     }
 
     _fileName = filename;
-    _fileType = 0;
 
     Texture2D *texture = _director->getTextureCache()->addImage(filename);
     if (texture)
@@ -194,18 +198,17 @@ bool Sprite::initWithFile(const std::string &filename, const Rect& rect)
 {
     CCASSERT(!filename.empty(), "Invalid filename");
     if (filename.empty())
-    {
         return false;
+<<<<<<< HEAD
     }
+=======
+>>>>>>> v4
 
     _fileName = filename;
-    _fileType = 0;
 
     Texture2D *texture = _director->getTextureCache()->addImage(filename);
     if (texture)
-    {
         return initWithTexture(texture, rect);
-    }
 
     // don't release here.
     // when load texture failed, it's better to get a "transparent" sprite then a crashed program
@@ -217,9 +220,11 @@ bool Sprite::initWithSpriteFrameName(const std::string& spriteFrameName)
 {
     CCASSERT(!spriteFrameName.empty(), "Invalid spriteFrameName");
     if (spriteFrameName.empty())
-    {
         return false;
+<<<<<<< HEAD
     }
+=======
+>>>>>>> v4
 
     _fileName = spriteFrameName;
     _fileType = 1;
@@ -232,9 +237,11 @@ bool Sprite::initWithSpriteFrame(SpriteFrame *spriteFrame)
 {
     CCASSERT(spriteFrame != nullptr, "spriteFrame can't be nullptr!");
     if (spriteFrame == nullptr)
-    {
         return false;
+<<<<<<< HEAD
     }
+=======
+>>>>>>> v4
 
     bool ret = initWithTexture(spriteFrame->getTexture(), spriteFrame->getRect(), spriteFrame->isRotated());
     setSpriteFrame(spriteFrame);
@@ -269,10 +276,13 @@ bool Sprite::initWithTexture(Texture2D *texture, const Rect& rect, bool rotated)
         _recursiveDirty = false;
         setDirty(false);
 
+<<<<<<< HEAD
         _opacityModifyRGB = true;
 
         _blendFunc = BlendFunc::ALPHA_PREMULTIPLIED;
 
+=======
+>>>>>>> v4
         _flippedX = _flippedY = false;
 
         // default transform anchor: center
@@ -307,6 +317,7 @@ bool Sprite::initWithTexture(Texture2D *texture, const Rect& rect, bool rotated)
 }
 
 Sprite::Sprite()
+<<<<<<< HEAD
 : _textureAtlas(nullptr)
 , _batchNode(nullptr)
 , _shouldBeHidden(false)
@@ -320,6 +331,8 @@ Sprite::Sprite()
 , _trianglesIndex(nullptr)
 , _insideBounds(true)
 , _stretchEnabled(true)
+=======
+>>>>>>> v4
 {
 #if CC_SPRITE_DEBUG_DRAW
     _debugDrawNode = DrawNode::create();
@@ -368,20 +381,94 @@ void Sprite::setTexture(const std::string &filename)
     Rect rect = Rect::ZERO;
     if (texture)
         rect.size = texture->getContentSize();
+
     setTextureRect(rect);
 }
 
-void Sprite::setTexture(Texture2D *texture)
+void Sprite::setVertexLayout()
 {
+    //set vertexLayout according to V3F_C4B_T2F structure
+    //auto& vertexLayout = _trianglesCommand.getPipelineDescriptor().vertexLayout;
+    auto vertexLayout = _programState->getVertexLayout();
+    ///a_position
+    vertexLayout->setAttribute(backend::ATTRIBUTE_NAME_POSITION,
+                              _programState->getAttributeLocation(backend::Attribute::POSITION),
+                              backend::VertexFormat::FLOAT3,
+                              0,
+                              false);
+    ///a_texCoord
+    vertexLayout->setAttribute(backend::ATTRIBUTE_NAME_TEXCOORD,
+                              _programState->getAttributeLocation(backend::Attribute::TEXCOORD),
+                              backend::VertexFormat::FLOAT2,
+                              offsetof(V3F_C4B_T2F, texCoords),
+                              false);
+    
+    ///a_color
+    vertexLayout->setAttribute(backend::ATTRIBUTE_NAME_COLOR,
+                              _programState->getAttributeLocation(backend::Attribute::COLOR),
+                              backend::VertexFormat::UBYTE4,
+                              offsetof(V3F_C4B_T2F, colors),
+                              true);
+    vertexLayout->setLayout(sizeof(V3F_C4B_T2F));
+}
+
+void Sprite::updateShaders(const char* vert, const char* frag)
+{
+    auto* program = backend::Device::getInstance()->newProgram(vert, frag);
+    auto programState = new (std::nothrow) backend::ProgramState(program);
+    setProgramState(programState);
+    CC_SAFE_RELEASE(programState);
+    CC_SAFE_RELEASE(program);
+}
+
+void Sprite::setProgramState(backend::ProgramType type)
+{
+<<<<<<< HEAD
     if(_glProgramState == nullptr)
     {
         setGLProgramState(GLProgramState::getOrCreateWithGLProgramName(GLProgram::SHADER_NAME_POSITION_TEXTURE_COLOR_NO_MVP, texture));
     }
     // If batchnode, then texture id should be the same
     CCASSERT(! _batchNode || (texture &&  texture->getName() == _batchNode->getTexture()->getName()), "CCSprite: Batched sprites should use the same texture as the batchnode");
+=======
+    if(_programState != nullptr &&
+       _programState->getProgram()->getProgramType() == type)
+        return;
+    
+    auto* program = backend::Program::getBuiltinProgram(type);
+    auto programState = new (std::nothrow) backend::ProgramState(program);
+    setProgramState(programState);
+    CC_SAFE_RELEASE_NULL(programState);
+}
+
+void Sprite::setProgramState(backend::ProgramState *programState)
+{
+    CCASSERT(programState, "argument should not be nullptr");
+    auto& pipelineDescriptor = _trianglesCommand.getPipelineDescriptor();
+    if (_programState != programState)
+    {
+        CC_SAFE_RELEASE(_programState);
+        _programState = programState;
+        CC_SAFE_RETAIN(programState);
+    }
+    pipelineDescriptor.programState = _programState;
+
+    _mvpMatrixLocation = pipelineDescriptor.programState->getUniformLocation(backend::Uniform::MVP_MATRIX);
+    _textureLocation = pipelineDescriptor.programState->getUniformLocation(backend::Uniform::TEXTURE);
+    _alphaTextureLocation = pipelineDescriptor.programState->getUniformLocation(backend::Uniform::TEXTURE1);
+
+    setVertexLayout();
+    updateProgramState();
+    setMVPMatrixUniform();
+}
+
+void Sprite::setTexture(Texture2D *texture)
+{
+    CCASSERT(! _batchNode || (texture &&  texture == _batchNode->getTexture()), "CCSprite: Batched sprites should use the same texture as the batchnode");
+>>>>>>> v4
     // accept texture==nil as argument
     CCASSERT( !texture || dynamic_cast<Texture2D*>(texture), "setTexture expects a Texture2D. Invalid argument");
-
+    
     if (texture == nullptr)
     {
         // Gets the texture by key firstly.
@@ -408,6 +495,23 @@ void Sprite::setTexture(Texture2D *texture)
             _texture = texture;
         }
         updateBlendFunc();
+    }
+    auto isETC1 = texture && texture->getAlphaTextureName();
+    setProgramState((isETC1) ? backend::ProgramType::ETC1 : backend::ProgramType::POSITION_TEXTURE_COLOR);
+    updateProgramState();
+}
+
+void Sprite::updateProgramState()
+{
+    if (_texture == nullptr || _texture->getBackendTexture() == nullptr)
+        return;
+
+    auto programState = _trianglesCommand.getPipelineDescriptor().programState;
+    programState->setTexture(_textureLocation, 0, _texture->getBackendTexture());
+    auto alphaTexture = _texture->getAlphaTexture();
+    if(alphaTexture && alphaTexture->getBackendTexture())
+    {
+        programState->setTexture(_alphaTextureLocation, 1, alphaTexture->getBackendTexture());
     }
 }
 
@@ -446,18 +550,29 @@ void Sprite::updatePoly()
     //    the texture is stretched to the content size
     // C) 9-sliced, stretched
     //    the sprite is 9-sliced and stretched.
+<<<<<<< HEAD
     if (_renderMode == RenderMode::QUAD || _renderMode == RenderMode::QUAD_BATCHNODE) {
         Rect copyRect;
         if (_stretchEnabled) {
             // case B)
             copyRect = Rect(0, 0, _rect.size.width * _stretchFactor.x, _rect.size.height * _stretchFactor.y);
         } else {
+=======
+    if (_renderMode == RenderMode::QUAD || _renderMode == RenderMode::QUAD_BATCHNODE)
+    {
+        Rect copyRect;
+        if (_stretchEnabled)
+            // case B)
+            copyRect = Rect(0, 0, _rect.size.width * _stretchFactor.x, _rect.size.height * _stretchFactor.y);
+        else
+>>>>>>> v4
             // case A)
             // modify origin to put the sprite in the correct offset
             copyRect = Rect((_contentSize.width - _originalContentSize.width) / 2.0f,
                             (_contentSize.height - _originalContentSize.height) / 2.0f,
                             _rect.size.width,
                             _rect.size.height);
+<<<<<<< HEAD
         }
         setTextureCoords(_rect, &_quad);
         setVertexCoords(copyRect, &_quad);
@@ -678,8 +793,228 @@ void Sprite::setCenterRectNormalized(const cocos2d::Rect &rectTopLeft)
     if (_renderMode != RenderMode::QUAD && _renderMode != RenderMode::SLICE9) {
         CCLOGWARN("Warning: Sprite::setCenterRectNormalized() only works with QUAD and SLICE9 render modes");
         return;
-    }
+=======
 
+        setTextureCoords(_rect, &_quad);
+        setVertexCoords(copyRect, &_quad);
+        _polyInfo.setQuad(&_quad);
+
+    }
+    else if (_renderMode == RenderMode::SLICE9)
+    {
+        // case C)
+
+        // How the texture is split
+        //
+        //  u,v: are the texture coordinates
+        //  w,h: are the width and heights
+        //
+        //      w0    w1   w2
+        // v2 +----+------+--+
+        //    |    |      |  |
+        //    |    |      |  |
+        //    | 6  |   7  | 8|  h2
+        //    |    |      |  |
+        // v1 +----+------+--|
+        //    |    |      |  |
+        //    | 3  |   4  | 5|  h1
+        // v0 +----+------+--|
+        //    |    |      |  |
+        //    | 0  |   1  | 2|  h0
+        //    |    |      |  |
+        //    +----+------+--+
+        //    u0   u1    u2
+        //
+        //
+        //  and when the texture is rotated, it will get transformed.
+        //  not only the rects have a different position, but also u,v
+        //  points to the bottom-left and not top-right of the texture
+        //  so some swaping/origin/reordering needs to be done in order
+        //  to support rotated slice-9 correctly
+        //
+        //       w0    w1     w2
+        // v2 +------+----+--------+
+        //    |      |    |        |
+        //    |   0  |  3 |    6   | h2
+        // v1 +------+----+--------+
+        //    |      |    |        |
+        //    |   1  |  4 |    7   | h1
+        //    |      |    |        |
+        // v0 +------+----+--------+
+        //    |   2  |  5 |    8   | h0
+        //    +------+----+--------+
+        //    u0      u1     u2
+
+
+        // center rect
+        float cx1 = _centerRectNormalized.origin.x;
+        float cy1 = _centerRectNormalized.origin.y;
+        float cx2 = _centerRectNormalized.origin.x + _centerRectNormalized.size.width;
+        float cy2 = _centerRectNormalized.origin.y + _centerRectNormalized.size.height;
+
+        // "O"riginal rect
+        const float oox = _rect.origin.x;
+        const float ooy = _rect.origin.y;
+        float osw = _rect.size.width;
+        float osh = _rect.size.height;
+
+        if (_rectRotated)
+        {
+            std::swap(cx1, cy1);
+            std::swap(cx2, cy2);
+
+            // when the texture is rotated, then the centerRect starts from the "bottom" (left)
+            // but when it is not rotated, it starts from the top, so invert it
+            cy2 = 1 - cy2;
+            cy1 = 1 - cy1;
+            std::swap(cy1, cy2);
+            std::swap(osw, osh);
+        }
+
+        //
+        // textCoords Data: Y must be inverted.
+        //
+        const float w0 = osw * cx1;
+        const float w1 = osw * (cx2-cx1);
+        const float w2 = osw * (1-cx2);
+        const float h0 = osh * cy1;
+        const float h1 = osh * (cy2-cy1);
+        const float h2 = osh * (1-cy2);
+
+        const float u0 = oox;
+        const float u1 = u0 + w0;
+        const float u2 = u1 + w1;
+        const float v2 = ooy;
+        const float v1 = v2 + h2;
+        const float v0 = v1 + h1;
+
+
+        const Rect texRects_normal[9] = {
+            Rect(u0, v0,    w0, h0),   // bottom-left
+            Rect(u1, v0,    w1, h0),   // bottom
+            Rect(u2, v0,    w2, h0),   // bottom-right
+
+            Rect(u0, v1,    w0, h1),   // left
+            Rect(u1, v1,    w1, h1),   // center
+            Rect(u2, v1,    w2, h1),   // right
+
+            Rect(u0, v2,    w0, h2),   // top-left
+            Rect(u1, v2,    w1, h2),   // top
+            Rect(u2, v2,    w2, h2),   // top-right
+        };
+
+        // swap width and height because setTextureCoords()
+        // will expects the hight and width to be swapped
+        const Rect texRects_rotated[9] = {
+            Rect(u0, v2,    h2, w0),        // top-left
+            Rect(u0, v1,    h1, w0),        // left
+            Rect(u0, v0,    h0, w0),        // bottom-left
+
+            Rect(u1, v2,    h2, w1),        // top
+            Rect(u1, v1,    h1, w1),        // center
+            Rect(u1, v0,    h0, w1),        // bottom
+
+            Rect(u2, v2,    h2, w2),        // top-right
+            Rect(u2, v1,    h1, w2),        // right
+            Rect(u2, v0,    h0, w2),        // bottom-right
+        };
+
+        const Rect* texRects = _rectRotated ? texRects_rotated : texRects_normal;
+
+        //
+        // vertex Data.
+        //
+
+        // reset center rect since it is altered when when the texture
+        // is rotated
+        cx1 = _centerRectNormalized.origin.x;
+        cy1 = _centerRectNormalized.origin.y;
+        cx2 = _centerRectNormalized.origin.x + _centerRectNormalized.size.width;
+        cy2 = _centerRectNormalized.origin.y + _centerRectNormalized.size.height;
+        if (_rectRotated)
+            std::swap(osw, osh);
+
+        // sizes
+        float x0_s = osw * cx1;
+        float x1_s = osw * (cx2-cx1) * _stretchFactor.x;
+        float x2_s = osw * (1-cx2);
+        float y0_s = osh * cy1;
+        float y1_s = osh * (cy2-cy1) * _stretchFactor.y;
+        float y2_s = osh * (1-cy2);
+
+
+        // avoid negative size:
+        if (_contentSize.width < x0_s + x2_s)
+            x2_s = x0_s = _contentSize.width / 2;
+
+        if  (_contentSize.height < y0_s + y2_s)
+            y2_s = y0_s = _contentSize.height / 2;
+
+
+        // is it flipped?
+        // swap sizes to calculate offset correctly
+        if (_flippedX)
+            std::swap(x0_s, x2_s);
+        if (_flippedY)
+            std::swap(y0_s, y2_s);
+
+        // origins
+        float x0 = 0;
+        float x1 = x0 + x0_s;
+        float x2 = x1 + x1_s;
+        float y0 = 0;
+        float y1 = y0 + y0_s;
+        float y2 = y1 + y1_s;
+
+        // swap origin, but restore size to its original value
+        if (_flippedX)
+        {
+            std::swap(x0, x2);
+            std::swap(x0_s, x2_s);
+        }
+        if (_flippedY)
+        {
+            std::swap(y0, y2);
+            std::swap(y0_s, y2_s);
+        }
+
+        const Rect verticesRects[9] = {
+            Rect(x0, y0,  x0_s, y0_s),      // bottom-left
+            Rect(x1, y0,  x1_s, y0_s),      // bottom
+            Rect(x2, y0,  x2_s, y0_s),      // bottom-right
+
+            Rect(x0, y1,  x0_s, y1_s),      // left
+            Rect(x1, y1,  x1_s, y1_s),      // center
+            Rect(x2, y1,  x2_s, y1_s),      // right
+
+            Rect(x0, y2,  x0_s, y2_s),      // top-left
+            Rect(x1, y2,  x1_s, y2_s),      // top
+            Rect(x2, y2,  x2_s, y2_s),      // top-right
+        };
+
+        // needed in order to get color from "_quad"
+        V3F_C4B_T2F_Quad tmpQuad = _quad;
+
+        for (int i=0; i<9; ++i)
+        {
+            setTextureCoords(texRects[i], &tmpQuad);
+            setVertexCoords(verticesRects[i], &tmpQuad);
+            populateTriangle(i, tmpQuad);
+        }
+        TrianglesCommand::Triangles triangles;
+        triangles.verts = _trianglesVertex;
+        triangles.vertCount = 16;
+        triangles.indices = _trianglesIndex;
+        triangles.indexCount = 6 * 9;   // 9 quads, each needs 6 vertices
+
+        // probably we can update the _trianglesCommand directly
+        // to avoid memcpy'ing stuff
+        _polyInfo.setTriangles(triangles);
+>>>>>>> v4
+    }
+}
+
+<<<<<<< HEAD
     // FIMXE: Rect is has origin on top-left (like text coordinate).
     // but all the logic has been done using bottom-left as origin. So it is easier to invert Y
     // here, than in the rest of the places... but it is not as clean.
@@ -717,6 +1052,56 @@ void Sprite::setCenterRectNormalized(const cocos2d::Rect &rectTopLeft)
             }
         }
 
+=======
+void Sprite::setCenterRectNormalized(const cocos2d::Rect &rectTopLeft)
+{
+    if (_renderMode != RenderMode::QUAD && _renderMode != RenderMode::SLICE9) {
+        CCLOGWARN("Warning: Sprite::setCenterRectNormalized() only works with QUAD and SLICE9 render modes");
+        return;
+    }
+
+    // FIMXE: Rect is has origin on top-left (like text coordinate).
+    // but all the logic has been done using bottom-left as origin. So it is easier to invert Y
+    // here, than in the rest of the places... but it is not as clean.
+    Rect rect(rectTopLeft.origin.x, 1 - rectTopLeft.origin.y - rectTopLeft.size.height, rectTopLeft.size.width, rectTopLeft.size.height);
+    if (!_centerRectNormalized.equals(rect))
+    {
+        _centerRectNormalized = rect;
+
+        // convert it to 1-slice when the centerRect is not present.
+        if (rect.equals(Rect(0,0,1,1)))
+        {
+            _renderMode = RenderMode::QUAD;
+            free(_trianglesVertex);
+            free(_trianglesIndex);
+            _trianglesVertex = nullptr;
+            _trianglesIndex = nullptr;
+        }
+        else
+        {
+            // convert it to 9-slice if it isn't already
+            if (_renderMode != RenderMode::SLICE9)
+            {
+                _renderMode = RenderMode::SLICE9;
+                // 9 quads + 7 exterior points = 16
+                _trianglesVertex = (V3F_C4B_T2F*) malloc(sizeof(*_trianglesVertex) * (9 + 3 + 4));
+                // 9 quads, each needs 6 vertices = 54
+                _trianglesIndex = (unsigned short*) malloc(sizeof(*_trianglesIndex) * 6 * 9);
+
+                // populate indices in CCW direction
+                for (int i=0; i<9; ++i)
+                {
+                    _trianglesIndex[i * 6 + 0] = (i * 4 / 3) + 4;
+                    _trianglesIndex[i * 6 + 1] = (i * 4 / 3) + 0;
+                    _trianglesIndex[i * 6 + 2] = (i * 4 / 3) + 5;
+                    _trianglesIndex[i * 6 + 3] = (i * 4 / 3) + 1;
+                    _trianglesIndex[i * 6 + 4] = (i * 4 / 3) + 5;
+                    _trianglesIndex[i * 6 + 5] = (i * 4 / 3) + 0;
+                }
+            }
+        }
+
+>>>>>>> v4
         updateStretchFactor();
         updatePoly();
         updateColor();
@@ -725,6 +1110,7 @@ void Sprite::setCenterRectNormalized(const cocos2d::Rect &rectTopLeft)
 
 void Sprite::setCenterRect(const cocos2d::Rect &rectInPoints)
 {
+<<<<<<< HEAD
     if (_renderMode != RenderMode::QUAD && _renderMode != RenderMode::SLICE9) {
         CCLOGWARN("Warning: Sprite::setCenterRect() only works with QUAD and SLICE9 render modes");
         return;
@@ -734,6 +1120,18 @@ void Sprite::setCenterRect(const cocos2d::Rect &rectInPoints)
     {
         Rect rect = rectInPoints;
 
+=======
+    if (_renderMode != RenderMode::QUAD && _renderMode != RenderMode::SLICE9)
+    {
+        CCLOGWARN("Warning: Sprite::setCenterRect() only works with QUAD and SLICE9 render modes");
+        return;
+    }
+
+    if (!_originalContentSize.equals(Size::ZERO))
+    {
+        Rect rect = rectInPoints;
+
+>>>>>>> v4
         const float x = rect.origin.x / _rect.size.width;
         const float y = rect.origin.y / _rect.size.height;
         const float w = rect.size.width / _rect.size.width;
@@ -776,19 +1174,32 @@ void Sprite::setTextureCoords(const Rect& rectInPoints)
 void Sprite::setTextureCoords(const Rect& rectInPoints, V3F_C4B_T2F_Quad* outQuad)
 {
     Texture2D *tex = (_renderMode == RenderMode::QUAD_BATCHNODE) ? _textureAtlas->getTexture() : _texture;
+<<<<<<< HEAD
+=======
+    
+>>>>>>> v4
     if (tex == nullptr)
-    {
         return;
+<<<<<<< HEAD
     }
+=======
+>>>>>>> v4
 
     const auto rectInPixels = CC_RECT_POINTS_TO_PIXELS(rectInPoints);
 
     const float atlasWidth = (float)tex->getPixelsWide();
     const float atlasHeight = (float)tex->getPixelsHigh();
+<<<<<<< HEAD
 
     float rw = rectInPixels.size.width;
     float rh = rectInPixels.size.height;
 
+=======
+   
+    float rw = rectInPixels.size.width;
+    float rh = rectInPixels.size.height;
+
+>>>>>>> v4
     // if the rect is rotated, it means that the frame is rotated 90 degrees (clockwise) and:
     //  - rectInpoints: origin will be the bottom-left of the frame (and not the top-right)
     //  - size: represents the unrotated texture size
@@ -816,6 +1227,7 @@ void Sprite::setTextureCoords(const Rect& rectInPoints, V3F_C4B_T2F_Quad* outQua
 
 
     if ((!_rectRotated && _flippedX) || (_rectRotated && _flippedY))
+<<<<<<< HEAD
     {
         std::swap(left, right);
     }
@@ -824,6 +1236,12 @@ void Sprite::setTextureCoords(const Rect& rectInPoints, V3F_C4B_T2F_Quad* outQua
     {
         std::swap(top, bottom);
     }
+=======
+        std::swap(left, right);
+
+    if ((!_rectRotated && _flippedY) || (_rectRotated && _flippedX))
+        std::swap(top, bottom);
+>>>>>>> v4
 
     if (_rectRotated)
     {
@@ -848,6 +1266,7 @@ void Sprite::setTextureCoords(const Rect& rectInPoints, V3F_C4B_T2F_Quad* outQua
         outQuad->tr.texCoords.v = top;
     }
 }
+<<<<<<< HEAD
 
 void Sprite::setVertexCoords(const Rect& rect, V3F_C4B_T2F_Quad* outQuad)
 {
@@ -863,13 +1282,31 @@ void Sprite::setVertexCoords(const Rect& rect, V3F_C4B_T2F_Quad* outQuad)
     {
         relativeOffsetY = -relativeOffsetY;
     }
+=======
+
+void Sprite::setVertexCoords(const Rect& rect, V3F_C4B_T2F_Quad* outQuad)
+{
+    float relativeOffsetX = _unflippedOffsetPositionFromCenter.x;
+    float relativeOffsetY = _unflippedOffsetPositionFromCenter.y;
+
+    // issue #732
+    if (_flippedX)
+        relativeOffsetX = -relativeOffsetX;
+    if (_flippedY)
+        relativeOffsetY = -relativeOffsetY;
+>>>>>>> v4
 
     _offsetPosition.x = relativeOffsetX + (_originalContentSize.width - _rect.size.width) / 2;
     _offsetPosition.y = relativeOffsetY + (_originalContentSize.height - _rect.size.height) / 2;
 
     // FIXME: Stretching should be applied to the "offset" as well
     // but probably it should be calculated in the caller function. It will be tidier
+<<<<<<< HEAD
     if (_renderMode == RenderMode::QUAD) {
+=======
+    if (_renderMode == RenderMode::QUAD)
+    {
+>>>>>>> v4
         _offsetPosition.x *= _stretchFactor.x;
         _offsetPosition.y *= _stretchFactor.y;
     }
@@ -926,14 +1363,24 @@ void Sprite::populateTriangle(int quadIndex, const V3F_C4B_T2F_Quad& quad)
     // Optimization: I don't need to copy all the vertices all the time. just the 4 "quads" from the corners.
     if (quadIndex == 0 || quadIndex == 2 || quadIndex == 6 || quadIndex == 8)
     {
+<<<<<<< HEAD
         if (_flippedX) {
+=======
+        if (_flippedX)
+        {
+>>>>>>> v4
             if (quadIndex % 3 == 0)
                 quadIndex += 2;
             else
                 quadIndex -= 2;
         }
 
+<<<<<<< HEAD
         if (_flippedY) {
+=======
+        if (_flippedY)
+        {
+>>>>>>> v4
             if (quadIndex <= 2)
                 quadIndex += 6;
             else
@@ -944,7 +1391,10 @@ void Sprite::populateTriangle(int quadIndex, const V3F_C4B_T2F_Quad& quad)
         const int index_br = index_bl + 1;
         const int index_tl = index_bl + 4;
         const int index_tr = index_bl + 5;
+<<<<<<< HEAD
         
+=======
+>>>>>>> v4
 
         _trianglesVertex[index_tr] = quad.tr;
         _trianglesVertex[index_br] = quad.br;
@@ -956,13 +1406,13 @@ void Sprite::populateTriangle(int quadIndex, const V3F_C4B_T2F_Quad& quad)
 
 // MARK: visit, draw, transform
 
-void Sprite::updateTransform(void)
+void Sprite::updateTransform()
 {
     CCASSERT(_renderMode == RenderMode::QUAD_BATCHNODE, "updateTransform is only valid when Sprite is being rendered using an SpriteBatchNode");
 
     // recalculate matrix only if it is dirty
-    if( isDirty() ) {
-
+    if(isDirty() )
+    {
         // If it is not visible, or one of its ancestors is not visible, then do nothing:
         if( !_visible || ( _parent && _parent != _batchNode && static_cast<Sprite*>(_parent)->_shouldBeHidden) )
         {
@@ -977,9 +1427,7 @@ void Sprite::updateTransform(void)
             _shouldBeHidden = false;
 
             if( ! _parent || _parent == _batchNode )
-            {
                 _transformToBatch = getNodeToParentTransform();
-            }
             else
             {
                 CCASSERT( dynamic_cast<Sprite*>(_parent), "Logic error in Sprite. Parent must be a Sprite");
@@ -1028,64 +1476,68 @@ void Sprite::updateTransform(void)
 
         // MARMALADE CHANGE: ADDED CHECK FOR nullptr, TO PERMIT SPRITES WITH NO BATCH NODE / TEXTURE ATLAS
         if (_textureAtlas)
-        {
             _textureAtlas->updateQuad(&_quad, _atlasIndex);
-        }
 
         _recursiveDirty = false;
         setDirty(false);
     }
 
-    // MARMALADE CHANGED
-    // recursively iterate over children
-/*    if( _hasChildren )
-    {
-        // MARMALADE: CHANGED TO USE Node*
-        // NOTE THAT WE HAVE ALSO DEFINED virtual Node::updateTransform()
-        arrayMakeObjectsPerformSelector(_children, updateTransform, Sprite*);
-    }*/
     Node::updateTransform();
 }
 
 // draw
-
 void Sprite::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
 {
-    if (_texture == nullptr)
-    {
+    if (_texture == nullptr || _texture->getBackendTexture() == nullptr)
         return;
+<<<<<<< HEAD
     }
+=======
+    
+    //TODO: arnold: current camera can be a non-default one.
+    setMVPMatrixUniform();
+>>>>>>> v4
 
 #if CC_USE_CULLING
     // Don't calculate the culling if the transform was not updated
     auto visitingCamera = Camera::getVisitingCamera();
     auto defaultCamera = Camera::getDefaultCamera();
+<<<<<<< HEAD
     if (visitingCamera == nullptr) {
         _insideBounds = true;
     }
     else if (visitingCamera == defaultCamera) {
+=======
+    if (visitingCamera == nullptr)
+        _insideBounds = true;
+    else if (visitingCamera == defaultCamera)
+>>>>>>> v4
         _insideBounds = ((flags & FLAGS_TRANSFORM_DIRTY) || visitingCamera->isViewProjectionUpdated()) ? renderer->checkVisibility(transform, _contentSize) : _insideBounds;
-    }
     else
-    {
         // XXX: this always return true since
         _insideBounds = renderer->checkVisibility(transform, _contentSize);
-    }
 
     if(_insideBounds)
 #endif
     {
         _trianglesCommand.init(_globalZOrder,
                                _texture,
+<<<<<<< HEAD
                                getGLProgramState(),
+=======
+>>>>>>> v4
                                _blendFunc,
                                _polyInfo.triangles,
                                transform,
                                flags);
+<<<<<<< HEAD
 
+=======
+>>>>>>> v4
         renderer->addCommand(&_trianglesCommand);
 
 #if CC_SPRITE_DEBUG_DRAW
+<<<<<<< HEAD
         _debugDrawNode->clear();
         auto count = _polyInfo.triangles.indexCount/3;
         auto indices = _polyInfo.triangles.indices;
@@ -1105,6 +1557,27 @@ void Sprite::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
             to = verts[indices[i*3]].vertices;
             _debugDrawNode->drawLine(Vec2(from.x, from.y), Vec2(to.x,to.y), Color4F::WHITE);
         }
+=======
+            _debugDrawNode->clear();
+            auto count = _polyInfo.triangles.indexCount / 3;
+            auto indices = _polyInfo.triangles.indices;
+            auto verts = _polyInfo.triangles.verts;
+            for(unsigned int i = 0; i < count; i++)
+            {
+                //draw 3 lines
+                Vec3 from =verts[indices[i*3]].vertices;
+                Vec3 to = verts[indices[i*3+1]].vertices;
+                _debugDrawNode->drawLine(Vec2(from.x, from.y), Vec2(to.x,to.y), Color4F::WHITE);
+                
+                from =verts[indices[i*3+1]].vertices;
+                to = verts[indices[i*3+2]].vertices;
+                _debugDrawNode->drawLine(Vec2(from.x, from.y), Vec2(to.x,to.y), Color4F::WHITE);
+                
+                from =verts[indices[i*3+2]].vertices;
+                to = verts[indices[i*3]].vertices;
+                _debugDrawNode->drawLine(Vec2(from.x, from.y), Vec2(to.x,to.y), Color4F::WHITE);
+            }
+>>>>>>> v4
 #endif //CC_SPRITE_DEBUG_DRAW
     }
 }
@@ -1115,15 +1588,17 @@ void Sprite::addChild(Node *child, int zOrder, int tag)
 {
     CCASSERT(child != nullptr, "Argument must be non-nullptr");
     if (child == nullptr)
-    {
         return;
+<<<<<<< HEAD
     }
+=======
+>>>>>>> v4
 
     if (_renderMode == RenderMode::QUAD_BATCHNODE)
     {
         Sprite* childSprite = dynamic_cast<Sprite*>(child);
         CCASSERT( childSprite, "CCSprite only supports Sprites as children when using SpriteBatchNode");
-        CCASSERT(childSprite->getTexture()->getName() == _textureAtlas->getTexture()->getName(), "childSprite's texture name should be equal to _textureAtlas's texture name!");
+        CCASSERT(childSprite->getTexture() == _textureAtlas->getTexture(), "childSprite's texture name should be equal to _textureAtlas's texture name!");
         //put it in descendants array of batch node
         _batchNode->appendChild(childSprite);
 
@@ -1140,15 +1615,17 @@ void Sprite::addChild(Node *child, int zOrder, const std::string &name)
 {
     CCASSERT(child != nullptr, "Argument must be non-nullptr");
     if (child == nullptr)
-    {
         return;
+<<<<<<< HEAD
     }
+=======
+>>>>>>> v4
 
     if (_renderMode == RenderMode::QUAD_BATCHNODE)
     {
         Sprite* childSprite = dynamic_cast<Sprite*>(child);
         CCASSERT( childSprite, "CCSprite only supports Sprites as children when using SpriteBatchNode");
-        CCASSERT(childSprite->getTexture()->getName() == _textureAtlas->getTexture()->getName(),
+        CCASSERT(childSprite->getTexture() == _textureAtlas->getTexture(),
                  "childSprite's texture name should be equal to _textureAtlas's texture name.");
         //put it in descendants array of batch node
         _batchNode->appendChild(childSprite);
@@ -1179,9 +1656,11 @@ void Sprite::reorderChild(Node *child, int zOrder)
 void Sprite::removeChild(Node *child, bool cleanup)
 {
     if (_renderMode == RenderMode::QUAD_BATCHNODE)
+<<<<<<< HEAD
     {
+=======
+>>>>>>> v4
         _batchNode->removeSpriteFromAtlas((Sprite*)(child));
-    }
 
     Node::removeChild(child, cleanup);
 }
@@ -1190,12 +1669,11 @@ void Sprite::removeAllChildrenWithCleanup(bool cleanup)
 {
     if (_renderMode == RenderMode::QUAD_BATCHNODE)
     {
-        for(const auto &child : _children) {
+        for(const auto &child : _children)
+        {
             Sprite* sprite = dynamic_cast<Sprite*>(child);
             if (sprite)
-            {
                 _batchNode->removeSpriteFromAtlas(sprite);
-            }
         }
     }
 
@@ -1223,7 +1701,7 @@ void Sprite::sortAllChildren()
 // used only when parent is SpriteBatchNode
 //
 
-void Sprite::setReorderChildDirtyRecursively(void)
+void Sprite::setReorderChildDirtyRecursively()
 {
     //only set parents flag the first time
     if ( ! _reorderChildDirty )
@@ -1243,12 +1721,11 @@ void Sprite::setDirtyRecursively(bool bValue)
     _recursiveDirty = bValue;
     setDirty(bValue);
 
-    for(const auto &child: _children) {
+    for(const auto &child: _children)
+    {
         Sprite* sp = dynamic_cast<Sprite*>(child);
         if (sp)
-        {
             sp->setDirtyRecursively(true);
-        }
     }
 }
 
@@ -1313,6 +1790,10 @@ void Sprite::setScaleX(float scaleX)
 
 void Sprite::setScaleY(float scaleY)
 {
+#ifdef CC_USE_METAL
+    if(_texture->isRenderTarget())
+       scaleY = std::abs(scaleY);
+#endif
     Node::setScaleY(scaleY);
     SET_DIRTY_RECURSIVELY();
 }
@@ -1366,7 +1847,12 @@ void Sprite::setContentSize(const Size& size)
 
 void Sprite::setStretchEnabled(bool enabled)
 {
+<<<<<<< HEAD
     if (_stretchEnabled != enabled) {
+=======
+    if (_stretchEnabled != enabled)
+    {
+>>>>>>> v4
         _stretchEnabled = enabled;
 
         // disabled centerrect / number of slices if disabled
@@ -1378,21 +1864,27 @@ void Sprite::setStretchEnabled(bool enabled)
     }
 }
 
+<<<<<<< HEAD
 void Sprite::setStrechEnabled(bool enabled)
 {
     setStretchEnabled(enabled);
 }
 
+=======
+>>>>>>> v4
 bool Sprite::isStretchEnabled() const
 {
     return _stretchEnabled;
 }
 
+<<<<<<< HEAD
 bool Sprite::isStrechEnabled() const
 {
     return isStretchEnabled();
 }
 
+=======
+>>>>>>> v4
 void Sprite::updateStretchFactor()
 {
     const Size size = getContentSize();
@@ -1441,23 +1933,62 @@ void Sprite::setFlippedX(bool flippedX)
     }
 }
 
-bool Sprite::isFlippedX(void) const
+bool Sprite::isFlippedX() const
 {
     return _flippedX;
 }
 
 void Sprite::setFlippedY(bool flippedY)
 {
+#ifdef CC_USE_METAL
+    if(_texture->isRenderTarget())
+        flippedY = !flippedY;
+#endif
     if (_flippedY != flippedY)
     {
         _flippedY = flippedY;
         flipY();
+<<<<<<< HEAD
+=======
     }
 }
 
-bool Sprite::isFlippedY(void) const
+bool Sprite::isFlippedY() const
 {
     return _flippedY;
+}
+
+void Sprite::flipX()
+{
+    if (_renderMode == RenderMode::QUAD_BATCHNODE)
+        setDirty(true);
+    else if (_renderMode == RenderMode::POLYGON)
+    {
+        for (unsigned int i = 0; i < _polyInfo.triangles.vertCount; i++) {
+            auto& v = _polyInfo.triangles.verts[i].vertices;
+            v.x = _contentSize.width -v.x;
+        }
+>>>>>>> v4
+    }
+    else
+        // RenderMode:: Quad or Slice9
+        updatePoly();
+}
+
+void Sprite::flipY()
+{
+    if (_renderMode == RenderMode::QUAD_BATCHNODE)
+        setDirty(true);
+    else if (_renderMode == RenderMode::POLYGON)
+    {
+        for (unsigned int i = 0; i < _polyInfo.triangles.vertCount; i++) {
+            auto& v = _polyInfo.triangles.verts[i].vertices;
+            v.y = _contentSize.height -v.y;
+        }
+    }
+    else
+        // RenderMode:: Quad or Slice9
+        updatePoly();
 }
 
 void Sprite::flipX() {
@@ -1502,21 +2033,25 @@ void Sprite::flipY() {
 // MARK: RGBA protocol
 //
 
-void Sprite::updateColor(void)
+void Sprite::updateColor()
 {
     Color4B color4( _displayedColor.r, _displayedColor.g, _displayedColor.b, _displayedOpacity );
 
     // special opacity for premultiplied textures
     if (_opacityModifyRGB)
     {
-        color4.r *= _displayedOpacity/255.0f;
-        color4.g *= _displayedOpacity/255.0f;
-        color4.b *= _displayedOpacity/255.0f;
+        color4.r *= _displayedOpacity / 255.0f;
+        color4.g *= _displayedOpacity / 255.0f;
+        color4.b *= _displayedOpacity / 255.0f;
     }
 
-    for (ssize_t i = 0; i < _polyInfo.triangles.vertCount; i++) {
+    for (unsigned int i = 0; i < _polyInfo.triangles.vertCount; i++)
         _polyInfo.triangles.verts[i].colors = color4;
-    }
+
+    // related to issue #17116
+    // when switching from Quad to Slice9, the color will be obtained from _quad
+    // so it is important to update _quad colors as well.
+    _quad.bl.colors = _quad.tl.colors = _quad.br.colors = _quad.tr.colors = color4;
 
     // related to issue #17116
     // when switching from Quad to Slice9, the color will be obtained from _quad
@@ -1527,15 +2062,11 @@ void Sprite::updateColor(void)
     if (_renderMode == RenderMode::QUAD_BATCHNODE)
     {
         if (_atlasIndex != INDEX_NOT_INITIALIZED)
-        {
             _textureAtlas->updateQuad(&_quad, _atlasIndex);
-        }
         else
-        {
             // no need to set it recursively
             // update dirty_, don't update recursiveDirty_
             setDirty(true);
-        }
     }
 
     // self render
@@ -1551,7 +2082,7 @@ void Sprite::setOpacityModifyRGB(bool modify)
     }
 }
 
-bool Sprite::isOpacityModifyRGB(void) const
+bool Sprite::isOpacityModifyRGB() const
 {
     return _opacityModifyRGB;
 }
@@ -1562,9 +2093,11 @@ void Sprite::setSpriteFrame(const std::string &spriteFrameName)
 {
     CCASSERT(!spriteFrameName.empty(), "spriteFrameName must not be empty");
     if (spriteFrameName.empty())
-    {
         return;
+<<<<<<< HEAD
     }
+=======
+>>>>>>> v4
 
     SpriteFrameCache *cache = SpriteFrameCache::getInstance();
     SpriteFrame *spriteFrame = cache->getSpriteFrameByName(spriteFrameName);
@@ -1589,9 +2122,7 @@ void Sprite::setSpriteFrame(SpriteFrame *spriteFrame)
     Texture2D *texture = spriteFrame->getTexture();
     // update texture before updating texture rect
     if (texture != _texture)
-    {
         setTexture(texture);
-    }
 
     // update rect
     _rectRotated = spriteFrame->isRotated();
@@ -1606,22 +2137,28 @@ void Sprite::setSpriteFrame(SpriteFrame *spriteFrame)
         updateColor();
     }
     if (spriteFrame->hasAnchorPoint())
-    {
         setAnchorPoint(spriteFrame->getAnchorPoint());
+<<<<<<< HEAD
     }
     if (spriteFrame->hasCenterRect())
     {
         setCenterRect(spriteFrame->getCenterRect());
     }
+=======
+    if (spriteFrame->hasCenterRect())
+        setCenterRect(spriteFrame->getCenterRect());
+>>>>>>> v4
 }
 
-void Sprite::setDisplayFrameWithAnimationName(const std::string& animationName, ssize_t frameIndex)
+void Sprite::setDisplayFrameWithAnimationName(const std::string& animationName, unsigned int frameIndex)
 {
     CCASSERT(!animationName.empty(), "CCSprite#setDisplayFrameWithAnimationName. animationName must not be nullptr");
     if (animationName.empty())
-    {
         return;
+<<<<<<< HEAD
     }
+=======
+>>>>>>> v4
 
     Animation *a = AnimationCache::getInstance()->getAnimation(animationName);
 
@@ -1639,16 +2176,15 @@ bool Sprite::isFrameDisplayed(SpriteFrame *frame) const
     Rect r = frame->getRect();
 
     return (r.equals(_rect) &&
-            frame->getTexture()->getName() == _texture->getName() &&
+            frame->getTexture() == _texture &&
             frame->getOffset().equals(_unflippedOffsetPositionFromCenter));
 }
 
 SpriteFrame* Sprite::getSpriteFrame() const
 {
-    if(nullptr != this->_spriteFrame)
-    {
+    if (nullptr != this->_spriteFrame)
         return this->_spriteFrame;
-    }
+
     return SpriteFrame::createWithTexture(_texture,
                                           CC_RECT_POINTS_TO_PIXELS(_rect),
                                           _rectRotated,
@@ -1666,10 +2202,18 @@ void Sprite::setBatchNode(SpriteBatchNode *spriteBatchNode)
     _batchNode = spriteBatchNode; // weak reference
 
     // self render
+<<<<<<< HEAD
     if( ! _batchNode ) {
         if (_renderMode != RenderMode::SLICE9) {
             _renderMode = RenderMode::QUAD;
         }
+=======
+    if (! _batchNode)
+    {
+        if (_renderMode != RenderMode::SLICE9)
+            _renderMode = RenderMode::QUAD;
+
+>>>>>>> v4
         _atlasIndex = INDEX_NOT_INITIALIZED;
         setTextureAtlas(nullptr);
         _recursiveDirty = false;
@@ -1684,7 +2228,13 @@ void Sprite::setBatchNode(SpriteBatchNode *spriteBatchNode)
         _quad.tl.vertices.set(x1, y2, 0);
         _quad.tr.vertices.set(x2, y2, 0);
 
+<<<<<<< HEAD
     } else {
+=======
+    }
+    else
+    {
+>>>>>>> v4
         // using batch
         _renderMode = RenderMode::QUAD_BATCHNODE;
         _transformToBatch = Mat4::IDENTITY;
@@ -1693,13 +2243,20 @@ void Sprite::setBatchNode(SpriteBatchNode *spriteBatchNode)
 }
 
 // MARK: Texture protocol
-
-void Sprite::updateBlendFunc(void)
+void Sprite::updateBlendFunc()
 {
+<<<<<<< HEAD
     if (_blendFuncSet) return; /// TC patch: _blendFunc was manually set, so don't override
     CCASSERT(_renderMode != RenderMode::QUAD_BATCHNODE, "CCSprite: updateBlendFunc doesn't work when the sprite is rendered using a SpriteBatchNode");
 
+=======
+    CCASSERT(_renderMode != RenderMode::QUAD_BATCHNODE, "CCSprite: updateBlendFunc doesn't work when the sprite is rendered using a SpriteBatchNode");
+    
+>>>>>>> v4
     // it is possible to have an untextured sprite
+    backend::BlendDescriptor& blendDescriptor = _trianglesCommand.getPipelineDescriptor().blendDescriptor;
+    blendDescriptor.blendEnabled = true;
+    
     if (! _texture || ! _texture->hasPremultipliedAlpha())
     {
         _blendFunc = BlendFunc::ALPHA_NON_PREMULTIPLIED;
@@ -1714,12 +2271,19 @@ void Sprite::updateBlendFunc(void)
 
 std::string Sprite::getDescription() const
 {
+<<<<<<< HEAD
     int texture_id = -1;
     if (_renderMode == RenderMode::QUAD_BATCHNODE)
         texture_id = _batchNode->getTextureAtlas()->getTexture()->getName();
+=======
+    char textureDescriptor[100];
+    if (_renderMode == RenderMode::QUAD_BATCHNODE)
+        sprintf(textureDescriptor, "<Sprite | Tag = %d, TextureID = %p>", _tag, _batchNode->getTextureAtlas()->getTexture()->getBackendTexture());
+>>>>>>> v4
     else
-        texture_id = _texture->getName();
-    return StringUtils::format("<Sprite | Tag = %d, TextureID = %d>", _tag, texture_id );
+        sprintf(textureDescriptor, "<Sprite | Tag = %d, TextureID = %p>", _tag, _texture->getBackendTexture());
+    
+    return textureDescriptor;
 }
 
 const PolygonInfo& Sprite::getPolygonInfo() const
@@ -1731,6 +2295,22 @@ void Sprite::setPolygonInfo(const PolygonInfo& info)
 {
     _polyInfo = info;
     _renderMode = RenderMode::POLYGON;
+<<<<<<< HEAD
+=======
+}
+
+void Sprite::setMVPMatrixUniform()
+{
+    const auto& projectionMat = Director::getInstance()->getMatrix(MATRIX_STACK_TYPE::MATRIX_STACK_PROJECTION);
+    auto programState = _trianglesCommand.getPipelineDescriptor().programState;
+    if (programState && _mvpMatrixLocation)
+        programState->setUniform(_mvpMatrixLocation, projectionMat.m, sizeof(projectionMat.m));
+}
+
+backend::ProgramState* Sprite::getProgramState() const
+{
+    return _programState;
+>>>>>>> v4
 }
 
 /* BPC_PATCH start: https://github.com/brooklynpacket/cocos2d-x/commit/95058b29d06161b19c6830cebf8a08126b8e6d28 */

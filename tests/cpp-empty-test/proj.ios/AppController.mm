@@ -59,7 +59,7 @@ static AppDelegate s_sharedApplication;
     
     // Use RootViewController manage CCEAGLView
     viewController = [[RootViewController alloc] initWithNibName:nil bundle:nil];
-    viewController.wantsFullScreenLayout = YES;
+    viewController.extendedLayoutIncludesOpaqueBars = YES;
     viewController.view = eaglView;
 
     // Set RootViewController to window
@@ -78,6 +78,12 @@ static AppDelegate s_sharedApplication;
 
     [[UIApplication sharedApplication] setStatusBarHidden: YES];
     
+    //Launching the app with the arguments -NSAllowsDefaultLineBreakStrategy NO to force back to the old behavior.
+    if ( [[UIDevice currentDevice].systemVersion floatValue] >= 13.0f)
+    {
+        [[NSUserDefaults standardUserDefaults] setBool:NO forKey:@"NSAllowsDefaultLineBreakStrategy"];
+    }
+
     // IMPORTANT: Setting the GLView should be done after creating the RootViewController
     cocos2d::GLViewImpl *glview = cocos2d::GLViewImpl::createWithEAGLView(eaglView);
     cocos2d::Director::getInstance()->setOpenGLView(glview);

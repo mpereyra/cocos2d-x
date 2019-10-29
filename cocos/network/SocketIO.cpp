@@ -1108,9 +1108,7 @@ void SIOClient::emit(const std::string& eventname, const std::vector<std::string
     {
         _delegate->onError(this, "Client not yet connected");
     }
-
 }
-
 
 void SIOClient::disconnect()
 {
@@ -1130,7 +1128,7 @@ void SIOClient::socketClosed()
 
 bool SIOClient::isConnected() const
 {
-    return _connected && _socket && _socket->_connected ;
+    return _socket && _socket->_connected && _connected;
 }
 
 void SIOClient::setConnected(bool connected) 
@@ -1188,11 +1186,6 @@ SocketIO* SocketIO::getInstance()
 void SocketIO::destroyInstance()
 {
     CC_SAFE_DELETE(_inst);
-}
-
-SIOClient* SocketIO::connect(SocketIO::SIODelegate& delegate, const std::string& uri)
-{
-    return SocketIO::connect(uri, delegate);
 }
 
 SIOClient* SocketIO::connect(const std::string& uri, SocketIO::SIODelegate& delegate)

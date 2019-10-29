@@ -32,9 +32,9 @@
 #include <stdio.h>
 #include <locale.h>
 #include "Json.h"
-#include "spine/extension.h"
-#include "spine/AtlasAttachmentLoader.h"
-#include "spine/Array.h"
+#include <spine/extension.h>
+#include <spine/AtlasAttachmentLoader.h>
+#include <spine/Array.h>
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 #define strdup _strdup

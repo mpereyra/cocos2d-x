@@ -43,7 +43,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.inputmethod.EditorInfo;
 
 import org.cocos2dx.lib.Cocos2dxHelper.Cocos2dxHelperListener;
 
@@ -183,8 +182,11 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
 
     @Override
     protected void onResume() {
-        Log.d(TAG, "onResume()");
+    	Log.d(TAG, "onResume()");
+        paused = false;
         super.onResume();
+        if(gainAudioFocus)
+            Cocos2dxAudioFocusManager.registerAudioFocusListener(this);
         this.hideVirtualButton();
         resumeIfHasFocus();
     }
@@ -242,7 +244,6 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
     protected void onDestroy() {
         if(gainAudioFocus)
             Cocos2dxAudioFocusManager.unregisterAudioFocusListener(this);
-        Log.d(TAG, "onDestroy()");
         super.onDestroy();
     }
 

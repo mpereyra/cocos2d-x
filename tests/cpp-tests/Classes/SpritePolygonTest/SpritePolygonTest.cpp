@@ -37,10 +37,7 @@ SpritePolygonTest::SpritePolygonTest()
     ADD_TEST_CASE(SpritePolygonTest5);
     ADD_TEST_CASE(SpritePolygonPerformanceTestDynamic);
     ADD_TEST_CASE(SpritePerformanceTestDynamic);
-    // FIXME: Tizen will crash with this example
-#if (CC_TARGET_PLATFORM != CC_PLATFORM_TIZEN)
     ADD_TEST_CASE(SpritePolygonTestNoCrash);
-#endif
     ADD_TEST_CASE(SpritePolygonTestTPIsland);
     ADD_TEST_CASE(SpritePolygonTestAutoPolyIsland);
     ADD_TEST_CASE(SpritePolygonTestFrameAnim);
@@ -100,7 +97,7 @@ bool SpritePolygonTestCase::init()
             auto menu = Menu::create(menuItem, nullptr);
             menu->setPosition(Vec2::ZERO);
             menuItem->setAnchorPoint(Vec2::ANCHOR_TOP_LEFT);
-            menuItem->setPosition( VisibleRect::leftBottom() + Vec2(0, VisibleRect::leftTop().y/4));
+            menuItem->setPosition( VisibleRect::leftBottom() + Vec2(0.0f, VisibleRect::leftTop().y/4));
             this->addChild(menu, 9999);
         }
         return true;
@@ -297,15 +294,16 @@ void SpritePolygonTestSlider::initSliders()
     slider->loadSlidBallTextures("cocosui/sliderThumb.png", "cocosui/sliderThumb.png", "");
     slider->loadProgressBarTexture("cocosui/sliderProgress.png");
     slider->setPosition(Vec2(vsize.width/2, vsize.height/4));
-    
-    slider->addEventListener(CC_CALLBACK_2(SpritePolygonTestSlider::changeEpsilon, this));
-    slider->setPercent((int)(sqrtf(1.0f/19.0f)*100));
-    
+
     auto ttfConfig = TTFConfig("fonts/arial.ttf", 8);
     _epsilonLabel = Label::createWithTTF(ttfConfig, "Epsilon: 2.0");
     addChild(_epsilonLabel);
     _epsilonLabel->setPosition(Vec2(vsize.width/2, vsize.height/4 + 15));
     addChild(slider);
+
+    slider->addEventListener(CC_CALLBACK_2(SpritePolygonTestSlider::changeEpsilon, this));
+    slider->setPercent((int)(sqrtf(1.0f/19.0f)*100));
+
 }
 
 void SpritePolygonTestSlider::makeSprites(const std::string* list, const int count, const float y)
@@ -372,9 +370,9 @@ Sprite* SpritePolygonTestSlider::makeSprite(const std::string &filename, const V
     auto ttfConfig = TTFConfig("fonts/arial.ttf", 8);
     auto spArea = Label::createWithTTF(ttfConfig, filename+"\nVerts: "+Value((int)pinfo.getVertCount()).asString()+ "\nPixels: "+Value((int)(pinfo.getArea()/originalSize*100)).asString()+"%");
     ret->addChild(spArea);
-    spArea->setAnchorPoint(Vec2(0,1));
+    spArea->setAnchorPoint(Vec2(0.0f,1.0f));
     spArea->setName(filename);
-    ret->setAnchorPoint(Vec2(0.5, 0));
+    ret->setAnchorPoint(Vec2(0.5f, 0.0f));
     
     updateDrawNode();
     
@@ -475,7 +473,7 @@ void SpritePolygonTest5::loadDefaultSprites()
     sprites[0]->setColor(Color3B::RED);
     sprites[1]->setOpacity(100);
     sprites[2]->setTexture(Director::getInstance()->getTextureCache()->addImage("Images/grossinis_sister1.png"));
-    sprites[3]->setTextureRect(Rect(0,0,100,30));
+    sprites[3]->setTextureRect(Rect(0.0f,0.0f,100.0f,30.0f));
     sprites[4]->setScale(0.5f, 2.0f);
     sprites[5]->setFlippedY(true);
     sprites[6]->setSkewX(60);
@@ -641,7 +639,7 @@ SpritePolygonPerformanceTestDynamic::SpritePolygonPerformanceTestDynamic()
 Sprite* SpritePolygonPerformanceTestDynamic::makeSprite()
 {
     auto ret = Sprite::create(_pinfo);
-    ret->runAction(RepeatForever::create(RotateBy::create(1.0,360.0)));
+    ret->runAction(RepeatForever::create(RotateBy::create(1.0f,360.0f)));
     return ret;
 }
 
@@ -662,7 +660,7 @@ void SpritePerformanceTestDynamic::initIncrementStats()
 Sprite* SpritePerformanceTestDynamic::makeSprite()
 {
     auto ret =  Sprite::create(s_pathGrossini);
-    ret->runAction(RepeatForever::create(RotateBy::create(1.0,360.0)));
+    ret->runAction(RepeatForever::create(RotateBy::create(1.0f,360.0f)));
     return ret;
 }
 

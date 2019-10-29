@@ -64,6 +64,9 @@ public class Cocos2dxGLSurfaceView extends GLSurfaceView {
     private boolean mSoftKeyboardShown = false;
     private boolean mMultipleTouchEnabled = true;
 
+    private boolean mSoftKeyboardShown = false;
+    private boolean mMultipleTouchEnabled = true;
+
     public boolean isSoftKeyboardShown() {
         return mSoftKeyboardShown;
     }

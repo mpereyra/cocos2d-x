@@ -31,7 +31,7 @@
 #include "audio/android/AudioDecoderWav.h"
 #include "platform/CCFileUtils.h"
 
-namespace cocos2d { namespace experimental {
+namespace cocos2d {
 
 AudioDecoder* AudioDecoderProvider::createAudioDecoder(SLEngineItf engineItf, const std::string &url, int bufferSizeInFrames, int sampleRate, const FdGetterCallback &fdGetterCallback)
 {
@@ -89,5 +89,4 @@ void AudioDecoderProvider::destroyAudioDecoder(AudioDecoder** decoder)
         (*decoder) = nullptr;
     }
 }
-
-}} // namespace cocos2d { namespace experimental {
+} // namespace cocos2d {

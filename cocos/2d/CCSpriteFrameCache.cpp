@@ -293,26 +293,26 @@ void SpriteFrameCache::addSpriteFramesWithDictionary(ValueMap& dict, const std::
     }
     
     Texture2D *texture = nullptr;
-    static std::unordered_map<std::string, Texture2D::PixelFormat> pixelFormats = {
-        {"RGBA8888", Texture2D::PixelFormat::RGBA8888},
-        {"RGBA4444", Texture2D::PixelFormat::RGBA4444},
-        {"RGB5A1", Texture2D::PixelFormat::RGB5A1},
-        {"RGBA5551", Texture2D::PixelFormat::RGB5A1},
-        {"RGB565", Texture2D::PixelFormat::RGB565},
-        {"A8", Texture2D::PixelFormat::A8},
-        {"ALPHA", Texture2D::PixelFormat::A8},
-        {"I8", Texture2D::PixelFormat::I8},
-        {"AI88", Texture2D::PixelFormat::AI88},
-        {"ALPHA_INTENSITY", Texture2D::PixelFormat::AI88},
-        //{"BGRA8888", Texture2D::PixelFormat::BGRA8888}, no Image conversion RGBA -> BGRA
-        {"RGB888", Texture2D::PixelFormat::RGB888}
+    static std::unordered_map<std::string, backend::PixelFormat> pixelFormats = {
+        {"RGBA8888", backend::PixelFormat::RGBA8888},
+        {"RGBA4444", backend::PixelFormat::RGBA4444},
+        {"RGB5A1", backend::PixelFormat::RGB5A1},
+        {"RGBA5551", backend::PixelFormat::RGB5A1},
+        {"RGB565", backend::PixelFormat::RGB565},
+        {"A8", backend::PixelFormat::A8},
+        {"ALPHA", backend::PixelFormat::A8},
+        {"I8", backend::PixelFormat::I8},
+        {"AI88", backend::PixelFormat::AI88},
+        {"ALPHA_INTENSITY", backend::PixelFormat::AI88},
+        //{"BGRA8888", backend::PixelFormat::BGRA8888}, no Image conversion RGBA -> BGRA
+        {"RGB888", backend::PixelFormat::RGB888}
     };
 
     auto pixelFormatIt = pixelFormats.find(pixelFormatName);
     if (pixelFormatIt != pixelFormats.end())
     {
-        const Texture2D::PixelFormat pixelFormat = (*pixelFormatIt).second;
-        const Texture2D::PixelFormat currentPixelFormat = Texture2D::getDefaultAlphaPixelFormat();
+        const backend::PixelFormat pixelFormat = (*pixelFormatIt).second;
+        const backend::PixelFormat currentPixelFormat = Texture2D::getDefaultAlphaPixelFormat();
         Texture2D::setDefaultAlphaPixelFormat(pixelFormat);
         texture = Director::getInstance()->getTextureCache()->addImage(texturePath);
         Texture2D::setDefaultAlphaPixelFormat(currentPixelFormat);
@@ -388,26 +388,8 @@ void SpriteFrameCache::addSpriteFramesWithFile(std::string const &plist, Bpc::As
 
     if (!texturePath.empty())
     {
-        /* BPC_PATCH start: Multiple commits from https://github.com/brooklynpacket/cocos2d-x/blob/30bd76c85b97d6733d2e2851f0a9b099a7c767e4/cocos2dx/sprite_nodes/CCSpriteFrameCache.cpp#L253-L267 */
-//            // build texture path relative to plist file
-//            texturePath = FileUtils::getInstance()->fullPathFromRelativeFile(texturePath, plist);
-
-        // resolve any compression formats
-        texturePath = Bpc::ImageManager::getPreferredFilename(texturePath);
-
-        // DO NOT build texture paths relative to plist file;
-        // plist may be in bundle while texture path is downloaded.
-        Bpc::ImageInfo iInfo = Bpc::ImageManager::shared().findImage(texturePath, sizingStyle);
-        if(iInfo.found)
-        {
-            texturePath = iInfo.path;
-        }
-        else //if somehow our image manager can't find it, fallback to default behavior.
-        {
-            CCLOG("texture not found: %s", texturePath.c_str());
-            texturePath = FileUtils::sharedFileUtils()->fullPathFromRelativeFile(texturePath, plist);
-        }
-        /* BPC_PATCH end */
+        // build texture path relative to plist file
+        texturePath = FileUtils::getInstance()->fullPathFromRelativeFile(texturePath, plist);
     }
     else
     {
@@ -416,7 +398,10 @@ void SpriteFrameCache::addSpriteFramesWithFile(std::string const &plist, Bpc::As
 
         // remove .xxx
         size_t startPos = texturePath.find_last_of('.'); 
-        texturePath = texturePath.erase(startPos);
+        if(startPos != string::npos)
+        {
+            texturePath = texturePath.erase(startPos);
+        }
 
         // append .png
         texturePath = texturePath.append(".png");
@@ -718,8 +703,10 @@ bool SpriteFrameCache::reloadTexture(const std::string& plist)
 
         // remove .xxx
         size_t startPos = texturePath.find_last_of('.');
-        texturePath = texturePath.erase(startPos);
-
+        if(startPos != string::npos)
+        {
+            texturePath = texturePath.erase(startPos);
+        }
         // append .png
         texturePath = texturePath.append(".png");
     }
@@ -775,6 +762,8 @@ bool SpriteFrameCache::PlistFramesCache::eraseFrames(const std::vector<std::stri
     {
         ret |= eraseFrame(frame);
     }
+    _indexPlist2Frames.clear();
+    _indexFrame2plist.clear();
     return ret;
 }
 

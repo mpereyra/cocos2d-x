@@ -34,12 +34,11 @@
 #include "platform/ios/CCGLViewImpl-ios.h"
 #include "base/CCTouch.h"
 #include "base/CCDirector.h"
-#include "base/CCDirector.h"
 
 NS_CC_BEGIN
 
 void* GLViewImpl::_pixelFormat = kEAGLColorFormatRGB565;
-int GLViewImpl::_depthFormat = GL_DEPTH24_STENCIL8_OES;
+int GLViewImpl::_depthFormat = GL_DEPTH_COMPONENT16;
 int GLViewImpl::_multisamplingCount = 0;
 
 GLViewImpl* GLViewImpl::createWithEAGLView(void *eaglview)
@@ -225,93 +224,55 @@ void GLViewImpl::setIMEKeyboardState(bool open)
 
     if (open)
     {
-        [eaglview becomeFirstResponder];
+        [eaglview showKeyboard];
     }
     else
     {
-        [eaglview resignFirstResponder];
+        [eaglview hideKeyboard];
     }
-}
-
-void GLViewImpl::setIMEKeyboardType(TextFieldTTF::KeyboardType type)
-{
-    UIKeyboardType uikType;
-
-    switch (type)
-    {
-        case TextFieldTTF::kKTEmail:
-            uikType = UIKeyboardTypeEmailAddress;
-            break;
-        case TextFieldTTF::kKTURL:
-            uikType = UIKeyboardTypeURL;
-            break;
-        case TextFieldTTF::kKTNumberPad:
-            uikType = UIKeyboardTypeNumberPad;
-            break;
-        case TextFieldTTF::kKTPhonePad:
-            uikType = UIKeyboardTypePhonePad;
-            break;
-        case TextFieldTTF::kKTAsciiKeyboard:
-            uikType = UIKeyboardTypeASCIICapable;
-            break;
-        default:
-            uikType = UIKeyboardTypeDefault;
-            break;
-    }
-
-    CCEAGLView *eaglview = (CCEAGLView*) _eaglview;
-    [eaglview setKeyboardFormat:uikType];
-}
-
-void GLViewImpl::setSecureTextEntry(bool secure)
-{
-    CCEAGLView *eaglview = (CCEAGLView*) _eaglview;
-    [eaglview setUsesSecureTextEntry:secure ? YES : NO];
 }
 
 Rect GLViewImpl::getSafeAreaRect() const
 {
     CCEAGLView *eaglview = (CCEAGLView*) _eaglview;
 
-    // Note from cocos commit - 8baa4b4639f7553de60c8303daf98b08af76c1d2
-    // @available(iOS 11.0, *) isn't supported in Xcode8. So we use the old way.
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 110000
     float version = [[UIDevice currentDevice].systemVersion floatValue];
     if (version >= 11.0f)
     {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wpartial-availability"
-            UIEdgeInsets safeAreaInsets = eaglview.safeAreaInsets;
+        UIEdgeInsets safeAreaInsets = eaglview.safeAreaInsets;
 #pragma clang diagnostic pop
-        
-            // Multiply contentScaleFactor since safeAreaInsets return points.
-            safeAreaInsets.left *= eaglview.contentScaleFactor;
-            safeAreaInsets.right *= eaglview.contentScaleFactor;
-            safeAreaInsets.top *= eaglview.contentScaleFactor;
-            safeAreaInsets.bottom *= eaglview.contentScaleFactor;
-    
-            // Get leftBottom and rightTop point in UI coordinates
-            Vec2 leftBottom = Vec2(safeAreaInsets.left, _screenSize.height - safeAreaInsets.bottom);
-            Vec2 rightTop = Vec2(_screenSize.width - safeAreaInsets.right, safeAreaInsets.top);
-    
-            // Convert a point from UI coordinates to which in design resolution coordinate.
-            leftBottom.x = (leftBottom.x - _viewPortRect.origin.x) / _scaleX,
-            leftBottom.y = (leftBottom.y - _viewPortRect.origin.y) / _scaleY;
-            rightTop.x = (rightTop.x - _viewPortRect.origin.x) / _scaleX,
-            rightTop.y = (rightTop.y - _viewPortRect.origin.y) / _scaleY;
-    
-            // Adjust points to make them inside design resolution
-            leftBottom.x = MAX(leftBottom.x, 0);
-            leftBottom.y = MIN(leftBottom.y, _designResolutionSize.height);
-            rightTop.x = MIN(rightTop.x, _designResolutionSize.width);
-            rightTop.y = MAX(rightTop.y, 0);
-    
-            // Convert to GL coordinates
-            leftBottom = Director::getInstance()->convertToGL(leftBottom);
-            rightTop = Director::getInstance()->convertToGL(rightTop);
-    
-            return Rect(leftBottom.x, leftBottom.y, rightTop.x - leftBottom.x, rightTop.y - leftBottom.y);
-        }
+
+        // Multiply contentScaleFactor since safeAreaInsets return points.
+        safeAreaInsets.left *= eaglview.contentScaleFactor;
+        safeAreaInsets.right *= eaglview.contentScaleFactor;
+        safeAreaInsets.top *= eaglview.contentScaleFactor;
+        safeAreaInsets.bottom *= eaglview.contentScaleFactor;
+
+        // Get leftBottom and rightTop point in UI coordinates
+        Vec2 leftBottom = Vec2(safeAreaInsets.left, _screenSize.height - safeAreaInsets.bottom);
+        Vec2 rightTop = Vec2(_screenSize.width - safeAreaInsets.right, safeAreaInsets.top);
+
+        // Convert a point from UI coordinates to which in design resolution coordinate.
+        leftBottom.x = (leftBottom.x - _viewPortRect.origin.x) / _scaleX,
+        leftBottom.y = (leftBottom.y - _viewPortRect.origin.y) / _scaleY;
+        rightTop.x = (rightTop.x - _viewPortRect.origin.x) / _scaleX,
+        rightTop.y = (rightTop.y - _viewPortRect.origin.y) / _scaleY;
+
+        // Adjust points to make them inside design resolution
+        leftBottom.x = MAX(leftBottom.x, 0);
+        leftBottom.y = MIN(leftBottom.y, _designResolutionSize.height);
+        rightTop.x = MIN(rightTop.x, _designResolutionSize.width);
+        rightTop.y = MAX(rightTop.y, 0);
+
+        // Convert to GL coordinates
+        leftBottom = Director::getInstance()->convertToGL(leftBottom);
+        rightTop = Director::getInstance()->convertToGL(rightTop);
+
+        return Rect(leftBottom.x, leftBottom.y, rightTop.x - leftBottom.x, rightTop.y - leftBottom.y);
+    }
 #endif
 
     // If running on iOS devices lower than 11.0, return visiable rect instead.

@@ -54,7 +54,7 @@
 //#define WEBSOCKETS_LOGGING
 #define  LOG_TAG    "WebSocket.cpp"
 
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32) && defined(WEBSOCKETS_LOGGING)
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
 // log, CCLOG aren't threadsafe, since we uses sub threads for parsing pcm data, threadsafe log output
 // is needed. Define the following macros (ALOGV, ALOGD, ALOGI, ALOGW, ALOGE) for threadsafe log output.
 
@@ -123,7 +123,7 @@ static void wsLog(const char * format, ...)
 
 // Since CCLOG isn't thread safe, we uses LOGD for multi-thread logging.
 #ifdef ANDROID
-    #ifdef WEBSOCKETS_LOGGING
+    #if COCOS2D_DEBUG > 0
         #define LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG,__VA_ARGS__)
     #else
         #define LOGD(...)
@@ -131,7 +131,7 @@ static void wsLog(const char * format, ...)
 
     #define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR, LOG_TAG,__VA_ARGS__)
 #else
-    #ifdef WEBSOCKETS_LOGGING
+    #if COCOS2D_DEBUG > 0
         #define LOGD(fmt, ...) wsLog("D/" LOG_TAG " (" QUOTEME(__LINE__) "): " fmt "", ##__VA_ARGS__)
     #else
         #define LOGD(fmt, ...)
@@ -165,9 +165,46 @@ static void printWebSocketLog(int level, const char *line)
         break;
     }
 
-    LOGD("%s: %s", level_name, line);
+    LOGD("%s%s\n", buf, line);
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID)
+static std::string getFileNameForPath(const std::string& filePath)
+{
+    std::string fileName = filePath;
+    const size_t lastSlashIdx = fileName.find_last_of("\\/");
+    if (std::string::npos != lastSlashIdx)
+    {
+        fileName.erase(0, lastSlashIdx + 1);
+    }
+    return fileName;
 }
-#endif // #ifdef WEBSOCKETS_LOGGING
+#endif
+
+static struct lws_protocols __defaultProtocols[2];
+
+static lws_context_creation_info convertToContextCreationInfo(const struct lws_protocols* protocols, bool peerServerCert)
+{
+    lws_context_creation_info info;
+    memset(&info, 0, sizeof(info));
+    /*
+     * create the websocket context.  This tracks open connections and
+     * knows how to route any traffic and which protocol version to use,
+     * and if each connection is client or server side.
+     *
+     * For this client-only demo, we tell it to not listen on any port.
+     */
+
+    info.port = CONTEXT_PORT_NO_LISTEN;
+    info.protocols = protocols;
+
+    // FIXME: Disable 'permessage-deflate' extension temporarily because of issues:
+    // https://github.com/cocos2d/cocos2d-x/issues/16045, https://github.com/cocos2d/cocos2d-x/issues/15767
+    // libwebsockets issue: https://github.com/warmcat/libwebsockets/issues/593
+    // Currently, we couldn't find out the exact reason.
+    // libwebsockets official said it's probably an issue of user code
+    // since 'libwebsockets' passed AutoBahn stressed Test.
+
+    //    info.extensions = exts;
 
 NS_NETWORK_BEGIN
 
@@ -388,10 +425,8 @@ void WsThreadHelper::onSubThreadLoop()
 
 void WsThreadHelper::onSubThreadStarted()
 {
-#ifdef WEBSOCKETS_LOGGING
     int log_level = LLL_ERR | LLL_WARN | LLL_NOTICE | LLL_INFO/* | LLL_DEBUG | LLL_PARSER | LLL_HEADER*/ | LLL_EXT | LLL_CLIENT | LLL_LATENCY;
     lws_set_log_level(log_level, printWebSocketLog);
-#endif
 
     memset(__defaultProtocols, 0, 2 * sizeof(struct lws_protocols));
 
@@ -601,7 +636,7 @@ bool WebSocket::init(const Delegate& delegate,
         memset(_lwsProtocols, 0, (size + 1) * sizeof(struct lws_protocols));
 
         static uint32_t __wsId = 0;
-
+        
         for (size_t i = 0; i < size; ++i)
         {
             _lwsProtocols[i].callback = WebSocketCallbackWrapper::onSocketCallback;
@@ -849,6 +884,7 @@ struct lws_vhost* WebSocket::createVhost(struct lws_protocols* protocols, int& s
 
     lws_vhost* vhost = lws_create_vhost(__wsContext, &info);
 
+>>>>>>> v4
     return vhost;
 }
 
@@ -923,7 +959,7 @@ void WebSocket::onClientOpenConnectionRequest()
 
         if (nullptr == _wsInstance)
         {
-            onConnectionError(nullptr, 0);
+            onConnectionError();
             return;
         }
     }
@@ -1198,19 +1234,11 @@ int WebSocket::onConnectionOpened()
     return 0;
 }
 
-int WebSocket::onConnectionError(void* in, ssize_t len)
+int WebSocket::onConnectionError()
 {
-    std::string error;
-
     {
         std::lock_guard<std::mutex> lk(_readyStateMutex);
-        if (len > 0)
-        {
-            error.assign((char*)in, (char*)in + len);
-        }
-
-        LOGD("WebSocket (%p) onConnectionError, state: %d, error: %s\n", this, (int)_readyState, error.c_str());
-
+        LOGD("WebSocket (%p) onConnectionError, state: %d ...\n", this, (int)_readyState);
         if (_readyState == State::CLOSED)
         {
             return 0;
@@ -1219,7 +1247,7 @@ int WebSocket::onConnectionError(void* in, ssize_t len)
     }
 
     std::shared_ptr<std::atomic<bool>> isDestroyed = _isDestroyed;
-    __wsHelper->sendMessageToCocosThread([this, isDestroyed, error](){
+    __wsHelper->sendMessageToCocosThread([this, isDestroyed](){
         if (*isDestroyed)
         {
             LOGD("WebSocket instance was destroyed!\n");
@@ -1311,7 +1339,7 @@ int WebSocket::onSocketCallback(struct lws *wsi,
             break;
 
         case LWS_CALLBACK_CLIENT_CONNECTION_ERROR:
-            ret = onConnectionError(in, len);
+            ret = onConnectionError();
             break;
 
         case LWS_CALLBACK_WSI_DESTROY:
@@ -1328,17 +1356,9 @@ int WebSocket::onSocketCallback(struct lws *wsi,
         case LWS_CALLBACK_CHANGE_MODE_POLL_FD:
         case LWS_CALLBACK_LOCK_POLL:
         case LWS_CALLBACK_UNLOCK_POLL:
-        case LWS_CALLBACK_ADD_POLL_FD:
-        case LWS_CALLBACK_DEL_POLL_FD:
-        case LWS_CALLBACK_CLOSED_CLIENT_HTTP:
-        case LWS_CALLBACK_CLIENT_FILTER_PRE_ESTABLISH:
-        case LWS_CALLBACK_CLIENT_APPEND_HANDSHAKE_HEADER:
             break;
         case LWS_CALLBACK_PROTOCOL_INIT:
             LOGD("protocol init...");
-            break;
-        case LWS_CALLBACK_WSI_CREATE:
-            LOGD("protocol create...");
             break;
         case LWS_CALLBACK_PROTOCOL_DESTROY:
             LOGD("protocol destroy...");

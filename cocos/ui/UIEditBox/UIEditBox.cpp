@@ -38,34 +38,9 @@ static const int DISABLED_RENDERER_Z = (-2);
 
 static const float CHECK_EDITBOX_POSITION_INTERVAL = 0.1f;
 
-EditBox::EditBox()
-: _normalRenderer(nullptr)
-, _pressedRenderer(nullptr)
-, _disabledRenderer(nullptr)
-, _normalFileName("")
-, _pressedFileName("")
-, _disabledFileName("")
-, _normalTexType(TextureResType::LOCAL)
-, _pressedTexType(TextureResType::LOCAL)
-, _disabledTexType(TextureResType::LOCAL)
-, _capInsetsNormal(Rect::ZERO)
-, _capInsetsPressed(Rect::ZERO)
-, _capInsetsDisabled(Rect::ZERO)
-, _normalTextureSize(_contentSize)
+EditBox::EditBox(): _normalTextureSize(_contentSize)
 , _pressedTextureSize(_contentSize)
 , _disabledTextureSize(_contentSize)
-, _normalTextureLoaded(false)
-, _pressedTextureLoaded(false)
-, _disabledTextureLoaded(false)
-, _normalTextureAdaptDirty(true)
-, _pressedTextureAdaptDirty(true)
-, _disabledTextureAdaptDirty(true)
-, _editBoxImpl(nullptr)
-, _delegate(nullptr)
-, _adjustHeight(0.f)
-#if CC_ENABLE_SCRIPT_BINDING
-, _scriptEditBoxHandler(0)
-#endif
 {
 }
 
@@ -80,13 +55,6 @@ EditBox::~EditBox()
 void EditBox::openKeyboard() const
 {
     _editBoxImpl->openKeyboard();
-}
-
-void EditBox::touchDownAction(Ref* /*sender*/, TouchEventType controlEvent)
-{
-    if (controlEvent == Widget::TouchEventType::ENDED) {
-        openKeyboard();
-    }
 }
 
 EditBox* EditBox::create(const Size& size,
@@ -573,12 +541,30 @@ const char* EditBox::getPlaceholderFontName() const
     return "";
 }
 
+const char* EditBox::getPlaceholderFontName() const
+{
+    if (_editBoxImpl != nullptr)
+    {
+        return _editBoxImpl->getPlaceholderFontName();
+    }
+    return "";
+}
+
 void EditBox::setPlaceholderFontSize(int fontSize)
 {
     if (_editBoxImpl != nullptr)
     {
         _editBoxImpl->setPlaceholderFont(_editBoxImpl->getPlaceholderFontName(), fontSize);
     }
+}
+
+int EditBox::getPlaceholderFontSize() const
+{
+    if (_editBoxImpl != nullptr)
+    {
+        return _editBoxImpl->getPlaceholderFontSize();
+    }
+    return -1;
 }
 
 int EditBox::getPlaceholderFontSize() const

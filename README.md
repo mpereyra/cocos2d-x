@@ -2,7 +2,6 @@
 
 
 cocos2d-x
-=========
 
 |Win32|Others|
 | ----|------|
@@ -11,11 +10,11 @@ cocos2d-x
 
 [cocos2d-x][1] is a multi-platform framework for building 2d games, interactive books, demos and other graphical applications.
 It is based on [cocos2d-iphone][2], but instead of using Objective-C, it uses C++.
-It works on iOS, Android, OS X, Windows, Linux and Web platforms.
+It works on iOS, Android, OS X, Windows and Linux.
 
 **Cocos2d-x Framework Architecture**:
 
-![](docs/framework_architecture.jpg "")
+![](docs/framework_architecture_v4.png "")
 
 cocos2d-x is:
 
@@ -124,7 +123,7 @@ Cocos2d-x supports CMake, a cross-platform build system. Example usage:
 Documentations and samples
 -------------
 * [All Docs in a single place!](http://cocos2d-x.org/docs/)
-* [Online API Reference](http://cocos2d-x.org/docs/api-ref/index.html) _Note that Cocos2d-x, Cocos2d-JS and Cocos Creator have different API set_
+* [Online API Reference](http://cocos2d-x.org/docs/api-ref/index.html) _Note that Cocos2d-x and Cocos Creator have different API set_
 * [Programmers Guide](http://cocos2d-x.org/docs/programmers-guide/2/index.html)
 * [Latest Release Note](https://github.com/cocos2d/cocos2d-x/blob/v3/docs/RELEASE_NOTES.md)
 * [Changelog](https://github.com/cocos2d/cocos2d-x/blob/v3/CHANGELOG)
@@ -153,13 +152,13 @@ Main features
    * Render To Texture
    * Touch/Accelerometer on mobile devices
    * Touch/Mouse/Keyboard on desktop
-   * Sound Engine support (CocosDenshion library) based on OpenAL
+   * Sound Engine support
    * Integrated Slow motion/Fast forward
    * Fast and compressed textures: PVR compressed and uncompressed textures, ETC1 compressed textures, and more
    * Resolution Independent
    * Language: C++, with Lua and JavaScript bindings
    * Open Source Commercial Friendly(MIT): Compatible with open and closed source projects
-   * OpenGL ES 2.0 (mobile) / OpenGL 2.1 (desktop) based
+   * OpenGL ES 2.0 (mobile) / OpenGL 2.1 (desktop) / metal(macos and iOS) based
 
 Build Requirements
 ------------------
@@ -178,70 +177,56 @@ Runtime Requirements
   * Android 3.0.0+ for Android
   * OS X v10.9+ for Mac games
   * Windows 7+ for Win games
-  * Modern browsers and IE 9+ for web games
+
+Environment Setup
+--------------------
+
+Should set up environment before starting a new game or running tests
+
+```
+$ cd cocos2d-x
+$ ./setup.py
+$ source FILE_TO_SAVE_SYSTEM_VARIABLE
+
+```
+
+Should invoke this script if using linux system
+
+```
+$ cd cocos2d-x
+$ ./install-linux-deps.sh
+```
 
 Running Tests
 --------------------
 
-Select the test you want from Xcode Scheme chooser.
-
-* Cocos Console
-
 ```
-// Enter cpp test folder
-cd tests/cpp-tests
-// Or enter js test folder
-cd tests/js-tests
-// Or enter lua test folder
-cd tests/lua-tests
-
-// Compile or run test case
-cocos compile -p ios|mac|android|win32|win8_1|metro|web -m debug|release
-cocos run -p ios|mac|android|win32|win8_1|metro|web -m debug|release
+$ cd cocos2d-x
+$ mkdir build
+$ cd build
+$ cocos run --proj-dir .. -p [mac|windows|android|linux|ios]
 ```
 
-* For OS X / iOS
+How to start a new game
+-----------------------
 
-```
-$ cd cocos2d-x/build
-$ open cocos2d_tests.xcodeproj
-```
+    $ cd cocos2d-x
+    $ ./setup.py
+    $ source FILE_TO_SAVE_SYSTEM_VARIABLE
+    $ cocos new MyGame -p com.your_company.mygame -l cpp -d NEW_PROJECTS_DIR
+    $ cd NEW_PROJECTS_DIR/MyGame
+    $ mkdir build
+    $ cd build
+    $ cocos run --proj-dir .. -p [mac|windows|android|linux|ios]
 
-* For Linux
+You can also create a Lua project with `-l lua`.
 
-```
-$ cd cocos2d-x/build
-$ ./install-deps-linux.sh
-$ mkdir linux-build
-$ cd linux-build
-$ cmake ../..
-```
+Using IDE
+----------------------------
 
-Run Samples
+If need to debug program, then it is more convinent to use IDE to run and debug it. All platforms other than Android can use CMake to generate corresponding project file. Can refer to [Detail CMake Guide](cmake/README.md) for detail information.
 
-```
-$ bin/Debug/cpp-empty-test/cpp-empty-test
-or
-$ bin/Debug/lua-empty-test/lua-empty-test
-```
-
-> You may meet building errors when building libGLFW.so. It is because libGL.so directs to an error target, you should make it to direct to a correct one. `install-deps-linux.sh` only has to be run once.
-
-* For Windows
-
-Open the `cocos2d-x/build/cocos2d-win32.sln`
-
-* For Android
-
-```
-$ cd cocos2d-x/build
-$ python ./android-build.py cpp-empty-test -p 14
-$ adb install ../tests/cpp-empty-test/proj.android/bin/CppEmptyTest-debug.apk
-```
-
-Then click item on Android device to run tests. Available value of `-p` is the API level, cocos2d-x supports from level 14.
-
-Or you can import the project located at `tests/cpp-empty-test/proj.android` using Android Studio 3.0.0+.
+For Android, the Android Studio project file lies in `PROJECT_DIR/proj.android`. Can just use Android Studio to import the exsting project file.
 
 Learning Resources
 --------------------------------

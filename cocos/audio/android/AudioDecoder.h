@@ -1,4 +1,5 @@
 /****************************************************************************
+/****************************************************************************
 Copyright (c) 2016 Chukong Technologies Inc.
 Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
@@ -29,7 +30,7 @@ THE SOFTWARE.
 #include "audio/android/PcmData.h"
 #include "base/CCData.h"
 
-namespace cocos2d { namespace experimental {
+namespace cocos2d {
 
 class AudioDecoder
 {
@@ -61,4 +62,4 @@ protected:
     size_t _fileCurrPos;
 };
 
-}} // namespace cocos2d { namespace experimental {
+} // namespace cocos2d {

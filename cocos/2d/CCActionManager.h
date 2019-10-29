@@ -115,10 +115,6 @@ public:
      */
     virtual void removeAllActionsByTag(int tag, Node *target);
 
-    /* BPC-PATCH */
-    struct _ccArray* getAllActions(const Node* target) const;
-    /* END BPC-PATCH */
-
     /** Removes all actions matching at least one bit in flags and the target.
      *
      * @param flags     The flag field to match the actions' flags based on bitwise AND.
@@ -152,10 +148,6 @@ public:
      */
     virtual ssize_t getNumberOfRunningActions() const;
 
-    /** @deprecated Use getNumberOfRunningActionsInTarget() instead.
-     */
-    CC_DEPRECATED_ATTRIBUTE ssize_t numberOfRunningActionsInTarget(Node *target) const { return getNumberOfRunningActionsInTarget(target); }
-
 
     /** Returns the numbers of actions that are running in a
      *  certain target with a specific tag.
@@ -172,7 +164,6 @@ public:
      * @js NA
      */
     virtual size_t getNumberOfRunningActionsInTargetByTag(const Node *target, int tag);
-
 
     /** Pauses the target: all running actions and newly added actions will be paused.
      *

@@ -32,14 +32,10 @@ THE SOFTWARE.
 #include "base/CCEventCustom.h"
 #include "base/CCEventType.h"
 #include "base/CCEventDispatcher.h"
-#include "renderer/CCGLProgramCache.h"
 #include "renderer/CCTextureCache.h"
-#include "renderer/ccGLStateCache.h"
-#include "2d/CCDrawingPrimitives.h"
 #include "platform/android/jni/JniHelper.h"
 #include "platform/CCDataManager.h"
 #include "network/CCDownloader-android.h"
-#include <unistd.h>
 #include <android/log.h>
 #include <android/api-level.h>
 #include <jni.h>
@@ -52,6 +48,8 @@ THE SOFTWARE.
 #define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG,__VA_ARGS__)
 
 void cocos_android_app_init(JNIEnv* env, jobject thiz) __attribute__((weak));
+
+void cocos_audioengine_focus_change(int focusChange);
 
 void cocos_audioengine_focus_change(int focusChange);
 
@@ -105,27 +103,11 @@ JNIEXPORT void Java_org_cocos2dx_lib_Cocos2dxRenderer_nativeInit(JNIEnv*  env, j
     }
     else
     {
-
-        /* BPC PATCH */ 
-        // invalidate texture id's and re-bind them to new context
-        cocos2d::Texture2D::invalidateOldContextNames();
-        /* END PATCH */
-        cocos2d::GL::invalidateStateCache();
-
-        // BPC PATCH: Reload all GL programs synchronously, since nothing is
-        // in a valid state right now.
-        cocos2d::EventCustom event(EVENT_RESET_ALL_GL_PROGRAMS);
-        director->getEventDispatcher()->dispatchEvent(&event);
-
-        cocos2d::GLProgramCache::getInstance()->reloadDefaultGLPrograms();
-        cocos2d::DrawPrimitives::init();
-        cocos2d::VolatileTextureMgr::reloadAllTextures();
-
-        // BPC PATCH: We have shader stuff to reload before this should happen.
-        // See EngineController for where we do that.
-        //cocos2d::EventCustom recreatedEvent(EVENT_RENDERER_RECREATED);
-        //director->getEventDispatcher()->dispatchEvent(&recreatedEvent);
+        cocos2d::Director::getInstance()->resetMatrixStack();
+        cocos2d::EventCustom recreatedEvent(EVENT_RENDERER_RECREATED);
+        director->getEventDispatcher()->dispatchEvent(&recreatedEvent);
         director->setGLDefaultValues();
+        cocos2d::VolatileTextureMgr::reloadAllTextures();
     }
     cocos2d::network::_preloadJavaDownloaderClass();
 }

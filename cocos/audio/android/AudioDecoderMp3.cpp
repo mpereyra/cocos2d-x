@@ -29,7 +29,7 @@ THE SOFTWARE.
 #include "audio/android/mp3reader.h"
 #include "platform/CCFileUtils.h"
 
-namespace cocos2d { namespace experimental {
+namespace cocos2d {
 
 AudioDecoderMp3::AudioDecoderMp3()
 {
@@ -79,5 +79,4 @@ bool AudioDecoderMp3::decodeToPcm()
     ALOGE("Decode MP3 (%s) failed, channels: %d, rate: %d, frames: %d", _url.c_str(), numChannels, sampleRate, numFrames);
     return false;
 }
-
-}} // namespace cocos2d { namespace experimental {
+} // namespace cocos2d {

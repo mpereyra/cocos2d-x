@@ -23,7 +23,6 @@
  ****************************************************************************/
 
 #include "UnitTest.h"
-#include "RefPtrTest.h"
 #include "ui/UIHelper.h"
 #include "network/Uri.h"
 #include "base/ccUtils.h"
@@ -73,7 +72,6 @@ UnitTests::UnitTests()
     ADD_TEST_CASE(TemplateVectorTest);
     ADD_TEST_CASE(TemplateMapTest);
     ADD_TEST_CASE(ValueTest);
-    ADD_TEST_CASE(RefPtrTest);
     ADD_TEST_CASE(UTFConversionTest);
     ADD_TEST_CASE(UIHelperSubStringTest);
     ADD_TEST_CASE(ParseIntegerListTest);
@@ -145,7 +143,7 @@ void TemplateVectorTest::onEnter()
 
     // Test move constructor
 
-    auto createVector = [this](){
+    auto createVector = [](){
         Vector<Node*> ret;
 
         for (int i = 0; i < 20; i++)
@@ -369,7 +367,7 @@ void TemplateMapTest::onEnter()
 {
     UnitTestDemo::onEnter();
 
-    auto createMap = [this](){
+    auto createMap = [](){
         Map<std::string, Node*> ret;
         for (int i = 0; i < 20; ++i)
         {

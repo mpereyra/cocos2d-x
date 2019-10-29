@@ -88,8 +88,7 @@ void ExtraAction::step(float /*dt*/)
 
 bool ActionInterval::initWithDuration(float d)
 {
-
-    _duration = std::abs(d) <= MATH_EPSILON ? MATH_EPSILON : d;
+    _duration = d;
     _elapsed = 0;
     _firstTick = true;
     _done = false;
@@ -177,19 +176,6 @@ Sequence* Sequence::createWithTwoActions(FiniteTimeAction *actionOne, FiniteTime
     return nullptr;
 }
 
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT)
-Sequence* Sequence::variadicCreate(FiniteTimeAction *action1, ...)
-{
-    va_list params;
-    va_start(params, action1);
-
-    Sequence *ret = Sequence::createWithVariableList(action1, params);
-
-    va_end(params);
-    
-    return ret;
-}
-#else
 Sequence* Sequence::create(FiniteTimeAction *action1, ...)
 {
     va_list params;
@@ -201,7 +187,6 @@ Sequence* Sequence::create(FiniteTimeAction *action1, ...)
     
     return ret;
 }
-#endif
 
 Sequence* Sequence::createWithVariableList(FiniteTimeAction *action1, va_list args)
 {
@@ -631,19 +616,6 @@ RepeatForever *RepeatForever::reverse() const
 // Spawn
 //
 
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_WINRT)
-Spawn* Spawn::variadicCreate(FiniteTimeAction *action1, ...)
-{
-    va_list params;
-    va_start(params, action1);
-
-    Spawn *ret = Spawn::createWithVariableList(action1, params);
-
-    va_end(params);
-    
-    return ret;
-}
-#else
 Spawn* Spawn::create(FiniteTimeAction *action1, ...)
 {
     va_list params;
@@ -655,7 +627,6 @@ Spawn* Spawn::create(FiniteTimeAction *action1, ...)
     
     return ret;
 }
-#endif
 
 Spawn* Spawn::createWithVariableList(FiniteTimeAction *action1, va_list args)
 {
@@ -941,6 +912,8 @@ void RotateTo::calculateAngles(float &startAngle, float &diffAngle, float dstAng
     }
 
     diffAngle = dstAngle - startAngle;
+    //fix angle when angle is bigger than 360
+    diffAngle = diffAngle - (int)diffAngle / 360 * 360;
     if (diffAngle > 180)
     {
         diffAngle -= 360;
@@ -2123,7 +2096,7 @@ Blink* Blink::reverse() const
 FadeIn* FadeIn::create(float d)
 {
     FadeIn* action = new (std::nothrow) FadeIn();
-    if (action && action->initWithDuration(d,255.0f))
+    if (action && action->initWithDuration(d,255))
     {
         action->autorelease();
         return action;
@@ -2160,7 +2133,7 @@ void FadeIn::startWithTarget(cocos2d::Node *target)
     if (nullptr != _reverseAction)
         this->_toOpacity = this->_reverseAction->_fromOpacity;
     else
-        _toOpacity = 255.0f;
+        _toOpacity = 255;
     
     if (target)
         _fromOpacity = target->getOpacity();
@@ -2173,7 +2146,7 @@ void FadeIn::startWithTarget(cocos2d::Node *target)
 FadeOut* FadeOut::create(float d)
 {
     FadeOut* action = new (std::nothrow) FadeOut();
-    if (action && action->initWithDuration(d,0.0f))
+    if (action && action->initWithDuration(d,0))
     {
         action->autorelease();
         return action;
@@ -2196,7 +2169,7 @@ void FadeOut::startWithTarget(cocos2d::Node *target)
     if (nullptr != _reverseAction)
         _toOpacity = _reverseAction->_fromOpacity;
     else
-        _toOpacity = 0.0f;
+        _toOpacity = 0;
     
     if (target)
         _fromOpacity = target->getOpacity();
@@ -2219,7 +2192,7 @@ FadeTo* FadeOut::reverse() const
 // FadeTo
 //
 
-FadeTo* FadeTo::create(float duration, GLubyte opacity)
+FadeTo* FadeTo::create(float duration, uint8_t opacity)
 {
     FadeTo *fadeTo = new (std::nothrow) FadeTo();
     if (fadeTo && fadeTo->initWithDuration(duration, opacity))
@@ -2232,7 +2205,7 @@ FadeTo* FadeTo::create(float duration, GLubyte opacity)
     return nullptr;
 }
 
-bool FadeTo::initWithDuration(float duration, GLubyte opacity)
+bool FadeTo::initWithDuration(float duration, uint8_t opacity)
 {
     if (ActionInterval::initWithDuration(duration))
     {
@@ -2269,14 +2242,14 @@ void FadeTo::update(float time)
 {
     if (_target)
     {
-        _target->setOpacity((GLubyte)(_fromOpacity + (_toOpacity - _fromOpacity) * time));
+        _target->setOpacity((uint8_t)(_fromOpacity + (_toOpacity - _fromOpacity) * time));
     }
 }
 
 //
 // TintTo
 //
-TintTo* TintTo::create(float duration, GLubyte red, GLubyte green, GLubyte blue)
+TintTo* TintTo::create(float duration, uint8_t red, uint8_t green, uint8_t blue)
 {
     TintTo *tintTo = new (std::nothrow) TintTo();
     if (tintTo && tintTo->initWithDuration(duration, red, green, blue))
@@ -2294,7 +2267,7 @@ TintTo* TintTo::create(float duration, const Color3B& color)
     return create(duration, color.r, color.g, color.b);
 }
 
-bool TintTo::initWithDuration(float duration, GLubyte red, GLubyte green, GLubyte blue)
+bool TintTo::initWithDuration(float duration, uint8_t red, uint8_t green, uint8_t blue)
 {
     if (ActionInterval::initWithDuration(duration))
     {
@@ -2330,9 +2303,9 @@ void TintTo::update(float time)
 {
     if (_target)
     {
-        _target->setColor(Color3B(GLubyte(_from.r + (_to.r - _from.r) * time),
-            (GLubyte)(_from.g + (_to.g - _from.g) * time),
-            (GLubyte)(_from.b + (_to.b - _from.b) * time)));
+        _target->setColor(Color3B(uint8_t(_from.r + (_to.r - _from.r) * time),
+            (uint8_t)(_from.g + (_to.g - _from.g) * time),
+            (uint8_t)(_from.b + (_to.b - _from.b) * time)));
     }
 }
 
@@ -2340,7 +2313,7 @@ void TintTo::update(float time)
 // TintBy
 //
 
-TintBy* TintBy::create(float duration, GLshort deltaRed, GLshort deltaGreen, GLshort deltaBlue)
+TintBy* TintBy::create(float duration, int16_t deltaRed, int16_t deltaGreen, int16_t deltaBlue)
 {
     TintBy *tintBy = new (std::nothrow) TintBy();
     if (tintBy && tintBy->initWithDuration(duration, deltaRed, deltaGreen, deltaBlue))
@@ -2353,7 +2326,7 @@ TintBy* TintBy::create(float duration, GLshort deltaRed, GLshort deltaGreen, GLs
     return nullptr;
 }
 
-bool TintBy::initWithDuration(float duration, GLshort deltaRed, GLshort deltaGreen, GLshort deltaBlue)
+bool TintBy::initWithDuration(float duration, int16_t deltaRed, int16_t deltaGreen, int16_t deltaBlue)
 {
     if (ActionInterval::initWithDuration(duration))
     {
@@ -2390,9 +2363,9 @@ void TintBy::update(float time)
 {
     if (_target)
     {
-        _target->setColor(Color3B((GLubyte)(_fromR + _deltaR * time),
-            (GLubyte)(_fromG + _deltaG * time),
-            (GLubyte)(_fromB + _deltaB * time)));
+        _target->setColor(Color3B((uint8_t)(_fromR + _deltaR * time),
+            (uint8_t)(_fromG + _deltaG * time),
+            (uint8_t)(_fromB + _deltaB * time)));
     }    
 }
 
@@ -2535,15 +2508,7 @@ Animate* Animate::create(Animation *animation)
 }
 
 Animate::Animate()
-: _splitTimes(new std::vector<float>)
-, _nextFrame(0)
-, _origFrame(nullptr)
-, _executedLoops(0)
-, _animation(nullptr)
-, _frameDisplayedEvent(nullptr)
-, _currFrameIndex(0)
 {
-
 }
 
 Animate::~Animate()

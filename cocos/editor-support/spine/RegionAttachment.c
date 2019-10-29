@@ -35,6 +35,10 @@ typedef enum {
 	BLX = 0, BLY, ULX, ULY, URX, URY, BRX, BRY
 } spVertexIndex;
 
+typedef enum {
+	BLX = 0, BLY, ULX, ULY, URX, URY, BRX, BRY
+} spVertexIndex;
+
 void _spRegionAttachment_dispose (spAttachment* attachment) {
 	spRegionAttachment* self = SUB_CAST(spRegionAttachment, attachment);
 	_spAttachment_deinit(attachment);

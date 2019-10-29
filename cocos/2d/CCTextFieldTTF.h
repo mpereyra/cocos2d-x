@@ -205,23 +205,6 @@ public:
     virtual void setPasswordTextStyle(const std::string& text);
     const std::string& getPasswordTextStyle() const;
 
-    // BPC PATCH - Support custom keyboard modes and secure text entry
-    enum KeyboardType {
-        kKTDefault = 0,
-        kKTEmail,
-        kKTURL,
-        kKTNumberPad,
-        kKTPhonePad,
-        kKTAsciiKeyboard,
-    };
-
-    virtual void setKeyboardType(KeyboardType type);
-    virtual KeyboardType getKeyboardType() const;
-
-    virtual void setPlatformSecureTextEntry(bool value);
-    virtual bool getPlatformSecureTextEntry() const;
-    // END BPC PATCH
-
     /**
      * Query whether the currently display mode is secure text entry or not.
      *@return Whether current text is displayed as secure text entry.

@@ -303,17 +303,15 @@ ResourceData ImageView::getRenderFile()
     rData.file = _textureFile;
     return rData;
 }
-    
-void ImageView::setGLProgram(GLProgram* glProgram)
+
+void ImageView::setBlendFunc(const BlendFunc &blendFunc)
 {
-    Widget::setGLProgram(glProgram);
-    _imageRenderer->setGLProgram(glProgram);
+    _imageRenderer->setBlendFunc(blendFunc);
 }
     
-void ImageView::setGLProgramState(cocos2d::GLProgramState* glProgramState)
+const BlendFunc& ImageView::getBlendFunc() const
 {
-    Widget::setGLProgramState(glProgramState);
-    _imageRenderer->setGLProgramState(glProgramState);
+    return _imageRenderer->getBlendFunc();
 }
 
 void ImageView::setBlendFunc(const BlendFunc &blendFunc)

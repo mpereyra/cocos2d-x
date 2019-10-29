@@ -41,8 +41,6 @@ THE SOFTWARE.
 #include "2d/CCActionManager.h"
 #include "2d/CCScene.h"
 #include "2d/CCComponent.h"
-#include "renderer/CCGLProgram.h"
-#include "renderer/CCGLProgramState.h"
 #include "renderer/CCMaterial.h"
 #include "math/TransformUtils.h"
 
@@ -95,7 +93,6 @@ Node::Node()
 // userData is always inited as nil
 , _userData(nullptr)
 , _userObject(nullptr)
-, _glProgramState(nullptr)
 , _running(false)
 , _visible(true)
 , _ignoreAnchorPointForPosition(false)
@@ -112,7 +109,6 @@ Node::Node()
 , _cascadeColorEnabled(false)
 , _cascadeOpacityEnabled(false)
 , _cameraMask(1)
-, _traversalCameraMask(1)
 , _onEnterCallback(nullptr)
 , _onExitCallback(nullptr)
 , _onEnterTransitionDidFinishCallback(nullptr)
@@ -165,9 +161,6 @@ Node::~Node()
     // User object has to be released before others, since userObject may have a weak reference of this node
     // It may invoke `node->stopAllActions();` while `_actionManager` is null if the next line is after `CC_SAFE_RELEASE_NULL(_actionManager)`.
     CC_SAFE_RELEASE_NULL(_userObject);
-    
-    // attributes
-    CC_SAFE_RELEASE_NULL(_glProgramState);
 
     for (auto& child : _children)
     {
@@ -193,6 +186,7 @@ Node::~Node()
     CC_SAFE_RELEASE(_eventDispatcher);
 
     delete[] _additionalTransform;
+    CC_SAFE_RELEASE(_programState);
 }
 
 bool Node::init()
@@ -432,7 +426,7 @@ void Node::setRotationSkewY(float rotationY)
 }
 
 /// scale getter
-float Node::getScale(void) const
+float Node::getScale() const
 {
     CCASSERT( _scaleX == _scaleY, "CCNode#scale. ScaleX != ScaleY. Don't know which one to return");
     return _scaleX;
@@ -738,42 +732,6 @@ void Node::setUserObject(Ref* userObject)
     _userObject = userObject;
 }
 
-GLProgramState* Node::getGLProgramState() const
-{
-    return _glProgramState;
-}
-
-void Node::setGLProgramState(cocos2d::GLProgramState* glProgramState)
-{
-    if (glProgramState != _glProgramState)
-    {
-        CC_SAFE_RELEASE(_glProgramState);
-        _glProgramState = glProgramState;
-        CC_SAFE_RETAIN(_glProgramState);
-
-        if (_glProgramState)
-            _glProgramState->setNodeBinding(this);
-    }
-}
-
-
-void Node::setGLProgram(GLProgram* glProgram)
-{
-    if (_glProgramState == nullptr || (_glProgramState && _glProgramState->getGLProgram() != glProgram))
-    {
-        CC_SAFE_RELEASE(_glProgramState);
-        _glProgramState = GLProgramState::getOrCreateWithGLProgram(glProgram);
-        _glProgramState->retain();
-
-        _glProgramState->setNodeBinding(this);
-    }
-}
-
-GLProgram * Node::getGLProgram() const
-{
-    return _glProgramState ? _glProgramState->getGLProgram() : nullptr;
-}
-
 Scene* Node::getScene() const
 {
     if (!_parent)
@@ -902,22 +860,27 @@ void Node::enumerateChildren(const std::string &name, std::function<bool (Node *
     
     // Remove '//', '/..' if exist
     std::string newName = name.substr(subStrStartPos, subStrlength);
-
+    
+    const Node* target = this;
+    
     if (searchFromParent)
     {
-        newName.insert(0, "[[:alnum:]]+/");
+        if (nullptr == _parent)
+        {
+            return;
+        }
+        target = _parent;
     }
-    
     
     if (searchRecursively)
     {
         // name is '//xxx'
-        doEnumerateRecursive(this, newName, callback);
+        target->doEnumerateRecursive(target, newName, callback);
     }
     else
     {
         // name is xxx
-        doEnumerate(newName, callback);
+        target->doEnumerate(newName, callback);
     }
 }
 
@@ -1706,16 +1669,6 @@ void Node::pause()
     _eventDispatcher->pauseEventListenersForTarget(this);
 }
 
-void Node::resumeSchedulerAndActions()
-{
-    resume();
-}
-
-void Node::pauseSchedulerAndActions()
-{
-    pause();
-}
-
 // override me
 void Node::update(float fDelta)
 {
@@ -1804,22 +1757,32 @@ const Mat4& Node::getNodeToParentTransform() const
             float sy = sinf(radiansY);
             
             float m0 = _transform.m[0], m1 = _transform.m[1], m4 = _transform.m[4], m5 = _transform.m[5], m8 = _transform.m[8], m9 = _transform.m[9];
-            _transform.m[0] = cy * m0 - sx * m1, _transform.m[4] = cy * m4 - sx * m5, _transform.m[8] = cy * m8 - sx * m9;
-            _transform.m[1] = sy * m0 + cx * m1, _transform.m[5] = sy * m4 + cx * m5, _transform.m[9] = sy * m8 + cx * m9;
+            _transform.m[0] = cy * m0 - sx * m1;
+            _transform.m[4] = cy * m4 - sx * m5;
+            _transform.m[8] = cy * m8 - sx * m9;
+            _transform.m[1] = sy * m0 + cx * m1;
+            _transform.m[5] = sy * m4 + cx * m5;
+            _transform.m[9] = sy * m8 + cx * m9;
         }
         _transform = translation * _transform;
 
         if (_scaleX != 1.f)
         {
-            _transform.m[0] *= _scaleX, _transform.m[1] *= _scaleX, _transform.m[2] *= _scaleX;
+            _transform.m[0] *= _scaleX;
+            _transform.m[1] *= _scaleX;
+             _transform.m[2] *= _scaleX;
         }
         if (_scaleY != 1.f)
         {
-            _transform.m[4] *= _scaleY, _transform.m[5] *= _scaleY, _transform.m[6] *= _scaleY;
+            _transform.m[4] *= _scaleY;
+            _transform.m[5] *= _scaleY;
+            _transform.m[6] *= _scaleY;
         }
         if (_scaleZ != 1.f)
         {
-            _transform.m[8] *= _scaleZ, _transform.m[9] *= _scaleZ, _transform.m[10] *= _scaleZ;
+            _transform.m[8] *= _scaleZ;
+            _transform.m[9] *= _scaleZ;
+            _transform.m[10] *= _scaleZ;
         }
         
         // FIXME:: Try to inline skew
@@ -2078,24 +2041,24 @@ void Node::removeAllComponents()
 
 // MARK: Opacity and Color
 
-GLubyte Node::getOpacity(void) const
+uint8_t Node::getOpacity() const
 {
     return _realOpacity;
 }
 
-GLubyte Node::getDisplayedOpacity() const
+uint8_t Node::getDisplayedOpacity() const
 {
     return _displayedOpacity;
 }
 
-void Node::setOpacity(GLubyte opacity)
+void Node::setOpacity(uint8_t opacity)
 {
     _displayedOpacity = _realOpacity = opacity;
     
     updateCascadeOpacity();
 }
 
-void Node::updateDisplayedOpacity(GLubyte parentOpacity)
+void Node::updateDisplayedOpacity(uint8_t parentOpacity)
 {
     _displayedOpacity = _realOpacity * parentOpacity/255.0;
     updateColor();
@@ -2109,7 +2072,7 @@ void Node::updateDisplayedOpacity(GLubyte parentOpacity)
     }
 }
 
-bool Node::isCascadeOpacityEnabled(void) const
+bool Node::isCascadeOpacityEnabled() const
 {
     return _cascadeOpacityEnabled;
 }
@@ -2135,7 +2098,7 @@ void Node::setCascadeOpacityEnabled(bool cascadeOpacityEnabled)
 
 void Node::updateCascadeOpacity()
 {
-    GLubyte parentOpacity = 255;
+    uint8_t parentOpacity = 255;
     
     if (_parent != nullptr && _parent->isCascadeOpacityEnabled())
     {
@@ -2163,7 +2126,7 @@ bool Node::isOpacityModifyRGB() const
     return false;
 }
 
-const Color3B& Node::getColor(void) const
+const Color3B& Node::getColor() const
 {
     return _realColor;
 }
@@ -2196,7 +2159,7 @@ void Node::updateDisplayedColor(const Color3B& parentColor)
     }
 }
 
-bool Node::isCascadeColorEnabled(void) const
+bool Node::isCascadeColorEnabled() const
 {
     return _cascadeColorEnabled;
 }
@@ -2301,93 +2264,24 @@ void Node::setCameraMask(unsigned short mask, bool applyChildren)
     }
 }
 
-/*BPC PATCH*/
-void Node::setTraversalCameraMask(unsigned short mask, bool applyChildren)
-{
-    _traversalCameraMask = _cameraMask | mask;
-    if (applyChildren)
-    {
-        for (const auto& child : _children)
-        {
-                child->setTraversalCameraMask(mask, applyChildren);
-        }
-    }
-}
-/*END BPC PATCH*/
-
-// BPC PATCH START - Memory usage debug
-// https://github.com/brooklynpacket/cocos2d-x/commit/95058b29d06161b19c6830cebf8a08126b8e6d28
-#if (BPC_ENABLE_MEMORY_USAGE_DEBUG)
-    size_t Node::nodeSize() {
-    return sizeof(Node);
-}
-
-std::vector<const Ref*> Node::getSharedResources() {
-    return {};
-}
-
-void Node::debugUsage(DebugData &data, std::set<std::string> tags, bool printReport /*= false*/) {
-    if (!m_bpcTag.empty()) {
-        tags.emplace(m_bpcTag);
-    }
-    
-    // gather usage info for this node
-    for (auto const &tag : tags) {
-        auto &usage = data[tag];
-        auto sharedResources = getSharedResources();
-        usage.shared_resources.insert(std::make_move_iterator(sharedResources.begin()), std::make_move_iterator(sharedResources.end()));
-        
-        usage.numberOfNodes++;
-        usage.bytesUsed += nodeSize();
-    }
-    
-    // recurse over children
-    for (auto child : _children) {
-        child->debugUsage(data, tags, false);
-    }
-    
-    if (printReport) {
-        auto &totalUsage = data[m_bpcTag];
-        CCLOG("---- Tag ----  Num nodes           |    Node data mem   |    Textures");
-        for (auto const &tagUsage : data) {
-            int texMemUsed = 0;
-            int numTex = 0;
-            auto const &usage = tagUsage.second;
-            for (auto const * const resource : usage.shared_resources) {
-                if (!resource) {
-                    continue;
-                }
-                
-                if (auto texture = dynamic_cast<Texture2D const*>(resource)) {
-                    texMemUsed += static_cast<float>(texture->getPixelsHigh() * texture->getPixelsWide()) * (static_cast<float>(texture->bitsPerPixelForFormat()) / 8.0f);
-                    numTex++;
-                    continue;
-                }
-            }
-            
-            auto const numNodesPercentage = static_cast<float>(usage.numberOfNodes) / totalUsage.numberOfNodes * 100.0f;
-            auto const bytesPercentage = static_cast<float>(usage.bytesUsed) / totalUsage.bytesUsed * 100.0f;
-            CCLOG("%12s: %5u nodes (%5.1f%%) | %6.2f MB (%5.1f%%) | %4i %6.2f MB",
-                  tagUsage.first.data(),
-                  usage.numberOfNodes, numNodesPercentage,
-                  static_cast<float>(usage.bytesUsed)/(1024*1024), bytesPercentage,
-                  numTex, static_cast<float>(texMemUsed)/(1024*1024));
-        }
-    }
-}
-#endif
-// BPC PATCH END
-
 int Node::getAttachedNodeCount()
 {
     return __attachedNodeCount;
 }
 
-// MARK: Deprecated
-
-__NodeRGBA::__NodeRGBA()
+void Node::setProgramState(backend::ProgramState* programState)
 {
-    CCLOG("NodeRGBA deprecated.");
+    if (_programState != programState)
+    {
+        CC_SAFE_RELEASE(_programState);
+        _programState = programState;
+        CC_SAFE_RETAIN(programState);
+    }
+}
+
+backend::ProgramState* Node::getProgramState() const
+{
+    return _programState;
 }
 
 NS_CC_END
