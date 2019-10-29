@@ -458,12 +458,14 @@ void Sprite::setProgramState(backend::ProgramState *programState)
     _alphaTextureLocation = pipelineDescriptor.programState->getUniformLocation(backend::Uniform::TEXTURE1);
 
     setVertexLayout();
-    updateProgramState();
+    updateProgramStateTexture();
     setMVPMatrixUniform();
 }
 
 void Sprite::setTexture(Texture2D *texture)
 {
+    auto isETC1 = texture && texture->getAlphaTextureName();
+    setProgramState((isETC1) ? backend::ProgramType::ETC1 : backend::ProgramType::POSITION_TEXTURE_COLOR);
     CCASSERT(! _batchNode || (texture &&  texture == _batchNode->getTexture()), "CCSprite: Batched sprites should use the same texture as the batchnode");
 >>>>>>> v4
     // accept texture==nil as argument
@@ -496,12 +498,10 @@ void Sprite::setTexture(Texture2D *texture)
         }
         updateBlendFunc();
     }
-    auto isETC1 = texture && texture->getAlphaTextureName();
-    setProgramState((isETC1) ? backend::ProgramType::ETC1 : backend::ProgramType::POSITION_TEXTURE_COLOR);
-    updateProgramState();
+    updateProgramStateTexture();
 }
 
-void Sprite::updateProgramState()
+void Sprite::updateProgramStateTexture()
 {
     if (_texture == nullptr || _texture->getBackendTexture() == nullptr)
         return;
