@@ -9,7 +9,7 @@ uniform sampler2D tex0;
 uniform sampler2D tex1;
 uniform vec2 u_screenSize;
 uniform vec4 u_Time;
-uniform vec4 u_CosTime
+uniform vec4 u_CosTime;
 
 void main(void)
 {

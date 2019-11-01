@@ -132,8 +132,6 @@ public:
      * @param open Open or close IME keyboard.
      */
     virtual void setIMEKeyboardState(bool open) = 0;
-
-    virtual void setIMEKeyboardType(TextFieldTTF::KeyboardType type) = 0;
     virtual void setSecureTextEntry(bool secure) = 0;
     
     /** When the window is closed, it will return false if the platforms is Ios or Android.

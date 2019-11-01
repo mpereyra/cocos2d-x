@@ -142,24 +142,6 @@ const Texture2D::PixelFormatInfoMap Texture2D::_pixelFormatInfoTables(TexturePix
 // Default is: RGBA8888 (32-bit textures)
 static backend::PixelFormat g_defaultAlphaPixelFormat = backend::PixelFormat::DEFAULT;
 
-
-/* BPC PATCH */
-static std::set<Texture2D *> liveTextures;
-
-// called on android after we lose gl context and regain
-void Texture2D::invalidateOldContextNames() {
-    // remove and re-generate all the gl texture id's so we can't delete
-    // something that doesn't exist in the new gl context
-    for (auto live : liveTextures) {
-        if (live->_name != 0) {
-            live->_name = 0;
-            glGenTextures(1, &(live->_name));
-            GL::bindTexture2D(live->_name);
-        }
-    }
-}
-/* END PATCH */
-
 Texture2D::Texture2D()
 : _pixelFormat(backend::PixelFormat::DEFAULT)
 , _pixelsWide(0)

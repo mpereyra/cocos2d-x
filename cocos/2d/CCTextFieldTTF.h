@@ -266,11 +266,6 @@ protected:
     bool _secureTextEntry;
     std::string _passwordStyleText;
     
-    // BPC PATCH
-    KeyboardType _keyboardType;
-    bool _platformSecureTextEntry {false};
-    // END BPC PATCH
-    
     // Need use cursor
     bool _cursorEnabled;
     // Current position cursor

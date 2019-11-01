@@ -305,14 +305,6 @@ public:
 
     bool isIsolated() const { return _isolated; }
 
-    /**
-    * When isolated is set, the position of the node is no longer affected by parent nodes.
-    * Which means it will be drawn just like a root node.
-    */
-    void setIsolated(bool isolated) { _isolated = isolated; }
-
-    bool isIsolated() const { return _isolated; }
-
 CC_CONSTRUCTOR_ACCESS:
     DrawNode(float lineWidth = DEFAULT_LINE_WIDTH);
     virtual ~DrawNode();

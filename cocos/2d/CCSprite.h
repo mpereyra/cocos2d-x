@@ -94,15 +94,6 @@ struct transformValues_;
 class CC_DLL Sprite : public Node, public TextureProtocol
 {
 public:
-<<<<<<< HEAD
-    /* BPC_PATCH start: https://github.com/brooklynpacket/cocos2d-x/commit/95058b29d06161b19c6830cebf8a08126b8e6d28 */
-#if (defined(COCOS2D_DEBUG) && (COCOS2D_DEBUG > 0)) || DEBUG
-    std::vector<Ref const*> getSharedResources() override;
-#endif
-    /* BPC_PATCH end */
-    
-=======
->>>>>>> v4
     enum class RenderMode {
         QUAD,
         POLYGON,
@@ -407,22 +398,14 @@ public:
     /**
      * Returns the index used on the TextureAtlas.
      */
-<<<<<<< HEAD
-    ssize_t getAtlasIndex() const { return _atlasIndex; }
-=======
     unsigned int getAtlasIndex() const { return _atlasIndex; }
->>>>>>> v4
 
     /**
      * Sets the index used on the TextureAtlas.
      *
      * @warning Don't modify this value unless you know what you are doing.
      */
-<<<<<<< HEAD
-    void setAtlasIndex(ssize_t atlasIndex) { _atlasIndex = atlasIndex; }
-=======
     void setAtlasIndex(unsigned int atlasIndex) { _atlasIndex = atlasIndex; }
->>>>>>> v4
 
     /**
      * Returns the rect of the Sprite in points.
@@ -433,8 +416,6 @@ public:
      * Gets the weak reference of the TextureAtlas when the sprite is rendered using via SpriteBatchNode.
      */
     TextureAtlas* getTextureAtlas() const { return _textureAtlas; }
-<<<<<<< HEAD
-=======
 
     /**
     * Set ProgramState
@@ -445,8 +426,6 @@ public:
     * Get current ProgramState
     */
     virtual backend::ProgramState *getProgramState() const override;
->>>>>>> v4
-
     /**
      * Sets the weak reference of the TextureAtlas when the sprite is rendered using via SpriteBatchNode.
      */
@@ -513,21 +492,9 @@ public:
     /** whether or not contentSize stretches the sprite's texture */
     void setStretchEnabled(bool enabled);
 
-<<<<<<< HEAD
-    /** @deprecated Use setStretchEnabled() instead. */
-    CC_DEPRECATED_ATTRIBUTE void setStrechEnabled(bool enabled);
-
     /** returns whether or not contentSize stretches the sprite's texture */
     bool isStretchEnabled() const;
 
-    /** @deprecated Use isStretchEnabled() instead. */
-    CC_DEPRECATED_ATTRIBUTE bool isStrechEnabled() const;
-
-=======
-    /** returns whether or not contentSize stretches the sprite's texture */
-    bool isStretchEnabled() const;
-
->>>>>>> v4
     //
     // Overrides
     //
@@ -540,63 +507,12 @@ public:
     *In lua: local setBlendFunc(local src, local dst).
     *@endcode
     */
-<<<<<<< HEAD
-    void setBlendFunc(const BlendFunc &blendFunc) override { 
-        _blendFunc = blendFunc;
-        _blendFuncSet = true; /// TC patc
-    }
-=======
     void setBlendFunc(const BlendFunc &blendFunc) override { _blendFunc = blendFunc; }
->>>>>>> v4
     /**
     * @js  NA
     * @lua NA
     */
     const BlendFunc& getBlendFunc() const override { return _blendFunc; }
-<<<<<<< HEAD
-    /// @}
-
-    /**
-     * @js NA
-     */
-    virtual std::string getDescription() const override;
-
-    /// @{
-    /// @name Functions inherited from Node.
-    virtual void setScaleX(float scaleX) override;
-    virtual void setScaleY(float scaleY) override;
-    virtual void setScale(float scaleX, float scaleY) override;
-    /**
-    * @js  NA
-    * @lua NA
-    */
-    virtual void setPosition(const Vec2& pos) override;
-    virtual void setPosition(float x, float y) override;
-    virtual void setRotation(float rotation) override;
-    virtual void setRotationSkewX(float rotationX) override;
-    virtual void setRotationSkewY(float rotationY) override;
-    virtual void setSkewX(float sx) override;
-    virtual void setSkewY(float sy) override;
-    virtual void removeChild(Node* child, bool cleanup) override;
-    virtual void removeAllChildrenWithCleanup(bool cleanup) override;
-    virtual void reorderChild(Node *child, int zOrder) override;
-    using Node::addChild;
-    virtual void addChild(Node *child, int zOrder, int tag) override;
-    virtual void addChild(Node *child, int zOrder, const std::string &name) override;
-    virtual void sortAllChildren() override;
-    virtual void setScale(float scale) override;
-    virtual void setPositionZ(float positionZ) override;
-    virtual void setAnchorPoint(const Vec2& anchor) override;
-    virtual void setContentSize(const Size& size) override;
-    
-    virtual void setIgnoreAnchorPointForPosition(bool value) override;
-    
-    virtual void setVisible(bool bVisible) override;
-    virtual void draw(Renderer *renderer, const Mat4 &transform, uint32_t flags) override;
-    virtual void setOpacityModifyRGB(bool modify) override;
-    virtual bool isOpacityModifyRGB() const override;
-=======
->>>>>>> v4
     /// @}
 
     int getResourceType() const { return _fileType; }
@@ -709,27 +625,10 @@ CC_CONSTRUCTOR_ACCESS :
     virtual void updateShaders(const char* vert, const char* frag);
     
 protected:
-<<<<<<< HEAD
-
-=======
->>>>>>> v4
     virtual void updateColor() override;
     virtual void setTextureCoords(const Rect& rect);
     virtual void setTextureCoords(const Rect& rect, V3F_C4B_T2F_Quad* outQuad);
     virtual void setVertexCoords(const Rect& rect, V3F_C4B_T2F_Quad* outQuad);
-<<<<<<< HEAD
-    void populateTriangle(int quadIndex, const V3F_C4B_T2F_Quad& quad);
-    virtual void updateBlendFunc();
-    virtual void setReorderChildDirtyRecursively();
-    virtual void setDirtyRecursively(bool value);
-
-    void updatePoly();
-    void updateStretchFactor();
-
-    virtual void flipX();
-    virtual void flipY();
-
-=======
     virtual void updateBlendFunc();
     virtual void setReorderChildDirtyRecursively();
     virtual void setDirtyRecursively(bool value);
@@ -742,7 +641,6 @@ protected:
     void populateTriangle(int quadIndex, const V3F_C4B_T2F_Quad& quad);
     void setMVPMatrixUniform();
     void setProgramState(backend::ProgramType type);
->>>>>>> v4
     //
     // Data used when the sprite is rendered using a SpriteSheet
     //
@@ -758,13 +656,6 @@ protected:
     //
     // Data used when the sprite is self-rendered
     //
-<<<<<<< HEAD
-    BlendFunc        _blendFunc;            /// It's required for TextureProtocol inheritance
-    bool             _blendFuncSet {false}; /// TC patch: So we don't override _blendFunc if it was manually set
-    Texture2D*       _texture;              /// Texture2D object that is used to render the sprite
-    SpriteFrame*     _spriteFrame;
-    TrianglesCommand _trianglesCommand;     ///
-=======
     BlendFunc _blendFunc;            /// It's required for TextureProtocol inheritance
     Texture2D* _texture = nullptr;   /// Texture2D object that is used to render the sprite
     SpriteFrame* _spriteFrame = nullptr;
@@ -773,8 +664,7 @@ protected:
     backend::UniformLocation _mvpMatrixLocation;
     backend::UniformLocation _textureLocation;
     backend::UniformLocation _alphaTextureLocation;
-        
->>>>>>> v4
+    
 #if CC_SPRITE_DEBUG_DRAW
     DrawNode *_debugDrawNode = nullptr;
 #endif //CC_SPRITE_DEBUG_DRAW
@@ -784,21 +674,12 @@ protected:
 
     // texture
     Rect _rect;                             /// Rectangle of Texture2D
-<<<<<<< HEAD
-    bool _rectRotated;                      /// Whether the texture is rotated
-
-    Rect _centerRectNormalized;             /// Rectangle to implement "slice 9"
-    RenderMode _renderMode;                 /// render mode used by the Sprite: Quad, Slice9, Polygon or Quad_Batchnode
-    Vec2 _stretchFactor;                    /// stretch factor to match the contentSize. for 1- and 9- slice sprites
-    Size _originalContentSize;              /// original content size
-=======
     bool _rectRotated = false;              /// Whether the texture is rotated
 
     Rect _centerRectNormalized = {0,0,1,1}; /// Rectangle to implement "slice 9"
     RenderMode _renderMode = Sprite::RenderMode::QUAD;   /// render mode used by the Sprite: Quad, Slice9, Polygon or Quad_Batchnode
     Vec2 _stretchFactor = Vec2::ONE;                     /// stretch factor to match the contentSize. for 1- and 9- slice sprites
     Size _originalContentSize = Size::ZERO;              /// original content size
->>>>>>> v4
 
 
     // Offset Position (used by Zwoptex)
@@ -807,13 +688,8 @@ protected:
 
     // vertex coords, texture coords and color info
     V3F_C4B_T2F_Quad _quad;
-<<<<<<< HEAD
-    V3F_C4B_T2F* _trianglesVertex;
-    unsigned short* _trianglesIndex;
-=======
     V3F_C4B_T2F* _trianglesVertex = nullptr;
     unsigned short* _trianglesIndex = nullptr;
->>>>>>> v4
     PolygonInfo  _polyInfo;
 
     // opacity and RGB protocol
@@ -828,13 +704,8 @@ protected:
     std::string _fileName;
     int _fileType = 0;
 
-<<<<<<< HEAD
-    bool _stretchEnabled;
-
-=======
     bool _stretchEnabled = true;
     
->>>>>>> v4
 private:
     CC_DISALLOW_COPY_AND_ASSIGN(Sprite);
 };

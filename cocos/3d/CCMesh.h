@@ -190,7 +190,6 @@ public:
     
     /**get AABB*/
     const AABB& getAABB() const { return _aabb; }
-    const AABB& getSkinnedAABB() const { return m_skinnedAABB; }
 
     /**  Sets a new ProgramState for the Mesh
      * A new Material will be created for it
@@ -224,60 +223,6 @@ public:
     void setForce2DQueue(bool force2D) { _force2DQueue = force2D; }
 
     std::string getTextureFileName(){ return _texFile; }
-
-    /*BPC-PATCH, some of these might want to migrate down into CCTechnique*/
-    float getGlobalZ() const {return m_globalZ;}
-    void setGlobalZ(float zVal) {m_globalZ = zVal;}
-    void setIsTransparent(bool transparent) { _isTransparent = transparent;}
-    bool getIsTransparent() const {return _isTransparent;}
-    GLWriteMode getDepthWriteMode() const {return m_depthWriteMode;}
-    void setDepthWriteMode(GLWriteMode mode) {m_depthWriteMode = mode;}
-    GLWriteMode getCullFaceMode() const {return m_cullFaceMode;}
-    void setCullFaceMode(GLWriteMode mode){m_cullFaceMode = mode;}
-    bool getIsShadowCaster() const {return m_isShadowCaster;}
-    bool getIsShadowReceiver() const {return m_isShadowReceiver;}
-    bool getIsVertexLit() const {return m_isVertexLit;}
-    bool getReceiveFog() const {return m_receiveFog;}
-    bool getSkipRender() const {return m_skipRender;}
-    void setIsShadowCaster(bool cast) {m_isShadowCaster = cast;}
-    void setIsShadowReceiver(bool receive) {m_isShadowReceiver = receive;}
-    void setIsVertexLit(bool vertexLit) {m_isVertexLit = vertexLit;}
-    void setReceiveFog(bool fog) { m_receiveFog = fog; }
-    void setSkipRender(bool skip) {m_skipRender = skip;}
-    void setSkinnedAABB(const AABB& skinnedBB);
-    void setUseMeshDepth(bool use) { m_useMeshDepth = use; }
-    void setLocalSortOrder(int order) {m_localDepthSort = order;}
-    int getLocalSortORder() const {return m_localDepthSort;}
-
-    bool boolFromWriteMode(GLWriteMode mode) const{
-        switch(mode){
-            case GLWriteMode::Default:
-                return !getIsTransparent();
-            case GLWriteMode::AlwaysOn:
-                return true;
-            case GLWriteMode::AlwaysOff:
-                return false;
-        }
-    }
-
-    void setMeshLightMask(unsigned int mask) { m_meshLightMask = mask; }
-    unsigned int getMeshLightMask() const { return m_meshLightMask; }
-
-    void addCommandOverride(const std::string& techniqueName);
-
-    void setPointLightCount(int count);
-    void setFxPointLightCount(int count);
-    void setDirLightCount(int count);
-    void setSpotLightCount(int count);
-    void setFxSpotLightCount(int count);
-    void setHasAmbientLight(bool hasAmbient) { m_hasAmbientComponent = hasAmbient; }
-    bool hasAmbientLight() const { return m_hasAmbientComponent; }
-    int getPointLightCount();
-    int getFxPointLightCount();
-    int getDirLightCount();
-    int getSpotLightCount();
-    int getFxSpotLightCount();
-    /*END BPC-PATCH*/
 
 CC_CONSTRUCTOR_ACCESS:
 

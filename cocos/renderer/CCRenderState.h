@@ -49,27 +49,6 @@ using CullFaceSide = backend::CullMode;
 using FrontFace = backend::Winding;
 using DepthFunction = backend::CompareFunction;
 
-//BPC PATCH
-struct PolygonOffset {
-    PolygonOffset(double factor, double units) {
-        m_factor = factor;
-        m_units = units;
-    }
-    double m_factor {0};
-    double m_units {0};
-
-    bool operator==(const PolygonOffset& rhs) const
-    {
-        return (m_factor == rhs.m_factor && m_units == rhs.m_units);
-    }
-    bool operator!=(const PolygonOffset& rhs) const
-    {
-        return !(*this == rhs);
-    }
-    bool empty() const { return m_factor == 0 && m_units == 0; }
-};
-//END BPC PATCH
-
 /**
  * Defines the rendering state of the graphics device.
  */
@@ -78,18 +57,18 @@ class CC_DLL RenderState : public Ref
     friend class Material;
     friend class Technique;
     friend class Pass;
-
+    
 public:
-
+    
     std::string getName() const;
-
+    
     /**
      * Binds the render state for this RenderState and any of its parents, top-down,
      * for the given pass.
      */
     void bindPass(Pass* pass, MeshCommand *);
-
-
+    
+    
     /**
      * Defines a block of fixed-function render states that can be applied to a
      * RenderState object.
@@ -106,10 +85,10 @@ public:
          * Creates a new StateBlock with default render state settings.
          */
         //static StateBlock* create();
-
+        
         /** The recommended way to create StateBlocks is by calling `create`.
          * Don't use `new` or `delete` on them.
-         * 
+         *
          */
         StateBlock() = default;
         ~StateBlock() = default;
@@ -121,7 +100,7 @@ public:
          * only the state explicitly defined by this StateBlock is applied to the renderer.
          */
         void bind(PipelineDescriptor *programState);
-
+        
         /**
          * Explicitly sets the source and destination used in the blend function for this render state.
          *
@@ -130,14 +109,14 @@ public:
          * @param blendFunc Specifies how the blending factors are computed.
          */
         void setBlendFunc(const BlendFunc& blendFunc);
-
+        
         /**
          * Toggles blending.
          *
          * @param enabled true to enable, false to disable.
          */
         void setBlend(bool enabled);
-
+        
         /**
          * Explicitly sets the source used in the blend function for this render state.
          *
@@ -146,7 +125,7 @@ public:
          * @param blend Specifies how the source blending factors are computed.
          */
         void setBlendSrc(backend::BlendFactor blend);
-
+        
         /**
          * Explicitly sets the source used in the blend function for this render state.
          *
@@ -155,14 +134,14 @@ public:
          * @param blend Specifies how the destination blending factors are computed.
          */
         void setBlendDst(backend::BlendFactor blend);
-
+        
         /**
          * Explicitly enables or disables backface culling.
          *
          * @param enabled true to enable, false to disable.
          */
         void setCullFace(bool enabled);
-
+        
         /**
          * Sets the side of the facets to cull.
          *
@@ -171,7 +150,7 @@ public:
          * @param side The side to cull.
          */
         void setCullFaceSide(CullFaceSide side);
-
+        
         /**
          * Sets the winding for front facing polygons.
          *
@@ -180,7 +159,7 @@ public:
          * @param winding The winding for front facing polygons.
          */
         void setFrontFace(FrontFace winding);
-
+        
         /**
          * Toggles depth testing.
          *
@@ -189,14 +168,14 @@ public:
          * @param enabled true to enable, false to disable.
          */
         void setDepthTest(bool enabled);
-
+        
         /**
          * Toggles depth writing.
          *
          * @param enabled true to enable, false to disable.
          */
         void setDepthWrite(bool enabled);
-
+        
         /**
          * Sets the depth function to use when depth testing is enabled.
          *
@@ -206,47 +185,6 @@ public:
          * @param func The depth function.
          */
         void setDepthFunction(DepthFunction func);
-
-        /**
-         * Sets the stencil writing mask.
-         *
-         * By default, the stencil writing mask is all 1's.
-         *
-         * @param mask Bit mask controlling writing to individual stencil planes.
-         */
-        void setStencilWrite(unsigned int mask);
-
-        /**
-         * Sets the stencil function.
-         *
-         * By default, the function is set to STENCIL_ALWAYS, the reference value is 0, and the mask is all 1's.
-         *
-         * @param func The stencil function.
-         * @param ref The stencil reference value.
-         * @param mask The stencil mask.
-         */
-        void setStencilFunction(StencilFunction func, int ref, unsigned int mask);
-
-        /**
-         * Sets the stencil operation.
-         *
-         * By default, stencil fail, stencil pass/depth fail, and stencil and depth pass are set to STENCIL_OP_KEEP.
-         *
-         * @param sfail The stencil operation if the stencil test fails.
-         * @param dpfail The stencil operation if the stencil test passes, but the depth test fails.
-         * @param dppass The stencil operation if both the stencil test and depth test pass.
-         */
-        void setStencilOperation(StencilOperation sfail, StencilOperation dpfail, StencilOperation dppass);
-
-        /** BPC PATCH BEGIN **/
-        void setShouldUsePolygonOffset(bool enabled);
-        void setOffset(PolygonOffset const & offset);
-        PolygonOffset const & getOffset() const {
-            return m_offset;
-        }
-        void setShouldClip(bool shouldClip);
-        void setGlBounds(Rect glBounds);
-        /** BPC PATCH END **/
         
         /**
          * Sets a render state from the given name and value strings.
@@ -259,10 +197,10 @@ public:
          * @param value Value of the specified render state.
          */
         void setState(const std::string& name, const std::string& value);
-
+        
         uint32_t getHash() const;
         bool isDirty() const;
-
+        
         /** StateBlock bits to be used with invalidate */
         enum
         {
@@ -273,29 +211,25 @@ public:
             RS_DEPTH_WRITE = (1 << 4),
             RS_DEPTH_FUNC = (1 << 5),
             RS_CULL_FACE_SIDE = (1 << 6),
-            RS_STENCIL_TEST = (1 << 7),
-            RS_STENCIL_WRITE = (1 << 8),
-            RS_STENCIL_FUNC = (1 << 9),
-            RS_STENCIL_OP = (1 << 10),
+            //            RS_STENCIL_TEST = (1 << 7),
+            //            RS_STENCIL_WRITE = (1 << 8),
+            //            RS_STENCIL_FUNC = (1 << 9),
+            //            RS_STENCIL_OP = (1 << 10),
             RS_FRONT_FACE = (1 << 11),
-
-            /*BPC PATCH*/
-            RS_CLIP_BOUNDS = (1 << 12),
-            RS_POLYGON_OFFSET = (1 << 13),
-            /*END BPC PATCH*/
             
             RS_ALL_ONES = 0xFFFFFFFF,
         };
-
+        
     protected:
         
         /**
-        * update internal states of ProgramState
-        */
+         * update internal states of ProgramState
+         */
         void apply(PipelineDescriptor *pipelineDescriptor);
-
+        
         static void restoreUnmodifiedStates(long flags, PipelineDescriptor *pipelineDescriptor);
-
+        
+        
         bool _cullFaceEnabled = false;
         bool _depthTestEnabled = true;
         bool _depthWriteEnabled = false;
@@ -306,24 +240,24 @@ public:
         CullFaceSide _cullFaceSide = CullFaceSide::BACK;
         FrontFace _frontFace = FrontFace::COUNTER_CLOCK_WISE;
         long _modifiedBits = 0L;
-
+        
         mutable uint32_t _hash;
         mutable bool _hashDirty;
     };
-
+    
     StateBlock& getStateBlock() const;
-
+    
 protected:
     RenderState() = default;
     
     mutable uint32_t _hash = 0;
     mutable bool _hashDirty = true;
-
+    
     /**
      * The StateBlock of fixed-function render states that can be applied to the RenderState.
      */
     mutable StateBlock _state;
-
+    
     // name, for filtering
     std::string _name;
 };

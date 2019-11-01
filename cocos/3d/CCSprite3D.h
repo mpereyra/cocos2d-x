@@ -176,19 +176,10 @@ public:
     void setCullFace(CullFaceSide side);
     // set cull face enable or not
     void setCullFaceEnabled(bool enabled);
-    void setCullFaceEnabled(GLWriteMode mode);
     
     /** light mask getter & setter, light works only when _lightmask & light's flag is true, default value of _lightmask is 0xffff */
     virtual void setLightMask(unsigned int mask);
     unsigned int getLightMask() const { return _lightMask; }
-
-    /* BPC PATCH BEGIN */
-    void setDepthWriteEnabled(GLWriteMode mode, bool recursive=true);
-    virtual void setGlobalZOrder(float globalZOrder) override;
-    void setSkinAABB(bool active){ m_skinAABB = active; }
-    void setAllowCulling(bool cull) {m_allowCulling = cull; }
-    void setForceCulling(bool cull) {m_forceCulling = cull; }
-    /* BPC PATCH END */
     
     /**draw*/
     virtual void draw(Renderer *renderer, const Mat4 &transform, uint32_t flags) override;
