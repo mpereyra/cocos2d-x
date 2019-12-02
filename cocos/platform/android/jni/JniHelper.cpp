@@ -1,6 +1,7 @@
 /****************************************************************************
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -29,9 +30,9 @@ THE SOFTWARE.
 
 #include "base/ccUTF8.h"
 
-#define  LOG_TAG    "JniHelper"
-#define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG,__VA_ARGS__)
-#define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
+#define  CCLOG_TAG    "JniHelper"
+#define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,CCLOG_TAG,__VA_ARGS__)
+#define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,CCLOG_TAG,__VA_ARGS__)
 
 static pthread_key_t g_key;
 
@@ -73,13 +74,13 @@ namespace cocos2d {
 
     JavaVM* JniHelper::getJavaVM() {
         pthread_t thisthread = pthread_self();
-        LOGD("JniHelper::getJavaVM(), pthread_self() = %ld", thisthread);
+        //LOGD("JniHelper::getJavaVM(), pthread_self() = %ld", thisthread);
         return _psJavaVM;
     }
 
     void JniHelper::setJavaVM(JavaVM *javaVM) {
         pthread_t thisthread = pthread_self();
-        LOGD("JniHelper::setJavaVM(%p), pthread_self() = %ld", javaVM, thisthread);
+        //LOGD("JniHelper::setJavaVM(%p), pthread_self() = %ld", javaVM, thisthread);
         _psJavaVM = javaVM;
 
         pthread_key_create(&g_key, _detachCurrentThread);

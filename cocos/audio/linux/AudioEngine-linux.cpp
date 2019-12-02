@@ -1,3 +1,27 @@
+/****************************************************************************
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
+ 
+ http://www.cocos2d-x.org
+ 
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ 
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+ 
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.
+ ****************************************************************************/
+
 /**
  * @author cesarpachon
  */
@@ -48,8 +72,6 @@ AudioEngineImpl::AudioEngineImpl()
 AudioEngineImpl::~AudioEngineImpl()
 {
     FMOD_RESULT result;
-    result = pSystem->close();
-    ERRCHECKWITHEXIT(result);
     result = pSystem->release();
     ERRCHECKWITHEXIT(result);
 }
@@ -63,7 +85,7 @@ bool AudioEngineImpl::init()
     result = FMOD::System_Create(&pSystem);
     ERRCHECKWITHEXIT(result);
 
-    result = pSystem->setOutput(FMOD_OUTPUTTYPE_PULSEAUDIO);
+    result = pSystem->setOutput(FMOD_OUTPUTTYPE_AUTODETECT);
     ERRCHECKWITHEXIT(result);
 
     result = pSystem->init(32, FMOD_INIT_NORMAL, 0);
@@ -73,7 +95,7 @@ bool AudioEngineImpl::init()
     mapSound.clear();
 
     auto scheduler = cocos2d::Director::getInstance()->getScheduler();
-    scheduler->schedule(schedule_selector(AudioEngineImpl::update), this, 0.05f, false);
+    scheduler->schedule(CC_SCHEDULE_SELECTOR(AudioEngineImpl::update), this, 0.05f, false);
 
     g_AudioEngineImpl = this;
 
@@ -85,7 +107,8 @@ int AudioEngineImpl::play2d(const std::string &fileFullPath, bool loop, float vo
     int id = preload(fileFullPath, nullptr);
     if (id >= 0) {
         mapChannelInfo[id].loop=loop;
-        mapChannelInfo[id].channel->setPaused(true);
+        // channel is null here. Don't dereference it. It's only set in resume(id).
+        //mapChannelInfo[id].channel->setPaused(true);
         mapChannelInfo[id].volume = volume;
         AudioEngine::_audioIDInfoMap[id].state = AudioEngine::AudioState::PAUSED;
         resume(id);
@@ -170,8 +193,8 @@ bool AudioEngineImpl::stop(int audioID)
 
 void AudioEngineImpl::stopAll()
 {
-    for (auto it = mapChannelInfo.begin(); it != mapChannelInfo.end(); ++it) {
-        ChannelInfo & audioRef = it->second;
+    for (auto& it : mapChannelInfo) {
+        ChannelInfo & audioRef = it.second;
         audioRef.channel->stop();
         audioRef.channel = nullptr;
     }
@@ -210,14 +233,16 @@ float AudioEngineImpl::getCurrentTime(int audioID)
 
 bool AudioEngineImpl::setCurrentTime(int audioID, float time)
 {
+    bool ret = false;
     try {
         unsigned int position = (unsigned int)(time * 1000.0f);
         FMOD_RESULT result = mapChannelInfo[audioID].channel->setPosition(position, FMOD_TIMEUNIT_MS);
-        ERRCHECK(result);
+        ret = !ERRCHECK(result);
     }
     catch (const std::out_of_range& oor) {
         printf("AudioEngineImpl::setCurrentTime: invalid audioID: %d\n", audioID);
     }
+    return ret;
 }
 
 void AudioEngineImpl::setFinishCallback(int audioID, const std::function<void (int, const std::string &)> &callback)
@@ -261,14 +286,13 @@ void AudioEngineImpl::uncache(const std::string& path)
         }
         mapSound.erase(it);
     }
-    if (mapId.find(path) != mapId.end())
-        mapId.erase(path);
+    mapId.erase(path);
 }
 
 void AudioEngineImpl::uncacheAll()
 {
-    for (auto it = mapSound.cbegin(); it != mapSound.cend(); ++it) {
-        auto sound = it->second;
+    for (const auto& it : mapSound) {
+        auto sound = it.second;
         if (sound) {
             sound->release();
         }
@@ -294,10 +318,9 @@ int AudioEngineImpl::preload(const std::string& filePath, std::function<void(boo
     }
 
     int id = static_cast<int>(mapChannelInfo.size()) + 1;
-    if (mapId.find(filePath) == mapId.end())
-        mapId.insert({filePath, id});
-    else
-        id = mapId.at(filePath);
+    // std::map::insert returns std::pair<iter, bool>
+    auto channelInfoIter = mapId.insert({filePath, id});
+    id = channelInfoIter.first->second;
 
     auto& chanelInfo = mapChannelInfo[id];
     chanelInfo.sound = sound;

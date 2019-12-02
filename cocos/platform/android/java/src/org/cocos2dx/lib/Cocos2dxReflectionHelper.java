@@ -1,6 +1,7 @@
 /****************************************************************************
 Copyright (c) 2016 cocos2d-x.org
 Copyright (c) 2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -37,7 +38,7 @@ public class Cocos2dxReflectionHelper {
             Log.e("error", "can not find " + constantName + " in " + aClass.getName());
         }
         catch (IllegalAccessException e) {
-            Log.e("error", constantName + " is not accessable");
+            Log.e("error", constantName + " is not accessible");
         }
         catch (IllegalArgumentException e) {
             Log.e("error", "arguments error when get " + constantName);

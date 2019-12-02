@@ -1,5 +1,6 @@
 /****************************************************************************
- Copyright (c) 2014 Chukong Technologies Inc.
+ Copyright (c) 2014-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -33,7 +34,6 @@
 #include "base/CCProtocols.h"
 #include "2d/CCNode.h"
 #include "renderer/CCMeshCommand.h"
-#include "renderer/CCGLProgramState.h"
 #include "3d/CCSkeleton3D.h" // need to include for lua-binding
 #include "3d/CCAABB.h"
 #include "3d/CCBundle3DData.h"
@@ -100,13 +100,10 @@ public:
     std::vector<Mesh*> getMeshArrayByName(const std::string& name) const;
 
     /**get mesh*/
-    Mesh* getMesh() const { return _meshes.at(0); }
+    Mesh* getMesh() const;
     
     /** get mesh count */
     ssize_t getMeshCount() const { return _meshes.size(); }
-    
-    /**get skin*/
-    CC_DEPRECATED_ATTRIBUTE MeshSkin* getSkin() const;
     
     Skeleton3D* getSkeleton() const { return _skeleton; }
     
@@ -124,21 +121,19 @@ public:
     virtual const BlendFunc &getBlendFunc() const override;
     
     // overrides
-    /** set GLProgramState, you should bind attributes by yourself */
-    virtual void setGLProgramState(GLProgramState *glProgramState) override;
-    /** just remember bind attributes */
-    virtual void setGLProgram(GLProgram *glprogram) override;
-    
-    
-    // BPC PATCH BEGIN
-    // Virtual so Model3D can extend it, and Model3D with out meshes will return a valid AABB
+    /** set ProgramState, you should bind attributes by yourself */
+    virtual void setProgramState(backend::ProgramState *programState) override;
+
     /*
      * Get AABB
      * If the sprite has animation, it can't be calculated accurately,
      * because bone can drive the vertices, we just use the origin vertices
      * to calculate the AABB.
      */
-    virtual const AABB& getAABB() const;
+    
+    // BPC PATCH BEGIN
+    // Virtual so Model3D can extend it, and Model3D with out meshes will return a valid AABB
+	virtual const AABB& getAABB() const;
     // BPC PATCH END
 
     // BPC PATCH isSprite()
@@ -185,8 +180,8 @@ public:
     const AABB& getNodeToParentAABB(const std::vector<std::string>& excludeMeshes = {}, bool force = false) const override;
     /** BPC PATCH END **/
 
-    // set which face is going to cull, GL_BACK, GL_FRONT, GL_FRONT_AND_BACK, default GL_BACK
-    void setCullFace(GLenum cullFace);
+    // set which face is going to cull, CullFaceSide::BACK, CullFaceSide::FRONT and CullFaceSide::NONE.
+    void setCullFace(CullFaceSide side);
     // set cull face enable or not
     void setCullFaceEnabled(bool enabled);
     void setCullFaceEnabled(GLWriteMode mode);
@@ -272,9 +267,9 @@ CC_CONSTRUCTOR_ACCESS:
     /**generate default material*/
     void genMaterial(bool useLight = false);
 
-    void createNode(NodeData* nodedata, Node* root, const MaterialDatas& matrialdatas, bool singleSprite);
-    void createAttachSprite3DNode(NodeData* nodedata,const MaterialDatas& matrialdatas);
-    Sprite3D* createSprite3DNode(NodeData* nodedata,ModelData* modeldata,const MaterialDatas& matrialdatas);
+    void createNode(NodeData* nodedata, Node* root, const MaterialDatas& materialdatas, bool singleSprite);
+    void createAttachSprite3DNode(NodeData* nodedata, const MaterialDatas& materialdatas);
+    Sprite3D* createSprite3DNode(NodeData* nodedata, ModelData* modeldata, const MaterialDatas& materialdatas);
 
     /**get MeshIndexData by Id*/
     MeshIndexData* getMeshIndexData(const std::string& indexId) const;
@@ -323,7 +318,7 @@ protected:
         std::function<void(Sprite3D*, void*)> afterLoadCallback; // callback after load
         void*                           callbackParam;
         bool                            result; // sprite load result
-        std::string                     modlePath;
+        std::string                     modelPath;
         std::string                     texPath; //
         MeshDatas* meshdatas;
         MaterialDatas* materialdatas;
@@ -343,7 +338,7 @@ public:
     struct Sprite3DData
     {
         Vector<MeshVertexData*>   meshVertexDatas;
-        Vector<GLProgramState*>   glProgramStates;
+        Vector<backend::ProgramState*>   programStates;
         NodeDatas*      nodedatas;
         MaterialDatas*  materialdatas;
         ~Sprite3DData()
@@ -353,7 +348,7 @@ public:
             if (materialdatas)
                 delete materialdatas;
             meshVertexDatas.clear();
-            glProgramStates.clear();
+            programStates.clear();
         }
     };
     

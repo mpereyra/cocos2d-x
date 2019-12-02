@@ -1,5 +1,6 @@
 /****************************************************************************
- Copyright (c) 2013 Chukong Technologies Inc.
+ Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -276,10 +277,8 @@ EventListenerPhysicsContact* EventListenerPhysicsContact::create()
     return nullptr;
 }
 
-bool EventListenerPhysicsContact::hitTest(PhysicsShape* shapeA, PhysicsShape* shapeB)
+bool EventListenerPhysicsContact::hitTest(PhysicsShape* /*shapeA*/, PhysicsShape* /*shapeB*/)
 {
-    CC_UNUSED_PARAM(shapeA);
-    CC_UNUSED_PARAM(shapeB);
     return true;
 }
 

@@ -3,6 +3,7 @@ Copyright (c) 2008-2010 Ricardo Quesada
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2011      Zynga Inc.
 Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -249,7 +250,7 @@ const int Scheduler::PRIORITY_SYSTEM = INT_MIN;
 // Minimum priority level for user scheduling.
 const int Scheduler::PRIORITY_NON_SYSTEM_MIN = PRIORITY_SYSTEM + 1;
 
-Scheduler::Scheduler(void)
+Scheduler::Scheduler()
 : _timeScale(1.0f)
 , _updatesNegList(nullptr)
 , _updates0List(nullptr)
@@ -267,7 +268,7 @@ Scheduler::Scheduler(void)
     _functionsToPerform.reserve(30);
 }
 
-Scheduler::~Scheduler(void)
+Scheduler::~Scheduler()
 {
     unscheduleAll();
 }
@@ -441,6 +442,7 @@ void Scheduler::priorityIn(tListEntry **list, const ccSchedulerFunc& callback, v
     hashElement->target = target;
     hashElement->list = list;
     hashElement->entry = listElement;
+    memset(&hashElement->hh, 0, sizeof(hashElement->hh));
     HASH_ADD_PTR(_hashForUpdates, target, hashElement);
 }
 
@@ -461,6 +463,7 @@ void Scheduler::appendIn(_listEntry **list, const ccSchedulerFunc& callback, voi
     hashElement->target = target;
     hashElement->list = list;
     hashElement->entry = listElement;
+    memset(&hashElement->hh, 0, sizeof(hashElement->hh));
     HASH_ADD_PTR(_hashForUpdates, target, hashElement);
 }
 
@@ -567,7 +570,7 @@ void Scheduler::unscheduleUpdate(void *target)
         this->removeUpdateFromHash(element->entry);
 }
 
-void Scheduler::unscheduleAll(void)
+void Scheduler::unscheduleAll()
 {
     unscheduleAllWithMinPriority(PRIORITY_SYSTEM);
 }
@@ -804,13 +807,10 @@ void Scheduler::resumeTargets(const std::set<void*>& targetsToResume)
     }
 }
 
-void Scheduler::performFunctionInCocosThread(const std::function<void ()> &function)
+void Scheduler::performFunctionInCocosThread(std::function<void ()> function)
 {
-
     std::lock_guard<std::mutex> lock(_performMutex);
-    
-    _functionsToPerform.push_back(function);
-    
+    _functionsToPerform.push_back(std::move(function));
 }
 
 void Scheduler::removeAllFunctionsToBePerformedInCocosThread()

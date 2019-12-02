@@ -1,5 +1,6 @@
 /****************************************************************************
  Copyright (c) 2015-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -30,7 +31,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 //  OC Classes Declaration
-#import <Foundation/NSData.h>
+#import <Foundation/Foundation.h>
 
 // this wrapper used to wrap C++ class DownloadTask into NSMutableDictionary
 @interface DownloadTaskWrapper : NSObject
@@ -227,7 +228,9 @@ namespace cocos2d { namespace network {
         request = [NSURLRequest requestWithURL:url];
     }
     NSURLSessionDataTask *ocTask = [self.downloadSession dataTaskWithRequest:request];
-    [self.taskDict setObject:[[DownloadTaskWrapper alloc] init:task] forKey:ocTask];
+    DownloadTaskWrapper* taskWrapper = [[DownloadTaskWrapper alloc] init:task];
+    [self.taskDict setObject:taskWrapper forKey:ocTask];
+    [taskWrapper release];
 
     if (_taskQueue.size() < _hints.countOfMaxProcessingTasks) {
         [ocTask resume];
@@ -263,7 +266,10 @@ namespace cocos2d { namespace network {
     {
         ocTask = [self.downloadSession downloadTaskWithRequest:request];
     }
-    [self.taskDict setObject:[[DownloadTaskWrapper alloc] init:task] forKey:ocTask];
+
+    DownloadTaskWrapper* taskWrapper = [[DownloadTaskWrapper alloc] init:task];
+    [self.taskDict setObject:taskWrapper forKey:ocTask];
+    [taskWrapper release];
 
     if (_taskQueue.size() < _hints.countOfMaxProcessingTasks) {
         [ocTask resume];
@@ -321,15 +327,19 @@ namespace cocos2d { namespace network {
         }
     }
     _outer = nullptr;
-
+    
+    while(!_taskQueue.empty())
+        _taskQueue.pop();
+    
     [self.downloadSession invalidateAndCancel];
     [self release];
 }
 
 -(void)dealloc
 {
-    [super dealloc];
     DLLOG("Destruct DownloaderAppleImpl %p", self);
+    self.downloadSession = nil;
+    [super dealloc];
 }
 #pragma mark - NSURLSessionTaskDelegate methods
 
@@ -405,9 +415,9 @@ namespace cocos2d { namespace network {
             std::string errorString;
 
             const int64_t buflen = [wrapper totalBytesReceived];
-            char buf[buflen];
+            std::vector<unsigned char> data((size_t)buflen);
+            char* buf = (char*)data.data();
             [wrapper transferDataToBuffer:buf lengthOfBuffer:buflen];
-            std::vector<unsigned char> data(buf, buf + buflen);
 
             _outer->onTaskFinish(*[wrapper get],
                                  cocos2d::network::DownloadTask::ERROR_NO_ERROR,
@@ -423,8 +433,8 @@ namespace cocos2d { namespace network {
             if (statusCode >= 400)
             {
                 std::vector<unsigned char> buf; // just a placeholder
-                const char *orignalURL = [task.originalRequest.URL.absoluteString cStringUsingEncoding:NSUTF8StringEncoding];
-                std::string errorMessage = cocos2d::StringUtils::format("Downloader: Failed to download %s with status code (%d)", orignalURL, (int)statusCode);
+                const char *originalURL = [task.originalRequest.URL.absoluteString cStringUsingEncoding:NSUTF8StringEncoding];
+                std::string errorMessage = cocos2d::StringUtils::format("Downloader: Failed to download %s with status code (%d)", originalURL, (int)statusCode);
 
                 _outer->onTaskFinish(*[wrapper get],
                                      cocos2d::network::DownloadTask::ERROR_IMPL_INTERNAL,
@@ -435,7 +445,6 @@ namespace cocos2d { namespace network {
         }
     }
     [self.taskDict removeObjectForKey:task];
-    [wrapper release];
 
     while (!_taskQueue.empty() && _taskQueue.front() == nil) {
         _taskQueue.pop();
@@ -605,11 +614,10 @@ namespace cocos2d { namespace network {
 {
 //    NSLog(@"DownloaderAppleImpl downloadTask: \"%@\" received: %lld total: %lld", downloadTask.originalRequest.URL, totalBytesWritten, totalBytesExpectedToWrite);
 
-    if (nullptr == _outer)
+    if (nullptr == _outer || totalBytesExpectedToWrite == NSURLSessionTransferSizeUnknown)
     {
         return;
     }
-
     DownloadTaskWrapper *wrapper = [self.taskDict objectForKey:downloadTask];
 
     std::function<int64_t(void *, int64_t)> transferDataToBuffer;   // just a placeholder

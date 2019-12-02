@@ -1,6 +1,7 @@
 /****************************************************************************
 Copyright (c) 2010      cocos2d-x.org
 Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -29,6 +30,9 @@ THE SOFTWARE.
 #include <string>
 #include "2d/CCNode.h"
 #include "base/ccMacros.h"
+#include "base/CCData.h"
+#include "renderer/backend/Types.h"
+#include "math/Mat4.h"
 
 /** @file ccUtils.h
 Misc free functions
@@ -74,7 +78,7 @@ namespace utils
     * @since v3.11
     * !!! remark: Caller is responsible for releasing it by calling delete.
     */
-    CC_DLL Image* captureNode(Node* startNode, float scale = 1.0f);
+    CC_DLL void captureNode(Node* startNode, std::function<void(Image*)> imageCallback, float scale = 1.0f);
     
     /** Find children by name, it will return all child that has the same name.
      * It supports c++ 11 regular expression. It is  a helper function of `Node::enumerateChildren()`.
@@ -140,7 +144,7 @@ namespace utils
 
      * @return Returns found node or nullptr
      */
-   CC_DLL Node*  findChild(Node* levelRoot, int tag);
+    CC_DLL Node*  findChild(Node* levelRoot, int tag);
 
     /**
      * Find a child by name recursively
@@ -163,6 +167,53 @@ namespace utils
     {
         return dynamic_cast<T>(findChild(levelRoot, tag));
     }
+
+    /**
+     *  Gets the md5 hash for the given file.
+     *  @param filename The file to calculate md5 hash.
+     *  @return The md5 hash for the file
+     */
+    CC_DLL std::string getFileMD5Hash(const std::string &filename);
+
+
+    /**
+    *  Gets the md5 hash for the given buffer.
+    *  @param data The buffer to calculate md5 hash.
+    *  @return The md5 hash for the data
+    */
+    CC_DLL std::string getDataMD5Hash(const Data &data);
+
+    /**
+    @brief Converts language iso 639-1 code to LanguageType enum.
+    @return LanguageType enum.
+    * @js NA
+    * @lua NA
+    */
+    CC_DLL LanguageType getLanguageTypeByISO2(const char* code);
+    
+    CC_DLL backend::BlendFactor toBackendBlendFactor(int factor);
+
+    CC_DLL int toGLBlendFactor(backend::BlendFactor blendFactor);
+
+    CC_DLL backend::SamplerFilter toBackendSamplerFilter(int mode);
+
+    CC_DLL backend::SamplerAddressMode toBackendAddressMode(int mode);
+
+    // Adjust matrix for metal.
+    CC_DLL const Mat4& getAdjustMatrix();
+
+    /**
+    Get the Normal Matrix of matrixMV
+    */
+    CC_DLL std::vector<float> getNormalMat3OfMat4(const Mat4 &mat);
+
+    /**
+    @brief Parses a list of space-separated integers.
+    @return Vector of ints.
+    * @js NA
+    * @lua NA
+    */
+    CC_DLL std::vector<int> parseIntegerList(const std::string &intsString);
 }
 
 NS_CC_END

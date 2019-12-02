@@ -3,6 +3,7 @@ Copyright (c) 2008-2010 Ricardo Quesada
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2011      Zynga Inc.
 Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -73,15 +74,13 @@ bool Action::isDone() const
     return true;
 }
 
-void Action::step(float dt)
+void Action::step(float /*dt*/)
 {
-    CC_UNUSED_PARAM(dt);
     CCLOG("[Action step]. override me");
 }
 
-void Action::update(float time)
+void Action::update(float /*time*/)
 {
-    CC_UNUSED_PARAM(time);
     CCLOG("[Action update]. override me");
 }
 
@@ -202,7 +201,8 @@ Follow* Follow::createWithOffset(Node* followedNode,float xOffset,float yOffset,
     
     bool valid;
     
-    valid = follow->initWithTargetAndOffset(followedNode, xOffset, yOffset,rect);
+    if(follow)
+        valid = follow->initWithTargetAndOffset(followedNode, xOffset, yOffset,rect);
 
     if (follow && valid)
     {
@@ -283,10 +283,8 @@ bool Follow::initWithTarget(Node *followedNode, const Rect& rect /*= Rect::ZERO*
     return initWithTargetAndOffset(followedNode, 0.0, 0.0,rect);
     
 }
-void Follow::step(float dt)
+void Follow::step(float /*dt*/)
 {
-    CC_UNUSED_PARAM(dt);
-
     if(_boundarySet)
     {
         // whole map fits inside a single screen, no need to modify the position - unless map boundaries are increased

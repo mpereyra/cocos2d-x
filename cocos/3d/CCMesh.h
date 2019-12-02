@@ -1,5 +1,6 @@
 /****************************************************************************
- Copyright (c) 2014 Chukong Technologies Inc.
+ Copyright (c) 2014-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -21,19 +22,19 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  ****************************************************************************/
-
-#ifndef __CCMESH_H__
-#define __CCMESH_H__
+#pragma once
 
 #include <string>
 #include <map>
 
 #include "3d/CCBundle3DData.h"
 #include "3d/CCAABB.h"
+#include "3d/CC3DProgramInfo.h"
 
 #include "base/CCRef.h"
 #include "math/CCMath.h"
 #include "renderer/CCMeshCommand.h"
+#include "renderer/CCCustomCommand.h"
 
 NS_CC_BEGIN
 
@@ -43,10 +44,9 @@ NS_CC_BEGIN
  */
 
 class Texture2D;
+class TextureCube;
 class MeshSkin;
 class MeshIndexData;
-class GLProgramState;
-class GLProgram;
 class Material;
 class Renderer;
 class Scene;
@@ -61,6 +61,11 @@ enum class GLWriteMode{
 };
 /*END BPC PATCH*/
  
+namespace backend
+{
+    class Buffer;
+}
+
 /** 
  * @brief Mesh: contains ref to index buffer, GLProgramState, texture, skin, blend function, aabb and so on
  */
@@ -71,8 +76,6 @@ public:
     typedef std::vector<unsigned short> IndexArray;
     /**create mesh from positions, normals, and so on, single SubMesh*/
     static Mesh* create(const std::vector<float>& positions, const std::vector<float>& normals, const std::vector<float>& texs, const IndexArray& indices);
-    /**create mesh with vertex attributes*/
-    CC_DEPRECATED_ATTRIBUTE static Mesh* create(const std::vector<float>& vertices, int perVertexSizeInFloat, const IndexArray& indices, int numIndex, const std::vector<MeshVertexAttrib>& attribs, int attribCount){ return create(vertices, perVertexSizeInFloat, indices, attribs); }
     
     /**
      * @lua NA
@@ -90,13 +93,13 @@ public:
      * 
      * @lua NA
      */
-    GLuint getVertexBuffer() const;
+    backend::Buffer* getVertexBuffer() const;
     /**
      * has vertex attribute?
      *
      * @lua NA
      */
-    bool hasVertexAttrib(int attrib) const;
+    bool hasVertexAttrib(shaderinfos::VertexKey attrib) const;
     /**get mesh vertex attribute count*/
     ssize_t getMeshVertexAttribCount() const;
     /**get MeshVertexAttribute by index*/
@@ -127,6 +130,16 @@ public:
      * @param usage Usage of this texture
      */
     void setTexture(const std::string& texPath, NTextureData::Usage usage);
+    
+    //BPC PATCH
+    /**
+     * set texture
+     * @param tex texture to be set
+     * @param usage Usage of this texture
+     */
+    void setTextureCube(TextureCube* tex, NTextureData::Usage usage);
+    //END BPC PATCH
+    
     /**
      * Get texture (diffuse), which is responsible for the main appearance. It is also means main texture, you can also call getTexture(NTextureData::Usage::Diffuse)
      * @return Texture used, return the texture of first mesh if multiple meshes exist
@@ -158,11 +171,11 @@ public:
     MeshIndexData* getMeshIndexData() const { return _meshIndexData; }
     
     /**
-     * get GLProgramState
+     * get ProgramState
      * 
      * @lua NA
      */
-    GLProgramState* getGLProgramState() const;
+    backend::ProgramState* getProgramState() const;
     
     /**name getter */
     const std::string& getName() const { return _name; }
@@ -175,7 +188,7 @@ public:
      *
      * @lua NA
      */
-    GLenum getPrimitiveType() const;
+    CustomCommand::PrimitiveType getPrimitiveType() const;
     /**
      * get index count
      *
@@ -187,22 +200,22 @@ public:
      *
      * @lua NA
      */
-    GLenum getIndexFormat() const;
+    CustomCommand::IndexFormat getIndexFormat() const;
     /**
      * get index buffer
      *
      * @lua NA
      */
-    GLuint getIndexBuffer() const;
+    backend::Buffer* getIndexBuffer() const;
     
     /**get AABB*/
     const AABB& getAABB() const { return _aabb; }
     const AABB& getSkinnedAABB() const { return m_skinnedAABB; }
 
-    /**  Sets a new GLProgramState for the Mesh
+    /**  Sets a new ProgramState for the Mesh
      * A new Material will be created for it
      */
-    void setGLProgramState(GLProgramState* glProgramState);
+    void setProgramState(backend::ProgramState* programState);
 
     /** Sets a new Material to the Mesh */
     void setMaterial(Material* material);
@@ -211,11 +224,6 @@ public:
     Material* getMaterial() const;
 
     void draw(Renderer* renderer, float globalZ, const Mat4& transform, uint32_t flags, unsigned int lightMask, const Vec4& color, bool forceDepthWrite);
-
-    /** 
-     * Get the MeshCommand.
-     */
-    MeshCommand& getMeshCommand();
 
     /**skin setter*/
     void setSkin(MeshSkin* skin);
@@ -290,6 +298,8 @@ public:
     int getDirLightCount();
     int getSpotLightCount();
     int getFxSpotLightCount();
+    
+    MeshCommand * getMeshCommandForTechniqueAndPass(Technique * technique, int pass);
     /*END BPC-PATCH*/
     
     
@@ -304,20 +314,23 @@ protected:
     void bindMeshCommand();
 
     std::map<NTextureData::Usage, Texture2D*> _textures; //textures that submesh is using
+    //BPC PATCH
+    std::map<NTextureData::Usage, TextureCube*> _textureCubes; //cube map textures that submesh is using
+    //END BPC PATCH
     MeshSkin*           _skin;     //skin
     bool                _visible; // is the submesh visible
     bool                _isTransparent; // is this mesh transparent, it is a property of material in fact
     bool                _force2DQueue; // add this mesh to 2D render queue
     
     std::string         _name;
-    MeshCommand         _meshCommand;
     MeshIndexData*      _meshIndexData;
-    GLProgramState*     _glProgramState;
+    //GLProgramState*     _glProgramState;
     BlendFunc           _blend;
     bool                _blendDirty;
     Material*           _material;
     AABB                _aabb;
-    std::function<void()> _visibleChanged;
+    std::function<void()>       _visibleChanged;
+    std::unordered_map<std::string, std::vector<MeshCommand> >    _meshCommands;
     
     
     /*BPC-PATCH*/
@@ -374,5 +387,3 @@ extern std::string CC_DLL s_uniformSamplerName[];//uniform sampler names array
 /// @endcond
 
 NS_CC_END
-
-#endif // __CCMESH_H__

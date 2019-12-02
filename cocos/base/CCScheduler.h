@@ -3,6 +3,7 @@ Copyright (c) 2008-2010 Ricardo Quesada
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2011      Zynga Inc.
 Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -82,7 +83,7 @@ public:
     /** Initializes a timer with a target, a selector and an interval in seconds, repeat in number of times to repeat, delay in seconds. */
     bool initWithSelector(Scheduler* scheduler, SEL_SCHEDULE selector, Ref* target, float seconds, unsigned int repeat, float delay);
     
-    inline SEL_SCHEDULE getSelector() const { return _selector; };
+    SEL_SCHEDULE getSelector() const { return _selector; }
     
     virtual void trigger(float dt) override;
     virtual void cancel() override;
@@ -101,8 +102,8 @@ public:
     // Initializes a timer with a target, a lambda and an interval in seconds, repeat in number of times to repeat, delay in seconds.
     bool initWithCallback(Scheduler* scheduler, const ccSchedulerFunc& callback, void *target, const std::string& key, float seconds, unsigned int repeat, float delay);
     
-    inline const ccSchedulerFunc& getCallback() const { return _callback; };
-    inline const std::string& getKey() const { return _key; };
+    const ccSchedulerFunc& getCallback() const { return _callback; }
+    const std::string& getKey() const { return _key; }
     
     virtual void trigger(float dt) override;
     virtual void cancel() override;
@@ -119,7 +120,7 @@ class CC_DLL TimerScriptHandler : public Timer
 {
 public:
     bool initWithScriptHandler(int handler, float seconds);
-    inline int getScriptHandler() const { return _scriptHandler; };
+    int getScriptHandler() const { return _scriptHandler; }
     
     virtual void trigger(float dt) override;
     virtual void cancel() override;
@@ -194,7 +195,7 @@ public:
      * Gets the time scale of schedule callbacks.
      * @see Scheduler::setTimeScale()
      */
-    inline float getTimeScale() { return _timeScale; }
+    float getTimeScale() { return _timeScale; }
     /** Modifies the time of all scheduled callbacks.
     You can use this property to create a 'slow motion' or 'fast forward' effect.
     Default is 1.0. To create a 'slow motion' effect, use values below 1.0.
@@ -202,7 +203,7 @@ public:
     @since v0.8
     @warning It will affect EVERY scheduled selector / action.
     */
-    inline void setTimeScale(float timeScale) { _timeScale = timeScale; }
+    void setTimeScale(float timeScale) { _timeScale = timeScale; }
 
     /** 'update' the scheduler.
      * You should NEVER call this method, unless you know what you are doing.
@@ -309,7 +310,7 @@ public:
     void unschedule(const std::string& key, void *target);
 
     /** Unschedules a selector for a given target.
-     If you want to unschedule the "update", use `unscheudleUpdate()`.
+     If you want to unschedule the "update", use `unscheduleUpdate()`.
      @param selector The selector that is unscheduled.
      @param target The target of the unscheduled selector.
      @since v3.0
@@ -426,7 +427,7 @@ public:
      @since v3.0
      @js NA
      */
-    void performFunctionInCocosThread( const std::function<void()> &function);
+    void performFunctionInCocosThread(std::function<void()> function);
     
     /**
      * Remove all pending functions queued to be performed with Scheduler::performFunctionInCocosThread
@@ -436,64 +437,6 @@ public:
      * @js NA
      */
     void removeAllFunctionsToBePerformedInCocosThread();
-    
-    /////////////////////////////////////
-    
-    // Deprecated methods:
-    
-    /** The scheduled method will be called every 'interval' seconds.
-     If paused is true, then it won't be called until it is resumed.
-     If 'interval' is 0, it will be called every frame, but if so, it's recommended to use 'scheduleUpdateForTarget:' instead.
-     If the selector is already scheduled, then only the interval parameter will be updated without re-scheduling it again.
-     repeat let the action be repeated repeat + 1 times, use CC_REPEAT_FOREVER to let the action run continuously
-     delay is the amount of time the action will wait before it'll start
-     @deprecated Please use `Scheduler::schedule` instead.
-     @since v0.99.3, repeat and delay added in v1.1
-     @js NA
-     */
-    CC_DEPRECATED_ATTRIBUTE void scheduleSelector(SEL_SCHEDULE selector, Ref *target, float interval, unsigned int repeat, float delay, bool paused)
-    {
-        schedule(selector, target, interval, repeat, delay, paused);
-    };
-    
-    /** Calls scheduleSelector with CC_REPEAT_FOREVER and a 0 delay.
-     *  @deprecated Please use `Scheduler::schedule` instead.
-     *  @js NA
-     */
-    CC_DEPRECATED_ATTRIBUTE void scheduleSelector(SEL_SCHEDULE selector, Ref *target, float interval, bool paused)
-    {
-        schedule(selector, target, interval, paused);
-    };
-    
-    /** Schedules the 'update' selector for a given target with a given priority.
-     The 'update' selector will be called every frame.
-     The lower the priority, the earlier it is called.
-     @deprecated Please use 'Scheduler::scheduleUpdate' instead.
-     @since v0.99.3
-     */
-    template <class T>
-    CC_DEPRECATED_ATTRIBUTE void scheduleUpdateForTarget(T* target, int priority, bool paused) { scheduleUpdate(target, priority, paused); };
-    
-    /** Unschedule a selector for a given target.
-     If you want to unschedule the "update", use unscheudleUpdateForTarget.
-     @deprecated Please use 'Scheduler::unschedule' instead.
-     @since v0.99.3
-     @js NA
-     */
-    CC_DEPRECATED_ATTRIBUTE void unscheduleSelector(SEL_SCHEDULE selector, Ref *target) { unschedule(selector, target); };
-    
-    /** Checks whether a selector for a given target is scheduled.
-     @deprecated Please use 'Scheduler::isScheduled' instead.
-     @since v0.99.3
-     @js NA
-     */
-    CC_DEPRECATED_ATTRIBUTE bool isScheduledForTarget(Ref *target, SEL_SCHEDULE selector) { return isScheduled(selector, target); };
-    
-    /** Unschedules the update selector for a given target
-     @deprecated Please use 'Scheduler::unscheduleUpdate' instead.
-     @since v0.99.3
-     */
-    CC_DEPRECATED_ATTRIBUTE void unscheduleUpdateForTarget(Ref *target) { return unscheduleUpdate(target); };
     
 protected:
     
