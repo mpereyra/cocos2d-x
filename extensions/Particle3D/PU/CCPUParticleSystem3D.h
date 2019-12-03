@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (C) 2013 Henry van Merode. All rights reserved.
- Copyright (c) 2015 Chukong Technologies Inc.
+ Copyright (c) 2015-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -147,28 +148,28 @@ struct CC_DLL PUParticle3D : public Particle3D
 
         /** Sets the event flags.
     */
-    inline void setEventFlags(unsigned int flags) {eventFlags = flags;}
+    void setEventFlags(unsigned int flags) { eventFlags = flags; }
 
     /** As setEventFlags, except the flags passed as parameters are appended to the
         existing flags on this object.
     */
-    inline void addEventFlags(unsigned int flags) {eventFlags |= flags;}
+    void addEventFlags(unsigned int flags) { eventFlags |= flags; }
             
     /** The flags passed as parameters are removed from the existing flags.
     */
-    inline void removeEventFlags(unsigned int flags) {eventFlags &= ~flags;}
+    void removeEventFlags(unsigned int flags) { eventFlags &= ~flags; }
         
     /** Return the event flags.
     */
-    inline unsigned int getEventFlags() const {return eventFlags;}
+    unsigned int getEventFlags() const { return eventFlags; }
 
     /** Determines whether it has certain flags set.
     */
-    inline bool hasEventFlags(unsigned int flags) const {return (eventFlags & flags) != 0;}
+    bool hasEventFlags(unsigned int flags) const { return (eventFlags & flags) != 0; }
 
     unsigned int eventFlags;
 
-    bool isFreezed(void) const
+    bool isFreezed() const
     {
         return freezed;
     }
@@ -218,7 +219,7 @@ class CC_DLL PUParticleSystem3D : public ParticleSystem3D
 {
 public:
 
-    typedef std::map<std::string, ParticlePool> ParticlePoolMap;
+    typedef std::unordered_map<std::string, ParticlePool> ParticlePoolMap;
 
     static const float DEFAULT_WIDTH;
     static const float DEFAULT_HEIGHT;
@@ -273,7 +274,7 @@ public:
      */
     void rotationOffset(Vec3& pos);
 
-    inline float getTimeElapsedSinceStart(void) const {return _timeElapsedSinceStart;};
+    float getTimeElapsedSinceStart() const { return _timeElapsedSinceStart; }
 
     /**
      * default particle width
@@ -356,7 +357,7 @@ public:
     void setMaxStepSize(float stepSize) { m_maxStepSize = stepSize; }
 
     bool makeParticleLocal(PUParticle3D* particle);
-    void calulateRotationOffset(void);
+    void calulateRotationOffset();
 
     virtual PUParticleSystem3D* clone();
     virtual void copyAttributesTo(PUParticleSystem3D* system);

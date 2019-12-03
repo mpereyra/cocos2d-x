@@ -1,5 +1,6 @@
 /****************************************************************************
  Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -67,8 +68,9 @@ CC_DEPRECATED_ATTRIBUTE int lua_cocos2dx_3d_Sprite3D_setBlendFunc01(lua_State* L
         if (!luaval_to_int32(L, 3, (int32_t*)&dst, "cc.Sprite3D:setBlendFunc"))
             return 0;
 
-        BlendFunc blendFunc = {src, dst};
-        cobj->setBlendFunc(blendFunc);
+//TODO minggo
+//        BlendFunc blendFunc = {src, dst};
+//        cobj->setBlendFunc(blendFunc);
 
         lua_settop(L, 1);
         return 1;
@@ -2044,15 +2046,17 @@ int lua_cocos2dx_3d_Ray_intersects(lua_State* L)
         if (!ok)
             return 0;
 
-        bool ret = self->intersects(*arg0);
+        float distance;
+        bool ret = self->intersects(*arg0, &distance);
         tolua_pushboolean(L, ret);
-        return 1;
+        tolua_pushnumber(L, (lua_Number)distance);
+        return 2;
     }
     luaL_error(L, "%s has wrong number of arguments: %d, was expecting %d \n",  "cc.Ray:intersects",argc, 1);
     return 0;
 #if COCOS2D_DEBUG >= 1
 tolua_lerror:
-    tolua_error(L,"#ferror in function 'lua_cocos2dx_3d_get_OBB_center'.",&tolua_err);
+    tolua_error(L,"#ferror in function 'lua_cocos2dx_3d_Ray_intersects'.",&tolua_err);
     return 0;
 #endif
 }

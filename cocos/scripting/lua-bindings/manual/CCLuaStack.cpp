@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (c) 2011-2012 cocos2d-x.org
  Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
  http://www.cocos2d-x.org
 
@@ -44,7 +45,6 @@ extern "C" {
 #include "scripting/lua-bindings/manual/platform/android/CCLuaJavaBridge.h"
 #endif
 
-#include "scripting/lua-bindings/manual/cocos2d/LuaOpengl.h"
 #include "scripting/lua-bindings/manual/cocos2d/LuaScriptHandlerMgr.h"
 #include "scripting/lua-bindings/auto/lua_cocos2dx_auto.hpp"
 #include "scripting/lua-bindings/manual/cocos2d/lua_cocos2dx_manual.hpp"
@@ -53,10 +53,11 @@ extern "C" {
 #include "scripting/lua-bindings/auto/lua_cocos2dx_physics_auto.hpp"
 #include "scripting/lua-bindings/manual/cocos2d/lua_cocos2dx_physics_manual.hpp"
 #include "scripting/lua-bindings/auto/lua_cocos2dx_experimental_auto.hpp"
+#include "scripting/lua-bindings/auto/lua_cocos2dx_backend_auto.hpp"
 #include "scripting/lua-bindings/manual/cocos2d/lua_cocos2dx_experimental_manual.hpp"
 #include "base/ZipUtils.h"
-#include "deprecated/CCBool.h"
-#include "deprecated/CCDouble.h"
+#include "scripting/deprecated/CCBool.h"
+#include "scripting/deprecated/CCDouble.h"
 #include "platform/CCFileUtils.h"
 
 namespace {
@@ -112,7 +113,7 @@ LuaStack::~LuaStack()
     }
 }
 
-LuaStack *LuaStack::create(void)
+LuaStack *LuaStack::create()
 {
     LuaStack *stack = new (std::nothrow) LuaStack();
     stack->init();
@@ -128,14 +129,14 @@ LuaStack *LuaStack::attach(lua_State *L)
     return stack;
 }
 
-bool LuaStack::init(void)
+bool LuaStack::init()
 {
     _state = lua_open();
     luaL_openlibs(_state);
     toluafix_open(_state);
 
     // Register our version of the global "print" function
-    const luaL_reg global_functions [] = {
+    const luaL_Reg global_functions [] = {
         {"print", lua_print},
         {"release_print",lua_release_print},
         {nullptr, nullptr}
@@ -144,14 +145,18 @@ bool LuaStack::init(void)
 
     g_luaType.clear();
     register_all_cocos2dx(_state);
-    tolua_opengl_open(_state);
+    register_all_cocos2dx_backend(_state);
     register_all_cocos2dx_manual(_state);
     register_all_cocos2dx_module_manual(_state);
     register_all_cocos2dx_math_manual(_state);
+    register_all_cocos2dx_shaders_manual(_state);
+    register_all_cocos2dx_bytearray_manual(_state);
+    
     register_all_cocos2dx_experimental(_state);
     register_all_cocos2dx_experimental_manual(_state);
-
-    register_glnode_manual(_state);
+    
+    tolua_luanode_open(_state);
+    register_luanode_manual(_state);
 #if CC_USE_PHYSICS
     register_all_cocos2dx_physics(_state);
     register_all_cocos2dx_physics_manual(_state);
@@ -259,18 +264,19 @@ int LuaStack::executeScriptFile(const char* filename)
     }
 
     FileUtils *utils = FileUtils::getInstance();
+
     //
-    // 1. check .lua suffix
-    // 2. check .luac suffix
+    // 1. check .luac suffix
+    // 2. check .lua suffix
     //
-    std::string tmpfilename = buf + NOT_BYTECODE_FILE_EXT;
+    std::string tmpfilename = buf + BYTECODE_FILE_EXT;
     if (utils->isFileExist(tmpfilename))
     {
         buf = tmpfilename;
     }
     else
     {
-        tmpfilename = buf + BYTECODE_FILE_EXT;
+        tmpfilename = buf + NOT_BYTECODE_FILE_EXT;
         if (utils->isFileExist(tmpfilename))
         {
             buf = tmpfilename;
@@ -302,7 +308,7 @@ int LuaStack::executeGlobalFunction(const char* functionName)
     return executeFunction(0);
 }
 
-void LuaStack::clean(void)
+void LuaStack::clean()
 {
     lua_settop(_state, 0);
 }
@@ -337,7 +343,7 @@ void LuaStack::pushString(const char* stringValue, int length)
     lua_pushlstring(_state, stringValue, length);
 }
 
-void LuaStack::pushNil(void)
+void LuaStack::pushNil()
 {
     lua_pushnil(_state);
 }
@@ -811,9 +817,9 @@ int LuaStack::luaLoadChunksFromZIP(lua_State *L)
                         }
                     }
                     // replace path separator '/' '\' to '.'
-                    for (int i=0; i<filename.size(); i++) {
-                        if (filename[i] == '/' || filename[i] == '\\') {
-                            filename[i] = '.';
+                    for (auto & character : filename) {
+                        if (character == '/' || character == '\\') {
+                            character = '.';
                         }
                     }
                     CCLOG("[luaLoadChunksFromZIP] add %s to preload", filename.c_str());
@@ -844,20 +850,25 @@ int LuaStack::luaLoadChunksFromZIP(lua_State *L)
     return 1;
 }
 
+namespace {
+
+void skipBOM(const char*& chunk, int& chunkSize)
+{
+    // UTF-8 BOM? skip
+    if (static_cast<unsigned char>(chunk[0]) == 0xEF &&
+        static_cast<unsigned char>(chunk[1]) == 0xBB &&
+        static_cast<unsigned char>(chunk[2]) == 0xBF)
+    {
+        chunk += 3;
+        chunkSize -= 3;
+    }
+}
+
+} // end anonymous namespace
+
 int LuaStack::luaLoadBuffer(lua_State *L, const char *chunk, int chunkSize, const char *chunkName)
 {
     int r = 0;
-    
-    auto skipBOM = [](const char*& chunk, int& chunkSize){
-        // UTF-8 BOM? skip
-        if (static_cast<unsigned char>(chunk[0]) == 0xEF &&
-            static_cast<unsigned char>(chunk[1]) == 0xBB &&
-            static_cast<unsigned char>(chunk[2]) == 0xBF)
-        {
-            chunk += 3;
-            chunkSize -= 3;
-        }
-    };
 
     if (_xxteaEnabled && strncmp(chunk, _xxteaSign, _xxteaSignLen) == 0)
     {
@@ -868,8 +879,10 @@ int LuaStack::luaLoadBuffer(lua_State *L, const char *chunk, int chunkSize, cons
                                               (unsigned char*)_xxteaKey,
                                               (xxtea_long)_xxteaKeyLen,
                                               &len);
-        skipBOM((const char*&)result, (int&)len);
-        r = luaL_loadbuffer(L, (char*)result, len, chunkName);
+        unsigned char* content = result;
+        xxtea_long contentSize = len;
+        skipBOM((const char*&)content, (int&)contentSize);
+        r = luaL_loadbuffer(L, (char*)content, contentSize, chunkName);
         free(result);
     }
     else

@@ -2,6 +2,7 @@
  Copyright (c) 2010-2012 cocos2d-x.org
  Copyright (c) 2012 James Chen
  Copyright (c) 2013-2015 zilongshanren
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -114,12 +115,18 @@ void EditBoxImplIOS::setNativeFontColor(const Color4B& color)
 
 void EditBoxImplIOS::setNativePlaceholderFont(const char* pFontName, int fontSize)
 {
-    //TODO::
+    UIFont* textFont = constructFont(pFontName, fontSize);
+    if (textFont != nil) {
+        [_systemControl setPlaceholderFont:textFont];
+    }
 }
 
 void EditBoxImplIOS::setNativePlaceholderFontColor(const Color4B& color)
 {
-    //TODO::
+    [_systemControl setPlaceholderTextColor:[UIColor colorWithRed:color.r / 255.0f
+                                                         green:color.g / 255.0f
+                                                          blue:color.b / 255.0f
+                                                         alpha:color.a / 255.f]];
 }
 
 void EditBoxImplIOS::setNativeInputMode(EditBox::InputMode inputMode)
@@ -142,7 +149,7 @@ NSString* removeSiriString(NSString* str)
     return [str stringByReplacingOccurrencesOfString:siriString withString:@""];
 }
 
-const char* EditBoxImplIOS::getText(void)
+const char* EditBoxImplIOS::getText()
 {
     return [removeSiriString(_systemControl.text) UTF8String];
 }
@@ -151,6 +158,11 @@ const char* EditBoxImplIOS::getText(void)
 void EditBoxImplIOS::setNativeReturnType(EditBox::KeyboardReturnType returnType)
 {
     [_systemControl setReturnType:returnType];
+}
+
+void EditBoxImplIOS::setNativeTextHorizontalAlignment(cocos2d::TextHAlignment alignment)
+{
+    [_systemControl setTextHorizontalAlignment:alignment];
 }
 
 void EditBoxImplIOS::setNativeText(const char* pText)

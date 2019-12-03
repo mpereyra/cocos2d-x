@@ -1,5 +1,6 @@
 /****************************************************************************
  Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -769,22 +770,22 @@ static int lua_cocos2dx_LayoutParameter_setMargin(lua_State* L)
         Margin margin;
         lua_pushstring(L, "left");
         lua_gettable(L,2);
-        margin.left = lua_isnil(L,-1) ? 0 : lua_tonumber(L,-1);
+        margin.left = lua_isnil(L,-1) ? 0.0f : (float)lua_tonumber(L,-1);
         lua_pop(L,1);
             
         lua_pushstring(L, "top");
         lua_gettable(L,2);
-        margin.top = lua_isnil(L,-1) ? 0 : lua_tonumber(L,-1);
+        margin.top = lua_isnil(L,-1) ? 0.0f : (float)lua_tonumber(L,-1);
         lua_pop(L,1);
             
         lua_pushstring(L, "right");
         lua_gettable(L,2);
-        margin.right = lua_isnil(L,-1) ? 0 : lua_tonumber(L,-1);
+        margin.right = lua_isnil(L,-1) ? 0.0f : (float)lua_tonumber(L,-1);
         lua_pop(L,1);
             
         lua_pushstring(L, "bottom");
         lua_gettable(L,2);
-        margin.bottom = lua_isnil(L,-1) ? 0 : lua_tonumber(L,-1);
+        margin.bottom = lua_isnil(L,-1) ? 0.0f : (float)lua_tonumber(L,-1);
         lua_pop(L,1);
         
         self->setMargin(margin);
@@ -1174,7 +1175,7 @@ static void extendEventListenerFocusEvent(lua_State* L)
     lua_pop(L, 1);
 }
 
-int register_ui_moudle(lua_State* L)
+int register_ui_module(lua_State* L)
 {
     lua_getglobal(L, "_G");
     if (lua_istable(L,-1))//stack:...,_G,

@@ -1,5 +1,6 @@
 /****************************************************************************
  Copyright (c) 2013-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -64,8 +65,9 @@ static int tolua_cocos2dx_setBlendFunc(lua_State* tolua_S,const char* className)
         if (!luaval_to_int32(tolua_S, 3, (int32_t*)&dst,StringUtils::format("%s%s",className,":setBlendFunc").c_str()))
             return 0;
 
-        BlendFunc blendFunc = {src, dst};
-        self->setBlendFunc(blendFunc);
+//TODO minggo
+//        BlendFunc blendFunc = {src, dst};
+//        self->setBlendFunc(blendFunc);
         return 0;
     }
 
@@ -105,7 +107,7 @@ static int lua_cocos2dx_CCSkeletonAnimation_createWithFile(lua_State* L)
         }
 #endif
         const char* skeletonDataFile = tolua_tostring(L, 2, "");
-        const char* atlasFile = tolua_tostring(L, 3, "");;
+        const char* atlasFile = tolua_tostring(L, 3, "");
         
         auto tolua_ret = LuaSkeletonAnimation::createWithFile(skeletonDataFile, atlasFile);
         
@@ -144,7 +146,7 @@ tolua_lerror:
     return 0;
 }
 
-int executeSpineEvent(LuaSkeletonAnimation* skeletonAnimation, int handler, spEventType eventType, int trackIndex , int loopCount = 0, spEvent* event = nullptr )
+int executeSpineEvent(LuaSkeletonAnimation* skeletonAnimation, int handler, spEventType eventType, spTrackEntry* entry, spEvent* event = nullptr )
 {
     if (nullptr == skeletonAnimation || 0 == handler)
         return 0;
@@ -159,7 +161,6 @@ int executeSpineEvent(LuaSkeletonAnimation* skeletonAnimation, int handler, spEv
     
     int ret = 0;
     
-    spTrackEntry* entry = spAnimationState_getCurrent(skeletonAnimation->getState(), trackIndex);
     std::string animationName = (entry && entry->animation) ? entry->animation->name : "";
     std::string eventTypeName = "";
     
@@ -169,9 +170,19 @@ int executeSpineEvent(LuaSkeletonAnimation* skeletonAnimation, int handler, spEv
                 eventTypeName = "start";
             }
             break;
+        case spEventType::SP_ANIMATION_INTERRUPT:
+            {
+                eventTypeName = "interrupt";
+            }
+                break;
         case spEventType::SP_ANIMATION_END:
             {
                 eventTypeName = "end";
+            }
+            break;
+        case spEventType::SP_ANIMATION_DISPOSE:
+            {
+                eventTypeName = "dispose";
             }
             break;
         case spEventType::SP_ANIMATION_COMPLETE:
@@ -191,17 +202,17 @@ int executeSpineEvent(LuaSkeletonAnimation* skeletonAnimation, int handler, spEv
     
     LuaValueDict spineEvent;
     spineEvent.insert(spineEvent.end(), LuaValueDict::value_type("type", LuaValue::stringValue(eventTypeName)));
-    spineEvent.insert(spineEvent.end(), LuaValueDict::value_type("trackIndex", LuaValue::intValue(trackIndex)));
+    spineEvent.insert(spineEvent.end(), LuaValueDict::value_type("trackIndex", LuaValue::intValue(entry->trackIndex)));
     spineEvent.insert(spineEvent.end(), LuaValueDict::value_type("animation", LuaValue::stringValue(animationName)));
-    spineEvent.insert(spineEvent.end(), LuaValueDict::value_type("loopCount", LuaValue::intValue(loopCount)));
+    spineEvent.insert(spineEvent.end(), LuaValueDict::value_type("loopCount", LuaValue::intValue(std::floor(entry->trackTime / entry->animationEnd))));
     
     if (nullptr != event)
     {
         LuaValueDict eventData;
         eventData.insert(eventData.end(), LuaValueDict::value_type("name", LuaValue::stringValue(event->data->name)));
-        eventData.insert(eventData.end(), LuaValueDict::value_type("intValue", LuaValue::intValue(event->intValue)));
-        eventData.insert(eventData.end(), LuaValueDict::value_type("floatValue", LuaValue::floatValue(event->floatValue)));
-        eventData.insert(eventData.end(), LuaValueDict::value_type("stringValue", LuaValue::stringValue(event->stringValue)));
+        eventData.insert(eventData.end(), LuaValueDict::value_type("intValue", LuaValue::intValue(event->data->intValue)));
+        eventData.insert(eventData.end(), LuaValueDict::value_type("floatValue", LuaValue::floatValue(event->data->floatValue)));
+        eventData.insert(eventData.end(), LuaValueDict::value_type("stringValue", LuaValue::stringValue(event->data->stringValue)));
         spineEvent.insert(spineEvent.end(), LuaValueDict::value_type("eventData", LuaValue::dictValue(eventData)));
     }
     
@@ -232,32 +243,48 @@ int tolua_Cocos2d_CCSkeletonAnimation_registerSpineEventHandler00(lua_State* tol
             switch (eventType) {
                 case spEventType::SP_ANIMATION_START:
                     {
-                        self->setStartListener([=](int trackIndex){
-                            executeSpineEvent(self, handler, eventType, trackIndex);
+                        self->setStartListener([=](spTrackEntry* entry){
+                            executeSpineEvent(self, handler, eventType, entry);
                         });
                         ScriptHandlerMgr::getInstance()->addObjectHandler((void*)self, handler, ScriptHandlerMgr::HandlerType::EVENT_SPINE_ANIMATION_START);
                     }
                     break;
+                case spEventType::SP_ANIMATION_INTERRUPT:
+                    {
+                        self->setInterruptListener([=](spTrackEntry* entry){
+                            executeSpineEvent(self, handler, eventType, entry);
+                        });
+                        ScriptHandlerMgr::getInstance()->addObjectHandler((void*)self, handler, ScriptHandlerMgr::HandlerType::EVENT_SPINE_ANIMATION_INTERRUPT);
+                    }
+                    break;
                 case spEventType::SP_ANIMATION_END:
                     {
-                        self->setEndListener([=](int trackIndex){
-                            executeSpineEvent(self, handler, eventType, trackIndex);
+                        self->setEndListener([=](spTrackEntry* entry){
+                            executeSpineEvent(self, handler, eventType, entry);
                         });
                         ScriptHandlerMgr::getInstance()->addObjectHandler((void*)self, handler, ScriptHandlerMgr::HandlerType::EVENT_SPINE_ANIMATION_END);
                     }
                     break;
+                case spEventType::SP_ANIMATION_DISPOSE:
+                {
+                    self->setDisposeListener([=](spTrackEntry* entry){
+                        executeSpineEvent(self, handler, eventType, entry);
+                    });
+                    ScriptHandlerMgr::getInstance()->addObjectHandler((void*)self, handler, ScriptHandlerMgr::HandlerType::EVENT_SPINE_ANIMATION_DISPOSE);
+                }
+                    break;
                 case spEventType::SP_ANIMATION_COMPLETE:
                     {
-                        self->setCompleteListener([=](int trackIndex, int loopCount){
-                            executeSpineEvent(self, handler, eventType, trackIndex, loopCount);
+                        self->setCompleteListener([=](spTrackEntry* entry){
+                            executeSpineEvent(self, handler, eventType, entry);
                         });
                         ScriptHandlerMgr::getInstance()->addObjectHandler((void*)self, handler, ScriptHandlerMgr::HandlerType::EVENT_SPINE_ANIMATION_COMPLETE);
                     }
                     break;
                 case spEventType::SP_ANIMATION_EVENT:
                     {
-                        self->setEventListener([=](int trackIndex, spEvent* event){
-                            executeSpineEvent(self, handler, eventType, trackIndex, 0, event);
+                        self->setEventListener([=](spTrackEntry* entry, spEvent* event){
+                            executeSpineEvent(self, handler, eventType, entry, event);
                         });
                         ScriptHandlerMgr::getInstance()->addObjectHandler((void*)self, handler, ScriptHandlerMgr::HandlerType::EVENT_SPINE_ANIMATION_EVENT);
                     }
@@ -295,15 +322,25 @@ int tolua_Cocos2d_CCSkeletonAnimation_unregisterSpineEventHandler00(lua_State* t
             switch (eventType) {
                 case spEventType::SP_ANIMATION_START:
                     handlerType = ScriptHandlerMgr::HandlerType::EVENT_SPINE_ANIMATION_START;
+                    self->setStartListener(nullptr);
+                    break;
+                case spEventType::SP_ANIMATION_INTERRUPT:
+                    handlerType = ScriptHandlerMgr::HandlerType::EVENT_SPINE_ANIMATION_INTERRUPT;
                     break;
                 case spEventType::SP_ANIMATION_END:
                     handlerType = ScriptHandlerMgr::HandlerType::EVENT_SPINE_ANIMATION_END;
+                    self->setEndListener(nullptr);
+                    break;
+                case spEventType::SP_ANIMATION_DISPOSE:
+                    handlerType = ScriptHandlerMgr::HandlerType::EVENT_SPINE_ANIMATION_DISPOSE;
                     break;
                 case spEventType::SP_ANIMATION_COMPLETE:
                     handlerType = ScriptHandlerMgr::HandlerType::EVENT_SPINE_ANIMATION_COMPLETE;
+                    self->setCompleteListener(nullptr);
                     break;
                 case spEventType::SP_ANIMATION_EVENT:
                     handlerType = ScriptHandlerMgr::HandlerType::EVENT_SPINE_ANIMATION_EVENT;
+                    self->setEventListener(nullptr);
                     break;
                     
                 default:

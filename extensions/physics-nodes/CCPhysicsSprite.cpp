@@ -1,5 +1,6 @@
 /* Copyright (c) 2012 Scott Lembcke and Howling Moon Software
  * Copyright (c) 2012 cocos2d-x.org
+ * Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -241,6 +242,7 @@ void PhysicsSprite::setB2Body(b2Body *pBody)
 #if CC_ENABLE_BOX2D_INTEGRATION
     _pB2Body = pBody;
 #else
+    CC_UNUSED_PARAM(pBody);
     CCASSERT(false, "Can't call box2d methods when Box2d is disabled");
 #endif
 }
@@ -260,6 +262,7 @@ void PhysicsSprite::setPTMRatio(float fRatio)
 #if CC_ENABLE_BOX2D_INTEGRATION
      _PTMRatio = fRatio;
 #else
+    CC_UNUSED_PARAM(fRatio);
     CCASSERT(false, "Can't call box2d methods when Box2d is disabled");
 #endif
 }
@@ -438,7 +441,7 @@ void PhysicsSprite::onExit()
     Node::onExit();
 }
 
-void PhysicsSprite::afterUpdate(EventCustom *event)
+void PhysicsSprite::afterUpdate(EventCustom* /*event*/)
 {
     syncPhysicsTransform();
     

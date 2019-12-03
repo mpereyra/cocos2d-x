@@ -291,7 +291,7 @@ CCLabelAtlas.create = CCLabelAtlasDeprecated.create
 
 
 ---------------------------
---global functions wil be deprecated, begin
+--global functions will be deprecated, begin
 local function CCRectMake(x,y,width,height)
     deprecatedTip("CCRectMake(x,y,width,height)","cc.rect(x,y,width,height) in lua")
     return cc.rect(x,y,width,height)
@@ -345,7 +345,7 @@ local function ccc4FEqual(a,b)
     return a:equals(b)
 end
 _G.ccc4FEqual = ccc4FEqual
---global functions wil be deprecated, end
+--global functions will be deprecated, end
 
 
 --functions of _G will be deprecated begin
@@ -1000,22 +1000,4 @@ cc.Node.ignoreAnchorPointForPosition = NodeDeprecated.ignoreAnchorPointForPositi
 --functions of cc.Node will be deprecated end
 
 --functions of cc.GLProgram will be deprecated begin
-local GLProgram = { }
-function GLProgram.initWithVertexShaderByteArray(self,vShaderByteArray, fShaderByteArray)
-    deprecatedTip("cc.GLProgram:initWithVertexShaderByteArray","cc.GLProgram:initWithByteArrays")
-    return self:initWithByteArrays(vShaderByteArray, fShaderByteArray)
-end
-cc.GLProgram.initWithVertexShaderByteArray = GLProgram.initWithVertexShaderByteArray
-
-function GLProgram.initWithVertexShaderFilename(self,vShaderByteArray, fShaderByteArray)
-    deprecatedTip("cc.GLProgram:initWithVertexShaderFilename","cc.GLProgram:initWithFilenames")
-    return self:initWithFilenames(vShaderByteArray, fShaderByteArray)
-end
-cc.GLProgram.initWithVertexShaderFilename = GLProgram.initWithVertexShaderFilename
-
-function GLProgram.addAttribute(self, attributeName, index)
-    deprecatedTip("cc.GLProgram:addAttribute","cc.GLProgram:bindAttribLocation")
-    return self:bindAttribLocation(attributeName, index)
-end
-cc.GLProgram.addAttribute = GLProgram.addAttribute
 --functions of cc.GLProgram will be deprecated end

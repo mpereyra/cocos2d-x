@@ -47,6 +47,12 @@
 -- @return ResourceData#ResourceData ret (return value: cc.ResourceData)
         
 --------------------------------
+-- 
+-- @function [parent=#Slider] getSlidBallDisabledRenderer 
+-- @param self
+-- @return Sprite#Sprite ret (return value: cc.Sprite)
+        
+--------------------------------
 -- Sets if slider is using scale9 renderer.<br>
 -- param able True that using scale9 renderer, false otherwise.
 -- @function [parent=#Slider] setScale9Enabled 
@@ -91,6 +97,12 @@
 -- @return Slider#Slider self (return value: ccui.Slider)
         
 --------------------------------
+-- 
+-- @function [parent=#Slider] getSlidBallRenderer 
+-- @param self
+-- @return Node#Node ret (return value: cc.Node)
+        
+--------------------------------
 -- Add call back function called when slider's percent has changed to slider.<br>
 -- param callback An given call back function called when slider's percent has changed to slider.
 -- @function [parent=#Slider] addEventListener 
@@ -131,12 +143,24 @@
 -- @return rect_table#rect_table ret (return value: rect_table)
         
 --------------------------------
+-- Updates the visual elements of the slider.
+-- @function [parent=#Slider] updateVisualSlider 
+-- @param self
+-- @return Slider#Slider self (return value: ccui.Slider)
+        
+--------------------------------
 -- Gets capinsets for progress bar slider, if slider is using scale9 renderer.<br>
 -- return Capinsets for progress bar slider.<br>
 -- js NA
 -- @function [parent=#Slider] getCapInsetsProgressBarRenderer 
 -- @param self
 -- @return rect_table#rect_table ret (return value: rect_table)
+        
+--------------------------------
+-- 
+-- @function [parent=#Slider] getSlidBallPressedRenderer 
+-- @param self
+-- @return Sprite#Sprite ret (return value: cc.Sprite)
         
 --------------------------------
 -- Load pressed state texture for slider ball.<br>
@@ -199,6 +223,12 @@
 -- @param #string disabled
 -- @param #int resType
 -- @return Slider#Slider self (return value: ccui.Slider)
+        
+--------------------------------
+-- 
+-- @function [parent=#Slider] getSlidBallNormalRenderer 
+-- @param self
+-- @return Sprite#Sprite ret (return value: cc.Sprite)
         
 --------------------------------
 --  When user pressed the button, the button will zoom to a scale.<br>

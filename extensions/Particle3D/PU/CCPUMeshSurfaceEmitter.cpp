@@ -1,6 +1,7 @@
 /****************************************************************************
  Copyright (C) 2013 Henry van Merode. All rights reserved.
- Copyright (c) 2015 Chukong Technologies Inc.
+ Copyright (c) 2015-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -38,7 +39,7 @@ const Vec3 PUMeshSurfaceEmitter::DEFAULT_SCALE(1, 1, 1);
 const MeshInfo::MeshSurfaceDistribution PUMeshSurfaceEmitter::DEFAULT_DISTRIBUTION = MeshInfo::MSD_HOMOGENEOUS;
 
 //-----------------------------------------------------------------------
-inline void PUTriangle::calculateSquareSurface (void)
+inline void PUTriangle::calculateSquareSurface ()
 {
     /* Calculating the surface of a triangle with the following algorithm:
         v1 = Vector3(x1, y1, z1)
@@ -67,7 +68,7 @@ inline void PUTriangle::calculateSquareSurface (void)
     squareSurface = p * (p-a) * (p-b) * (p-c);
 }
 //-----------------------------------------------------------------------
-inline void PUTriangle::calculateSurfaceNormal (void)
+inline void PUTriangle::calculateSurfaceNormal ()
 {
     /* Calculating the surface normal of a triangle with the following algorithm:
         v1 = Vector3(x1, y1, z1)
@@ -79,7 +80,7 @@ inline void PUTriangle::calculateSurfaceNormal (void)
     surfaceNormal.normalize();
 }
 //-----------------------------------------------------------------------
-inline void PUTriangle::calculateEdgeNormals (void)
+inline void PUTriangle::calculateEdgeNormals ()
 {
     Vec3::cross(v1, v2, &en1);
     en1.normalize();
@@ -89,7 +90,7 @@ inline void PUTriangle::calculateEdgeNormals (void)
     en3.normalize();
 }
 //-----------------------------------------------------------------------
-const Vec3 PUTriangle::getRandomTrianglePosition (void)
+const Vec3 PUTriangle::getRandomTrianglePosition ()
 {
     // Use barycentric coordinates. Let A, B, C be the three vertices of the triangle. Any point P inside can 
     // be expressed uniquely as P = aA + bB + cC, where a+b+c=1 and a,b,c are each >= 0.
@@ -111,7 +112,7 @@ const Vec3 PUTriangle::getRandomTrianglePosition (void)
     return a * v1 + b * v2 + c * v3;
 }
 //-----------------------------------------------------------------------
-const PUTriangle::PositionAndNormal PUTriangle::getRandomEdgePositionAndNormal (void)
+const PUTriangle::PositionAndNormal PUTriangle::getRandomEdgePositionAndNormal ()
 {
     float mult = CCRANDOM_0_1();
     float randomVal = CCRANDOM_0_1() * 3.0f;
@@ -141,7 +142,7 @@ const PUTriangle::PositionAndNormal PUTriangle::getRandomEdgePositionAndNormal (
     return pAndN;
 }
 //-----------------------------------------------------------------------
-const PUTriangle::PositionAndNormal PUTriangle::getRandomVertexAndNormal (void)
+const PUTriangle::PositionAndNormal PUTriangle::getRandomVertexAndNormal ()
 {
     float randomVal = CCRANDOM_0_1() * 3.0f;
     PositionAndNormal pAndN;
@@ -172,10 +173,10 @@ const PUTriangle::PositionAndNormal PUTriangle::getRandomVertexAndNormal (void)
 //-----------------------------------------------------------------------
 //-----------------------------------------------------------------------
 //-----------------------------------------------------------------------
-MeshInfo::MeshInfo (const std::string& meshName, 
+MeshInfo::MeshInfo (const std::string& meshName,
     MeshSurfaceDistribution distribution,
     const Quaternion& orientation,
-    const Vec3& scale) : 
+    const Vec3& scale) :
     mDistribution(distribution)
 {
     std::string meshFile = ParticleAssetCreator::getInstance()->getSprite3DFilename(meshName);
@@ -198,7 +199,7 @@ MeshInfo::MeshInfo (const std::string& meshName,
     Bundle3D::destroyBundle(bundle);
 }
 //-----------------------------------------------------------------------
-MeshInfo::~MeshInfo (void)
+MeshInfo::~MeshInfo ()
 {
     _triangles.clear();
 }
@@ -329,15 +330,15 @@ void MeshInfo::getMeshInformation(	const MeshDatas& meshes,
         bool hitPos = false, hitNorm = false;
         for (const auto& attrib : submesh->attribs)
         {
-            if (attrib.vertexAttrib == GLProgram::VERTEX_ATTRIB_POSITION)
+            if (attrib.vertexAttrib == shaderinfos::VertexKey::VERTEX_ATTRIB_POSITION)
                 hitPos = true;
-            if (attrib.vertexAttrib == GLProgram::VERTEX_ATTRIB_NORMAL)
+            if (attrib.vertexAttrib == shaderinfos::VertexKey::VERTEX_ATTRIB_NORMAL)
                 hitNorm = true;
             
             if (!hitPos)
-                posFloatOffset += attrib.attribSizeBytes / sizeof(float);
+                posFloatOffset += attrib.getAttribSizeBytes() / sizeof(float);
             if (!hitNorm)
-                normFloatOffset += attrib.attribSizeBytes / sizeof(float);
+                normFloatOffset += attrib.getAttribSizeBytes() / sizeof(float);
         }
         
         float* curVert = &submesh->vertex[0];
@@ -403,7 +404,7 @@ void MeshInfo::getMeshInformation(	const MeshDatas& meshes,
 //-----------------------------------------------------------------------
 //-----------------------------------------------------------------------
 //-----------------------------------------------------------------------
-PUMeshSurfaceEmitter::PUMeshSurfaceEmitter(void) : 
+PUMeshSurfaceEmitter::PUMeshSurfaceEmitter() : 
     PUEmitter(),
     _meshName(),
     _orientation(),
@@ -415,7 +416,7 @@ PUMeshSurfaceEmitter::PUMeshSurfaceEmitter(void) :
 {
 }
 //-----------------------------------------------------------------------
-PUMeshSurfaceEmitter::~PUMeshSurfaceEmitter(void)
+PUMeshSurfaceEmitter::~PUMeshSurfaceEmitter()
 {
     if (_meshInfo)
     {
@@ -530,7 +531,7 @@ void PUMeshSurfaceEmitter::initParticleDirection(PUParticle3D* particle)
     }
 }
 //-----------------------------------------------------------------------
-const std::string& PUMeshSurfaceEmitter::getMeshName(void) const
+const std::string& PUMeshSurfaceEmitter::getMeshName() const
 {
     return _meshName;
 }
@@ -556,7 +557,7 @@ void PUMeshSurfaceEmitter::setDistribution(MeshInfo::MeshSurfaceDistribution dis
     _distribution = distribution;
 }
 //-----------------------------------------------------------------------
-const Vec3& PUMeshSurfaceEmitter::getScale (void) const
+const Vec3& PUMeshSurfaceEmitter::getScale () const
 {
     return _scale;
 }
@@ -566,7 +567,7 @@ void PUMeshSurfaceEmitter::setScale (const Vec3& scale)
     _scale = scale;
 }
 //-----------------------------------------------------------------------
-void PUMeshSurfaceEmitter::build(void)
+void PUMeshSurfaceEmitter::build()
 {
     // Delete the mesh info if already existing
     if (_meshInfo)

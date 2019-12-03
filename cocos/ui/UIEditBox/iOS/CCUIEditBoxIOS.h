@@ -3,6 +3,7 @@
  Copyright (c) 2012 James Chen
  Copyright (c) 2013-2015 zilongshanren
  Copyright (c) 2015 Mazyad Alabduljaleel
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -39,23 +40,28 @@
 @property (nonatomic, assign) cocos2d::ui::EditBox::InputFlag dataInputMode;
 @property (nonatomic, assign) cocos2d::ui::EditBox::KeyboardReturnType keyboardReturnType;
 @property (nonatomic, readonly, getter = isEditState) BOOL editState;
+@property (nonatomic, readwrite) BOOL returnPressed;
 
 - (instancetype)initWithFrame:(CGRect)frameRect editBox:(void *)editBox;
-- (void)doAnimationWhenKeyboardMoveWithDuration:(float)duration distance:(float)distance;
+- ()doAnimationWhenKeyboardMoveWithDuration:(float)duration distance:(float)distance;
 
 - (NSString *)getDefaultFontName;
+- (cocos2d::ui::EditBoxDelegate::EditBoxEndAction)getEndAction;
 
-- (void)setInputMode:(cocos2d::ui::EditBox::InputMode)inputMode;
-- (void)setInputFlag:(cocos2d::ui::EditBox::InputFlag)flag;
-- (void)setReturnType:(cocos2d::ui::EditBox::KeyboardReturnType)returnType;
+- ()setInputMode:(cocos2d::ui::EditBox::InputMode)inputMode;
+- ()setInputFlag:(cocos2d::ui::EditBox::InputFlag)flag;
+- ()setReturnType:(cocos2d::ui::EditBox::KeyboardReturnType)returnType;
+- ()setTextHorizontalAlignment:(cocos2d::TextHAlignment)alignment;
 
-- (void)setPlaceHolder:(NSString *)text;
-- (void)setVisible:(BOOL)visible;
-- (void)setTextColor:(UIColor*)color;
-- (void)setFont:(UIFont *)font;
-- (void)updateFrame:(CGRect)rect;
+- ()setPlaceHolder:(NSString *)text;
+- ()setPlaceholderFont:(UIFont *)font;
+- ()setPlaceholderTextColor:(UIColor *)color;
+- ()setVisible:(BOOL)visible;
+- ()setTextColor:(UIColor*)color;
+- ()setFont:(UIFont *)font;
+- ()updateFrame:(CGRect)rect;
 
-- (void)openKeyboard;
-- (void)closeKeyboard;
+- ()openKeyboard;
+- ()closeKeyboard;
 
 @end

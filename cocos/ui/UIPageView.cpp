@@ -1,5 +1,6 @@
 /****************************************************************************
 Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -36,8 +37,6 @@ _indicator(nullptr),
 _indicatorPositionAsAnchorPoint(Vec2(0.5f, 0.1f)),
 _currentPageIndex(-1),
 _childFocusCancelOffset(5.0f),
-_pageViewEventListener(nullptr),
-_pageViewEventSelector(nullptr),
 _eventCallback(nullptr),
 _autoScrollStopEpsilon(0.001f),
 _previousPageIndex(-1),
@@ -47,8 +46,6 @@ _isTouchBegin(false)
 
 PageView::~PageView()
 {
-    _pageViewEventListener = nullptr;
-    _pageViewEventSelector = nullptr;
 }
 
 PageView* PageView::create()
@@ -85,8 +82,8 @@ void PageView::doLayout()
     ListView::doLayout();
     if(_indicator != nullptr)
     {
-        ssize_t index = getIndex(getCenterItemInCurrentView());
-        _indicator->indicate(index);
+        _currentPageIndex = getIndex(getCenterItemInCurrentView());
+        _indicator->indicate(_currentPageIndex);
     }
     _innerContainerDoLayoutDirty = false;
 }
@@ -108,11 +105,6 @@ void PageView::setDirection(PageView::Direction direction)
         _indicator->setDirection(direction);
         refreshIndicatorPosition();
     }
-}
-
-void PageView::addWidgetToPage(Widget *widget, ssize_t pageIdx, bool forceCreate)
-{
-    insertCustomItem(widget, pageIdx);
 }
 
 void PageView::addPage(Widget* page)
@@ -140,9 +132,13 @@ void PageView::removeAllPages()
     removeAllItems();
 }
 
-void PageView::setCurPageIndex( ssize_t index )
+ssize_t PageView::getCurrentPageIndex()
 {
-    setCurrentPageIndex(index);
+    //The _currentPageIndex is lazy calculated
+    if (_innerContainerDoLayoutDirty) {
+        _currentPageIndex = getIndex(getCenterItemInCurrentView());
+    }
+    return _currentPageIndex;
 }
 
 void PageView::setCurrentPageIndex(ssize_t index)
@@ -154,30 +150,26 @@ void PageView::scrollToPage(ssize_t idx)
 {
     scrollToItem(idx);
 }
+    
+void PageView::scrollToPage(ssize_t idx, float time)
+{
+    scrollToItem(idx, time);
+}
 
 void PageView::scrollToItem(ssize_t itemIndex)
 {
+    if (_innerContainerDoLayoutDirty) {
+        this->forceDoLayout();
+    }
     ListView::scrollToItem(itemIndex, Vec2::ANCHOR_MIDDLE, Vec2::ANCHOR_MIDDLE);
 }
 
-void PageView::setCustomScrollThreshold(float threshold)
+void PageView::scrollToItem(ssize_t itemIndex, float time)
 {
-    CCLOG("PageView::setCustomScrollThreshold() has no effect!");
-}
-
-float PageView::getCustomScrollThreshold()const
-{
-    return 0;
-}
-
-void PageView::setUsingCustomScrollThreshold(bool flag)
-{
-    CCLOG("PageView::setUsingCustomScrollThreshold() has no effect!");
-}
-
-bool PageView::isUsingCustomScrollThreshold()const
-{
-    return false;
+    if (_innerContainerDoLayoutDirty) {
+        this->forceDoLayout();
+    }
+    ListView::scrollToItem(itemIndex, Vec2::ANCHOR_MIDDLE, Vec2::ANCHOR_MIDDLE, time >= 0 ? time : _scrollTime);
 }
 
 void PageView::setAutoScrollStopEpsilon(float epsilon)
@@ -283,26 +275,9 @@ float PageView::getAutoScrollStopEpsilon() const
     return _autoScrollStopEpsilon;
 }
 
-void PageView::addEventListenerPageView(Ref *target, SEL_PageViewEvent selector)
-{
-    _pageViewEventListener = target;
-    _pageViewEventSelector = selector;
-
-    ccScrollViewCallback scrollViewCallback = [=](Ref* ref, ScrollView::EventType type) -> void{
-        if (type == ScrollView::EventType::AUTOSCROLL_ENDED && _previousPageIndex != _currentPageIndex) {
-            pageTurningEvent();
-        }
-    };
-    this->addEventListener(scrollViewCallback);
-}
-
 void PageView::pageTurningEvent()
 {
     this->retain();
-    if (_pageViewEventListener && _pageViewEventSelector)
-    {
-        (_pageViewEventListener->*_pageViewEventSelector)(this, PAGEVIEW_EVENT_TURNING);
-    }
     if (_eventCallback)
     {
         _eventCallback(this,EventType::TURNING);
@@ -318,49 +293,12 @@ void PageView::pageTurningEvent()
 void PageView::addEventListener(const ccPageViewCallback& callback)
 {
     _eventCallback = callback;
-    ccScrollViewCallback scrollViewCallback = [=](Ref* ref, ScrollView::EventType type) -> void{
+    ccScrollViewCallback scrollViewCallback = [=](Ref* /*ref*/, ScrollView::EventType type) -> void{
         if (type == ScrollView::EventType::AUTOSCROLL_ENDED && _previousPageIndex != _currentPageIndex) {
             pageTurningEvent();
         }
     };
     this->addEventListener(scrollViewCallback);
-}
-
-ssize_t PageView::getCurPageIndex() const
-{
-    Widget* widget = ListView::getCenterItemInCurrentView();
-    return getIndex(widget);
-}
-
-Vector<Layout*>& PageView::getPages()
-{
-    CCLOG("This method is obsolete!");
-
-    // Temporary code to keep backward compatibility.
-    static Vector<Layout*> pages;
-    pages.clear();
-    for(Widget* widget : getItems())
-    {
-        pages.pushBack(dynamic_cast<Layout*>(widget));
-    }
-    return pages;
-}
-
-Layout* PageView::getPage(ssize_t index)
-{
-    if (index < 0 || index >= this->getItems().size())
-    {
-        return nullptr;
-    }
-
-    // Temporary code to keep backward compatibility.
-    static Vector<Layout*> pages;
-    pages.clear();
-    for(Widget* widget : getItems())
-    {
-        pages.pushBack(dynamic_cast<Layout*>(widget));
-    }
-    return pages.at(index);
 }
 
 std::string PageView::getDescription() const
@@ -381,8 +319,6 @@ void PageView::copySpecialProperties(Widget *widget)
         ListView::copySpecialProperties(widget);
         _eventCallback = pageView->_eventCallback;
         _ccEventCallback = pageView->_ccEventCallback;
-        _pageViewEventListener = pageView->_pageViewEventListener;
-        _pageViewEventSelector = pageView->_pageViewEventSelector;
         _currentPageIndex = pageView->_currentPageIndex;
         _previousPageIndex = pageView->_previousPageIndex;
         _childFocusCancelOffset = pageView->_childFocusCancelOffset;
@@ -481,6 +417,34 @@ const Color3B& PageView::getIndicatorIndexNodesColor() const
 {
     CCASSERT(_indicator != nullptr, "");
     return _indicator->getIndexNodesColor();
+}
+    
+void PageView::setIndicatorSelectedIndexOpacity(uint8_t opacity)
+{
+    if(_indicator != nullptr)
+    {
+        _indicator->setSelectedIndexOpacity(opacity);
+    }
+}
+
+uint8_t PageView::getIndicatorSelectedIndexOpacity() const
+{
+    CCASSERT(_indicator != nullptr, "");
+    return _indicator->getSelectedIndexOpacity();
+}
+
+void PageView::setIndicatorIndexNodesOpacity(uint8_t opacity)
+{
+    if(_indicator != nullptr)
+    {
+        _indicator->setIndexNodesOpacity(opacity);
+    }
+}
+
+uint8_t PageView::getIndicatorIndexNodesOpacity() const
+{
+    CCASSERT(_indicator != nullptr, "");
+    return _indicator->getIndexNodesOpacity();
 }
 
 void PageView::setIndicatorIndexNodesScale(float indexNodesScale)

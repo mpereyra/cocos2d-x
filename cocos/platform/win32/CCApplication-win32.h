@@ -1,6 +1,7 @@
 /****************************************************************************
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -22,9 +23,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-#ifndef __CC_APPLICATION_WIN32_H__
-#define __CC_APPLICATION_WIN32_H__
-
+#pragma once
 #include "platform/CCPlatformConfig.h"
 #if CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
 
@@ -60,12 +59,10 @@ public:
     @return Current application instance pointer.
     */
     static Application* getInstance();
-
-    /** @deprecated Use getInstance() instead */
-    CC_DEPRECATED_ATTRIBUTE static Application* sharedApplication();
     
     /* override functions */
-    virtual void setAnimationInterval(float interval);
+    virtual void setAnimationInterval(float interval) override;
+
     virtual LanguageType getCurrentLanguage();
 
     virtual const char * getCurrentLanguageCode();
@@ -97,11 +94,11 @@ public:
      *  Gets the Resource root path.
      *  @deprecated Please use FileUtils::getInstance()->getSearchPaths() instead. 
      */
-    CC_DEPRECATED_ATTRIBUTE const std::string& getResourceRootPath(void);
+    CC_DEPRECATED_ATTRIBUTE const std::string& getResourceRootPath();
 
     void setStartupScriptFilename(const std::string& startupScriptFile);
 
-    const std::string& getStartupScriptFilename(void)
+    const std::string& getStartupScriptFilename()
     {
         return _startupScriptFilename;
     }
@@ -119,5 +116,3 @@ protected:
 NS_CC_END
 
 #endif // CC_TARGET_PLATFORM == CC_PLATFORM_WIN32
-
-#endif    // __CC_APPLICATION_WIN32_H__

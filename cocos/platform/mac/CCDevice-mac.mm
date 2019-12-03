@@ -1,6 +1,7 @@
 /****************************************************************************
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -129,6 +130,10 @@ static NSSize _calculateRealSizeForString(NSAttributedString **str, id font, NSS
         while (actualSize.size.width > constrainSize.width ||
                actualSize.size.height > constrainSize.height) {
             fontSize = fontSize - 1;
+            if (fontSize < 0) {
+                actualSize = CGRectMake(0, 0, 0, 0);
+                break;
+            }
             
             NSMutableAttributedString *mutableString = [[*str mutableCopy] autorelease];
             *str = __attributedStringWithFontSize(mutableString, fontSize);
@@ -162,6 +167,10 @@ static NSSize _calculateRealSizeForString(NSAttributedString **str, id font, NSS
         while (actualSize.size.height > constrainSize.height
                ||actualSize.size.width > constrainSize.width) {
             fontSize = fontSize - 1;
+            if (fontSize < 0) {
+                actualSize = CGRectMake(0, 0, 0, 0);
+                break;
+            }
             
             NSMutableAttributedString *mutableString = [[*str mutableCopy] autorelease];
             *str = __attributedStringWithFontSize(mutableString, fontSize);
@@ -200,18 +209,10 @@ static NSFont* _createSystemFont(const char* fontName, int size)
     fntName = [[fntName lastPathComponent] stringByDeletingPathExtension];
     
     // font
-    NSFont *font = [[NSFontManager sharedFontManager]
-                    fontWithFamily:fntName
-                    traits:NSUnboldFontMask | NSUnitalicFontMask
-                    weight:0
-                    size:size];
+    NSFont *font = [NSFont fontWithName:fntName size:size];
     
     if (font == nil) {
-        font = [[NSFontManager sharedFontManager]
-                fontWithFamily:@"Arial"
-                traits:NSUnboldFontMask | NSUnitalicFontMask
-                weight:0
-                size:size];
+        font = [NSFont systemFontOfSize:size];
     }
     return font;
 }
@@ -262,7 +263,6 @@ static bool _initWithString(const char * text, Device::TextAlign align, const ch
         
         // alignment
         NSTextAlignment textAlign = FontUtils::_calculateTextAlignment(align);
-        
         NSMutableParagraphStyle *paragraphStyle = FontUtils::_calculateParagraphStyle(enableWrap, overflow);
         [paragraphStyle setAlignment:textAlign];
         
@@ -278,48 +278,50 @@ static bool _initWithString(const char * text, Device::TextAlign align, const ch
 
         NSSize realDimensions;
         
-        if (overflow == 2) {
+        if (overflow == 2)
             realDimensions = _calculateRealSizeForString(&stringWithAttributes, font, dimensions, enableWrap);
-        } else {
-            realDimensions = _calculateStringSize(stringWithAttributes, font, &dimensions, enableWrap, overflow);
-        }
-        
+        else
+            realDimensions = _calculateStringSize(stringWithAttributes, font, &dimensions, enableWrap, overflow);        
 
         // Mac crashes if the width or height is 0
         CC_BREAK_IF(realDimensions.width <= 0 || realDimensions.height <= 0);
-        
        
-        if(dimensions.width <= 0.f) {
+        if(dimensions.width <= 0.f)
             dimensions.width = realDimensions.width;
-        }
-        if (dimensions.height <= 0.f) {
-            dimensions.height = realDimensions.height;
-        }
-      
+        if (dimensions.height <= 0.f)
+            dimensions.height = realDimensions.height;      
         
         //Alignment
         CGFloat xPadding = FontUtils::_calculateTextDrawStartWidth(align, realDimensions, dimensions);
-        
+
         CGFloat yPadding = _calculateTextDrawStartHeight(align, realDimensions, dimensions);
-        
+
         NSInteger POTWide = dimensions.width;
         NSInteger POTHigh = dimensions.height;
         NSRect textRect = NSMakeRect(xPadding, POTHigh - dimensions.height + yPadding,
                                      realDimensions.width, realDimensions.height);
-        
-        
-        [[NSGraphicsContext currentContext] setShouldAntialias:NO];
-        
-        NSImage *image = [[NSImage alloc] initWithSize:NSMakeSize(POTWide, POTHigh)];
-        [image lockFocus];
-        // patch for mac retina display and lableTTF
-        [[NSAffineTransform transform] set];
+
+        NSBitmapImageRep* offscreenRep = [[[NSBitmapImageRep alloc]
+            initWithBitmapDataPlanes:NULL
+            pixelsWide:POTWide
+            pixelsHigh:POTHigh
+            bitsPerSample:8
+            samplesPerPixel:4
+            hasAlpha:YES
+            isPlanar:NO
+            colorSpaceName:NSDeviceRGBColorSpace
+            bitmapFormat: 0
+            bytesPerRow:4 * POTWide
+            bitsPerPixel:32] autorelease];
+
+        NSGraphicsContext* g = [NSGraphicsContext graphicsContextWithBitmapImageRep:offscreenRep];
+        [NSGraphicsContext saveGraphicsState];
+        [NSGraphicsContext setCurrentContext:g];
         [stringWithAttributes drawInRect:textRect];
-        NSBitmapImageRep *bitmap = [[NSBitmapImageRep alloc] initWithFocusedViewRect:NSMakeRect (0.0f, 0.0f, POTWide, POTHigh)];
-        [image unlockFocus];
-        
-        auto data = (unsigned char*) [bitmap bitmapData];  //Use the same buffer to improve the performance.
-        
+        [NSGraphicsContext restoreGraphicsState];
+
+        auto data = (unsigned char*) [offscreenRep bitmapData];  //Use the same buffer to improve the performance.
+
         NSUInteger textureSize = POTWide * POTHigh * 4;
         auto dataNew = (unsigned char*)malloc(sizeof(unsigned char) * textureSize);
         if (dataNew) {
@@ -332,8 +334,6 @@ static bool _initWithString(const char * text, Device::TextAlign align, const ch
             info->isPremultipliedAlpha = true;
             ret = true;
         }
-        [bitmap release];
-        [image release];
     } while (0);
     return ret;
 }
@@ -361,12 +361,10 @@ Data Device::getTextureDataForText(const char * text, const FontDefinition& text
 
 void Device::setKeepScreenOn(bool value)
 {
-    CC_UNUSED_PARAM(value);
 }
 
 void Device::vibrate(float duration)
 {
-    CC_UNUSED_PARAM(duration);
 }
 
 NS_CC_END

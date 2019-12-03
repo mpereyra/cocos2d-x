@@ -1,5 +1,6 @@
 /****************************************************************************
- Copyright (c) 2015 Chukong Technologies Inc.
+ Copyright (c) 2015-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -480,7 +481,7 @@ namespace ui
         if (tabcell != nullptr && tabcell->init())
         {
             tabcell->_frontCrossRenderer->setVisible(false); // _isSelected == false
-            tabcell->_anchorPoint = Vec2(.5f, 0);
+            tabcell->_anchorPoint = Vec2(.5f, 0.0f);
             tabcell->autorelease();
             return tabcell;
         }
@@ -502,7 +503,7 @@ namespace ui
         {
             tabcell->_frontCrossRenderer->setVisible(false);
             tabcell->_tabLabelRender->setString(titleStr);
-            tabcell->_anchorPoint = Vec2(.5f, 0);
+            tabcell->_anchorPoint = Vec2(.5f, 0.0f);
             tabcell->autorelease();
             return tabcell;
         }
@@ -528,7 +529,7 @@ namespace ui
         {
             tabcell->_frontCrossRenderer->setVisible(false);
             tabcell->_tabLabelRender->setString(titleStr);
-            tabcell->_anchorPoint = Vec2(.5f, 0);
+            tabcell->_anchorPoint = Vec2(.5f, 0.0f);
             tabcell->autorelease();
             return tabcell;
         }
@@ -565,7 +566,7 @@ namespace ui
         _tabLabelRender->setPosition(_contentSize * 0.5f);
     }
 
-    const std::string TabHeader::getTitleText() const
+    std::string TabHeader::getTitleText() const
     {
         if (nullptr == _tabLabelRender)
         {
@@ -658,7 +659,7 @@ namespace ui
         return _tabLabelRender;
     }
 
-    const std::string TabHeader::getTitleFontName() const
+    std::string TabHeader::getTitleFontName() const
     {
         if (this->_fontType == FontType::SYSTEM)
         {

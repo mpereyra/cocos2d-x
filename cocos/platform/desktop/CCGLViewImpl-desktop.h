@@ -1,6 +1,7 @@
 /****************************************************************************
 Copyright (c) 2010-2012 cocos2d-x.org
 Copyright (c) 2013-2016 Chukong Technologies Inc.
+Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
 
 http://www.cocos2d-x.org
 
@@ -23,8 +24,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 
-#ifndef __CC_EGLViewIMPL_DESKTOP_H__
-#define __CC_EGLViewIMPL_DESKTOP_H__
+#pragma once
 
 #include "base/CCRef.h"
 #include "platform/CCCommon.h"
@@ -53,6 +53,7 @@ THE SOFTWARE.
 
 NS_CC_BEGIN
 
+
 class CC_DLL GLViewImpl : public GLView
 {
 public:
@@ -79,6 +80,14 @@ public:
     void pollEvents() override;
     GLFWwindow* getWindow() const { return _mainWindow; }
 
+    bool isFullscreen() const;
+    void setFullscreen();
+    void setFullscreen(int monitorIndex);
+    void setFullscreen(const GLFWvidmode &videoMode, GLFWmonitor *monitor);
+    void setWindowed(int width, int height);
+    int getMonitorCount() const;
+    Size getMonitorSize() const;
+
     /* override functions */
     virtual bool isOpenGLReady() override;
     virtual void end() override;
@@ -86,14 +95,32 @@ public:
     virtual void setFrameSize(float width, float height) override;
     virtual void setIMEKeyboardState(bool bOpen) override;
 
-    /*
-     * Set zoom factor for frame. This method is for debugging big resolution (e.g.new ipad) app on desktop.
+#if CC_ICON_SET_SUPPORT
+    virtual void setIcon(const std::string& filename) const override;
+    virtual void setIcon(const std::vector<std::string>& filelist) const override;
+    virtual void setDefaultIcon() const override;
+#endif /* CC_ICON_SET_SUPPORT */
+
+    /**
+     * Sets the cursor for the window with custom image.
      */
-    void setFrameZoomFactor(float zoomFactor) override;
+    virtual void setCursor(const std::string& filename, Vec2 hotspot = Vec2::ANCHOR_TOP_LEFT) override;
+
+    /**
+     * Sets the cursor for the window back to default.
+     */
+    virtual void setDefaultCursor() override;
+
     /**
      * Hide or Show the mouse cursor if there is one.
      */
     virtual void setCursorVisible(bool isVisible) override;
+
+    /*
+     * Set zoom factor for frame. This method is for debugging big resolution (e.g.new ipad) app on desktop.
+     */
+    void setFrameZoomFactor(float zoomFactor) override;
+
     /** Retina support is disabled by default
      *  @note This method is only available on Mac.
      */
@@ -110,17 +137,18 @@ public:
     
 #if (CC_TARGET_PLATFORM == CC_PLATFORM_MAC)
     id getCocoaWindow() override { return glfwGetCocoaWindow(_mainWindow); }
+    id getNSGLContext() override { return glfwGetNSGLContext(_mainWindow); } // stevetranby: added
 #endif // #if (CC_TARGET_PLATFORM == CC_PLATFORM_MAC)
 
 protected:
     GLViewImpl(bool initglfw = true);
     virtual ~GLViewImpl();
 
+    bool initGlew();
+
     bool initWithRect(const std::string& viewName, Rect rect, float frameZoomFactor, bool resizable);
     bool initWithFullScreen(const std::string& viewName);
     bool initWithFullscreen(const std::string& viewname, const GLFWvidmode &videoMode, GLFWmonitor *monitor);
-
-    bool initGlew();
 
     void updateFrameSize();
 
@@ -135,6 +163,7 @@ protected:
     void onGLFWframebuffersize(GLFWwindow* window, int w, int h);
     void onGLFWWindowSizeFunCallback(GLFWwindow *window, int width, int height);
     void onGLFWWindowIconifyCallback(GLFWwindow* window, int iconified);
+    void onGLFWWindowFocusCallback(GLFWwindow* window, int focused);
 
     bool _captured;
     bool _supportTouch;
@@ -152,12 +181,103 @@ protected:
     float _mouseX;
     float _mouseY;
 
+    GLFWcursor* _cursor;
+
     friend class GLFWEventHandler;
+    
+public:
+    // View will trigger an event when window is resized, gains or loses focus
+    static const std::string EVENT_WINDOW_RESIZED;
+    static const std::string EVENT_WINDOW_FOCUSED;
+    static const std::string EVENT_WINDOW_UNFOCUSED;
 
 private:
     CC_DISALLOW_COPY_AND_ASSIGN(GLViewImpl);
 };
 
-NS_CC_END   // end of namespace   cocos2d
 
-#endif  // end of __CC_EGLViewImpl_DESKTOP_H__
+class CC_DLL GLFWEventHandler
+{
+public:
+    static void onGLFWError(int errorID, const char* errorDesc)
+    {
+        if (_view)
+            _view->onGLFWError(errorID, errorDesc);
+    }
+
+    static void onGLFWMouseCallBack(GLFWwindow* window, int button, int action, int modify)
+    {
+        if (_view)
+            _view->onGLFWMouseCallBack(window, button, action, modify);
+    }
+
+    static void onGLFWMouseMoveCallBack(GLFWwindow* window, double x, double y)
+    {
+        if (_view)
+            _view->onGLFWMouseMoveCallBack(window, x, y);
+    }
+
+    static void onGLFWMouseScrollCallback(GLFWwindow* window, double x, double y)
+    {
+        if (_view)
+            _view->onGLFWMouseScrollCallback(window, x, y);
+    }
+
+    static void onGLFWKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+    {
+        if (_view)
+            _view->onGLFWKeyCallback(window, key, scancode, action, mods);
+    }
+
+    static void onGLFWCharCallback(GLFWwindow* window, unsigned int character)
+    {
+        if (_view)
+            _view->onGLFWCharCallback(window, character);
+    }
+
+    static void onGLFWWindowPosCallback(GLFWwindow* windows, int x, int y)
+    {
+        if (_view)
+            _view->onGLFWWindowPosCallback(windows, x, y);
+    }
+
+    static void onGLFWWindowSizeFunCallback(GLFWwindow *window, int width, int height)
+    {
+        if (_view)
+            _view->onGLFWWindowSizeFunCallback(window, width, height);
+    }
+
+
+    static void onGLFWframebuffersize(GLFWwindow *window, int width, int height)
+    {
+        if (_view)
+            _view->onGLFWframebuffersize(window, width, height);
+    }
+
+    static void setGLViewImpl(GLViewImpl* view)
+    {
+        _view = view;
+    }
+
+    static void onGLFWWindowIconifyCallback(GLFWwindow* window, int iconified)
+    {
+        if (_view)
+        {
+            _view->onGLFWWindowIconifyCallback(window, iconified);
+        }
+    }
+
+    static void onGLFWWindowFocusCallback(GLFWwindow* window, int focused)
+    {
+        if (_view)
+        {
+            _view->onGLFWWindowFocusCallback(window, focused);
+        }
+    }
+
+
+private:
+    static GLViewImpl* _view;
+};
+
+NS_CC_END   // end of namespace   cocos2d

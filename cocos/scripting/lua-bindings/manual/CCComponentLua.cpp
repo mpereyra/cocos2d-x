@@ -1,5 +1,6 @@
 /****************************************************************************
- Copyright (c) 2015 Chukong Technologies Inc.
+ Copyright (c) 2015-2016 Chukong Technologies Inc.
+ Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
  
  http://www.cocos2d-x.org
  
@@ -37,6 +38,27 @@ const std::string ComponentLua::UPDATE = "update";
 
 #define KEY_COMPONENT  "component"
 
+namespace {
+    void adjustScriptFileName(std::string& scriptFileName)
+    {
+        assert(scriptFileName.size() > 4);
+        
+        auto fileUtils = FileUtils::getInstance();
+        if (fileUtils->isFileExist(scriptFileName))
+            return;
+        
+        const std::string luaSuffix(".lua");
+        const std::string luacSuffix(".luac");
+        
+        // xxx.lua -> xxx.luac or
+        // xxx.luac -> xxx.lua
+        if (scriptFileName.compare(scriptFileName.size() - luaSuffix.size(), luaSuffix.size(), luaSuffix) == 0)
+            scriptFileName.replace(scriptFileName.size() - luaSuffix.size(), luaSuffix.size(), luacSuffix);
+        else
+            scriptFileName.replace(scriptFileName.size() - luacSuffix.size(), luacSuffix.size(), luaSuffix);
+    }
+}
+
 int ComponentLua::_index = 0;
 
 ComponentLua* ComponentLua::create(const std::string& scriptFileName)
@@ -45,6 +67,7 @@ ComponentLua* ComponentLua::create(const std::string& scriptFileName)
     
     initClass();
     
+    adjustScriptFileName(const_cast<std::string&>(scriptFileName));
     auto componentLua = new(std::nothrow) ComponentLua(scriptFileName);
     if (componentLua)
     {

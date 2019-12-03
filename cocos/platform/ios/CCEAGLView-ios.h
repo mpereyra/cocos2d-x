@@ -80,10 +80,12 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
  * The view content is basically an EAGL surface you render your OpenGL scene into.
  * Note that setting the view non-opaque will only work if the EAGL surface has an alpha channel.
  */
-@interface CCEAGLView : UIView <UIKeyInput, UITextInput>
+@interface CCEAGLView : UIView <UIKeyInput, UITextInput, UITextInputTraits>
 {
+    //BPC PATCH -restore this
     id<CCESRenderer>        renderer_;
     EAGLContext             *context_; // weak ref
+    //END BPC PATCH
 
     NSString                *pixelformat_;
     GLuint                  depthFormat_;
@@ -116,6 +118,8 @@ Copyright (C) 2008 Apple Inc. All Rights Reserved.
 @property(nonatomic) BOOL usesSecureTextEntry;
 @property(nonatomic) UIKeyboardType keyboardFormat;
 @property(nonatomic, copy) NSNotification* keyboardShowNotification;
+@property(nonatomic) UITextAutocorrectionType autocorrectionType;         // default is UITextAutocorrectionTypeDefault
+
 /** creates an initializes an CCEAGLView with a frame and 0-bit depth buffer, and a RGB565 color buffer */
 + (id) viewWithFrame:(CGRect)frame;
 /** creates an initializes an CCEAGLView with a frame, a color buffer format, and 0-bit depth buffer */
