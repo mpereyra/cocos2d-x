@@ -620,13 +620,6 @@
 			path = ../../../../external/xxtea;
 			sourceTree = "<group>";
 		};
-		15427D41198F73F700DC375D /* cocosdenshion */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = cocosdenshion;
-			sourceTree = "<group>";
-		};
 		1551A334158F2AB200E66CFE = {
 			isa = PBXGroup;
 			children = (
@@ -673,13 +666,6 @@
 				15C1BCDC1986525900A46ACC /* LuaScriptHandlerMgr.h */,
 			);
 			path = cocos2d;
-			sourceTree = "<group>";
-		};
-		15C1BCF11986526C00A46ACC /* cocosbuilder */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = cocosbuilder;
 			sourceTree = "<group>";
 		};
 		15C1BCFD1986526C00A46ACC /* extension */ = {
@@ -790,9 +776,7 @@
 				15A561E91B00A3D0005D4720 /* physics3d */,
 				3E2BDB0719C5E6100055CDCD /* audioengine */,
 				158C128419A0FA1300781A76 /* 3d */,
-				15427D41198F73F700DC375D /* cocosdenshion */,
 				15EFA400198B2AB2000C57D3 /* cocostudio */,
-				15C1BCF11986526C00A46ACC /* cocosbuilder */,
 				15C1BCFD1986526C00A46ACC /* extension */,
 				15C1BD001986526C00A46ACC /* network */,
 				15C1BD141986526C00A46ACC /* spine */,
