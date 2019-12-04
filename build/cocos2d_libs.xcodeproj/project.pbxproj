@@ -7,8 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		15AE1C1919AAE30900C27E9E /* libwebsockets.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AAF5387180E35AC000584C8 /* libwebsockets.a */; };
-		15AE1C1A19AAE3C800C27E9E /* libwebsockets.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AAF5384180E35A3000584C8 /* libwebsockets.a */; };
 		15FB20871AE7C57D00C31518 /* shapes.cc in Sources */ = {isa = PBXBuildFile; fileRef = 15FB207A1AE7C57D00C31518 /* shapes.cc */; };
 		15FB20881AE7C57D00C31518 /* shapes.cc in Sources */ = {isa = PBXBuildFile; fileRef = 15FB207A1AE7C57D00C31518 /* shapes.cc */; };
 		15FB20891AE7C57D00C31518 /* shapes.h in Headers */ = {isa = PBXBuildFile; fileRef = 15FB207B1AE7C57D00C31518 /* shapes.h */; };
@@ -2023,6 +2021,13 @@
 		41B8C238239714A900689439 /* UITextField.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 41B8C15B239714A700689439 /* UITextField.cpp */; };
 		41B8C239239714A900689439 /* UIDeprecated.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 41B8C15C239714A700689439 /* UIDeprecated.cpp */; };
 		41B8C23A239714A900689439 /* UIDeprecated.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 41B8C15C239714A700689439 /* UIDeprecated.cpp */; };
+		41E7FB06239849F4008E2357 /* libwebsockets.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 41E7FAC9239849F4008E2357 /* libwebsockets.a */; };
+		41E7FB13239849F4008E2357 /* lws_config-arm64.h in Headers */ = {isa = PBXBuildFile; fileRef = 41E7FAEB239849F4008E2357 /* lws_config-arm64.h */; };
+		41E7FB14239849F4008E2357 /* lws_config-i386.h in Headers */ = {isa = PBXBuildFile; fileRef = 41E7FAEC239849F4008E2357 /* lws_config-i386.h */; };
+		41E7FB15239849F4008E2357 /* lws_config-x86_64.h in Headers */ = {isa = PBXBuildFile; fileRef = 41E7FAED239849F4008E2357 /* lws_config-x86_64.h */; };
+		41E7FB16239849F4008E2357 /* libwebsockets.h in Headers */ = {isa = PBXBuildFile; fileRef = 41E7FAEE239849F4008E2357 /* libwebsockets.h */; };
+		41E7FB17239849F4008E2357 /* lws_config.h in Headers */ = {isa = PBXBuildFile; fileRef = 41E7FAEF239849F4008E2357 /* lws_config.h */; };
+		41E7FB18239849F4008E2357 /* lws_config-arm32.h in Headers */ = {isa = PBXBuildFile; fileRef = 41E7FAF0239849F4008E2357 /* lws_config-arm32.h */; };
 		46C02E0718E91123004B7456 /* xxhash.c in Sources */ = {isa = PBXBuildFile; fileRef = 46C02E0518E91123004B7456 /* xxhash.c */; };
 		46C02E0818E91123004B7456 /* xxhash.c in Sources */ = {isa = PBXBuildFile; fileRef = 46C02E0518E91123004B7456 /* xxhash.c */; };
 		46C02E0918E91123004B7456 /* xxhash.h in Headers */ = {isa = PBXBuildFile; fileRef = 46C02E0618E91123004B7456 /* xxhash.h */; };
@@ -2073,7 +2078,6 @@
 		507B3CF71C31BDD30067B53E /* ConvertUTFWrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1A1645AF191B726C008C7C7F /* ConvertUTFWrapper.cpp */; };
 		507B3CF81C31BDD30067B53E /* DetourProximityGrid.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6DD2F9D1B04825B00E47F5F /* DetourProximityGrid.cpp */; };
 		507B3CFA1C31BDD30067B53E /* DetourNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6DD2F8F1B04825B00E47F5F /* DetourNode.cpp */; };
-		507B3D071C31BDD30067B53E /* libwebsockets.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AAF5387180E35AC000584C8 /* libwebsockets.a */; };
 		507B3D081C31BDD30067B53E /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 292F1A5C1A5151CE00E479F8 /* libssl.a */; };
 		507B3D091C31BDD30067B53E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1551A342158F2AB200E66CFE /* Foundation.framework */; };
 		507B3D0A1C31BDD30067B53E /* libpng.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A570363180BD1120088DEC7 /* libpng.a */; };
@@ -2351,8 +2355,6 @@
 		1A57052A180BD31F0088DEC7 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libfreetype.a; sourceTree = "<group>"; };
 		1A57052D180BD3280088DEC7 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libfreetype.a; sourceTree = "<group>"; };
 		1A57FFF7180BC5160088DEC7 /* CHANGELOG */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; lineEnding = 0; name = CHANGELOG; path = ../CHANGELOG; sourceTree = "<group>"; };
-		1AAF5384180E35A3000584C8 /* libwebsockets.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libwebsockets.a; sourceTree = "<group>"; };
-		1AAF5387180E35AC000584C8 /* libwebsockets.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libwebsockets.a; sourceTree = "<group>"; };
 		1AAF541C180E3B6A000584C8 /* libcurl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libcurl.a; sourceTree = "<group>"; };
 		1AC026991914068200FA920D /* ConvertUTF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConvertUTF.h; sourceTree = "<group>"; };
 		29031E0619BFE8D400EFA1DF /* libchipmunk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libchipmunk.a; path = prebuilt/mac/libchipmunk.a; sourceTree = "<group>"; };
@@ -3469,6 +3471,13 @@
 		41B8C15A239714A600689439 /* UIVBox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIVBox.cpp; sourceTree = "<group>"; };
 		41B8C15B239714A700689439 /* UITextField.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UITextField.cpp; sourceTree = "<group>"; };
 		41B8C15C239714A700689439 /* UIDeprecated.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UIDeprecated.cpp; sourceTree = "<group>"; };
+		41E7FAC9239849F4008E2357 /* libwebsockets.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libwebsockets.a; sourceTree = "<group>"; };
+		41E7FAEB239849F4008E2357 /* lws_config-arm64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "lws_config-arm64.h"; sourceTree = "<group>"; };
+		41E7FAEC239849F4008E2357 /* lws_config-i386.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "lws_config-i386.h"; sourceTree = "<group>"; };
+		41E7FAED239849F4008E2357 /* lws_config-x86_64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "lws_config-x86_64.h"; sourceTree = "<group>"; };
+		41E7FAEE239849F4008E2357 /* libwebsockets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libwebsockets.h; sourceTree = "<group>"; };
+		41E7FAEF239849F4008E2357 /* lws_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lws_config.h; sourceTree = "<group>"; };
+		41E7FAF0239849F4008E2357 /* lws_config-arm32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "lws_config-arm32.h"; sourceTree = "<group>"; };
 		46A15FCC1807A544005B8026 /* AUTHORS */ = {isa = PBXFileReference; lastKnownFileType = text; name = AUTHORS; path = ../AUTHORS; sourceTree = "<group>"; };
 		46A15FCE1807A544005B8026 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		46C02E0518E91123004B7456 /* xxhash.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = xxhash.c; sourceTree = "<group>"; };
@@ -3572,7 +3581,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				29031E0719BFE8D400EFA1DF /* libchipmunk.a in Frameworks */,
-				15AE1C1A19AAE3C800C27E9E /* libwebsockets.a in Frameworks */,
 				292F1A6B1A5250F700E479F8 /* libssl.a in Frameworks */,
 				292F1A631A52447100E479F8 /* libcrypto.a in Frameworks */,
 				B21770471977ED34009EE11B /* QuartzCore.framework in Frameworks */,
@@ -3587,6 +3595,7 @@
 				1A5703A1180BD22C0088DEC7 /* libtiff.a in Frameworks */,
 				1A5703B8180BD2780088DEC7 /* libwebp.a in Frameworks */,
 				1A57052B180BD31F0088DEC7 /* libfreetype.a in Frameworks */,
+				41E7FB06239849F4008E2357 /* libwebsockets.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3594,7 +3603,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				507B3D071C31BDD30067B53E /* libwebsockets.a in Frameworks */,
 				507B3D081C31BDD30067B53E /* libssl.a in Frameworks */,
 				507B3D091C31BDD30067B53E /* Foundation.framework in Frameworks */,
 				507B3D0A1C31BDD30067B53E /* libpng.a in Frameworks */,
@@ -3611,7 +3619,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				15AE1C1919AAE30900C27E9E /* libwebsockets.a in Frameworks */,
 				292F1A5E1A5151CE00E479F8 /* libssl.a in Frameworks */,
 				A07A4CAF1783777C0073F6A7 /* Foundation.framework in Frameworks */,
 				1A570364180BD1120088DEC7 /* libpng.a in Frameworks */,
@@ -4138,36 +4145,10 @@
 		1AAF537A180E354D000584C8 /* websockets */ = {
 			isa = PBXGroup;
 			children = (
-				1AAF537B180E3560000584C8 /* prebuilt */,
+				41E7FAE9239849F4008E2357 /* include */,
+				41E7FAC7239849F4008E2357 /* prebuilt */,
 			);
 			name = websockets;
-			sourceTree = "<group>";
-		};
-		1AAF537B180E3560000584C8 /* prebuilt */ = {
-			isa = PBXGroup;
-			children = (
-				1AAF5386180E35AC000584C8 /* ios */,
-				1AAF5383180E35A3000584C8 /* mac */,
-			);
-			name = prebuilt;
-			sourceTree = "<group>";
-		};
-		1AAF5383180E35A3000584C8 /* mac */ = {
-			isa = PBXGroup;
-			children = (
-				1AAF5384180E35A3000584C8 /* libwebsockets.a */,
-			);
-			name = mac;
-			path = ../external/websockets/prebuilt/mac;
-			sourceTree = "<group>";
-		};
-		1AAF5386180E35AC000584C8 /* ios */ = {
-			isa = PBXGroup;
-			children = (
-				1AAF5387180E35AC000584C8 /* libwebsockets.a */,
-			);
-			name = ios;
-			path = ../external/websockets/prebuilt/ios;
 			sourceTree = "<group>";
 		};
 		1AAF5403180E3B2D000584C8 /* curl */ = {
@@ -5009,6 +4990,45 @@
 			path = UIWebView;
 			sourceTree = "<group>";
 		};
+		41E7FAC7239849F4008E2357 /* prebuilt */ = {
+			isa = PBXGroup;
+			children = (
+				41E7FAC8239849F4008E2357 /* ios */,
+			);
+			name = prebuilt;
+			path = ../external/websockets/prebuilt;
+			sourceTree = "<group>";
+		};
+		41E7FAC8239849F4008E2357 /* ios */ = {
+			isa = PBXGroup;
+			children = (
+				41E7FAC9239849F4008E2357 /* libwebsockets.a */,
+			);
+			path = ios;
+			sourceTree = "<group>";
+		};
+		41E7FAE9239849F4008E2357 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				41E7FAEA239849F4008E2357 /* ios */,
+			);
+			name = include;
+			path = ../external/websockets/include;
+			sourceTree = "<group>";
+		};
+		41E7FAEA239849F4008E2357 /* ios */ = {
+			isa = PBXGroup;
+			children = (
+				41E7FAEB239849F4008E2357 /* lws_config-arm64.h */,
+				41E7FAEC239849F4008E2357 /* lws_config-i386.h */,
+				41E7FAED239849F4008E2357 /* lws_config-x86_64.h */,
+				41E7FAEE239849F4008E2357 /* libwebsockets.h */,
+				41E7FAEF239849F4008E2357 /* lws_config.h */,
+				41E7FAF0239849F4008E2357 /* lws_config-arm32.h */,
+			);
+			path = ios;
+			sourceTree = "<group>";
+		};
 		46A15FD01807A56F005B8026 /* audio */ = {
 			isa = PBXGroup;
 			children = (
@@ -5657,6 +5677,7 @@
 				417852B92396F9BE009E76F9 /* ccTypes.h in Headers */,
 				4178561C239700CF009E76F9 /* HttpRequest.h in Headers */,
 				41785946239701AA009E76F9 /* CCPUMeshSurfaceEmitterTranslator.h in Headers */,
+				41E7FB16239849F4008E2357 /* libwebsockets.h in Headers */,
 				417853C62396FAB8009E76F9 /* CCDataManager.h in Headers */,
 				41785B74239701AB009E76F9 /* CCPUBehaviourTranslator.h in Headers */,
 				41B8C16F239714A800689439 /* UIScrollViewBar.h in Headers */,
@@ -5731,6 +5752,7 @@
 				417853AC2396FAB8009E76F9 /* CCGLViewImpl-ios.h in Headers */,
 				417852B62396F9BE009E76F9 /* CCIMEDispatcher.h in Headers */,
 				417850B82396F376009E76F9 /* CCTMXObjectGroup.h in Headers */,
+				41E7FB18239849F4008E2357 /* lws_config-arm32.h in Headers */,
 				417853C02396FAB8009E76F9 /* CCApplication-mac.h in Headers */,
 				4178547A2396FB94009E76F9 /* CCNavMeshObstacle.h in Headers */,
 				41B8C187239714A800689439 /* UILayout.h in Headers */,
@@ -5791,6 +5813,7 @@
 				417850842396F376009E76F9 /* CCFontAtlas.h in Headers */,
 				46C02E0918E91123004B7456 /* xxhash.h in Headers */,
 				41785AE0239701AB009E76F9 /* CCPUDynamicAttribute.h in Headers */,
+				41E7FB17239849F4008E2357 /* lws_config.h in Headers */,
 				417857212397015C009E76F9 /* RenderPipelineDescriptor.h in Headers */,
 				41785B10239701AB009E76F9 /* CCPUCollisionAvoidanceAffectorTranslator.h in Headers */,
 				50864CA01C7BC1B000B3BAB1 /* cpBB.h in Headers */,
@@ -5965,6 +5988,7 @@
 				417852B82396F9BE009E76F9 /* uthash.h in Headers */,
 				41785960239701AA009E76F9 /* CCPUTextureRotatorTranslator.h in Headers */,
 				41785608239700CF009E76F9 /* HttpCookie.h in Headers */,
+				41E7FB15239849F4008E2357 /* lws_config-x86_64.h in Headers */,
 				41785AD4239701AB009E76F9 /* CCPUEventHandlerManager.h in Headers */,
 				417853B82396FAB8009E76F9 /* CCPlatformDefine-mac.h in Headers */,
 				417857692397015D009E76F9 /* Buffer.h in Headers */,
@@ -5989,6 +6013,7 @@
 				417852752396F9BE009E76F9 /* ObjectFactory.h in Headers */,
 				417852D82396F9BE009E76F9 /* CCEventListenerController.h in Headers */,
 				41785618239700CF009E76F9 /* HttpResponse.h in Headers */,
+				41E7FB13239849F4008E2357 /* lws_config-arm64.h in Headers */,
 				41785AF0239701AB009E76F9 /* CCPUVelocityMatchingAffectorTranslator.h in Headers */,
 				41785998239701AA009E76F9 /* CCPUMaterialTranslator.h in Headers */,
 				15FB20991AE7C57D00C31518 /* sweep.h in Headers */,
@@ -6051,6 +6076,7 @@
 				41B8C167239714A800689439 /* UIListView.h in Headers */,
 				41785972239701AA009E76F9 /* CCPUScriptCompiler.h in Headers */,
 				417859B8239701AA009E76F9 /* CCPURandomiserTranslator.h in Headers */,
+				41E7FB14239849F4008E2357 /* lws_config-i386.h in Headers */,
 				417851A12396F3B3009E76F9 /* CCFrustum.h in Headers */,
 				50864CA61C7BC1B000B3BAB1 /* cpConstraint.h in Headers */,
 				4178571D2397015C009E76F9 /* RenderPipeline.h in Headers */,
@@ -8079,7 +8105,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/.. $(SRCROOT)/../cocos $(SRCROOT)/../cocos/editor-support $(SRCROOT)/../external/chipmunk/include $(SRCROOT)/../external $(SRCROOT)/../extensions $(SRCROOT)/../external/poly2tri $(SRCROOT)/../external/poly2tri/common $(SRCROOT)/../external/poly2tri/sweep";
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/.. $(SRCROOT)/../cocos $(SRCROOT)/../cocos/editor-support $(SRCROOT)/../external/chipmunk/include $(SRCROOT)/../external $(SRCROOT)/../extensions $(SRCROOT)/../external/poly2tri $(SRCROOT)/../external/poly2tri/common $(SRCROOT)/../external/poly2tri/sweep $(SRCROOT)/../external/uv/include";
 			};
 			name = Debug;
 		};
@@ -8128,7 +8154,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/.. $(SRCROOT)/../cocos $(SRCROOT)/../cocos/editor-support $(SRCROOT)/../external/chipmunk/include $(SRCROOT)/../external $(SRCROOT)/../extensions $(SRCROOT)/../external/poly2tri $(SRCROOT)/../external/poly2tri/common $(SRCROOT)/../external/poly2tri/sweep";
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/.. $(SRCROOT)/../cocos $(SRCROOT)/../cocos/editor-support $(SRCROOT)/../external/chipmunk/include $(SRCROOT)/../external $(SRCROOT)/../extensions $(SRCROOT)/../external/poly2tri $(SRCROOT)/../external/poly2tri/common $(SRCROOT)/../external/poly2tri/sweep $(SRCROOT)/../external/uv/include";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
