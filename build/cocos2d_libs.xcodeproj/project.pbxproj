@@ -786,6 +786,11 @@
 		4162051423996FB700EA5DA7 /* CCESRenderer-ios.h in Headers */ = {isa = PBXBuildFile; fileRef = 416204EF23996FB700EA5DA7 /* CCESRenderer-ios.h */; };
 		4162051523996FB700EA5DA7 /* CCApplication-ios.h in Headers */ = {isa = PBXBuildFile; fileRef = 416204F023996FB700EA5DA7 /* CCApplication-ios.h */; };
 		4162051623996FB700EA5DA7 /* CCApplication-ios.h in Headers */ = {isa = PBXBuildFile; fileRef = 416204F023996FB700EA5DA7 /* CCApplication-ios.h */; };
+		4162051E2399965400EA5DA7 /* glsl_optimizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4162051A2399965300EA5DA7 /* glsl_optimizer.h */; };
+		41620521239996B000EA5DA7 /* glsl_optimizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 4162051A2399965300EA5DA7 /* glsl_optimizer.h */; };
+		41620522239996B500EA5DA7 /* libglcpp-library.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4162051C2399965400EA5DA7 /* libglcpp-library.a */; };
+		41620523239996BA00EA5DA7 /* libglsl_optimizer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 416205192399965300EA5DA7 /* libglsl_optimizer.a */; };
+		41620524239996BE00EA5DA7 /* libmesa.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4162051B2399965400EA5DA7 /* libmesa.a */; };
 		417850382396F376009E76F9 /* CCAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 41784FAE2396F35F009E76F9 /* CCAction.cpp */; };
 		417850392396F376009E76F9 /* CCAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 41784FAE2396F35F009E76F9 /* CCAction.cpp */; };
 		4178503A2396F376009E76F9 /* CCActionPageTurn3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 41784FAF2396F35F009E76F9 /* CCActionPageTurn3D.cpp */; };
@@ -2574,14 +2579,6 @@
 		41E703EB23985ED1008E2357 /* RenderPipeline.h in Headers */ = {isa = PBXBuildFile; fileRef = 41E703B023985ED0008E2357 /* RenderPipeline.h */; };
 		41E703EC23985ED1008E2357 /* DepthStencilState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 41E703B123985ED1008E2357 /* DepthStencilState.cpp */; };
 		41E703ED23985ED1008E2357 /* DepthStencilState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 41E703B123985ED1008E2357 /* DepthStencilState.cpp */; };
-		41E7040723986220008E2357 /* glsl_optimizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 41E703FD23986220008E2357 /* glsl_optimizer.h */; };
-		41E7040823986220008E2357 /* glsl_optimizer.h in Headers */ = {isa = PBXBuildFile; fileRef = 41E703FD23986220008E2357 /* glsl_optimizer.h */; };
-		41E7040923986220008E2357 /* libglcpp-library.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 41E7040023986220008E2357 /* libglcpp-library.a */; };
-		41E7040A23986220008E2357 /* libglcpp-library.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 41E7040023986220008E2357 /* libglcpp-library.a */; };
-		41E7040B23986220008E2357 /* libmesa.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 41E7040123986220008E2357 /* libmesa.a */; };
-		41E7040C23986220008E2357 /* libmesa.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 41E7040123986220008E2357 /* libmesa.a */; };
-		41E7040D23986220008E2357 /* libglsl_optimizer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 41E7040223986220008E2357 /* libglsl_optimizer.a */; };
-		41E7040E23986220008E2357 /* libglsl_optimizer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 41E7040223986220008E2357 /* libglsl_optimizer.a */; };
 		41E7FB06239849F4008E2357 /* libwebsockets.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 41E7FAC9239849F4008E2357 /* libwebsockets.a */; };
 		41E7FB13239849F4008E2357 /* lws_config-arm64.h in Headers */ = {isa = PBXBuildFile; fileRef = 41E7FAEB239849F4008E2357 /* lws_config-arm64.h */; };
 		41E7FB14239849F4008E2357 /* lws_config-i386.h in Headers */ = {isa = PBXBuildFile; fileRef = 41E7FAEC239849F4008E2357 /* lws_config-i386.h */; };
@@ -3293,6 +3290,10 @@
 		416204EE23996FB700EA5DA7 /* CCDirectorCaller-ios.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CCDirectorCaller-ios.h"; sourceTree = "<group>"; };
 		416204EF23996FB700EA5DA7 /* CCESRenderer-ios.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CCESRenderer-ios.h"; sourceTree = "<group>"; };
 		416204F023996FB700EA5DA7 /* CCApplication-ios.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CCApplication-ios.h"; sourceTree = "<group>"; };
+		416205192399965300EA5DA7 /* libglsl_optimizer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglsl_optimizer.a; path = prebuilt/ios/libglsl_optimizer.a; sourceTree = "<group>"; };
+		4162051A2399965300EA5DA7 /* glsl_optimizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = glsl_optimizer.h; path = include/glsl_optimizer.h; sourceTree = "<group>"; };
+		4162051B2399965400EA5DA7 /* libmesa.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmesa.a; path = prebuilt/ios/libmesa.a; sourceTree = "<group>"; };
+		4162051C2399965400EA5DA7 /* libglcpp-library.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libglcpp-library.a"; path = "prebuilt/ios/libglcpp-library.a"; sourceTree = "<group>"; };
 		41784FAE2396F35F009E76F9 /* CCAction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCAction.cpp; sourceTree = "<group>"; };
 		41784FAF2396F35F009E76F9 /* CCActionPageTurn3D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCActionPageTurn3D.cpp; sourceTree = "<group>"; };
 		41784FB02396F35F009E76F9 /* CCActionCamera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCActionCamera.cpp; sourceTree = "<group>"; };
@@ -4301,10 +4302,6 @@
 		41E703AF23985ED0008E2357 /* Program.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Program.h; sourceTree = "<group>"; };
 		41E703B023985ED0008E2357 /* RenderPipeline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderPipeline.h; sourceTree = "<group>"; };
 		41E703B123985ED1008E2357 /* DepthStencilState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DepthStencilState.cpp; sourceTree = "<group>"; };
-		41E703FD23986220008E2357 /* glsl_optimizer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = glsl_optimizer.h; sourceTree = "<group>"; };
-		41E7040023986220008E2357 /* libglcpp-library.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = "libglcpp-library.a"; sourceTree = "<group>"; };
-		41E7040123986220008E2357 /* libmesa.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmesa.a; sourceTree = "<group>"; };
-		41E7040223986220008E2357 /* libglsl_optimizer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libglsl_optimizer.a; sourceTree = "<group>"; };
 		41E7FAC9239849F4008E2357 /* libwebsockets.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libwebsockets.a; sourceTree = "<group>"; };
 		41E7FAEB239849F4008E2357 /* lws_config-arm64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "lws_config-arm64.h"; sourceTree = "<group>"; };
 		41E7FAEC239849F4008E2357 /* lws_config-i386.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "lws_config-i386.h"; sourceTree = "<group>"; };
@@ -4423,14 +4420,12 @@
 				416204D823996B2000EA5DA7 /* libBulletMultiThreaded.a in Frameworks */,
 				292F1A6B1A5250F700E479F8 /* libssl.a in Frameworks */,
 				292F1A631A52447100E479F8 /* libcrypto.a in Frameworks */,
-				41E7040D23986220008E2357 /* libglsl_optimizer.a in Frameworks */,
 				B21770471977ED34009EE11B /* QuartzCore.framework in Frameworks */,
 				B21770451977ED14009EE11B /* Cocoa.framework in Frameworks */,
 				B21770421977ECF8009EE11B /* ApplicationServices.framework in Frameworks */,
 				B21770401977ECE6009EE11B /* OpenGL.framework in Frameworks */,
 				B217703C1977ECB4009EE11B /* IOKit.framework in Frameworks */,
 				416204DA23996B2000EA5DA7 /* libMiniCL.a in Frameworks */,
-				41E7040B23986220008E2357 /* libmesa.a in Frameworks */,
 				292F1A641A52447100E479F8 /* libcurl.a in Frameworks */,
 				416204DC23996B2000EA5DA7 /* libLinearMath.a in Frameworks */,
 				41E702F923984E6C008E2357 /* libcrypto.a in Frameworks */,
@@ -4438,7 +4433,6 @@
 				1A570361180BD1080088DEC7 /* libpng.a in Frameworks */,
 				1A57037B180BD1C90088DEC7 /* libjpeg.a in Frameworks */,
 				1A5703B8180BD2780088DEC7 /* libwebp.a in Frameworks */,
-				41E7040923986220008E2357 /* libglcpp-library.a in Frameworks */,
 				1A57052B180BD31F0088DEC7 /* libfreetype.a in Frameworks */,
 				4162017423996A7500EA5DA7 /* libbox2d.a in Frameworks */,
 				416204D423996B2000EA5DA7 /* libBulletCollision.a in Frameworks */,
@@ -4468,19 +4462,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				292F1A5E1A5151CE00E479F8 /* libssl.a in Frameworks */,
+				41620523239996BA00EA5DA7 /* libglsl_optimizer.a in Frameworks */,
 				4162017523996A7500EA5DA7 /* libbox2d.a in Frameworks */,
 				416204DD23996B2000EA5DA7 /* libLinearMath.a in Frameworks */,
+				41620524239996BE00EA5DA7 /* libmesa.a in Frameworks */,
+				41620522239996B500EA5DA7 /* libglcpp-library.a in Frameworks */,
 				A07A4CAF1783777C0073F6A7 /* Foundation.framework in Frameworks */,
 				41E702F823984E6C008E2357 /* libssl.a in Frameworks */,
 				416204DB23996B2000EA5DA7 /* libMiniCL.a in Frameworks */,
 				1A570364180BD1120088DEC7 /* libpng.a in Frameworks */,
 				1A570378180BD1B40088DEC7 /* libjpeg.a in Frameworks */,
-				41E7040C23986220008E2357 /* libmesa.a in Frameworks */,
 				292F1A5D1A5151CE00E479F8 /* libcrypto.a in Frameworks */,
 				41E702F623984E6C008E2357 /* libcrypto.a in Frameworks */,
-				41E7040A23986220008E2357 /* libglcpp-library.a in Frameworks */,
 				29031E0919BFE8DE00EFA1DF /* libchipmunk.a in Frameworks */,
-				41E7040E23986220008E2357 /* libglsl_optimizer.a in Frameworks */,
 				1A5703BB180BD2800088DEC7 /* libwebp.a in Frameworks */,
 				416204D923996B2000EA5DA7 /* libBulletMultiThreaded.a in Frameworks */,
 				416204D523996B2000EA5DA7 /* libBulletCollision.a in Frameworks */,
@@ -6379,10 +6373,10 @@
 		41E703FA23986220008E2357 /* glsl-optimizer */ = {
 			isa = PBXGroup;
 			children = (
-				41E703FD23986220008E2357 /* glsl_optimizer.h */,
-				41E7040023986220008E2357 /* libglcpp-library.a */,
-				41E7040123986220008E2357 /* libmesa.a */,
-				41E7040223986220008E2357 /* libglsl_optimizer.a */,
+				4162051A2399965300EA5DA7 /* glsl_optimizer.h */,
+				4162051C2399965400EA5DA7 /* libglcpp-library.a */,
+				416205192399965300EA5DA7 /* libglsl_optimizer.a */,
+				4162051B2399965400EA5DA7 /* libmesa.a */,
 			);
 			name = "glsl-optimizer";
 			path = "../external/glsl-optimizer";
@@ -7594,7 +7588,6 @@
 				416202DD23996B0C00EA5DA7 /* btConvexCast.h in Headers */,
 				417851202396F376009E76F9 /* CCAnimationCache.h in Headers */,
 				4162039923996B0D00EA5DA7 /* btTriangleInfoMap.h in Headers */,
-				41E7040723986220008E2357 /* glsl_optimizer.h in Headers */,
 				4162036523996B0D00EA5DA7 /* btBvhTriangleMeshShape.h in Headers */,
 				417850BC2396F376009E76F9 /* CCTransitionPageTurn.h in Headers */,
 				4162049D23996B0D00EA5DA7 /* btRandom.h in Headers */,
@@ -7927,6 +7920,7 @@
 				417859EA239701AA009E76F9 /* CCPUBillboardChain.h in Headers */,
 				4178518F2396F3B3009E76F9 /* CCSprite3D.h in Headers */,
 				416203A123996B0D00EA5DA7 /* btConvexInternalShape.h in Headers */,
+				4162051E2399965400EA5DA7 /* glsl_optimizer.h in Headers */,
 				50864CD31C7BC1B100B3BAB1 /* cpSimpleMotor.h in Headers */,
 				417850862396F376009E76F9 /* CCAutoPolygon.h in Headers */,
 				4178599A239701AA009E76F9 /* CCPUVelocityMatchingAffector.h in Headers */,
@@ -8432,7 +8426,6 @@
 				B6DD2FD81B04825B00E47F5F /* DetourCrowd.h in Headers */,
 				4162032823996B0D00EA5DA7 /* gim_geometry.h in Headers */,
 				416203F023996B0D00EA5DA7 /* btSoftBodySolverOutputCLtoGL.h in Headers */,
-				41E7040823986220008E2357 /* glsl_optimizer.h in Headers */,
 				417855FB239700CF009E76F9 /* CCDownloader.h in Headers */,
 				41785979239701AA009E76F9 /* CCPUOnRandomObserver.h in Headers */,
 				417850FD2396F376009E76F9 /* CCFontAtlasCache.h in Headers */,
@@ -8522,6 +8515,7 @@
 				4162033423996B0D00EA5DA7 /* gim_clip_polygon.h in Headers */,
 				41E7035223985734008E2357 /* CCMeshCommand.h in Headers */,
 				41B8C1CC239714A900689439 /* UITextView+CCUITextInput.h in Headers */,
+				41620521239996B000EA5DA7 /* glsl_optimizer.h in Headers */,
 				417851D22396F3B3009E76F9 /* CCMotionStreak3D.h in Headers */,
 				41785AF1239701AB009E76F9 /* CCPUVelocityMatchingAffectorTranslator.h in Headers */,
 				416203A623996B0D00EA5DA7 /* btCapsuleShape.h in Headers */,
@@ -10274,9 +10268,9 @@
 					"\"$(SRCROOT)/../external/websockets/prebuilt/ios\"",
 					"\"$(SRCROOT)/../external/chipmunk/prebuilt/ios\"",
 					"\"$(SRCROOT)/../external/openssl/prebuilt/ios\"",
-					"\"$(SRCROOT)/../external/Box2d\"",
+					"\"$(SRCROOT)/../external/Box2d/prebuilt/ios\"",
 					"\"$(SRCROOT)/../external/bullet/prebuilt/ios\"",
-					"\"$(SRCROOT)/../external/glsl-optimizer\"",
+					"\"$(SRCROOT)/../external/glsl-optimizer/prebuilt/ios\"",
 				);
 				OTHER_LDFLAGS = "-llibsql3";
 				SDKROOT = iphoneos;
@@ -10318,9 +10312,9 @@
 					"\"$(SRCROOT)/../external/websockets/prebuilt/ios\"",
 					"\"$(SRCROOT)/../external/chipmunk/prebuilt/ios\"",
 					"\"$(SRCROOT)/../external/openssl/prebuilt/ios\"",
-					"\"$(SRCROOT)/../external/Box2d\"",
+					"\"$(SRCROOT)/../external/Box2d/prebuilt/ios\"",
 					"\"$(SRCROOT)/../external/bullet/prebuilt/ios\"",
-					"\"$(SRCROOT)/../external/glsl-optimizer\"",
+					"\"$(SRCROOT)/../external/glsl-optimizer/prebuilt/ios\"",
 				);
 				OTHER_LDFLAGS = "-llibsql3";
 				SDKROOT = iphoneos;
