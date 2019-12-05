@@ -1452,22 +1452,14 @@
 		417854872396FB94009E76F9 /* CCNavMeshAgent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 417854732396FB93009E76F9 /* CCNavMeshAgent.cpp */; };
 		417855F2239700CF009E76F9 /* WebSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 417855D9239700CA009E76F9 /* WebSocket.h */; };
 		417855F3239700CF009E76F9 /* WebSocket.h in Headers */ = {isa = PBXBuildFile; fileRef = 417855D9239700CA009E76F9 /* WebSocket.h */; };
-		417855F4239700CF009E76F9 /* HttpCookie.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 417855DA239700CA009E76F9 /* HttpCookie.cpp */; };
-		417855F5239700CF009E76F9 /* HttpCookie.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 417855DA239700CA009E76F9 /* HttpCookie.cpp */; };
 		417855F6239700CF009E76F9 /* HttpClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 417855DB239700CB009E76F9 /* HttpClient.h */; };
 		417855F7239700CF009E76F9 /* HttpClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 417855DB239700CB009E76F9 /* HttpClient.h */; };
-		417855F8239700CF009E76F9 /* HttpClient-android.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 417855DC239700CB009E76F9 /* HttpClient-android.cpp */; };
-		417855F9239700CF009E76F9 /* HttpClient-android.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 417855DC239700CB009E76F9 /* HttpClient-android.cpp */; };
 		417855FA239700CF009E76F9 /* CCDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 417855DD239700CB009E76F9 /* CCDownloader.h */; };
 		417855FB239700CF009E76F9 /* CCDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 417855DD239700CB009E76F9 /* CCDownloader.h */; };
 		417855FC239700CF009E76F9 /* HttpClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 417855DE239700CB009E76F9 /* HttpClient.cpp */; };
 		417855FD239700CF009E76F9 /* HttpClient.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 417855DE239700CB009E76F9 /* HttpClient.cpp */; };
 		417855FE239700CF009E76F9 /* HttpAsynConnection-apple.h in Headers */ = {isa = PBXBuildFile; fileRef = 417855DF239700CB009E76F9 /* HttpAsynConnection-apple.h */; };
 		417855FF239700CF009E76F9 /* HttpAsynConnection-apple.h in Headers */ = {isa = PBXBuildFile; fileRef = 417855DF239700CB009E76F9 /* HttpAsynConnection-apple.h */; };
-		41785600239700CF009E76F9 /* HttpAsynConnection-apple.m in Sources */ = {isa = PBXBuildFile; fileRef = 417855E0239700CB009E76F9 /* HttpAsynConnection-apple.m */; };
-		41785601239700CF009E76F9 /* HttpAsynConnection-apple.m in Sources */ = {isa = PBXBuildFile; fileRef = 417855E0239700CB009E76F9 /* HttpAsynConnection-apple.m */; };
-		41785602239700CF009E76F9 /* CCDownloader-android.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 417855E1239700CC009E76F9 /* CCDownloader-android.cpp */; };
-		41785603239700CF009E76F9 /* CCDownloader-android.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 417855E1239700CC009E76F9 /* CCDownloader-android.cpp */; };
 		41785604239700CF009E76F9 /* SocketIO.h in Headers */ = {isa = PBXBuildFile; fileRef = 417855E2239700CC009E76F9 /* SocketIO.h */; };
 		41785605239700CF009E76F9 /* SocketIO.h in Headers */ = {isa = PBXBuildFile; fileRef = 417855E2239700CC009E76F9 /* SocketIO.h */; };
 		41785606239700CF009E76F9 /* CCDownloader-apple.h in Headers */ = {isa = PBXBuildFile; fileRef = 417855E3239700CC009E76F9 /* CCDownloader-apple.h */; };
@@ -1484,8 +1476,6 @@
 		41785611239700CF009E76F9 /* CCDownloader-curl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 417855E8239700CD009E76F9 /* CCDownloader-curl.cpp */; };
 		41785612239700CF009E76F9 /* CCDownloader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 417855E9239700CD009E76F9 /* CCDownloader.cpp */; };
 		41785613239700CF009E76F9 /* CCDownloader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 417855E9239700CD009E76F9 /* CCDownloader.cpp */; };
-		41785614239700CF009E76F9 /* CCDownloader-android.h in Headers */ = {isa = PBXBuildFile; fileRef = 417855EA239700CD009E76F9 /* CCDownloader-android.h */; };
-		41785615239700CF009E76F9 /* CCDownloader-android.h in Headers */ = {isa = PBXBuildFile; fileRef = 417855EA239700CD009E76F9 /* CCDownloader-android.h */; };
 		41785616239700CF009E76F9 /* CCDownloader-curl.h in Headers */ = {isa = PBXBuildFile; fileRef = 417855EB239700CD009E76F9 /* CCDownloader-curl.h */; };
 		41785617239700CF009E76F9 /* CCDownloader-curl.h in Headers */ = {isa = PBXBuildFile; fileRef = 417855EB239700CD009E76F9 /* CCDownloader-curl.h */; };
 		41785618239700CF009E76F9 /* HttpResponse.h in Headers */ = {isa = PBXBuildFile; fileRef = 417855EC239700CE009E76F9 /* HttpResponse.h */; };
@@ -1498,8 +1488,6 @@
 		4178561F239700CF009E76F9 /* SocketIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 417855EF239700CE009E76F9 /* SocketIO.cpp */; };
 		41785620239700CF009E76F9 /* CCDownloader-apple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 417855F0239700CE009E76F9 /* CCDownloader-apple.mm */; };
 		41785621239700CF009E76F9 /* CCDownloader-apple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 417855F0239700CE009E76F9 /* CCDownloader-apple.mm */; };
-		41785622239700CF009E76F9 /* HttpClient-apple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 417855F1239700CF009E76F9 /* HttpClient-apple.mm */; };
-		41785623239700CF009E76F9 /* HttpClient-apple.mm in Sources */ = {isa = PBXBuildFile; fileRef = 417855F1239700CF009E76F9 /* HttpClient-apple.mm */; };
 		417857292397015C009E76F9 /* ProgramMTL.h in Headers */ = {isa = PBXBuildFile; fileRef = 4178565523970159009E76F9 /* ProgramMTL.h */; };
 		4178572A2397015C009E76F9 /* ProgramMTL.h in Headers */ = {isa = PBXBuildFile; fileRef = 4178565523970159009E76F9 /* ProgramMTL.h */; };
 		4178572B2397015C009E76F9 /* Utils.h in Headers */ = {isa = PBXBuildFile; fileRef = 4178565623970159009E76F9 /* Utils.h */; };
@@ -3719,14 +3707,10 @@
 		417854722396FB93009E76F9 /* CCNavMeshAgent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CCNavMeshAgent.h; path = ../cocos/navmesh/CCNavMeshAgent.h; sourceTree = "<group>"; };
 		417854732396FB93009E76F9 /* CCNavMeshAgent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CCNavMeshAgent.cpp; path = ../cocos/navmesh/CCNavMeshAgent.cpp; sourceTree = "<group>"; };
 		417855D9239700CA009E76F9 /* WebSocket.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebSocket.h; sourceTree = "<group>"; };
-		417855DA239700CA009E76F9 /* HttpCookie.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HttpCookie.cpp; sourceTree = "<group>"; };
 		417855DB239700CB009E76F9 /* HttpClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpClient.h; sourceTree = "<group>"; };
-		417855DC239700CB009E76F9 /* HttpClient-android.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "HttpClient-android.cpp"; sourceTree = "<group>"; };
 		417855DD239700CB009E76F9 /* CCDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCDownloader.h; sourceTree = "<group>"; };
 		417855DE239700CB009E76F9 /* HttpClient.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = HttpClient.cpp; sourceTree = "<group>"; };
 		417855DF239700CB009E76F9 /* HttpAsynConnection-apple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "HttpAsynConnection-apple.h"; sourceTree = "<group>"; };
-		417855E0239700CB009E76F9 /* HttpAsynConnection-apple.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "HttpAsynConnection-apple.m"; sourceTree = "<group>"; };
-		417855E1239700CC009E76F9 /* CCDownloader-android.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "CCDownloader-android.cpp"; sourceTree = "<group>"; };
 		417855E2239700CC009E76F9 /* SocketIO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SocketIO.h; sourceTree = "<group>"; };
 		417855E3239700CC009E76F9 /* CCDownloader-apple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CCDownloader-apple.h"; sourceTree = "<group>"; };
 		417855E4239700CC009E76F9 /* HttpCookie.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpCookie.h; sourceTree = "<group>"; };
@@ -3735,14 +3719,12 @@
 		417855E7239700CD009E76F9 /* Uri.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Uri.h; sourceTree = "<group>"; };
 		417855E8239700CD009E76F9 /* CCDownloader-curl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "CCDownloader-curl.cpp"; sourceTree = "<group>"; };
 		417855E9239700CD009E76F9 /* CCDownloader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CCDownloader.cpp; sourceTree = "<group>"; };
-		417855EA239700CD009E76F9 /* CCDownloader-android.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CCDownloader-android.h"; sourceTree = "<group>"; };
 		417855EB239700CD009E76F9 /* CCDownloader-curl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CCDownloader-curl.h"; sourceTree = "<group>"; };
 		417855EC239700CE009E76F9 /* HttpResponse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpResponse.h; sourceTree = "<group>"; };
 		417855ED239700CE009E76F9 /* CCIDownloaderImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCIDownloaderImpl.h; sourceTree = "<group>"; };
 		417855EE239700CE009E76F9 /* HttpRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HttpRequest.h; sourceTree = "<group>"; };
 		417855EF239700CE009E76F9 /* SocketIO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SocketIO.cpp; sourceTree = "<group>"; };
 		417855F0239700CE009E76F9 /* CCDownloader-apple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "CCDownloader-apple.mm"; sourceTree = "<group>"; };
-		417855F1239700CF009E76F9 /* HttpClient-apple.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = "HttpClient-apple.mm"; sourceTree = "<group>"; };
 		4178565523970159009E76F9 /* ProgramMTL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProgramMTL.h; sourceTree = "<group>"; };
 		4178565623970159009E76F9 /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
 		4178565723970159009E76F9 /* DeviceMTL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DeviceMTL.h; sourceTree = "<group>"; };
@@ -4982,8 +4964,6 @@
 		1AAF5360180E3374000584C8 /* network */ = {
 			isa = PBXGroup;
 			children = (
-				417855E1239700CC009E76F9 /* CCDownloader-android.cpp */,
-				417855EA239700CD009E76F9 /* CCDownloader-android.h */,
 				417855E3239700CC009E76F9 /* CCDownloader-apple.h */,
 				417855F0239700CE009E76F9 /* CCDownloader-apple.mm */,
 				417855E8239700CD009E76F9 /* CCDownloader-curl.cpp */,
@@ -4992,12 +4972,8 @@
 				417855DD239700CB009E76F9 /* CCDownloader.h */,
 				417855ED239700CE009E76F9 /* CCIDownloaderImpl.h */,
 				417855DF239700CB009E76F9 /* HttpAsynConnection-apple.h */,
-				417855E0239700CB009E76F9 /* HttpAsynConnection-apple.m */,
-				417855DC239700CB009E76F9 /* HttpClient-android.cpp */,
-				417855F1239700CF009E76F9 /* HttpClient-apple.mm */,
 				417855DE239700CB009E76F9 /* HttpClient.cpp */,
 				417855DB239700CB009E76F9 /* HttpClient.h */,
-				417855DA239700CA009E76F9 /* HttpCookie.cpp */,
 				417855E4239700CC009E76F9 /* HttpCookie.h */,
 				417855EE239700CE009E76F9 /* HttpRequest.h */,
 				417855EC239700CE009E76F9 /* HttpResponse.h */,
@@ -7709,7 +7685,6 @@
 				417851FB2396F49C009E76F9 /* Export.h in Headers */,
 				50864C911C7BC1B000B3BAB1 /* chipmunk_private.h in Headers */,
 				417853682396FAB7009E76F9 /* CCFileUtils-apple.h in Headers */,
-				41785614239700CF009E76F9 /* CCDownloader-android.h in Headers */,
 				416202C123996B0C00EA5DA7 /* btMultiSapBroadphase.h in Headers */,
 				382383EE1A258FA7002C4610 /* flatbuffers.h in Headers */,
 				417850682396F376009E76F9 /* CCTMXTiledMap.h in Headers */,
@@ -8914,7 +8889,6 @@
 				4162047023996B0D00EA5DA7 /* btPoint2PointConstraint.h in Headers */,
 				4162038A23996B0D00EA5DA7 /* btHeightfieldTerrainShape.h in Headers */,
 				417853752396FAB7009E76F9 /* CCSAXParser.h in Headers */,
-				41785615239700CF009E76F9 /* CCDownloader-android.h in Headers */,
 				417850632396F376009E76F9 /* CCActionTween.h in Headers */,
 				417851CE2396F3B3009E76F9 /* CCRay.h in Headers */,
 				416204C823996B0D00EA5DA7 /* btMinMax.h in Headers */,
@@ -9176,7 +9150,6 @@
 				41785B90239701AB009E76F9 /* AssetsManager.cpp in Sources */,
 				4178528A2396F9BE009E76F9 /* CCEventListenerController.cpp in Sources */,
 				41B8C1F7239714A900689439 /* UITextBMFont.cpp in Sources */,
-				41785600239700CF009E76F9 /* HttpAsynConnection-apple.m in Sources */,
 				B6DD2FF11B04825B00E47F5F /* DetourTileCacheBuilder.cpp in Sources */,
 				417850742396F376009E76F9 /* CCTMXObjectGroup.cpp in Sources */,
 				4178597E239701AA009E76F9 /* CCPUOnPositionObserver.cpp in Sources */,
@@ -9256,7 +9229,6 @@
 				41785B38239701AB009E76F9 /* CCPUBehaviourManager.cpp in Sources */,
 				417859BE239701AA009E76F9 /* CCPUObserver.cpp in Sources */,
 				417852A82396F9BE009E76F9 /* CCEventListenerMouse.cpp in Sources */,
-				417855F4239700CF009E76F9 /* HttpCookie.cpp in Sources */,
 				417852CA2396F9BE009E76F9 /* CCNinePatchImageParser.cpp in Sources */,
 				41B8C227239714A900689439 /* UILoadingBar.cpp in Sources */,
 				41785948239701AA009E76F9 /* CCPUCollisionAvoidanceAffector.cpp in Sources */,
@@ -9290,7 +9262,6 @@
 				41785BA6239701AB009E76F9 /* CCPhysicsSprite.cpp in Sources */,
 				417851D52396F3B3009E76F9 /* CCObjLoader.cpp in Sources */,
 				41785ABA239701AB009E76F9 /* CCPUSlaveBehaviourTranslator.cpp in Sources */,
-				41785622239700CF009E76F9 /* HttpClient-apple.mm in Sources */,
 				41785A6E239701AA009E76F9 /* CCPUDoStopSystemEventHandler.cpp in Sources */,
 				41785A6A239701AA009E76F9 /* CCPUScriptLexer.cpp in Sources */,
 				41B8C209239714A900689439 /* UIListView.cpp in Sources */,
@@ -9451,7 +9422,6 @@
 				4178540C2396FB33009E76F9 /* CCPhysics3DConstraint.cpp in Sources */,
 				41785AD8239701AB009E76F9 /* CCPUSlaveBehaviour.cpp in Sources */,
 				B6DD2FBD1B04825B00E47F5F /* DetourCommon.cpp in Sources */,
-				417855F8239700CF009E76F9 /* HttpClient-android.cpp in Sources */,
 				41785AAA239701AA009E76F9 /* CCPUCircleEmitter.cpp in Sources */,
 				41785BDA239701AB009E76F9 /* CCTableView.cpp in Sources */,
 				15FB209B1AE7C57D00C31518 /* sweep_context.cc in Sources */,
@@ -9516,7 +9486,6 @@
 				417852A02396F9BE009E76F9 /* ZipUtils.cpp in Sources */,
 				417851852396F3B2009E76F9 /* CCPlane.cpp in Sources */,
 				41785B4C239701AB009E76F9 /* CCPUAffector.cpp in Sources */,
-				41785602239700CF009E76F9 /* CCDownloader-android.cpp in Sources */,
 				41E703E423985ED1008E2357 /* RenderPassDescriptor.cpp in Sources */,
 				41785A72239701AA009E76F9 /* CCPUOnRandomObserver.cpp in Sources */,
 				41785B4A239701AB009E76F9 /* CCPUDynamicAttribute.cpp in Sources */,
@@ -9736,7 +9705,6 @@
 				417851D62396F3B3009E76F9 /* CCObjLoader.cpp in Sources */,
 				417850772396F376009E76F9 /* CCParticleBatchNode.cpp in Sources */,
 				41785BA7239701AB009E76F9 /* CCPhysicsSprite.cpp in Sources */,
-				417855F5239700CF009E76F9 /* HttpCookie.cpp in Sources */,
 				417853E52396FB02009E76F9 /* CCPhysicsShape.cpp in Sources */,
 				41785B39239701AB009E76F9 /* CCPUBehaviourManager.cpp in Sources */,
 				4178505D2396F376009E76F9 /* CCActionCatmullRom.cpp in Sources */,
@@ -9752,7 +9720,6 @@
 				41E7038E239858BF008E2357 /* CCRenderer.cpp in Sources */,
 				41785A27239701AA009E76F9 /* CCPUEventHandlerTranslator.cpp in Sources */,
 				417850DD2396F376009E76F9 /* CCFontAtlasCache.cpp in Sources */,
-				41785603239700CF009E76F9 /* CCDownloader-android.cpp in Sources */,
 				4178537D2396FAB7009E76F9 /* CCSAXParser.cpp in Sources */,
 				417855FD239700CF009E76F9 /* HttpClient.cpp in Sources */,
 				41B8C20A239714A900689439 /* UIListView.cpp in Sources */,
@@ -9871,7 +9838,6 @@
 				B6DD2FC81B04825B00E47F5F /* DetourNavMeshBuilder.cpp in Sources */,
 				B6DD2FBE1B04825B00E47F5F /* DetourCommon.cpp in Sources */,
 				4178505F2396F376009E76F9 /* CCComponent.cpp in Sources */,
-				41785623239700CF009E76F9 /* HttpClient-apple.mm in Sources */,
 				417859DD239701AA009E76F9 /* CCPUBaseColliderTranslator.cpp in Sources */,
 				41785931239701AA009E76F9 /* ParticleAssetCreator.cpp in Sources */,
 				417851C62396F3B3009E76F9 /* CCAnimate3D.cpp in Sources */,
@@ -10024,7 +9990,6 @@
 				417851272396F376009E76F9 /* CCLabel.cpp in Sources */,
 				41785BCF239701AB009E76F9 /* CCControlSlider.cpp in Sources */,
 				41785A93239701AA009E76F9 /* CCPUBehaviour.cpp in Sources */,
-				41785601239700CF009E76F9 /* HttpAsynConnection-apple.m in Sources */,
 				4178592F239701AA009E76F9 /* CCParticle3DEmitter.cpp in Sources */,
 				4178544D2396FB75009E76F9 /* Vec2.cpp in Sources */,
 				41785AEF239701AB009E76F9 /* CCPUDynamicAttributeTranslator.cpp in Sources */,
@@ -10033,7 +9998,6 @@
 				41785A07239701AA009E76F9 /* CCPUEventHandler.cpp in Sources */,
 				417859BF239701AA009E76F9 /* CCPUObserver.cpp in Sources */,
 				4178519C2396F3B3009E76F9 /* CCFrustum.cpp in Sources */,
-				417855F9239700CF009E76F9 /* HttpClient-android.cpp in Sources */,
 				41B8C20E239714A900689439 /* UIWebView.mm in Sources */,
 				41785B5D239701AB009E76F9 /* CCPUDoPlacementParticleEventHandlerTranslator.cpp in Sources */,
 				417854812396FB94009E76F9 /* CCNavMeshDebugDraw.cpp in Sources */,
