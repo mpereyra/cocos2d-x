@@ -55,8 +55,6 @@
 		1A570364180BD1120088DEC7 /* libpng.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A570363180BD1120088DEC7 /* libpng.a */; };
 		1A570378180BD1B40088DEC7 /* libjpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A570377180BD1B40088DEC7 /* libjpeg.a */; };
 		1A57037B180BD1C90088DEC7 /* libjpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A57037A180BD1C90088DEC7 /* libjpeg.a */; };
-		1A5703A1180BD22C0088DEC7 /* libtiff.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A5703A0180BD22C0088DEC7 /* libtiff.a */; };
-		1A5703A4180BD2350088DEC7 /* libtiff.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A5703A3180BD2350088DEC7 /* libtiff.a */; };
 		1A5703B8180BD2780088DEC7 /* libwebp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A5703B7180BD2780088DEC7 /* libwebp.a */; };
 		1A5703BB180BD2800088DEC7 /* libwebp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A5703BA180BD2800088DEC7 /* libwebp.a */; };
 		1A57052B180BD31F0088DEC7 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A57052A180BD31F0088DEC7 /* libfreetype.a */; };
@@ -2645,7 +2643,6 @@
 		507B3D091C31BDD30067B53E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1551A342158F2AB200E66CFE /* Foundation.framework */; };
 		507B3D0A1C31BDD30067B53E /* libpng.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A570363180BD1120088DEC7 /* libpng.a */; };
 		507B3D0B1C31BDD30067B53E /* libjpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A570377180BD1B40088DEC7 /* libjpeg.a */; };
-		507B3D0C1C31BDD30067B53E /* libtiff.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A5703A3180BD2350088DEC7 /* libtiff.a */; };
 		507B3D0D1C31BDD30067B53E /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 292F1A5B1A5151CE00E479F8 /* libcrypto.a */; };
 		507B3D0E1C31BDD30067B53E /* libchipmunk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 29031E0819BFE8DE00EFA1DF /* libchipmunk.a */; };
 		507B3D0F1C31BDD30067B53E /* libwebp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1A5703BA180BD2800088DEC7 /* libwebp.a */; };
@@ -2908,8 +2905,6 @@
 		1A570363180BD1120088DEC7 /* libpng.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libpng.a; sourceTree = "<group>"; };
 		1A570377180BD1B40088DEC7 /* libjpeg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libjpeg.a; sourceTree = "<group>"; };
 		1A57037A180BD1C90088DEC7 /* libjpeg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libjpeg.a; sourceTree = "<group>"; };
-		1A5703A0180BD22C0088DEC7 /* libtiff.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtiff.a; sourceTree = "<group>"; };
-		1A5703A3180BD2350088DEC7 /* libtiff.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libtiff.a; sourceTree = "<group>"; };
 		1A5703B7180BD2780088DEC7 /* libwebp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libwebp.a; sourceTree = "<group>"; };
 		1A5703BA180BD2800088DEC7 /* libwebp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libwebp.a; sourceTree = "<group>"; };
 		1A57052A180BD31F0088DEC7 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libfreetype.a; sourceTree = "<group>"; };
@@ -4442,7 +4437,6 @@
 				416204D623996B2000EA5DA7 /* libBulletDynamics.a in Frameworks */,
 				1A570361180BD1080088DEC7 /* libpng.a in Frameworks */,
 				1A57037B180BD1C90088DEC7 /* libjpeg.a in Frameworks */,
-				1A5703A1180BD22C0088DEC7 /* libtiff.a in Frameworks */,
 				1A5703B8180BD2780088DEC7 /* libwebp.a in Frameworks */,
 				41E7040923986220008E2357 /* libglcpp-library.a in Frameworks */,
 				1A57052B180BD31F0088DEC7 /* libfreetype.a in Frameworks */,
@@ -4461,7 +4455,6 @@
 				41E7031E23984EAF008E2357 /* libssl.a in Frameworks */,
 				507B3D0A1C31BDD30067B53E /* libpng.a in Frameworks */,
 				507B3D0B1C31BDD30067B53E /* libjpeg.a in Frameworks */,
-				507B3D0C1C31BDD30067B53E /* libtiff.a in Frameworks */,
 				507B3D0D1C31BDD30067B53E /* libcrypto.a in Frameworks */,
 				41E7031D23984EAA008E2357 /* libcrypto.a in Frameworks */,
 				507B3D0E1C31BDD30067B53E /* libchipmunk.a in Frameworks */,
@@ -4482,7 +4475,6 @@
 				416204DB23996B2000EA5DA7 /* libMiniCL.a in Frameworks */,
 				1A570364180BD1120088DEC7 /* libpng.a in Frameworks */,
 				1A570378180BD1B40088DEC7 /* libjpeg.a in Frameworks */,
-				1A5703A4180BD2350088DEC7 /* libtiff.a in Frameworks */,
 				41E7040C23986220008E2357 /* libmesa.a in Frameworks */,
 				292F1A5D1A5151CE00E479F8 /* libcrypto.a in Frameworks */,
 				41E702F623984E6C008E2357 /* libcrypto.a in Frameworks */,
@@ -4753,7 +4745,6 @@
 				1A570373180BD1790088DEC7 /* jpeg */,
 				1AD71EF8180E28C400808F54 /* json */,
 				1A57035C180BD0D90088DEC7 /* png */,
-				1A57038A180BD1EF0088DEC7 /* tiff */,
 				1A570348180BD09B0088DEC7 /* tinyxml2 */,
 				1A57034F180BD0B00088DEC7 /* unzip */,
 				1A5703A5180BD2410088DEC7 /* webp */,
@@ -4854,41 +4845,6 @@
 			);
 			name = mac;
 			path = ../external/jpeg/prebuilt/mac;
-			sourceTree = "<group>";
-		};
-		1A57038A180BD1EF0088DEC7 /* tiff */ = {
-			isa = PBXGroup;
-			children = (
-				1A57038C180BD2040088DEC7 /* prebuilt */,
-			);
-			name = tiff;
-			sourceTree = "<group>";
-		};
-		1A57038C180BD2040088DEC7 /* prebuilt */ = {
-			isa = PBXGroup;
-			children = (
-				1A5703A2180BD2350088DEC7 /* ios */,
-				1A57039F180BD22C0088DEC7 /* mac */,
-			);
-			name = prebuilt;
-			sourceTree = "<group>";
-		};
-		1A57039F180BD22C0088DEC7 /* mac */ = {
-			isa = PBXGroup;
-			children = (
-				1A5703A0180BD22C0088DEC7 /* libtiff.a */,
-			);
-			name = mac;
-			path = ../external/tiff/prebuilt/mac;
-			sourceTree = "<group>";
-		};
-		1A5703A2180BD2350088DEC7 /* ios */ = {
-			isa = PBXGroup;
-			children = (
-				1A5703A3180BD2350088DEC7 /* libtiff.a */,
-			);
-			name = ios;
-			path = ../external/tiff/prebuilt/ios;
 			sourceTree = "<group>";
 		};
 		1A5703A5180BD2410088DEC7 /* webp */ = {
@@ -10317,6 +10273,10 @@
 					"\"$(SRCROOT)/../external/curl/prebuilt/ios\"",
 					"\"$(SRCROOT)/../external/websockets/prebuilt/ios\"",
 					"\"$(SRCROOT)/../external/chipmunk/prebuilt/ios\"",
+					"\"$(SRCROOT)/../external/openssl/prebuilt/ios\"",
+					"\"$(SRCROOT)/../external/Box2d\"",
+					"\"$(SRCROOT)/../external/bullet/prebuilt/ios\"",
+					"\"$(SRCROOT)/../external/glsl-optimizer\"",
 				);
 				OTHER_LDFLAGS = "-llibsql3";
 				SDKROOT = iphoneos;
@@ -10357,6 +10317,10 @@
 					"\"$(SRCROOT)/../external/curl/prebuilt/ios\"",
 					"\"$(SRCROOT)/../external/websockets/prebuilt/ios\"",
 					"\"$(SRCROOT)/../external/chipmunk/prebuilt/ios\"",
+					"\"$(SRCROOT)/../external/openssl/prebuilt/ios\"",
+					"\"$(SRCROOT)/../external/Box2d\"",
+					"\"$(SRCROOT)/../external/bullet/prebuilt/ios\"",
+					"\"$(SRCROOT)/../external/glsl-optimizer\"",
 				);
 				OTHER_LDFLAGS = "-llibsql3";
 				SDKROOT = iphoneos;
