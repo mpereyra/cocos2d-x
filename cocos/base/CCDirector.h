@@ -512,6 +512,11 @@ public:
      */
     const std::thread::id& getCocos2dThreadId() const { return _cocos2d_thread_id; }
 
+    /**
+     * returns whether or not the Director is in a valid state
+     */
+    bool isValid() const { return !_invalid; }
+
     /* BPC_PATCH start */
     bool getDetectedNegativeDeltaTime() const;
     void resetDetectedNegativeDeltaTime(); // only allow outside peeps to set to false    
