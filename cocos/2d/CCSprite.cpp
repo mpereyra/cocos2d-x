@@ -1475,7 +1475,7 @@ bool Sprite::isFlippedX() const
 void Sprite::setFlippedY(bool flippedY)
 {
 #ifdef CC_USE_METAL
-    if(_texture->isRenderTarget())
+    if(_texture && _texture->isRenderTarget())
         flippedY = !flippedY;
 #endif
     if (_flippedY != flippedY)
