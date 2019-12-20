@@ -76,6 +76,23 @@ namespace
         }
     }
 
+    //BPC PATCH
+    //This looks weird, but it seems that endian bullshit is plaguing us
+    void convertRGBA2ABGR(uint8_t* src, uint8_t* dst, uint32_t length)
+    {
+        for (uint32_t i = 0; i < length; ++i)
+        {
+            uint8_t b = (*src & 0xF0) >> 4;
+            uint8_t a = (*src & 0x0F);
+            src++;
+            uint8_t r = (*src & 0xF0) >> 4;
+            uint8_t g = (*src & 0x0F);
+            src++;
+            *dst++ = (b << 4) | a;
+            *dst++ = (r << 4) | g;
+        }
+    }
+    //END BPC PATCH
     
     bool convertData(uint8_t* src, unsigned int length, PixelFormat format, uint8_t** out)
     {
@@ -90,6 +107,15 @@ namespace
                     converted = true;
                 }
                 break;
+            //BPC PATCH
+            case PixelFormat::RGBA4444:
+                {
+                    *out = (uint8_t*)malloc(length * 2);
+                    convertRGBA2ABGR(src, *out, length);
+                    converted = true;
+                }
+                break;
+            //END BPC PATCH
             default:
                 break;
         }
@@ -161,6 +187,46 @@ namespace
         return bytesPerRow;
     }
     
+    //BPC PATCH
+    uint32_t getBytesPerRowASTC(MTLPixelFormat pixelFormat, uint32_t width)
+    {
+        uint32_t bytesPerRow  = 0;
+        uint32_t bytesPerBlock = 16, blockWidth = 0;
+        switch (pixelFormat) {
+            case MTLPixelFormatASTC_4x4_LDR:
+                blockWidth = 4;
+                break;
+            case MTLPixelFormatASTC_5x4_LDR:
+            case MTLPixelFormatASTC_5x5_LDR:
+                blockWidth = 5;
+                break;
+            case MTLPixelFormatASTC_6x5_LDR:
+            case MTLPixelFormatASTC_6x6_LDR:
+                blockWidth = 6;
+                break;
+            case MTLPixelFormatASTC_8x5_LDR:
+            case MTLPixelFormatASTC_8x6_LDR:
+            case MTLPixelFormatASTC_8x8_LDR:
+                blockWidth = 8;
+                break;
+            case MTLPixelFormatASTC_10x5_LDR:
+            case MTLPixelFormatASTC_10x6_LDR:
+            case MTLPixelFormatASTC_10x8_LDR:
+            case MTLPixelFormatASTC_10x10_LDR:
+                blockWidth = 10;
+                break;
+            case MTLPixelFormatASTC_12x10_LDR:
+            case MTLPixelFormatASTC_12x12_LDR:
+            default:
+                blockWidth = 12;
+                break;
+        }
+        auto blocksPerRow = (width + (blockWidth - 1)) / blockWidth;
+        bytesPerRow = blocksPerRow * bytesPerBlock;
+        return bytesPerRow;
+    }
+    //END BPC PATCH
+    
     uint32_t getBytesPerRow(PixelFormat textureFormat, uint32_t width, uint32_t bitsPerElement)
     {
         MTLPixelFormat pixelFormat = Utils::toMTLPixelFormat(textureFormat);
@@ -180,6 +246,11 @@ namespace
         {
             bytesPerRow = getBytesPerRowS3TC(pixelFormat, width);
         }
+        //BPC PATCH
+        else if (textureFormat == PixelFormat::ASTC_RGBA) {
+            bytesPerRow  = getBytesPerRowASTC(pixelFormat, width);
+        }
+        //END BPC PATCH
         else
         {
             bytesPerRow = width * bitsPerElement / 8;
