@@ -90,6 +90,8 @@
 		382384011A258FA7002C4610 /* util.h in Headers */ = {isa = PBXBuildFile; fileRef = 382383ED1A258FA7002C4610 /* util.h */; };
 		3E2BDAEC19C0436F0055CDCD /* AudioEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3E2BDAEB19C0436F0055CDCD /* AudioEngine.cpp */; };
 		3E2F27A619CFBFE100E7C490 /* AudioEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3E2BDAEB19C0436F0055CDCD /* AudioEngine.cpp */; };
+		413B29A8249A816100FB3AB9 /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AAF541C180E3B6A000584C8 /* libcurl.a */; };
+		413B29A9249A816F00FB3AB9 /* libcurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AAF541C180E3B6A000584C8 /* libcurl.a */; };
 		4162011523996A5E00EA5DA7 /* b2Collision.h in Headers */ = {isa = PBXBuildFile; fileRef = 416200E023996A5D00EA5DA7 /* b2Collision.h */; };
 		4162011623996A5E00EA5DA7 /* b2Collision.h in Headers */ = {isa = PBXBuildFile; fileRef = 416200E023996A5D00EA5DA7 /* b2Collision.h */; };
 		4162011723996A5E00EA5DA7 /* b2DynamicTree.h in Headers */ = {isa = PBXBuildFile; fileRef = 416200E123996A5D00EA5DA7 /* b2DynamicTree.h */; };
@@ -4584,6 +4586,7 @@
 				507B3D0E1C31BDD30067B53E /* libchipmunk.a in Frameworks */,
 				507B3D0F1C31BDD30067B53E /* libwebp.a in Frameworks */,
 				507B3D101C31BDD30067B53E /* libfreetype.a in Frameworks */,
+				413B29A9249A816F00FB3AB9 /* libcurl.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4596,6 +4599,7 @@
 				4162017523996A7500EA5DA7 /* libbox2d.a in Frameworks */,
 				416204DD23996B2000EA5DA7 /* libLinearMath.a in Frameworks */,
 				41620524239996BE00EA5DA7 /* libmesa.a in Frameworks */,
+				413B29A8249A816100FB3AB9 /* libcurl.a in Frameworks */,
 				41620522239996B500EA5DA7 /* libglcpp-library.a in Frameworks */,
 				A07A4CAF1783777C0073F6A7 /* Foundation.framework in Frameworks */,
 				41E702F823984E6C008E2357 /* libssl.a in Frameworks */,
