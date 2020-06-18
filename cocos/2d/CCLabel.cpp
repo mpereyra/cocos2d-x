@@ -25,9 +25,9 @@
  ****************************************************************************/
 
 #include "2d/CCLabel.h"
-
 #include <algorithm>
-
+#include <stddef.h> // offsetof
+#include "base/ccTypes.h"
 #include "2d/CCFont.h"
 #include "2d/CCFontAtlasCache.h"
 #include "2d/CCFontAtlas.h"
@@ -44,8 +44,8 @@
 #include "base/CCEventListenerCustom.h"
 #include "base/CCEventDispatcher.h"
 #include "base/CCEventCustom.h"
+#include "base/ccUtils.h"
 #include "2d/CCFontFNT.h"
-#include "base/CCEventType.h"
 #include "renderer/ccShaders.h"
 #include "renderer/backend/ProgramState.h"
 
@@ -472,12 +472,6 @@ Label::Label(TextHAlignment hAlignment /* = TextHAlignment::LEFT */,
         }
     });
     _eventDispatcher->addEventListenerWithFixedPriority(_resetTextureListener, 2);
-    
-    _reloadShadersListener = EventListenerCustom::create(EVENT_LABEL_RELOAD_SHADERS,
-        [this](EventCustom *) {
-        updateShaderProgram();
-    });
-    _eventDispatcher->addEventListenerWithSceneGraphPriority(_reloadShadersListener, this);
 }
 
 Label::~Label()
@@ -494,12 +488,9 @@ Label::~Label()
     _batchCommands.clear();
     _eventDispatcher->removeEventListener(_purgeTextureListener);
     _eventDispatcher->removeEventListener(_resetTextureListener);
-	_eventDispatcher->removeEventListener(_reloadShadersListener);
 
     CC_SAFE_RELEASE_NULL(_textSprite);
     CC_SAFE_RELEASE_NULL(_shadowNode);
-    
-    CC_SAFE_RELEASE(_programState);
 }
 
 void Label::reset()
@@ -695,7 +686,8 @@ void Label::updateShaderProgram()
     }
 
     CC_SAFE_RELEASE(_programState);
-    _programState = new backend::ProgramState(programType);
+    auto* program = backend::Program::getBuiltinProgram(programType);
+    _programState = new backend::ProgramState(program);
 
     updateUniformLocations();
 
@@ -830,13 +822,6 @@ void Label::setString(const std::string& text)
         if (StringUtils::UTF8ToUTF32(_utf8Text, utf32String))
         {
             _utf32Text  = utf32String;
-        }
-
-        CCASSERT(_utf32Text.length() <= CC_LABEL_MAX_LENGTH, "Length of text should be less then 16384");
-        if (_utf32Text.length() > CC_LABEL_MAX_LENGTH)
-        {
-            cocos2d::log("Error: Label text is too long %d > %d and it will be truncated!", _utf32Text.length(), CC_LABEL_MAX_LENGTH);
-            _utf32Text = _utf32Text.substr(0, CC_LABEL_MAX_LENGTH);
         }
     }
 }
@@ -2294,7 +2279,6 @@ FontDefinition Label::_getFontDefinition() const
     systemFontDef._fontSize = _systemFontSize;
     systemFontDef._alignment = _hAlignment;
     systemFontDef._vertAlignment = _vAlignment;
-    systemFontDef._lineSpacing = _lineSpacing;
     systemFontDef._dimensions.width = _labelWidth;
     systemFontDef._dimensions.height = _labelHeight;
     systemFontDef._fontFillColor.r = _textColor.r;

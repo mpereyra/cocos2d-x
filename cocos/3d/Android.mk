@@ -6,9 +6,6 @@ LOCAL_ARM_MODE := arm
 
 LOCAL_MODULE_FILENAME := libc3d
 
-#turn off thumb for extra speed
-LOCAL_ARM_MODE := arm
-
 LOCAL_SRC_FILES := \
 CCRay.cpp \
 CCAABB.cpp \

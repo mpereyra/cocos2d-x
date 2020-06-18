@@ -43,7 +43,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.inputmethod.EditorInfo;
 
 import org.cocos2dx.lib.Cocos2dxHelper.Cocos2dxHelperListener;
 
@@ -63,9 +62,7 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
     // Fields
     // ===========================================================
     
-    //BPC PATCH: Attempt to preserve GL context onCreate.
-    protected Cocos2dxGLSurfaceView mGLSurfaceView = null;
-    //END BPC PATCH
+    private Cocos2dxGLSurfaceView mGLSurfaceView = null;
     private int[] mGLContextAttrs = null;
     private Cocos2dxHandler mHandler = null;   
     private static Cocos2dxActivity sContext = null;
@@ -206,8 +203,8 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
         //It is possible for the app to receive the onWindowsFocusChanged(true) event
         //even though it is locked or asleep
         boolean readyToPlay = !isDeviceLocked() && !isDeviceAsleep();
-        //BPC Patch:  hasFocus doesn't get set to true (for some reason), so ignore it.
-        if(/*hasFocus && */readyToPlay) {
+
+        if(hasFocus && readyToPlay) {
             this.hideVirtualButton();
         	Cocos2dxHelper.onResume();
         	mGLSurfaceView.onResume();
@@ -227,7 +224,6 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
     
     @Override
     protected void onDestroy() {
-        Log.d(TAG, "onDestroy()");
         if(gainAudioFocus)
             Cocos2dxAudioFocusManager.unregisterAudioFocusListener(this);
         super.onDestroy();
@@ -279,15 +275,11 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
         Cocos2dxEditBox edittext = new Cocos2dxEditBox(this);
         edittext.setLayoutParams(edittext_layout_params);
 
-        //Set some default IME options
-        edittext.setImeOptions(EditorInfo.IME_ACTION_DONE | EditorInfo.IME_FLAG_NO_EXTRACT_UI | EditorInfo.IME_FLAG_NO_FULLSCREEN);
-
 
         mFrameLayout.addView(edittext);
 
         // Cocos2dxGLSurfaceView
         this.mGLSurfaceView = this.onCreateView();
-        this.mGLSurfaceView.setPreserveEGLContextOnPause(true);
 
         // ...add to FrameLayout
         mFrameLayout.addView(this.mGLSurfaceView);
@@ -300,8 +292,6 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
         this.mGLSurfaceView.setCocos2dxRenderer(new Cocos2dxRenderer());
         this.mGLSurfaceView.setCocos2dxEditText(edittext);
 
-        this.addCustomFrameLayout(mFrameLayout);
-
         // Set framelayout as the content view
         setContentView(mFrameLayout);
     }
@@ -310,16 +300,14 @@ public abstract class Cocos2dxActivity extends Activity implements Cocos2dxHelpe
     public Cocos2dxGLSurfaceView onCreateView() {
         Cocos2dxGLSurfaceView glSurfaceView = new Cocos2dxGLSurfaceView(this);
         //this line is need on some device if we specify an alpha bits
-        if(this.mGLContextAttrs[3] > 0) glSurfaceView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
+        // FIXME: is it needed? And it will cause afterimage.
+        // if(this.mGLContextAttrs[3] > 0) glSurfaceView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
 
         // use custom EGLConfigureChooser
         Cocos2dxEGLConfigChooser chooser = new Cocos2dxEGLConfigChooser(this.mGLContextAttrs);
         glSurfaceView.setEGLConfigChooser(chooser);
 
         return glSurfaceView;
-    }
-
-    public void addCustomFrameLayout(ResizeLayout layout) {
     }
 
     protected void hideVirtualButton() {

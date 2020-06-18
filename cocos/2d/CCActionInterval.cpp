@@ -88,8 +88,8 @@ void ExtraAction::step(float /*dt*/)
 
 bool ActionInterval::initWithDuration(float d)
 {
+    _duration = d;
 
-    _duration = std::abs(d) <= MATH_EPSILON ? MATH_EPSILON : d;
     _elapsed = 0;
     _firstTick = true;
     _done = false;
@@ -116,10 +116,10 @@ bool ActionInterval::isDone() const
 
 void ActionInterval::step(float dt)
 {
-    if (_firstTick && !_ignoreFirstTick)
+    if (_firstTick)
     {
         _firstTick = false;
-        _elapsed = MATH_EPSILON;
+        _elapsed = 0;
     }
     else
     {
@@ -467,7 +467,7 @@ Repeat::~Repeat()
 void Repeat::startWithTarget(Node *target)
 {
     _total = 0;
-    _nextDt = _innerAction->getDuration() / _duration;
+    _nextDt = _innerAction->getDuration()/_duration;
     ActionInterval::startWithTarget(target);
     _innerAction->startWithTarget(target);
 }

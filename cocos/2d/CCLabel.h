@@ -560,7 +560,7 @@ public:
      
      @warning Not support system font.
      @return the type of label
-     @since v3.17.1
+     @since v3.18.0
      */
     LabelType getLabelType() const { return _currentLabelType; }
     
@@ -816,12 +816,6 @@ protected:
     backend::UniformLocation _effectColorLocation;
     backend::UniformLocation _effectTypeLocation;
     
-    backend::ProgramState* _programState = nullptr;
-
-    class EventListenerCustom *_purgeTextureAtlasListener{};
-    class EventListenerCustom *_resetTextureAtlasListener{};
-    class EventListenerCustom *_reloadShadersListener{};
-
 private:
     CC_DISALLOW_COPY_AND_ASSIGN(Label);
 };

@@ -19,7 +19,6 @@
 package org.cocos2dx.lib;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
@@ -38,8 +37,6 @@ import android.widget.MediaController.MediaPlayerControl;
 
 import java.io.IOException;
 import java.util.Map;
-
-import static org.cocos2dx.lib.Cocos2dxActivity.getContext;
 
 public class Cocos2dxVideoView extends SurfaceView implements MediaPlayerControl {
     private String TAG = "Cocos2dxVideoView";
@@ -198,8 +195,7 @@ public class Cocos2dxVideoView extends SurfaceView implements MediaPlayerControl
         mCurrentState = STATE_IDLE;
         mTargetState  = STATE_IDLE;
     }
-
-    /* TC PATCH
+    
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if( mUserInputEnabled && ((event.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP))
@@ -210,11 +206,10 @@ public class Cocos2dxVideoView extends SurfaceView implements MediaPlayerControl
                 resume();
             }
         }
-
+        
         return true;
     }
-    */
-
+    
     private boolean mIsAssetRouse = false;
     private boolean mLooping = false;
     private boolean mUserInputEnabled = true;
@@ -312,15 +307,11 @@ public class Cocos2dxVideoView extends SurfaceView implements MediaPlayerControl
             mDuration = -1;
             mCurrentBufferPercentage = 0;
             if (mIsAssetRouse) {
-                /* TC patch start */
-                Context appContext = mCocos2dxActivity.getApplicationContext();
-                String packageName = appContext.getPackageName();
-                String stripped = mVideoFilePath.substring(0, mVideoFilePath.lastIndexOf('.'));
-                int resId = mCocos2dxActivity.getResources().getIdentifier(stripped, "raw", packageName);
-                String path = "android.resource://" + packageName + "/" + resId;
-                /* TC patch end */
-
-                mMediaPlayer.setDataSource(mCocos2dxActivity, Uri.parse(path));
+                AssetFileDescriptor afd = mCocos2dxActivity.getAssets().openFd(mVideoFilePath);
+                if (afd == null && Cocos2dxHelper.getObbFile() != null) {
+                    afd = Cocos2dxHelper.getObbFile() .getAssetFileDescriptor(mVideoFilePath);
+                }
+                mMediaPlayer.setDataSource(afd.getFileDescriptor(),afd.getStartOffset(),afd.getLength());
             } else {
                 mMediaPlayer.setDataSource(mCocos2dxActivity, mVideoUri);
             }

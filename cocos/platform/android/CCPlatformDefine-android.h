@@ -23,15 +23,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-
-#ifndef __CCPLATFORMDEFINE_H__
-#define __CCPLATFORMDEFINE_H__
-
-#include "platform/CCPlatformConfig.h"
-#if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
+#pragma once
 
 #include <android/log.h>
-#include "../../../shared/common/DLog.h"
 
 #define CC_DLL
 
@@ -51,7 +45,7 @@ THE SOFTWARE.
                             __FILE__, __FUNCTION__, __LINE__, msg); \
     }
 
-#define CC_ASSERT(cond) DAssert((cond), "CC_ASSERT failed")
+#define CC_ASSERT(cond) CC_NO_MESSAGE_PSEUDOASSERT(cond)
 
 #define CC_UNUSED_PARAM(unusedparam) (void)unusedparam
 
@@ -63,7 +57,3 @@ THE SOFTWARE.
 #define NULL    ((void *)0)
 #endif
 #endif
-
-#endif // CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
-
-#endif /* __CCPLATFORMDEFINE_H__*/

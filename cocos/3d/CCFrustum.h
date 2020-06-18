@@ -56,11 +56,7 @@ public:
      * init frustum from camera.
      */
     bool initFrustum(const Camera* camera);
-    
-    /*BPC PATCH*/
-    bool initFrustum(const Mat4& viewProjection);
-    /*#BPC PATCH END*/
-    
+
     /**
      * is aabb out of frustum.
      */
@@ -69,9 +65,6 @@ public:
      * is obb out of frustum
      */
     bool isOutOfFrustum(const OBB& obb) const;
-    
-    //BPC PATCH
-    bool isOutOfFrustum(const Vec3& pt) const;
 
     /**
      * get & set z clip. if bclipZ == true use near and far plane
@@ -86,8 +79,8 @@ protected:
     void createPlane(const Camera* camera);
 
     Plane _plane[6];             // clip plane, left, right, top, bottom, near, far
-    bool _clipZ{true};                // use near and far clip plane
-    bool _initialized{false};
+    bool _clipZ;                // use near and far clip plane
+    bool _initialized;
 };
 
 NS_CC_END

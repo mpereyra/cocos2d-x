@@ -29,13 +29,12 @@ THE SOFTWARE.
 
 
 #include "2d/CCParticleSystemQuad.h"
-
 #include <algorithm>
-
+#include <stddef.h> // offsetof
+#include "base/ccTypes.h"
 #include "2d/CCSpriteFrame.h"
 #include "2d/CCParticleBatchNode.h"
 #include "renderer/CCTextureAtlas.h"
-#include "renderer/ccGLStateCache.h"
 #include "renderer/CCRenderer.h"
 #include "base/CCDirector.h"
 #include "base/CCEventType.h"
@@ -51,7 +50,8 @@ NS_CC_BEGIN
 ParticleSystemQuad::ParticleSystemQuad()
 {
     auto& pipelieDescriptor = _quadCommand.getPipelineDescriptor();
-    _programState = new (std::nothrow) backend::ProgramState(positionTextureColor_vert, positionTextureColor_frag);
+    auto* program = backend::Program::getBuiltinProgram(backend::ProgramType::POSITION_TEXTURE_COLOR);
+    _programState = new (std::nothrow) backend::ProgramState(program);
     pipelieDescriptor.programState = _programState;
     _mvpMatrixLocaiton = pipelieDescriptor.programState->getUniformLocation("u_MVPMatrix");
     _textureLocation = pipelieDescriptor.programState->getUniformLocation("u_texture");
@@ -83,7 +83,6 @@ ParticleSystemQuad::~ParticleSystemQuad()
         CC_SAFE_FREE(_quads);
         CC_SAFE_FREE(_indices);
     }
-    CC_SAFE_RELEASE(_programState);
 }
 
 // implementation ParticleSystemQuad
@@ -412,9 +411,7 @@ void ParticleSystemQuad::updateParticleQuads()
             uint8_t colorR = *r * *a * 255;
             uint8_t colorG = *g * *a * 255;
             uint8_t colorB = *b * *a * 255;
-			//BPC PATCH
-            uint8_t colorA = (*a * _displayedOpacity/255.f) * 255;
-			//END BPC PATCH   
+            uint8_t colorA = *a * 255;
             quad->bl.colors.set(colorR, colorG, colorB, colorA);
             quad->br.colors.set(colorR, colorG, colorB, colorA);
             quad->tl.colors.set(colorR, colorG, colorB, colorA);
@@ -434,9 +431,7 @@ void ParticleSystemQuad::updateParticleQuads()
             uint8_t colorR = *r * 255;
             uint8_t colorG = *g * 255;
             uint8_t colorB = *b * 255;
-			//BPC PATCH
-            uint8_t colorA = (*a * _displayedOpacity/255.f) * 255;
-			//END BPC PATCH
+            uint8_t colorA = *a * 255;
             quad->bl.colors.set(colorR, colorG, colorB, colorA);
             quad->br.colors.set(colorR, colorG, colorB, colorA);
             quad->tl.colors.set(colorR, colorG, colorB, colorA);

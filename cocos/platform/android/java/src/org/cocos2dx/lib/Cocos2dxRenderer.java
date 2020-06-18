@@ -25,7 +25,6 @@ THE SOFTWARE.
 package org.cocos2dx.lib;
 
 import android.opengl.GLSurfaceView;
-import android.util.Log;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -62,15 +61,8 @@ public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
     }
 
     public void setScreenWidthAndHeight(final int surfaceWidth, final int surfaceHeight) {
-        /* BPC PATCH */
-        if (Cocos2dxRenderer.nativeIsLandscape() && surfaceHeight > surfaceWidth) {
-            this.mScreenWidth = surfaceHeight;
-            this.mScreenHeight = surfaceWidth;
-        } else {
-            this.mScreenWidth = surfaceWidth;
-            this.mScreenHeight = surfaceHeight;
-        }
-        /* END BPC PATCH */
+        this.mScreenWidth = surfaceWidth;
+        this.mScreenHeight = surfaceHeight;
     }
 
     // ===========================================================
@@ -81,23 +73,12 @@ public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
     public void onSurfaceCreated(final GL10 GL10, final EGLConfig EGLConfig) {
         Cocos2dxRenderer.nativeInit(this.mScreenWidth, this.mScreenHeight);
         this.mLastTickInNanoSeconds = System.nanoTime();
-        if(mNativeInitCompleted){ //we dont need to do this the first time only on restarts...
-            Cocos2dxRenderer.nativeOnRegainedGLContext();
-        }
         mNativeInitCompleted = true;
     }
 
     @Override
     public void onSurfaceChanged(final GL10 GL10, final int width, final int height) {
-        /* BPC_PATCH */
-        // no-op dead end? Removed.
-        // Cocos2dxRenderer.nativeOnSurfaceChanged(width, height);
-        
-        /* BPC_PATCH */
-        // fix squished view on return from background with new context
-        GL10.glViewport(0, 0, this.mScreenWidth, this.mScreenHeight);
-        
-        Cocos2dxRenderer.nativeBPCResume(); // leads to EngineController::resume();
+        Cocos2dxRenderer.nativeOnSurfaceChanged(width, height);
     }
 
     @Override
@@ -141,11 +122,6 @@ public class Cocos2dxRenderer implements GLSurfaceView.Renderer {
     private static native void nativeOnSurfaceChanged(final int width, final int height);
     private static native void nativeOnPause();
     private static native void nativeOnResume();
-    /* BPC PATCH METHODS */
-    private static native void nativeBPCResume();
-    private static native void nativeOnRegainedGLContext();
-    private static native boolean nativeIsLandscape();
-    /* END BPC PATCH */
 
     public void handleActionDown(final int id, final float x, final float y) {
         Cocos2dxRenderer.nativeTouchesBegin(id, x, y);

@@ -135,26 +135,6 @@ public:
         return ret;
     }
 
-    /* TC patch start */
-    template <typename... Ts>
-    static long callStaticLongMethod(const std::string& className,
-                                     const std::string& methodName,
-                                     Ts... xs) {
-        jint ret = 0;
-        cocos2d::JniMethodInfo t;
-        std::string signature = "(" + std::string(getJNISignature(xs...)) + ")J";
-        if (cocos2d::JniHelper::getStaticMethodInfo(t, className.c_str(), methodName.c_str(), signature.c_str())) {
-            LocalRefMapType localRefs;
-            ret = t.env->CallStaticLongMethod(t.classID, t.methodID, convert(localRefs, t, xs)...);
-            t.env->DeleteLocalRef(t.classID);
-            deleteLocalRefs(t.env, localRefs);
-        } else {
-            reportError(className, methodName, signature);
-        }
-        return ret;
-    }
-    /* TC patch end */
-
     /**
     @brief Call of Java static float method
     @return value from Java static float method if there are proper JniMethodInfo; otherwise 0.
@@ -315,28 +295,6 @@ public:
         }
         return ret;
     }
-
-    /* TC patch start */
-    template <typename... Ts>
-    static void* callStaticObjectMethod(const std::string& className,
-                                        const std::string& methodName,
-                                        const std::string & returnCode,
-                                              Ts... xs) {
-        void* ret = nullptr;
-
-        cocos2d::JniMethodInfo t;
-        std::string signature = "(" + std::string(getJNISignature(xs...)) + ")" + returnCode;
-        if (cocos2d::JniHelper::getStaticMethodInfo(t, className.c_str(), methodName.c_str(), signature.c_str())) {
-            LocalRefMapType localRefs;
-            ret = t.env->CallStaticObjectMethod(t.classID, t.methodID, convert(localRefs, t, xs)...);
-            t.env->DeleteLocalRef(t.classID);
-            deleteLocalRefs(t.env, localRefs);
-        } else {
-            reportError(className, methodName, signature);
-        }
-        return ret;
-    }
-    /* TC patch end */
 
 private:
     static JNIEnv* cacheEnv(JavaVM* jvm);

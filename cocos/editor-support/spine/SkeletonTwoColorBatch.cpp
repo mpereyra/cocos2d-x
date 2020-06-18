@@ -27,9 +27,12 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *****************************************************************************/
-#include "spine/SkeletonTwoColorBatch.h"
-#include "spine/extension.h"
+#include <spine/SkeletonTwoColorBatch.h>
+#include <spine/extension.h>
 #include <algorithm>
+#include <stddef.h> // offsetof
+#include "base/ccTypes.h"
+#include "base/ccUtils.h"
 
 USING_NS_CC;
 #define EVENT_AFTER_DRAW_RESET_POSITION "director_after_draw"
@@ -90,14 +93,17 @@ void TwoColorTrianglesCommand::generateMaterialID() {
 
 void TwoColorTrianglesCommand::useMaterial() const {
 	//Set texture
-	GL::bindTexture2D(_textureID);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, _textureID);
 	
-	if (_alphaTextureID > 0) {
+	if (_alphaTextureID > 0)
+    {
 		// ANDROID ETC1 ALPHA supports.
-		GL::bindTexture2DN(1, _alphaTextureID);
+        glActiveTexture(GL_TEXTURE0 + 1);
+        glBindTexture(GL_TEXTURE_2D, _alphaTextureID);
 	}
 	//set blend mode
-	GL::blendFunc(_blendType.src, _blendType.dst);
+    cocos2d::utils::setBlending(_blendType.src, _blendType.dst);
 	
 	_glProgramState->apply(_mv);
 }

@@ -22,10 +22,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
-
-#include "platform/CCPlatformConfig.h"
-#if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
-
 #include "platform/android/CCApplication-android.h"
 #include "platform/android/CCGLViewImpl-android.h"
 #include "base/CCDirector.h"
@@ -34,22 +30,16 @@ THE SOFTWARE.
 #include "base/CCEventDispatcher.h"
 #include "renderer/CCTextureCache.h"
 #include "platform/android/jni/JniHelper.h"
-#include "platform/CCDataManager.h"
 #include "network/CCDownloader-android.h"
-#include <unistd.h>
 
 #include <android/log.h>
 #include <android/api-level.h>
 #include <jni.h>
 
-/* BPC PATCH */ 
-#include "renderer/CCTexture2D.h"
-/* END PATCH */
+#define  LOG_TAG    "main"
+#define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,LOG_TAG,__VA_ARGS__)
 
-#define  CCLOG_TAG    "main"
-#define  LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,CCLOG_TAG,__VA_ARGS__)
-
-void cocos_android_app_init(JNIEnv* env, jobject thiz) __attribute__((weak));
+void cocos_android_app_init(JNIEnv* env) __attribute__((weak));
 
 void cocos_audioengine_focus_change(int focusChange);
 
@@ -83,14 +73,13 @@ JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved)
 {
     JniHelper::setJavaVM(vm);
 
+    cocos_android_app_init(JniHelper::getEnv());
+
     return JNI_VERSION_1_4;
 }
 
 JNIEXPORT void Java_org_cocos2dx_lib_Cocos2dxRenderer_nativeInit(JNIEnv*  env, jobject thiz, jint w, jint h)
 {
-    DataManager::setProcessID(getpid());
-    DataManager::setFrameSize(w, h);
-
     auto director = cocos2d::Director::getInstance();
     auto glview = director->getOpenGLView();
     if (!glview)
@@ -104,6 +93,8 @@ JNIEXPORT void Java_org_cocos2dx_lib_Cocos2dxRenderer_nativeInit(JNIEnv*  env, j
     else
     {
         cocos2d::Director::getInstance()->resetMatrixStack();
+        cocos2d::EventCustom recreatedEvent(EVENT_RENDERER_RECREATED);
+        director->getEventDispatcher()->dispatchEvent(&recreatedEvent);
         director->setGLDefaultValues();
         cocos2d::VolatileTextureMgr::reloadAllTextures();
     }
@@ -112,7 +103,6 @@ JNIEXPORT void Java_org_cocos2dx_lib_Cocos2dxRenderer_nativeInit(JNIEnv*  env, j
 
 JNIEXPORT jintArray Java_org_cocos2dx_lib_Cocos2dxActivity_getGLContextAttrs(JNIEnv*  env, jobject thiz)
 {
-    cocos_android_app_init(env, thiz);
     cocos2d::Application::getInstance()->initGLContextAttrs(); 
     GLContextAttrs _glContextAttrs = GLView::getGLContextAttrs();
     
@@ -136,17 +126,4 @@ JNIEXPORT void Java_org_cocos2dx_lib_Cocos2dxRenderer_nativeOnSurfaceChanged(JNI
     cocos2d::Application::getInstance()->applicationScreenSizeChanged(w, h);
 }
 
-jboolean Java_org_cocos2dx_lib_Cocos2dxGLSurfaceView_shouldPreserveGLContext(JNIEnv * const env, jobject const thiz)
-{
-#if DEBUG // || ADHOC
-    // always destroy GLcontext on background, to make Android background issues easier to repro
-  return false;
-#else
-  return true; //GLcontext MAY be destroyed on background, on some phones.
-#endif
 }
-
-}
-
-#endif // CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
-

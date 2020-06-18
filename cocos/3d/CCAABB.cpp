@@ -37,7 +37,7 @@ AABB::AABB(const Vec3& min, const Vec3& max)
     set(min, max);
 }
 
-Vec3 AABB::getCenter() const
+Vec3 AABB::getCenter()
 {
     Vec3 center;
 	center.x = 0.5f*(_min.x+_max.x);
@@ -152,10 +152,6 @@ void AABB::updateMinMax(const Vec3* point, ssize_t num)
 
 void AABB::transform(const Mat4& mat)
 {
-    // BPC PATCH BEGIN
-    assert(!isEmpty()); // if we transform an empty bounding box we're in real trouble
-    // BPC PATCH END
-    
     Vec3 corners[8];
 	 // Near face, specified counter-clockwise
     // Left-top-front.
