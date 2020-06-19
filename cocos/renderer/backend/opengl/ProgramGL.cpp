@@ -30,6 +30,7 @@
 #include "base/CCEventDispatcher.h"
 #include "base/CCEventType.h"
 #include "renderer/backend/opengl/UtilsGL.h"
+#include "renderer/backend/ShaderCache.h"
 
 CC_BACKEND_BEGIN
 namespace {
@@ -40,15 +41,9 @@ namespace {
 ProgramGL::ProgramGL(const std::string& vertexShader, const std::string& fragmentShader, Program::CompileResult& result)
 : Program(vertexShader, fragmentShader)
 {
-#if CC_TARGET_PLATFORM == CC_PLATFORM_ANDROID
-    //some device required manually specify the precision qualifiers for vertex shader.
-    _vertexShaderModule = static_cast<ShaderModuleGL*>(ShaderCache::newVertexShaderModule(std::move(vsPreDefine + _vertexShader)));
-    _fragmentShaderModule = static_cast<ShaderModuleGL*>(ShaderCache::newFragmentShaderModule(std::move(fsPreDefine +  _fragmentShader)));
-#else
-    _vertexShaderModule = static_cast<ShaderModuleGL*>(ShaderCache::newVertexShaderModule(_vertexShader));
-    _fragmentShaderModule = static_cast<ShaderModuleGL*>(ShaderCache::newFragmentShaderModule(_fragmentShader));
-#endif
-
+    _vertexShaderModule = static_cast<ShaderModuleGL*>(ShaderCache::newVertexShaderModule(_vertexShader, result));
+    _fragmentShaderModule = static_cast<ShaderModuleGL*>(ShaderCache::newFragmentShaderModule(_fragmentShader, result));
+    
     CC_SAFE_RETAIN(_vertexShaderModule);
     CC_SAFE_RETAIN(_fragmentShaderModule);
     compileProgram(result);
@@ -88,9 +83,10 @@ void ProgramGL::reloadProgram()
     _activeUniformInfos.clear();
     _mapToCurrentActiveLocation.clear();
     _mapToOriginalLocation.clear();
-    static_cast<ShaderModuleGL*>(_vertexShaderModule)->compileShader(backend::ShaderStage::VERTEX, std::move(vsPreDefine + _vertexShader));
-    static_cast<ShaderModuleGL*>(_fragmentShaderModule)->compileShader(backend::ShaderStage::FRAGMENT, std::move(fsPreDefine + _fragmentShader));
-    compileProgram();
+    Program::CompileResult result;
+    static_cast<ShaderModuleGL*>(_vertexShaderModule)->compileShader(backend::ShaderStage::VERTEX, std::move(_vertexShader), result);
+    static_cast<ShaderModuleGL*>(_fragmentShaderModule)->compileShader(backend::ShaderStage::FRAGMENT, std::move(_fragmentShader), result);
+    compileProgram(result);
     computeUniformInfos();
 
     for(const auto& uniform : _activeUniformInfos)
@@ -125,11 +121,83 @@ void ProgramGL::compileProgram(Program::CompileResult & result)
     
     GLint status = 0;
     glGetProgramiv(_program, GL_LINK_STATUS, &status);
+    /** BPC PATCH **/
+    result.success = status == GL_TRUE;
+    if (!status)
+    {
+        GLint logLength = 0;
+        glGetProgramiv(_program, GL_INFO_LOG_LENGTH, &logLength);
+        char* log = (char*)malloc(sizeof(char) * logLength);
+        glGetProgramInfoLog(_program, logLength, nullptr, log);
+        result.errorMsg = log;
+    }
+    /** END PATCH **/
+    if (GL_FALSE == status)
+    {
+        printf("cocos2d: ERROR: %s: failed to link program ", __FUNCTION__);
+        
+        
+        glDeleteProgram(_program);
+        _program = 0;
+    }
+}
+
+ProgramGL::ProgramGL(unsigned int format, const std::string binary, Program::CompileResult & result)
+: Program("", "")
+{
+    loadProgram(format, binary, result);
+    computeUniformInfos();
+    computeLocations();
+#if CC_ENABLE_CACHE_TEXTURE_DATA
+    for(const auto& uniform: _activeUniformInfos)
+    {
+        auto location = uniform.second.location;
+        _originalUniformLocations[uniform.first] = location;
+        _mapToCurrentActiveLocation[location] = location;
+        _mapToOriginalLocation[location] = location;
+    }
+
+    // TODO: reloadProgram will not work in this case. Need to save the binary data and recreate the program using binary instead of source code
+    //_backToForegroundListener = EventListenerCustom::create(EVENT_RENDERER_RECREATED, [this](EventCustom*){
+    //    this->reloadProgram();
+    //});
+    //Director::getInstance()->getEventDispatcher()->addEventListenerWithFixedPriority(_backToForegroundListener, -1);
+#endif
+}
+
+void ProgramGL::loadProgram(unsigned int format, const std::string binary, Program::CompileResult & result)
+{
+    _program = glCreateProgram();
+    if (!_program)
+        return;
+    
+    glProgramBinaryOES(_program, format, &(binary[0]), binary.size());
+    
+    GLint status = 0;
+    glGetProgramiv(_program, GL_LINK_STATUS, &status);
     if (GL_FALSE == status)
     {
         printf("cocos2d: ERROR: %s: failed to link program ", __FUNCTION__);
         glDeleteProgram(_program);
         _program = 0;
+        result.success = false;
+    }
+}
+
+void ProgramGL::getProgramBinary(unsigned int& format, std::string& binary)
+{
+    GLsizei actualLength = 0;
+    glGetProgramiv(_program, GL_PROGRAM_BINARY_LENGTH_OES, &actualLength);
+    binary.resize(static_cast<unsigned long>(actualLength));
+    
+    GLsizei finalLength = 0;
+    glGetProgramBinaryOES(_program, binary.size(), &finalLength, &format, &(binary[0]));
+    binary.resize(static_cast<unsigned long>(finalLength));
+    
+    GLenum error = glGetError();
+    if (error != GL_NO_ERROR)
+    {
+        printf("cocos2d: ERROR: %s: failed to get program binary %i", __FUNCTION__, error);
     }
 }
 
@@ -193,6 +261,12 @@ void ProgramGL::computeLocations()
     
     location = glGetUniformLocation(_program, UNIFORM_NAME_BPC_CAMERA_POSITION);
     _builtinUniformLocation[Uniform::BPC_CAMERA_POSITION].location[0] = location;
+    
+    
+    ///CC_Time
+    location = glGetUniformLocation(_program, UNIFORM_NAME_TIME);
+    _builtinUniformLocation[Uniform::TIME].location[0] = location;
+    _builtinUniformLocation[Uniform::TIME].location[1] = _activeUniformInfos[UNIFORM_NAME_TIME].bufferOffset;
     //END BPC PATCH
 }
 

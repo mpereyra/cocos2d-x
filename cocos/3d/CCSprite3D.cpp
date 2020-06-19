@@ -776,11 +776,9 @@ void Sprite3D::setGlobalZOrder(float globalZOrder) {
 void Sprite3D::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
 {
 #if CC_USE_CULLING
-    //TODO new-renderer: interface isVisibleInFrustum removal
-    // camera clipping
     //BPC PATCH force culling and allow culling
-	//if(m_forceCulling || (m_allowCulling && _children.size() == 0 && Camera::getVisitingCamera() && !Camera::getVisitingCamera()->isVisibleInFrustum(&this->getAABB())))
-    //    return;
+	if(m_forceCulling || (m_allowCulling && _children.size() == 0 && Camera::getVisitingCamera() && !Camera::getVisitingCamera()->isVisibleInFrustum(&this->getAABB())))
+        return;
 #endif
     
     if (_skeleton && (flags & FLAGS_UPDATE_SKELETON))
@@ -833,6 +831,11 @@ void Sprite3D::draw(Renderer *renderer, const Mat4 &transform, uint32_t flags)
             
             auto worldViewLoc = state->getUniformLocation(backend::UNIFORM_NAME_BPC_WORLD_VIEW);
             state->setUniform(worldViewLoc, &worldViewTransform, sizeof(worldViewTransform));
+
+            float time = _director->getAccumulatedDeltaTime();
+            Vec4 timeVec = Vec4(time/10.0, time, time*2, time*4);
+            auto timeLoc = state->getUniformLocation(backend::UNIFORM_NAME_TIME);
+            state->setUniform(timeLoc, &timeVec, sizeof(timeVec));
         }
         /*END BPC PATCH*/
         
@@ -998,7 +1001,7 @@ void Sprite3D::setCullFace(CullFaceSide side)
 void Sprite3D::setCullFaceEnabled(bool enabled){
     //no op use the other one
 }
-void Sprite3D::setCullFaceEnabled(GLWriteMode mode)
+void Sprite3D::setCullFaceEnabled(WriteMode mode)
 {
     for (auto& it : _meshes) {
         it->setCullFaceMode(mode);
@@ -1059,10 +1062,10 @@ void Sprite3D::setForceDepthWrite(bool enabled, bool recursive) {
     if(!enabled){
         return; //no-op
     }
-    setDepthWriteEnabled(GLWriteMode::AlwaysOn, recursive);
+    setDepthWriteEnabled(WriteMode::AlwaysOn, recursive);
 }
 
-void Sprite3D::setDepthWriteEnabled(GLWriteMode mode, bool recursive) {
+void Sprite3D::setDepthWriteEnabled(WriteMode mode, bool recursive) {
     for(auto mesh : _meshes) {
         mesh->setDepthWriteMode(mode);
     }
@@ -1085,7 +1088,7 @@ void Sprite3D::setForceCullFace(bool enabled, bool recursive) {
     }
     
     for(auto mesh : _meshes){
-        mesh->setCullFaceMode(GLWriteMode::AlwaysOn);
+        mesh->setCullFaceMode(WriteMode::AlwaysOn);
     }
     
     if(recursive) {

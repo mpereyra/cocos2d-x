@@ -419,6 +419,9 @@ void Renderer::setDepthTest(bool value)
 void Renderer::setDepthWrite(bool value)
 {
     _depthStencilDescriptor.depthWriteEnabled = value;
+    //BPC PATCH
+    _renderPassDescriptor.depthWriteEnabled = value;
+    //END BPC PATCH
 }
 
 void Renderer::setDepthCompareFunction(backend::CompareFunction func)
@@ -476,6 +479,9 @@ void Renderer::setStencilWriteMask(unsigned int mask)
 {
     _depthStencilDescriptor.frontFaceStencil.writeMask = mask;
     _depthStencilDescriptor.backFaceStencil.writeMask = mask;
+    //BPC PATCH
+    _renderPassDescriptor.stencilWriteEnabled = mask != 0;
+    //END BPC PATCH
 }
 
 bool Renderer::getStencilTest() const
@@ -660,6 +666,10 @@ void Renderer::drawCustomCommand(RenderCommand *command)
     if (cmd->getBeforeCallback()) cmd->getBeforeCallback()();
     //BPC PATCH -- custom commands may not have program state and should not attempt drawing
     if (cmd->getPipelineDescriptor().programState != nullptr) {
+        //BPC PATCH
+        bool depthTestWasEnabled = _depthStencilDescriptor.depthTestEnabled;
+        _depthStencilDescriptor.depthTestEnabled = cmd->getDepthTestEnabled();
+        //END BPC PATCH
         beginRenderPass(command);
         _commandBuffer->setVertexBuffer(cmd->getVertexBuffer());
         _commandBuffer->setProgramState(cmd->getPipelineDescriptor().programState);
@@ -684,6 +694,11 @@ void Renderer::drawCustomCommand(RenderCommand *command)
         }
         _drawnBatches++;
         _commandBuffer->endRenderPass();
+        _depthStencilDescriptor.depthTestEnabled = depthTestWasEnabled;
+    }
+    if (cmd->func)
+    {
+        cmd->func();
     }
     //END BPC PATCH
     if (cmd->getAfterCallback()) cmd->getAfterCallback()();
@@ -755,7 +770,9 @@ void Renderer::setRenderPipeline(const PipelineDescriptor& pipelineDescriptor, c
     auto device = backend::Device::getInstance();
     _renderPipeline->update(pipelineDescriptor, renderPassDescriptor);
     backend::DepthStencilState* depthStencilState = nullptr;
-    auto needDepthStencilAttachment = renderPassDescriptor.depthTestEnabled || renderPassDescriptor.stencilTestEnabled;
+    //BPC PATCH
+    auto needDepthStencilAttachment = renderPassDescriptor.depthTestEnabled || renderPassDescriptor.stencilTestEnabled || _depthStencilDescriptor.depthWriteEnabled || _depthStencilDescriptor.frontFaceStencil.writeMask || _depthStencilDescriptor.backFaceStencil.writeMask;
+    //END BPC PATCH
     if (needDepthStencilAttachment)
     {
         depthStencilState = device->createDepthStencilState(_depthStencilDescriptor);
@@ -773,6 +790,9 @@ void Renderer::beginRenderPass(RenderCommand* cmd)
      _commandBuffer->setCullMode(_cullMode);
      _commandBuffer->setWinding(_winding);
      _commandBuffer->setScissorRect(_scissorState.isEnabled, _scissorState.rect.x, _scissorState.rect.y, _scissorState.rect.width, _scissorState.rect.height);
+    //BPC PATCH
+     _commandBuffer->setPolygonOffset(_polygonOffsetState.isEnabled, _polygonOffsetState.slope, _polygonOffsetState.constant, _polygonOffsetState.clamp);
+    //END BPC PATCH
      setRenderPipeline(cmd->getPipelineDescriptor(), _renderPassDescriptor);
 
     _commandBuffer->setStencilReferenceValue(_stencilRef);
@@ -838,6 +858,9 @@ void Renderer::clear(ClearFlag flags, const Color4F& color, float depth, unsigne
 
     CallbackCommand* command = new CallbackCommand();
     command->init(globalOrder);
+#ifndef NDEBUG //BPC PATCH
+    command->setName("clear");
+#endif
     command->func = [=]() -> void {
         backend::RenderPassDescriptor descriptor;
 
@@ -934,7 +957,40 @@ void Renderer::setScissorRect(float x, float y, float width, float height)
     _scissorState.rect.width = width;
     _scissorState.rect.height = height;
 }
+//BPC PATCH
+void Renderer::setPolygonOffsetEnabled(bool enabled)
+{
+    _polygonOffsetState.isEnabled = enabled;
+}
 
+void Renderer::setPolygonOffset(double slope, double constant, double clamp)
+{
+    _polygonOffsetState.slope = slope;
+    _polygonOffsetState.constant = constant;
+    _polygonOffsetState.clamp = clamp;
+}
+
+bool Renderer::getPolygonOffsetEnabled() const
+{
+    return _polygonOffsetState.isEnabled;
+}
+
+double Renderer::getPolygonOffsetSlope() const
+{
+    return _polygonOffsetState.slope;
+}
+
+double Renderer::getPolygonOffsetConstant() const
+{
+    return _polygonOffsetState.constant;
+}
+
+double Renderer::getPolygonOffsetClamp() const
+{
+    return _polygonOffsetState.clamp;
+}
+
+//END BPC PATCH
 // TriangleCommandBufferManager
 Renderer::TriangleCommandBufferManager::~TriangleCommandBufferManager()
 {

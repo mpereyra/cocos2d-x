@@ -32,6 +32,7 @@ THE SOFTWARE.
 
 #include "base/CCData.h"
 #include "base/ccConfig.h" // CC_USE_JPEG, CC_USE_WEBP
+#include "platform/CCGL.h"
 
 extern "C"
 {
@@ -79,6 +80,7 @@ extern "C"
 #endif
 
 #if CC_USE_PNG
+#define PNG_NO_PEDANTIC_WARNINGS
 #include "png.h"
 #endif //CC_USE_PNG
 
@@ -2042,7 +2044,7 @@ bool Image::initWithWebpData(const unsigned char * data, ssize_t dataLen)
 bool Image::initWithASTCData(const unsigned char* data, ssize_t dataLen)
 {
     if (!Configuration::getInstance()->supportsASTC()) {
-        CCLOG("cocos2d: ATC compression is not supported in hardware. Software decoding not supported.");
+        CCLOG("cocos2d: ASTC compression is not supported in hardware. Software decoding not supported.");
         return false;
     }
 

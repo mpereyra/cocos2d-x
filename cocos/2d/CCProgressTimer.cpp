@@ -25,13 +25,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 ****************************************************************************/
 #include "2d/CCProgressTimer.h"
-
 #include <algorithm>
-
+#include <stddef.h> // offsetof
+#include "base/ccTypes.h"
 #include "base/ccMacros.h"
 #include "base/CCDirector.h"
 #include "2d/CCSprite.h"
-#include "renderer/ccGLStateCache.h"
 #include "renderer/CCRenderer.h"
 #include "renderer/ccShaders.h"
 #include "renderer/backend/ProgramState.h"
@@ -47,7 +46,8 @@ namespace
     backend::ProgramState* initPipelineDescriptor(cocos2d::CustomCommand& command, bool ridal, backend::UniformLocation &locMVP, backend::UniformLocation &locTexture)
     {
         auto& pipelieDescriptor = command.getPipelineDescriptor();
-        auto programState = new (std::nothrow) backend::ProgramState(positionTextureColor_vert, positionTextureColor_frag);
+        auto* program = backend::Program::getBuiltinProgram(backend::ProgramType::POSITION_TEXTURE_COLOR);
+        auto programState = new (std::nothrow) backend::ProgramState(program);
         CC_SAFE_RELEASE(pipelieDescriptor.programState);
         pipelieDescriptor.programState = programState;
         
@@ -579,14 +579,23 @@ void ProgressTimer::draw(Renderer *renderer, const Mat4 &transform, uint32_t fla
         if (!_reverseDirection)
         {
             _customCommand.init(_globalZOrder, _sprite->getBlendFunc());
+            //BPC PATCH
+            _customCommand.setDepthTestEnabled(false);
+            //END BPC PATCH
             renderer->addCommand(&_customCommand);
         }
         else
         {
             _customCommand.init(_globalZOrder, _sprite->getBlendFunc());
+            //BPC PATCH
+            _customCommand.setDepthTestEnabled(false);
+            //END BPC PATCH
             renderer->addCommand(&_customCommand);
 
             _customCommand2.init(_globalZOrder, _sprite->getBlendFunc());
+            //BPC PATCH
+            _customCommand2.setDepthTestEnabled(false);
+            //END BPC PATCH
             _programState2->setUniform(_locMVP2, finalMat.m, sizeof(finalMat.m));
             _programState2->setTexture(_locTex2, 0, _sprite->getTexture()->getBackendTexture());
             renderer->addCommand(&_customCommand2);
@@ -595,6 +604,9 @@ void ProgressTimer::draw(Renderer *renderer, const Mat4 &transform, uint32_t fla
     else
     {
         _customCommand.init(_globalZOrder, _sprite->getBlendFunc());
+        //BPC PATCH
+        _customCommand.setDepthTestEnabled(false);
+        //END BPC PATCH
         renderer->addCommand(&_customCommand);
     }
 }

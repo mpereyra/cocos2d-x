@@ -32,7 +32,9 @@
 
 NS_CC_BEGIN
 
-unsigned char* getImageData(Image* img, backend::PixelFormat&  ePixFmt)
+//BPC PATCH
+unsigned char* getImageData(Image* img, backend::PixelFormat&  ePixFmt, size_t& dataLen)
+//END BPC PATCH
 {
     unsigned char*    pTmpData = img->getData();
     unsigned int*     inPixel32 = nullptr;
@@ -70,7 +72,10 @@ unsigned char* getImageData(Image* img, backend::PixelFormat&  ePixFmt)
         {
             // Convert "RRRRRRRRRGGGGGGGGBBBBBBBBAAAAAAAA" to "RRRRRGGGGGGBBBBB"
             inPixel32 = (unsigned int*)img->getData();
-            pTmpData = (unsigned char *)malloc(nWidth * nHeight * 2);
+            //BPC PATCH
+            dataLen = nWidth * nHeight * 2;
+            pTmpData = (unsigned char *)malloc(dataLen);
+            //END BPC PATCH
             outPixel16 = (unsigned short*)pTmpData;
 
             for (unsigned int i = 0; i < uLen; ++i, ++inPixel32)
@@ -84,7 +89,10 @@ unsigned char* getImageData(Image* img, backend::PixelFormat&  ePixFmt)
         else
         {
             // Convert "RRRRRRRRGGGGGGGGBBBBBBBB" to "RRRRRGGGGGGBBBBB"
-            pTmpData = (unsigned char *)malloc(nWidth * nHeight * 2);
+            //BPC PATCH
+            dataLen = nWidth * nHeight * 2;
+            pTmpData = (unsigned char *)malloc(dataLen);
+            //END BPC PATCH
             outPixel16 = (unsigned short*)pTmpData;
             inPixel8 = (unsigned char*)img->getData();
 
@@ -106,8 +114,10 @@ unsigned char* getImageData(Image* img, backend::PixelFormat&  ePixFmt)
     {
         // Convert "RRRRRRRRRGGGGGGGGBBBBBBBBAAAAAAAA" to "RRRRRRRRGGGGGGGGBBBBBBBB"
         inPixel32 = (unsigned int*)img->getData();
-
-        pTmpData = (unsigned char*)malloc(nWidth * nHeight * 3);
+        //BPC PATCH
+        dataLen = nWidth * nHeight * 3;
+        pTmpData = (unsigned char *)malloc(dataLen);
+        //END BPC PATCH
         unsigned char* outPixel8 = pTmpData;
 
         for (unsigned int i = 0; i < uLen; ++i, ++inPixel32)
@@ -208,7 +218,9 @@ bool TextureCube::init(const std::string& positive_x, const std::string& negativ
         }
     }
 
+    //BPC PATCH
     backend::TextureDescriptor textureDescriptor;
+    textureDescriptor.textureFormat = images[0]->getPixelFormat();
     textureDescriptor.width = textureDescriptor.height = imageSize;
     textureDescriptor.textureType = backend::TextureType::TEXTURE_CUBE;
     textureDescriptor.samplerDescriptor.minFilter = backend::SamplerFilter::LINEAR;
@@ -221,36 +233,14 @@ bool TextureCube::init(const std::string& positive_x, const std::string& negativ
     for (int i = 0; i < 6; i++)
     {
         Image* img = images[i];
-
-        backend::PixelFormat  ePixelFmt;
-        unsigned char*          pData = getImageData(img, ePixelFmt);
-        uint8_t *cData = nullptr;
-        uint8_t *useData = pData;
-
-        //convert pixel format to RGBA
-        if (ePixelFmt != backend::PixelFormat::RGBA8888)
-        {
-            size_t len = 0;
-            backend::PixelFormatUtils::convertDataToFormat(pData, img->getDataLen(), ePixelFmt, backend::PixelFormat::RGBA8888, &cData, &len);
-            if (cData != pData) //convert error
-            {
-                useData = cData;
-            }
-            else
-            {
-                CCASSERT(false, "error: CubeMap texture may be incorrect, failed to convert pixel format data to RGBA8888");
-            }
-        }
-
-        _texture->updateFaceData(static_cast<backend::TextureCubeFace>(i), useData);
         
-        if (cData != pData)
-            free(cData);
-
-        if (pData != img->getData())
-            free(pData);
+        backend::PixelFormat  ePixelFmt = img->getPixelFormat();
+        Assert(ePixelFmt == textureDescriptor.textureFormat, "All cubemap textures must share the same format!");
+        size_t dataLen = img->getDataLen();
+        unsigned char*          pData = img->getData();
+        _texture->updateFaceData(static_cast<backend::TextureCubeFace>(i), pData);
     }
-
+    //END BPC PATCH
     for (auto img: images)
     {
         CC_SAFE_RELEASE(img);

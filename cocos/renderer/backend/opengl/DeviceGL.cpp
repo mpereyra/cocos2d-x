@@ -64,7 +64,7 @@ CommandBuffer* DeviceGL::newCommandBuffer()
     return new (std::nothrow) CommandBufferGL();
 }
 
-Buffer* DeviceGL::newBuffer(unsigned int size, BufferType type, BufferUsage usage)
+Buffer* DeviceGL::newBuffer(std::size_t size, BufferType type, BufferUsage usage)
 {
     return new (std::nothrow) BufferGL(size, type, usage);
 }
@@ -109,5 +109,10 @@ Program* DeviceGL::newProgram(const std::string& vertexShader, const std::string
     return new (std::nothrow) ProgramGL(vertexShader, fragmentShader, result);
 }
 //END BPC PATCH
+
+Program* DeviceGL::newProgram(unsigned int format, const std::string binary, Program::CompileResult & result)
+{
+    return new (std::nothrow) ProgramGL(format, binary, result);
+}
 
 CC_BACKEND_END

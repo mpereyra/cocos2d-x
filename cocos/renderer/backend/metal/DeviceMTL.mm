@@ -90,7 +90,7 @@ CommandBuffer* DeviceMTL::newCommandBuffer()
     return new (std::nothrow) CommandBufferMTL(this);
 }
 
-Buffer* DeviceMTL::newBuffer(unsigned int size, BufferType type, BufferUsage usage)
+Buffer* DeviceMTL::newBuffer(std::size_t size, BufferType type, BufferUsage usage)
 {
     return new (std::nothrow) BufferMTL(_mtlDevice, size, type, usage);
 }
@@ -111,7 +111,7 @@ TextureBackend* DeviceMTL::newTexture(const TextureDescriptor& descriptor)
 
 ShaderModule* DeviceMTL::newShaderModule(ShaderStage stage, const std::string& source, Program::CompileResult & result)
 {
-    return new (std::nothrow) ShaderModuleMTL(_mtlDevice, stage, source);
+    return new (std::nothrow) ShaderModuleMTL(_mtlDevice, stage, source, result);
 }
 
 DepthStencilState* DeviceMTL::createDepthStencilState(const DepthStencilDescriptor& descriptor)
@@ -128,10 +128,12 @@ RenderPipeline* DeviceMTL::newRenderPipeline()
     return new (std::nothrow) RenderPipelineMTL(_mtlDevice);
 }
 
+//BPC PATCH
 Program* DeviceMTL::newProgram(const std::string& vertexShader, const std::string& fragmentShader, Program::CompileResult & result)
 {
-    return new (std::nothrow) ProgramMTL(vertexShader, fragmentShader);
+    return new (std::nothrow) ProgramMTL(vertexShader, fragmentShader, result);
 }
+//END BPC PATCH
 
 void DeviceMTL::setFrameBufferOnly(bool frameBufferOnly)
 {

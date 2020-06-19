@@ -28,7 +28,7 @@
 #include "base/CCRef.h"
 #include "platform/CCPlatformMacros.h"
 #include "Types.h"
-#include "ShaderCache.h"
+#include "ShaderModule.h"
 
 #include <string>
 #include <vector>
@@ -50,6 +50,12 @@ class ShaderModule;
 class Program : public Ref
 {
 public:
+    /**
+     * Get engine built-in program.
+     * @param type Specifies the built-in program type.
+     */
+    static Program* getBuiltinProgram(ProgramType type);
+    
     /**
      * Get uniform location by name.
      * @param uniform Specifies the uniform name.
@@ -115,12 +121,6 @@ public:
     ProgramType getProgramType() const { return _programType; }
 
     /**
-     * Set engin built-in program type.
-     * @param type Specifies the program type.
-     */
-    void setProgramType(ProgramType type);
-
-    /**
      * Get uniform buffer size in bytes that can hold all the uniforms.
      * @param stage Specifies the shader stage. The symbolic constant can be either VERTEX or FRAGMENT.
      * @return The uniform buffer size in bytes.
@@ -140,7 +140,6 @@ public:
      * @return The uniformInfos.
      */
     virtual const std::unordered_map<std::string, UniformInfo>& getAllActiveUniformInfo(ShaderStage stage) const = 0;
-
     
     /** BPC PATCH **/
     struct CompileResult {
@@ -148,15 +147,28 @@ public:
         std::string filename{};
         std::string errorMsg{};
     };
+#ifdef ANDROID
+    virtual void getProgramBinary(unsigned int& format, std::string& binary) = 0;
+#endif
     /** END PATCH **/
-    
+
 protected:
+    /**
+     * Set engin built-in program type.
+     * @param type Specifies the program type.
+     */
+    void setProgramType(ProgramType type);
+    
     /**
      * @param vs Specifes the vertex shader source.
      * @param fs Specifes the fragment shader source.
      */
     Program(const std::string& vs, const std::string& fs);
-
+//BPC PATCH
+#ifdef ANDROID
+    Program(unsigned int format, const std::string binary, Program::CompileResult & result);
+#endif
+//END BPC PATCH
 #if CC_ENABLE_CACHE_TEXTURE_DATA
     /**
      * In case of EGL context lost, the engine will reload shaders. Thus location of uniform may changed.
@@ -182,12 +194,12 @@ protected:
      */
     virtual const std::unordered_map<std::string, int> getAllUniformsLocation() const = 0;
     friend class ProgramState;
-    friend class ProgramCache;
 #endif
+    friend class ProgramCache;
     
     std::string _vertexShader; ///< Vertex shader.
     std::string _fragmentShader; ///< Fragment shader.
-    ProgramType _programType; ///< built-in program type.
+    ProgramType _programType = ProgramType::CUSTOM_PROGRAM; ///< built-in program type, initial value is CUSTOM_PROGRAM.
 };
 
 //end of _backend group

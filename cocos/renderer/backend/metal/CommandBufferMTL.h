@@ -32,6 +32,9 @@
 CC_BACKEND_BEGIN
 
 class RenderPipelineMTL;
+//BPC PATCH
+class DepthStencilStateMTL;
+//END BPC PATCH
 
 /**
  * @addtogroup _metal
@@ -42,7 +45,7 @@ class RenderPipelineMTL;
  * @brief Store encoded commands for the GPU to execute.
  * A command buffer stores encoded commands until the buffer is committed for execution by the GPU
  */
-class CommandBufferMTL final : public CommandBuffer
+class CommandBufferMTL : public CommandBuffer
 {
 public:
     /// @name Constructor, Destructor and Initializers
@@ -122,7 +125,7 @@ public:
      * @param count For each instance, the number of indexes to draw
      * @see `drawElements(PrimitiveType primitiveType, IndexFormat indexType, unsigned int count, unsigned int offset)`
      */
-    virtual void drawArrays(PrimitiveType primitiveType, unsigned int start,  unsigned int count) override;
+    virtual void drawArrays(PrimitiveType primitiveType, std::size_t start,  std::size_t count) override;
     
     /**
      * Draw primitives with an index list.
@@ -133,7 +136,7 @@ public:
      * @see `setIndexBuffer(Buffer* buffer)`
      * @see `drawArrays(PrimitiveType primitiveType, unsigned int start,  unsigned int count)`
     */
-    virtual void drawElements(PrimitiveType primitiveType, IndexFormat indexType, unsigned int count, unsigned int offset) override;
+    virtual void drawElements(PrimitiveType primitiveType, IndexFormat indexType, std::size_t count, std::size_t offset) override;
     
     /**
      * Do some resources release.
@@ -159,6 +162,10 @@ public:
      * @param height Specifies the height of the scissor box
      */
     virtual void setScissorRect(bool isEnabled, float x, float y, float width, float height) override;
+    
+    //BPC PATCH
+    virtual void setPolygonOffset(bool enabled, double slope, double constant, double clamp) override;
+    //END BPC PATCH
     
     /**
      * Set depthStencil status
@@ -188,7 +195,9 @@ private:
     
     RenderPipelineMTL* _renderPipelineMTL = nullptr;
     ProgramState* _programState = nullptr;
-    id<MTLDepthStencilState> _mtlDepthStencilState = nil;
+    //BPC PATCH
+    DepthStencilStateMTL* _depthStencilState = nullptr;
+    //END BPC PATCH
     
     unsigned int _renderTargetWidth = 0;
     unsigned int _renderTargetHeight = 0;

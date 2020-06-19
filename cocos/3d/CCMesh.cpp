@@ -399,6 +399,9 @@ void Mesh::setMaterial(Material* material)
 #endif
                 //TODO
                 auto vertexAttribBinding = VertexAttribBinding::create(_meshIndexData, pass, &list[i]);
+#ifndef NDEBUG //BPC  PATCH
+                list[i].setName(this->getName());
+#endif
                 pass->setVertexAttribBinding(vertexAttribBinding);
                 i += 1;
             }
@@ -487,6 +490,12 @@ void Mesh::draw(Renderer* renderer, float globalZOrder, const Mat4& transform, u
     
     auto &commands = _meshCommands[technique->getName()];
 
+    //BPC PATCH
+    if (commands.size() == 0) {
+        return;
+    }
+    //END BPC PATCH
+    
     for (auto &command : commands)
     {
         command.init(globalZOrder, transform);

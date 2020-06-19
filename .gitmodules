@@ -4,6 +4,6 @@
 [submodule "tools/bindings-generator"]
         path = tools/bindings-generator
         url = git://github.com/cocos2d/bindings-generator.git
-[submodule "tests/cpp-tests/Resources/ccs-res"]
-        path = tests/cpp-tests/Resources/ccs-res
-        url = git://github.com/dumganhar/ccs-res.git
+[submodule "lib/glsl-optimizer"]
+	path = lib/glsl-optimizer
+	url = git@github.com:brooklynpacket/glsl-optimizer.git

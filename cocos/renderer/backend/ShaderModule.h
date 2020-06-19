@@ -52,6 +52,7 @@ enum Uniform : uint32_t
     BPC_MATRIX_PALETTE,
     BPC_WORLD_VIEW,
     BPC_CAMERA_POSITION,
+    TIME,
     //END BPC PATCH
     UNIFORM_MAX //Maximum uniforms
 };
@@ -78,12 +79,16 @@ public:
      */
     ShaderStage getShaderStage() const;
 
+    std::size_t getHashValue() const { return _hash; }
     
 protected:
     ShaderModule(ShaderStage stage);
     virtual ~ShaderModule();
-
+    void setHashValue(std::size_t hash) { _hash = hash; }
+    
+    friend class ShaderCache;
     ShaderStage _stage = ShaderStage::VERTEX;
+    std::size_t _hash = 0;
 };
 
 //end of _backend group

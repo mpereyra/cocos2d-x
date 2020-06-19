@@ -205,6 +205,10 @@ namespace
                 return nil;
         }
     }
+
+    inline int clamp(int value, int min, int max) {
+        return std::min(max, std::max(min, value));
+    }
 }
 
 CommandBufferMTL::CommandBufferMTL(DeviceMTL* deviceMTL)
@@ -215,6 +219,17 @@ CommandBufferMTL::CommandBufferMTL(DeviceMTL* deviceMTL)
 
 CommandBufferMTL::~CommandBufferMTL()
 {
+    //BPC PATCH
+    if (_depthStencilState)
+    {
+        _depthStencilState->release();
+        _depthStencilState = nullptr;
+    }
+    [_mtlCommandBuffer release];
+    _mtlCommandBuffer = nil;
+    [_mtlRenderEncoder release];
+    _mtlRenderEncoder = nil;
+    //END BPC PATCH
     dispatch_semaphore_signal(_frameBoundarySemaphore);
 }
 
@@ -223,9 +238,13 @@ void CommandBufferMTL::beginFrame()
     _autoReleasePool = [[NSAutoreleasePool alloc] init];
     dispatch_semaphore_wait(_frameBoundarySemaphore, DISPATCH_TIME_FOREVER);
 
-    _mtlCommandBuffer = [_mtlCommandQueue commandBuffer];
+    //BPC  PATCH
+    auto mtlCommandBuffer = [_mtlCommandQueue commandBuffer];
+    [mtlCommandBuffer retain];
+    [_mtlCommandBuffer release];
+    _mtlCommandBuffer = mtlCommandBuffer;
     [_mtlCommandBuffer enqueue];
-    [_mtlCommandBuffer retain];
+    //END BPC PATCH
 
     BufferManager::beginFrame();
 }
@@ -252,14 +271,18 @@ id<MTLRenderCommandEncoder> CommandBufferMTL::getRenderCommandEncoder(const Rend
     _renderTargetWidth = (unsigned int)mtlDescriptor.colorAttachments[0].texture.width;
     _renderTargetHeight = (unsigned int)mtlDescriptor.colorAttachments[0].texture.height;
     id<MTLRenderCommandEncoder> mtlRenderEncoder = [_mtlCommandBuffer renderCommandEncoderWithDescriptor:mtlDescriptor];
-    [mtlRenderEncoder retain];
-    
+    //BPC PATCH (deletion)
     return mtlRenderEncoder;
 }
 
 void CommandBufferMTL::beginRenderPass(const RenderPassDescriptor& descriptor)
 {
-    _mtlRenderEncoder = getRenderCommandEncoder(descriptor);
+    //BPC PATCH
+    auto mtlRenderEncoder = getRenderCommandEncoder(descriptor);
+    [mtlRenderEncoder retain];
+    [_mtlRenderEncoder release];
+    _mtlRenderEncoder = mtlRenderEncoder;
+    //END BPC PATCH
 //    [_mtlRenderEncoder setFrontFacingWinding:MTLWindingCounterClockwise];
 }
 
@@ -318,7 +341,7 @@ void CommandBufferMTL::setIndexBuffer(Buffer* buffer)
     [_mtlIndexBuffer retain];
 }
 
-void CommandBufferMTL::drawArrays(PrimitiveType primitiveType, unsigned int start,  unsigned int count)
+void CommandBufferMTL::drawArrays(PrimitiveType primitiveType, std::size_t start,  std::size_t count)
 {
     prepareDrawing();
     [_mtlRenderEncoder drawPrimitives:toMTLPrimitive(primitiveType)
@@ -326,7 +349,7 @@ void CommandBufferMTL::drawArrays(PrimitiveType primitiveType, unsigned int star
                           vertexCount:count];
 }
 
-void CommandBufferMTL::drawElements(PrimitiveType primitiveType, IndexFormat indexType, unsigned int count, unsigned int offset)
+void CommandBufferMTL::drawElements(PrimitiveType primitiveType, IndexFormat indexType, std::size_t count, std::size_t offset)
 {
     prepareDrawing();
     [_mtlRenderEncoder drawIndexedPrimitives:toMTLPrimitive(primitiveType)
@@ -366,6 +389,9 @@ void CommandBufferMTL::endFrame()
 
     [_mtlCommandBuffer commit];
     [_mtlCommandBuffer release];
+    //BPC PATCH
+    _mtlCommandBuffer = nil;
+    //END BPC PATCH
     DeviceMTL::resetCurrentDrawable();
     [_autoReleasePool drain];
 }
@@ -383,24 +409,33 @@ void CommandBufferMTL::afterDraw()
 
 void CommandBufferMTL::setDepthStencilState(DepthStencilState* depthStencilState)
 {
+    //BPC PATCH
+    if (_depthStencilState != nullptr)
+    {
+        _depthStencilState->release();
+        _depthStencilState = nullptr;
+    }
+
     if (depthStencilState)
-        _mtlDepthStencilState = static_cast<DepthStencilStateMTL*>(depthStencilState)->getMTLDepthStencilState();
-    else
-        _mtlDepthStencilState = nil;
-    
+    {
+        _depthStencilState = static_cast<DepthStencilStateMTL*>(depthStencilState);
+        _depthStencilState->retain();
+    }
+    //END BPC PATCH
 }
 
 void CommandBufferMTL::prepareDrawing() const
 {
     setUniformBuffer();
     setTextures();
-    
-    if (_mtlDepthStencilState)
+    //BPC PATCH
+    if (_depthStencilState)
     {
-        [_mtlRenderEncoder setDepthStencilState:_mtlDepthStencilState];
+        [_mtlRenderEncoder setDepthStencilState: _depthStencilState->getMTLDepthStencilState()];
         [_mtlRenderEncoder setStencilFrontReferenceValue:_stencilReferenceValueFront
                                       backReferenceValue:_stencilReferenceValueBack];
     }
+    //END BPC PATCH
 }
 
 void CommandBufferMTL::setTextures() const
@@ -484,10 +519,19 @@ void CommandBufferMTL::setScissorRect(bool isEnabled, float x, float y, float wi
     MTLScissorRect scissorRect;
     if(isEnabled)
     {
-        scissorRect.x = x;
-        scissorRect.y = _renderTargetHeight - height - y;
-        scissorRect.width = width;
-        scissorRect.height = height;
+        y = _renderTargetHeight - height - y;
+        int minX = clamp((int)x, 0, (int)_renderTargetWidth);
+        int minY = clamp((int)y, 0, (int)_renderTargetHeight);
+        int maxX = clamp((int)(x + width), 0, (int)_renderTargetWidth);
+        int maxY = clamp((int)(y + height), 0, (int)_renderTargetHeight);
+        scissorRect.x = minX;
+        scissorRect.y = minY;
+        scissorRect.width = maxX - minX;
+        scissorRect.height = maxY - minY;
+        if (scissorRect.width == 0 || scissorRect.height == 0) {
+            scissorRect.width = 0;
+            scissorRect.height = 0;
+        }
     }
     else
     {
@@ -498,6 +542,20 @@ void CommandBufferMTL::setScissorRect(bool isEnabled, float x, float y, float wi
     }
     [_mtlRenderEncoder setScissorRect:scissorRect];
 }
+
+//BPC PATCH
+void CommandBufferMTL::setPolygonOffset(bool enabled, double slope, double constant, double clamp)
+{
+    if (enabled) {
+        [_mtlRenderEncoder setDepthBias:(float)constant
+                            slopeScale:(float)slope
+                                  clamp:(float)clamp];
+    } else {
+        [_mtlRenderEncoder setDepthBias:0.0f slopeScale:0.0f clamp:0.0f];
+    }
+}
+
+//END BPC PATCH
 
 
 CC_BACKEND_END
